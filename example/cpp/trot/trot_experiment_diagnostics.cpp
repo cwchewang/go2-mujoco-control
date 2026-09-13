@@ -85,7 +85,10 @@ void TrotExperiment::WriteCsvHeader()
          << ",wbc_full_id_contact_force_x_n"
          << ",diag_active_relative_time_s"
          << ",diag_closure_enabled,diag_solver_returned,diag_contact_mask"
-         << ",diag_force_post_delta_norm,diag_tau_post_delta_norm";
+         << ",diag_force_post_delta_norm,diag_tau_post_delta_norm"
+         << ",rr_thigh_d_gate_time_s,rr_thigh_d_gate_phase"
+         << ",rr_thigh_d_gate_active,rr_thigh_d_kd_scale"
+         << ",rr_thigh_d_kd_baseline,rr_thigh_d_kd_effective";
     for (int i = 0; i < 18; ++i)
         csv_ << ",diag_solver_qdd_" << i;
     for (int i = 0; i < 12; ++i)
@@ -900,7 +903,13 @@ void TrotExperiment::LogSample(
          << "," << (wbc_shadow_diagnostics_.closure_solver_returned ? 1 : 0)
          << "," << wbc_shadow_diagnostics_.closure_contact_mask
          << "," << wbc_shadow_diagnostics_.closure_force_post_delta_norm
-         << "," << wbc_shadow_diagnostics_.closure_tau_post_delta_norm;
+         << "," << wbc_shadow_diagnostics_.closure_tau_post_delta_norm
+         << "," << rr_thigh_d_gate_time_s_
+         << "," << rr_thigh_d_gate_phase_
+         << "," << (rr_thigh_d_gate_active_ ? 1 : 0)
+         << "," << rr_thigh_d_kd_scale_
+         << "," << rr_thigh_d_kd_baseline_
+         << "," << rr_thigh_d_kd_effective_;
     const auto &solver_closure = wbc_shadow_diagnostics_.closure_solver;
     const auto &final_closure = wbc_shadow_diagnostics_.closure_final;
     for (double value : solver_closure.qdd)

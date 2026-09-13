@@ -1164,13 +1164,23 @@ void TrotExperiment::WriteMotorCommands(
     const std::array<double, go2_trot::kMotorCount> &wbc_torque_ff,
     bool apply_wbc_torque_ff)
 {
-    // Delayed post-ID actuator-composition perturbation for the Phase1 A/B
-    // experiment. The active-relative gait clock is shared with the
-    // velocity-command profile; all targets, ID/WBC outputs, and tau_ff stay
-    // unchanged while only the simulator-side PD contribution is suppressed.
-    const bool pd_pulse_active =
-        pd_pulse_enabled_ &&
-        gait_elapsed_s >= 32.10 && gait_elapsed_s < 32.40;
+    // Default-off Phase1 RR-thigh D ablation. The gate uses the same
+    // active-relative gait clock and period as the command profile; all
+    // controller outputs stay unchanged and only motor 7 kd is attenuated.
+    rr_thigh_d_gate_time_s_ = gait_elapsed_s;
+    const double gate_period_s = std::max(params_.period_s, 1.0e-6);
+    rr_thigh_d_gate_phase_ = std::fmod(
+        std::max(0.0, gait_elapsed_s) / gate_period_s, 1.0);
+    if (rr_thigh_d_gate_phase_ < 0.0)
+        rr_thigh_d_gate_phase_ += 1.0;
+    rr_thigh_d_gate_active_ =
+        rr_thigh_d_gated_ab_enabled_ &&
+        gait_elapsed_s >= 32.10 && gait_elapsed_s < 32.60 &&
+        rr_thigh_d_gate_phase_ >= 0.50 &&
+        rr_thigh_d_gate_phase_ < 0.75;
+    rr_thigh_d_kd_scale_ = rr_thigh_d_gate_active_ ? 0.75 : 1.0;
+    rr_thigh_d_kd_baseline_ = 0.0;
+    rr_thigh_d_kd_effective_ = 0.0;
     if (wbc_primary_active)
     {
     // 扭矩渐变注入:激活后 0.5s 内从 0 线性升到 1,避免跳变冲击
@@ -1278,8 +1288,14 @@ void TrotExperiment::WriteMotorCommands(
                 cmd_kp = (joint == 0 ? hip_kp : sagittal_kp);
                 cmd_kd = stance_kd;
             }
-            low_cmd_.motor_cmd()[i].kp() = pd_pulse_active ? 0.0 : cmd_kp;
-            low_cmd_.motor_cmd()[i].kd() = pd_pulse_active ? 0.0 : cmd_kd;
+            if (i == 7)
+            {
+                rr_thigh_d_kd_baseline_ = cmd_kd;
+                cmd_kd *= rr_thigh_d_kd_scale_;
+                rr_thigh_d_kd_effective_ = cmd_kd;
+            }
+            low_cmd_.motor_cmd()[i].kp() = cmd_kp;
+            low_cmd_.motor_cmd()[i].kd() = cmd_kd;
             // 低接触数(过渡/对角支撑)时减弱 WBC 扭矩,避免力分配
             // 在支撑切换瞬间扰动姿态
             const double contact_scale = params_.wbc_full
@@ -1314,10 +1330,16 @@ void TrotExperiment::WriteMotorCommands(
     {
         low_cmd_.motor_cmd()[i].q() = joint_targets[i];
         low_cmd_.motor_cmd()[i].dq() = joint_velocities[i];
-        low_cmd_.motor_cmd()[i].kp() = pd_pulse_active ? 0.0
-            : (task_.motion_stage_ == 0 ? 100.0 : params_.kp);
-        low_cmd_.motor_cmd()[i].kd() = pd_pulse_active ? 0.0
-            : (task_.motion_stage_ == 0 ? 3.5 : params_.kd);
+        low_cmd_.motor_cmd()[i].kp() =
+            task_.motion_stage_ == 0 ? 100.0 : params_.kp;
+        double cmd_kd = task_.motion_stage_ == 0 ? 3.5 : params_.kd;
+        if (i == 7)
+        {
+            rr_thigh_d_kd_baseline_ = cmd_kd;
+            cmd_kd *= rr_thigh_d_kd_scale_;
+            rr_thigh_d_kd_effective_ = cmd_kd;
+        }
+        low_cmd_.motor_cmd()[i].kd() = cmd_kd;
         low_cmd_.motor_cmd()[i].tau() =
             apply_wbc_torque_ff ? wbc_torque_ff[i] : 0.0;
     }

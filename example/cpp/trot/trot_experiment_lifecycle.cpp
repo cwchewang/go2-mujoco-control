@@ -182,9 +182,13 @@ bool TrotExperiment::Init()
         WriteClosureCsvHeader();
     }
     InitLowCmd();
-    const char *pd_pulse_env = std::getenv("TROT_PD_PULSE_AB");
-    pd_pulse_enabled_ =
-        pd_pulse_env != nullptr && std::atof(pd_pulse_env) > 0.5;
+    const char *rr_thigh_d_env = std::getenv("TROT_RR_THIGH_D_GATED_AB");
+    rr_thigh_d_gated_ab_enabled_ =
+        rr_thigh_d_env != nullptr && std::atof(rr_thigh_d_env) > 0.5;
+    std::cout << "RR-thigh D gated A/B="
+              << (rr_thigh_d_gated_ab_enabled_ ? "enabled" : "disabled")
+              << " kd_scale=0.75 time=[32.10,32.60) phase=[0.50,0.75)"
+              << " motor=7\n";
 
     if (params_.wbc_full)
     {
