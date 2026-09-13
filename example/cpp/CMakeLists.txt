@@ -68,6 +68,18 @@ if(EXISTS "${_go2_mujoco_lib}")
         real_trot_go2 PROPERTIES
         BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
 endif()
+if(EXISTS "${_go2_mujoco_lib}")
+    add_executable(
+        replay_pd_counterfactual
+        tools/analysis/replay_pd_counterfactual.cpp)
+    target_include_directories(
+        replay_pd_counterfactual PRIVATE "${_go2_mujoco_inc}")
+    target_link_libraries(
+        replay_pd_counterfactual "${_go2_mujoco_lib}")
+    set_target_properties(
+        replay_pd_counterfactual PROPERTIES
+        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+endif()
 
 function(go2_add_ctest name)
     add_test(NAME ${name} COMMAND ${name})

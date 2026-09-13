@@ -18,6 +18,7 @@
 #undef private
 
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -27,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <new>
@@ -709,6 +711,202 @@ namespace
   };
 
   GroundTruthContactLogger ground_truth_logger;
+  class CounterfactualSnapshotLogger
+  {
+  public:
+    void Configure(mjModel *model)
+    {
+      Close();
+      const char *path_env = std::getenv("TROT_MJ_SNAPSHOT_PATH");
+      if (path_env == nullptr || *path_env == '\0')
+        return;
+
+      model_ = model;
+      state_sig_ = mjSTATE_INTEGRATION;
+      state_size_ = mj_stateSize(model_, state_sig_);
+      if (state_size_ <= 0)
+      {
+        std::cerr << "PD counterfactual snapshots: invalid state size\n";
+        return;
+      }
+      state_.assign(static_cast<std::size_t>(state_size_), 0.0);
+      start_time_s_ = ParseBound("TROT_MJ_SNAPSHOT_TIME_START", -1.0e9);
+      end_time_s_ = ParseBound("TROT_MJ_SNAPSHOT_TIME_END", 1.0e9);
+      if (!(start_time_s_ < end_time_s_))
+      {
+        std::cerr << "PD counterfactual snapshots: invalid time bounds\n";
+        state_.clear();
+        return;
+      }
+
+      static constexpr std::array<const char *, 4> kLegs = {
+          "FR", "FL", "RR", "RL"};
+      foot_geom_ids_.fill(-1);
+      for (std::size_t i = 0; i < kLegs.size(); ++i)
+      {
+        foot_geom_ids_[i] =
+            mj_name2id(model_, mjOBJ_GEOM, kLegs[i]);
+      }
+
+      const std::filesystem::path output(path_env);
+      std::error_code error;
+      if (!output.parent_path().empty())
+        std::filesystem::create_directories(output.parent_path(), error);
+      if (error)
+      {
+        std::cerr << "PD counterfactual snapshots: cannot create directory: "
+                  << error.message() << "\n";
+        state_.clear();
+        return;
+      }
+      stream_.open(output, std::ios::binary | std::ios::out | std::ios::trunc);
+      if (!stream_)
+      {
+        std::cerr << "PD counterfactual snapshots: cannot open "
+                  << output << "\n";
+        state_.clear();
+        return;
+      }
+
+      stream_.write("GO2PDSNP", 8);
+      WriteScalar<std::uint32_t>(1);
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(mj_version()));
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(sizeof(mjtNum)));
+      WriteScalar<std::uint32_t>(state_sig_);
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(state_size_));
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(model_->nq));
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(model_->nv));
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(model_->na));
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(model_->nu));
+      WriteScalar<double>(start_time_s_);
+      WriteScalar<double>(end_time_s_);
+      WriteScalar<double>(model_->opt.timestep);
+      ready_ = stream_.good();
+      if (ready_)
+      {
+        std::cerr << "PD counterfactual snapshots enabled path=" << output
+                  << " sim_time=[" << start_time_s_ << "," << end_time_s_
+                  << ") state_sig=" << state_sig_
+                  << " state_size=" << state_size_ << "\n";
+      }
+    }
+
+    bool Begin(const mjModel *model, const mjData *data)
+    {
+      pending_ = false;
+      if (!ready_ || model != model_ || data == nullptr ||
+          data->time < start_time_s_ || data->time >= end_time_s_)
+        return false;
+      mj_getState(model, data, state_.data(), state_sig_);
+      pending_time_s_ = data->time;
+      pending_qvel0_ = data->qvel[0];
+      pending_ncon_ = data->ncon;
+      pending_nefc_ = data->nefc;
+      pending_contact_mask_ = ContactMask(model, data);
+      pending_ = true;
+      return true;
+    }
+
+    void End(const mjModel *model, const mjData *data)
+    {
+      if (!pending_ || !ready_ || model != model_ || data == nullptr)
+        return;
+      WriteScalar<std::uint64_t>(record_count_++);
+      WriteScalar<std::int64_t>(
+          static_cast<std::int64_t>(std::llround(pending_time_s_ * 1000.0)));
+      WriteScalar<double>(pending_time_s_);
+      WriteScalar<double>(pending_qvel0_);
+      WriteScalar<double>(data->qacc[0]);
+      WriteScalar<std::int32_t>(pending_ncon_);
+      WriteScalar<std::int32_t>(pending_nefc_);
+      WriteScalar<std::int32_t>(pending_contact_mask_);
+      WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(state_size_));
+      stream_.write(
+          reinterpret_cast<const char *>(state_.data()),
+          static_cast<std::streamsize>(
+              state_.size() * sizeof(mjtNum)));
+      if ((record_count_ % 128) == 0)
+        stream_.flush();
+      pending_ = false;
+    }
+
+    void Close()
+    {
+      pending_ = false;
+      if (stream_.is_open())
+      {
+        stream_.flush();
+        stream_.close();
+      }
+      ready_ = false;
+      state_.clear();
+      record_count_ = 0;
+    }
+
+  private:
+    template <typename T>
+    void WriteScalar(const T &value)
+    {
+      stream_.write(
+          reinterpret_cast<const char *>(&value),
+          static_cast<std::streamsize>(sizeof(T)));
+    }
+
+    static double ParseBound(const char *name, double fallback)
+    {
+      const char *value = std::getenv(name);
+      if (value == nullptr || *value == '\0')
+        return fallback;
+      char *end = nullptr;
+      const double parsed = std::strtod(value, &end);
+      return end != value && *end == '\0' && std::isfinite(parsed)
+          ? parsed : fallback;
+    }
+
+    int ContactMask(const mjModel *model, const mjData *data) const
+    {
+      int mask = 0;
+      for (int contact_id = 0; contact_id < data->ncon; ++contact_id)
+      {
+        const mjContact &contact = data->contact[contact_id];
+        if (contact.exclude != 0 || contact.efc_address < 0)
+          continue;
+        for (std::size_t leg = 0; leg < foot_geom_ids_.size(); ++leg)
+        {
+          const int foot_geom = foot_geom_ids_[leg];
+          if (foot_geom < 0 ||
+              (contact.geom[0] != foot_geom &&
+               contact.geom[1] != foot_geom))
+            continue;
+          const int other_geom =
+              contact.geom[0] == foot_geom ? contact.geom[1] : contact.geom[0];
+          if (other_geom >= 0 && other_geom < model->ngeom &&
+              model->geom_bodyid[other_geom] == 0)
+            mask |= 1 << static_cast<int>(leg);
+        }
+      }
+      return mask;
+    }
+
+    mjModel *model_ = nullptr;
+    std::ofstream stream_;
+    std::vector<mjtNum> state_;
+    std::array<int, 4> foot_geom_ids_ = {-1, -1, -1, -1};
+    unsigned int state_sig_ = 0;
+    int state_size_ = 0;
+    double start_time_s_ = 0.0;
+    double end_time_s_ = 0.0;
+    double pending_time_s_ = 0.0;
+    double pending_qvel0_ = 0.0;
+    int pending_ncon_ = 0;
+    int pending_nefc_ = 0;
+    int pending_contact_mask_ = 0;
+    std::uint64_t record_count_ = 0;
+    bool pending_ = false;
+    bool ready_ = false;
+  };
+
+  CounterfactualSnapshotLogger counterfactual_snapshot_logger;
 
   //---------------------------------------- plugin handling -----------------------------------------
 
@@ -1101,6 +1299,7 @@ namespace
           mj_forward(m, d);
           ConfigureCamera(&sim);
           ground_truth_logger.Configure(m);
+          counterfactual_snapshot_logger.Configure(m);
 
           // allocate ctrlnoise
           free(ctrlnoise);
@@ -1133,6 +1332,7 @@ namespace
           mj_forward(m, d);
           ConfigureCamera(&sim);
           ground_truth_logger.Configure(m);
+          counterfactual_snapshot_logger.Configure(m);
 
           // allocate ctrlnoise
           free(ctrlnoise);
@@ -1208,9 +1408,11 @@ namespace
               syncSim = d->time;
               sim.speed_changed = false;
 
+              counterfactual_snapshot_logger.Begin(m, d);
               // run single step, let next iteration deal with timing
               mj_step(m, d);
               ground_truth_logger.Log(m, d);
+              counterfactual_snapshot_logger.End(m, d);
               stepped = true;
             }
 
@@ -1251,7 +1453,9 @@ namespace
                 }
 
                 // call mj_step
+                counterfactual_snapshot_logger.Begin(m, d);
                 mj_step(m, d);
+                counterfactual_snapshot_logger.End(m, d);
                 ground_truth_logger.Log(m, d);
                 stepped = true;
 
@@ -1319,6 +1523,7 @@ void PhysicsThread(mj::Simulate *sim, const char *filename)
       ConfigureCamera(sim);
       mj_forward(m, d);
       ground_truth_logger.Configure(m);
+      counterfactual_snapshot_logger.Configure(m);
 
       // allocate ctrlnoise
       free(ctrlnoise);
@@ -1333,6 +1538,7 @@ void PhysicsThread(mj::Simulate *sim, const char *filename)
 
   PhysicsLoop(*sim);
   ground_truth_logger.Close();
+  counterfactual_snapshot_logger.Close();
 
   // delete everything we allocated
   free(ctrlnoise);
@@ -1529,6 +1735,7 @@ int main(int argc, char **argv)
     std::printf("headless mode: exit requested, flushing ground-truth log and exiting\n");
     std::fflush(stdout);
     ground_truth_logger.Close();
+    counterfactual_snapshot_logger.Close();
     _exit(0);
   } else {
     // start simulation UI loop (blocking call)
