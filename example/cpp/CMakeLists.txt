@@ -104,6 +104,18 @@ if(EXISTS "${_go2_mujoco_lib}")
         replay_pd_components PROPERTIES
         BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
 endif()
+if(EXISTS "${_go2_mujoco_lib}")
+    add_executable(
+        replay_four_thigh_d_screen
+        tools/analysis/replay_four_thigh_d_screen.cpp)
+    target_include_directories(
+        replay_four_thigh_d_screen PRIVATE "${_go2_mujoco_inc}")
+    target_link_libraries(
+        replay_four_thigh_d_screen "${_go2_mujoco_lib}")
+    set_target_properties(
+        replay_four_thigh_d_screen PROPERTIES
+        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+endif()
 
 function(go2_add_ctest name)
     add_test(NAME ${name} COMMAND ${name})
