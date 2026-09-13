@@ -92,6 +92,18 @@ if(EXISTS "${_go2_mujoco_lib}")
         replay_bridge_atomic PROPERTIES
         BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
 endif()
+if(EXISTS "${_go2_mujoco_lib}")
+    add_executable(
+        replay_pd_components
+        tools/analysis/replay_pd_components.cpp)
+    target_include_directories(
+        replay_pd_components PRIVATE "${_go2_mujoco_inc}")
+    target_link_libraries(
+        replay_pd_components "${_go2_mujoco_lib}")
+    set_target_properties(
+        replay_pd_components PROPERTIES
+        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+endif()
 
 function(go2_add_ctest name)
     add_test(NAME ${name} COMMAND ${name})
