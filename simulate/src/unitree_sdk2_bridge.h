@@ -13,7 +13,10 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <limits>
 #include <mutex>
@@ -24,6 +27,63 @@
 
 #define MOTOR_SENSOR_NUM 3
 
+namespace go2_bridge
+{
+constexpr std::size_t kAtomicMotorCount = 12;
+
+struct AtomicBridgeRecord
+{
+    std::uint64_t bridge_ctrl_seq = 0;
+    std::uint32_t motor_count = 0;
+    double sim_time_s = 0.0;
+    std::array<double, kAtomicMotorCount> q{};
+    std::array<double, kAtomicMotorCount> dq{};
+    std::array<double, kAtomicMotorCount> kp{};
+    std::array<double, kAtomicMotorCount> kd{};
+    std::array<double, kAtomicMotorCount> tau_ff{};
+    std::array<double, kAtomicMotorCount> sensor_q{};
+    std::array<double, kAtomicMotorCount> sensor_dq{};
+    std::array<double, kAtomicMotorCount> ctrl{};
+};
+
+class AtomicBridgeCapture
+{
+public:
+    AtomicBridgeCapture()
+        : enabled_(ParseEnabled(std::getenv("TROT_BRIDGE_ATOMIC_RECORD")))
+    {
+    }
+
+    bool enabled() const
+    {
+        return enabled_;
+    }
+
+    const AtomicBridgeRecord &record() const
+    {
+        return record_;
+    }
+
+    void Publish(AtomicBridgeRecord record)
+    {
+        record.bridge_ctrl_seq = ++next_seq_;
+        record_ = record;
+    }
+
+private:
+    static bool ParseEnabled(const char *value)
+    {
+        return value != nullptr &&
+            (std::string(value) == "1" || std::string(value) == "true");
+    }
+
+    const bool enabled_ = false;
+    std::uint64_t next_seq_ = 0;
+    AtomicBridgeRecord record_;
+};
+
+inline AtomicBridgeCapture atomic_bridge_capture;
+}  // namespace go2_bridge
 class UnitreeSDK2BridgeBase
 {
 public:
@@ -313,11 +373,37 @@ public:
         // lowcmd
         {
             std::lock_guard<std::mutex> lock(lowcmd->mutex_);
+            const bool capture_atomic =
+                go2_bridge::atomic_bridge_capture.enabled();
+            go2_bridge::AtomicBridgeRecord atomic_record;
             for(int i(0); i<num_motor_; i++) {
                 auto & m = lowcmd->msg_.motor_cmd()[i];
-                mj_data_->ctrl[i] = m.tau() +
+                const mjtNum sensor_q = mj_data_->sensordata[i];
+                const mjtNum sensor_dq =
+                    mj_data_->sensordata[i + num_motor_];
+                const mjtNum ctrl = m.tau() +
                                     m.kp() * (m.q() - mj_data_->sensordata[i]) +
-                                    m.kd() * (m.dq() - mj_data_->sensordata[i + num_motor_]);
+                                    m.kd() * (m.dq() -
+                                               mj_data_->sensordata[i + num_motor_]);
+                mj_data_->ctrl[i] = ctrl;
+                if (capture_atomic &&
+                    i < static_cast<int>(go2_bridge::kAtomicMotorCount)) {
+                    atomic_record.q[static_cast<std::size_t>(i)] = m.q();
+                    atomic_record.dq[static_cast<std::size_t>(i)] = m.dq();
+                    atomic_record.kp[static_cast<std::size_t>(i)] = m.kp();
+                    atomic_record.kd[static_cast<std::size_t>(i)] = m.kd();
+                    atomic_record.tau_ff[static_cast<std::size_t>(i)] = m.tau();
+                    atomic_record.sensor_q[static_cast<std::size_t>(i)] = sensor_q;
+                    atomic_record.sensor_dq[static_cast<std::size_t>(i)] = sensor_dq;
+                    atomic_record.ctrl[static_cast<std::size_t>(i)] =
+                        mj_data_->ctrl[i];
+                }
+            }
+            if (capture_atomic) {
+                atomic_record.motor_count =
+                    static_cast<std::uint32_t>(num_motor_);
+                atomic_record.sim_time_s = mj_data_->time;
+                go2_bridge::atomic_bridge_capture.Publish(atomic_record);
             }
         }
 

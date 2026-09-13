@@ -769,7 +769,7 @@ namespace
       }
 
       stream_.write("GO2PDSNP", 8);
-      WriteScalar<std::uint32_t>(1);
+      WriteScalar<std::uint32_t>(2);
       WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(mj_version()));
       WriteScalar<std::uint32_t>(static_cast<std::uint32_t>(sizeof(mjtNum)));
       WriteScalar<std::uint32_t>(state_sig_);
@@ -803,6 +803,16 @@ namespace
       pending_ncon_ = data->ncon;
       pending_nefc_ = data->nefc;
       pending_contact_mask_ = ContactMask(model, data);
+      pending_bridge_record_ = go2_bridge::atomic_bridge_capture.record();
+      for (std::size_t i = 0; i < go2_bridge::kAtomicMotorCount; ++i)
+        pending_snapshot_ctrl_[i] = data->ctrl[i];
+      if (!have_last_bridge_seq_ ||
+          pending_bridge_record_.bridge_ctrl_seq != last_bridge_seq_)
+        pending_bridge_seq_step_index_ = 1;
+      else
+        ++pending_bridge_seq_step_index_;
+      last_bridge_seq_ = pending_bridge_record_.bridge_ctrl_seq;
+      have_last_bridge_seq_ = true;
       pending_ = true;
       return true;
     }
@@ -825,6 +835,19 @@ namespace
           reinterpret_cast<const char *>(state_.data()),
           static_cast<std::streamsize>(
               state_.size() * sizeof(mjtNum)));
+      WriteScalar<std::uint64_t>(pending_bridge_record_.bridge_ctrl_seq);
+      WriteScalar<std::uint32_t>(pending_bridge_record_.motor_count);
+      WriteScalar<double>(pending_bridge_record_.sim_time_s);
+      for (double value : pending_bridge_record_.q) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.dq) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.kp) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.kd) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.tau_ff) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.sensor_q) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.sensor_dq) WriteScalar<double>(value);
+      for (double value : pending_bridge_record_.ctrl) WriteScalar<double>(value);
+      for (double value : pending_snapshot_ctrl_) WriteScalar<double>(value);
+      WriteScalar<std::uint32_t>(pending_bridge_seq_step_index_);
       if ((record_count_ % 128) == 0)
         stream_.flush();
       pending_ = false;
@@ -841,6 +864,8 @@ namespace
       ready_ = false;
       state_.clear();
       record_count_ = 0;
+      last_bridge_seq_ = 0;
+      have_last_bridge_seq_ = false;
     }
 
   private:
@@ -901,6 +926,11 @@ namespace
     int pending_ncon_ = 0;
     int pending_nefc_ = 0;
     int pending_contact_mask_ = 0;
+    go2_bridge::AtomicBridgeRecord pending_bridge_record_;
+    std::array<double, go2_bridge::kAtomicMotorCount> pending_snapshot_ctrl_{};
+    std::uint32_t pending_bridge_seq_step_index_ = 0;
+    std::uint64_t last_bridge_seq_ = 0;
+    bool have_last_bridge_seq_ = false;
     std::uint64_t record_count_ = 0;
     bool pending_ = false;
     bool ready_ = false;
