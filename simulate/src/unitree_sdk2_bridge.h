@@ -6,6 +6,7 @@
 #include <unitree/robot/channel/channel_subscriber.hpp>
 #include <unitree/dds_wrapper/robots/go2/go2.h>
 #include <unitree/dds_wrapper/robots/g1/g1.h>
+#include <unitree/idl/go2/Error_.hpp>
 #include <unitree/idl/go2/HeightMap_.hpp>
 #include <unitree/idl/hg/BmsState_.hpp>
 #include <unitree/idl/hg/IMUState_.hpp>
@@ -24,12 +25,18 @@
 
 #include "param.h"
 #include "physics_joystick.h"
+#include "lockstep.h"
+
 
 #define MOTOR_SENSOR_NUM 3
+
+namespace lockstep { class Coordinator; }
+extern lockstep::Coordinator *g_lockstep;
 
 namespace go2_bridge
 {
 constexpr std::size_t kAtomicMotorCount = 12;
+
 
 struct AtomicBridgeRecord
 {
@@ -238,6 +245,44 @@ protected:
             secondary_imu_acc_adr_ = mj_model_->sensor_adr[sensor_id];
         }
     }
+
+
+};
+// LowCmd subscription that counts every DDS arrival so the lockstep
+// exchange rule can wait for a full controller write period. Message state
+// handling is identical to SubscriptionBase's default handler; the
+// wall-clock path keeps the plain LowCmd_t and is byte-identical.
+template <typename MsgType>
+class CountingLowCmd : public unitree::robot::SubscriptionBase<MsgType>
+{
+public:
+    CountingLowCmd(const std::string &topic, lockstep::Coordinator *coord)
+        : unitree::robot::SubscriptionBase<MsgType>(
+              topic, [this, coord](const void *msg) {
+                  if (coord != nullptr) coord->OnCommandArrived();
+                  std::lock_guard<std::mutex> lock(this->mutex_);
+                  this->msg_ = *(const MsgType *)msg;
+              })
+    {
+    }
+};
+
+// Ack metadata subscriber for the exact {state_seq, command_seq} pair.
+class LockstepAckSubscriber
+    : public unitree::robot::SubscriptionBase<unitree_go::msg::dds_::Error_>
+{
+public:
+    explicit LockstepAckSubscriber(const std::string &topic,
+                                   lockstep::Coordinator *coord)
+        : unitree::robot::SubscriptionBase<unitree_go::msg::dds_::Error_>(
+              topic, [coord](const void *msg) {
+                  if (coord == nullptr) return;
+                  const auto *m = static_cast<
+                      const unitree_go::msg::dds_::Error_ *>(msg);
+                  coord->OnAckReceived(m->source(), m->state());
+              })
+    {
+    }
 };
 
 template <typename LowCmd_t, typename LowState_t>
@@ -253,7 +298,18 @@ public:
         std::recursive_mutex *sim_mutex)
         : UnitreeSDK2BridgeBase(model, data, sim_mutex)
     {
-        lowcmd = std::make_shared<LowCmd_t>("rt/lowcmd");
+        if (param::config.lockstep)
+        {
+            lowcmd = std::make_shared<CountingLowCmd<
+                typename LowCmd_t::MsgType>>("rt/lowcmd", ::g_lockstep);
+            lockstep_ack_subscriber_ =
+                std::make_shared<LockstepAckSubscriber>(
+                    "rt/lockstep/ack", ::g_lockstep);
+        }
+        else
+        {
+            lowcmd = std::make_shared<LowCmd_t>("rt/lowcmd");
+        }
         lowstate = std::make_unique<LowState_t>();
         lowstate->joystick = joystick;
         highstate = std::make_unique<HighState_t>();
@@ -366,6 +422,16 @@ public:
     }
 
     virtual void run()
+    {
+        if (param::config.lockstep && ::g_lockstep != nullptr)
+        {
+            RunLockstep();
+            return;
+        }
+        RunWallClock();
+    }
+
+    void RunWallClock()
     {
         auto sim_lock = LockSimulation();
         if(!mj_data_) return;
@@ -520,10 +586,219 @@ public:
     }
 
     std::unique_ptr<HighState_t> highstate;
+    void RunLockstep()
+    {
+        if (!::g_lockstep->BarrierComplete())
+        {
+            RunWallClock();
+            ::g_lockstep->OnStartupPublish(CurrentTickMs());
+            return;
+        }
+        auto sim_lock = LockSimulation();
+        if (!mj_data_) return;
+        if (::g_lockstep->FailedClosed()) return;
+        const std::uint64_t sim_tick_ms = CurrentTickMs();
+        const lockstep::PublishOutcome outcome =
+            ::g_lockstep->OnPublish(sim_tick_ms);
+        PublishStateSnapshot(/*blocking_lowstate=*/true);
+        if (outcome == lockstep::PublishOutcome::kStepGranted)
+        {
+            ApplyLatestCommand();
+            ::g_lockstep->NotifyCommandApplied();
+        }
+    }
+
+    std::uint64_t CurrentTickMs() const
+    {
+        return static_cast<std::uint64_t>(
+            std::llround(mj_data_->time * 1000.0));
+    }
+
+    void ApplyLatestCommand()
+    {
+        auto sim_lock = LockSimulation();
+        if (!mj_data_) return;
+        std::lock_guard<std::mutex> lock(lowcmd->mutex_);
+        const bool capture_atomic =
+            go2_bridge::atomic_bridge_capture.enabled();
+        go2_bridge::AtomicBridgeRecord atomic_record;
+        for (int i = 0; i < num_motor_; i++)
+        {
+            auto &motor = lowcmd->msg_.motor_cmd()[i];
+            const mjtNum sensor_q = mj_data_->sensordata[i];
+            const mjtNum sensor_dq =
+                mj_data_->sensordata[i + num_motor_];
+            mj_data_->ctrl[i] = motor.tau() +
+                motor.kp() * (motor.q() - sensor_q) +
+                motor.kd() * (motor.dq() - sensor_dq);
+            if (capture_atomic &&
+                i < static_cast<int>(go2_bridge::kAtomicMotorCount))
+            {
+                atomic_record.q[static_cast<std::size_t>(i)] = motor.q();
+                atomic_record.dq[static_cast<std::size_t>(i)] = motor.dq();
+                atomic_record.kp[static_cast<std::size_t>(i)] = motor.kp();
+                atomic_record.kd[static_cast<std::size_t>(i)] = motor.kd();
+                atomic_record.tau_ff[static_cast<std::size_t>(i)] =
+                    motor.tau();
+                atomic_record.sensor_q[static_cast<std::size_t>(i)] = sensor_q;
+                atomic_record.sensor_dq[static_cast<std::size_t>(i)] = sensor_dq;
+                atomic_record.ctrl[static_cast<std::size_t>(i)] =
+                    mj_data_->ctrl[i];
+            }
+        }
+        if (capture_atomic)
+        {
+            atomic_record.motor_count =
+                static_cast<std::uint32_t>(num_motor_);
+            atomic_record.sim_time_s = mj_data_->time;
+            go2_bridge::atomic_bridge_capture.Publish(atomic_record);
+        }
+    }
+
+    void PublishStateSnapshot(bool blocking_lowstate)
+    {
+        auto sim_lock = LockSimulation();
+        if (!mj_data_) return;
+        PublishEnvironmentHeightMap();
+        const bool lowstate_locked =
+            blocking_lowstate ? (lowstate->lock(), true) : lowstate->trylock();
+        if (lowstate_locked)
+        {
+            for (int i = 0; i < num_motor_; i++)
+            {
+                lowstate->msg_.motor_state()[i].q() =
+                    mj_data_->sensordata[i];
+                lowstate->msg_.motor_state()[i].dq() =
+                    mj_data_->sensordata[i + num_motor_];
+                lowstate->msg_.motor_state()[i].tau_est() =
+                    mj_data_->sensordata[i + 2 * num_motor_];
+            }
+            if (imu_quat_adr_ >= 0)
+            {
+                lowstate->msg_.imu_state().quaternion()[0] =
+                    mj_data_->sensordata[imu_quat_adr_ + 0];
+                lowstate->msg_.imu_state().quaternion()[1] =
+                    mj_data_->sensordata[imu_quat_adr_ + 1];
+                lowstate->msg_.imu_state().quaternion()[2] =
+                    mj_data_->sensordata[imu_quat_adr_ + 2];
+                lowstate->msg_.imu_state().quaternion()[3] =
+                    mj_data_->sensordata[imu_quat_adr_ + 3];
+                const double w = lowstate->msg_.imu_state().quaternion()[0];
+                const double x = lowstate->msg_.imu_state().quaternion()[1];
+                const double y = lowstate->msg_.imu_state().quaternion()[2];
+                const double z = lowstate->msg_.imu_state().quaternion()[3];
+                lowstate->msg_.imu_state().rpy()[0] =
+                    atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y));
+                lowstate->msg_.imu_state().rpy()[1] =
+                    asin(2 * (w * y - z * x));
+                lowstate->msg_.imu_state().rpy()[2] =
+                    atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
+            }
+            if (imu_gyro_adr_ >= 0)
+            {
+                lowstate->msg_.imu_state().gyroscope()[0] =
+                    mj_data_->sensordata[imu_gyro_adr_ + 0];
+                lowstate->msg_.imu_state().gyroscope()[1] =
+                    mj_data_->sensordata[imu_gyro_adr_ + 1];
+                lowstate->msg_.imu_state().gyroscope()[2] =
+                    mj_data_->sensordata[imu_gyro_adr_ + 2];
+            }
+            if (imu_acc_adr_ >= 0)
+            {
+                lowstate->msg_.imu_state().accelerometer()[0] =
+                    mj_data_->sensordata[imu_acc_adr_ + 0];
+                lowstate->msg_.imu_state().accelerometer()[1] =
+                    mj_data_->sensordata[imu_acc_adr_ + 1];
+                lowstate->msg_.imu_state().accelerometer()[2] =
+                    mj_data_->sensordata[imu_acc_adr_ + 2];
+            }
+            if constexpr (std::is_same_v<
+                              std::decay_t<decltype(lowstate->msg_)>,
+                              unitree_go::msg::dds_::LowState_>)
+            {
+                for (std::size_t i = 0; i < foot_force_adr_.size(); ++i)
+                {
+                    if (foot_force_adr_[i] >= 0)
+                    {
+                        const double force = std::clamp(
+                            mj_data_->sensordata[foot_force_adr_[i]],
+                            0.0,
+                            static_cast<double>(
+                                std::numeric_limits<int16_t>::max()));
+                        const int16_t force_value =
+                            static_cast<int16_t>(std::lround(force));
+                        lowstate->msg_.foot_force()[i] = force_value;
+                        lowstate->msg_.foot_force_est()[i] = force_value;
+                    }
+                }
+                static thread_local std::vector<mjtNum> full_mass(
+                    static_cast<std::size_t>(mj_model_->nv) *
+                    static_cast<std::size_t>(mj_model_->nv), 0.0);
+                mj_fullM(mj_model_, full_mass.data(), mj_data_->qM);
+                for (int slot = 0; slot < 42; ++slot)
+                {
+                    const int motor = 12 + slot / 7;
+                    const int field = slot % 7;
+                    double value = 0.0;
+                    if (slot < 36)
+                    {
+                        const int r = slot / 6;
+                        const int c = slot % 6;
+                        value = full_mass[static_cast<std::size_t>(
+                            r * mj_model_->nv + c)];
+                    }
+                    else
+                    {
+                        value = mj_data_->qfrc_bias[slot - 36];
+                    }
+                    auto &ms = lowstate->msg_.motor_state()[motor];
+                    switch (field)
+                    {
+                        case 0: ms.q() = static_cast<float>(value); break;
+                        case 1: ms.dq() = static_cast<float>(value); break;
+                        case 2: ms.ddq() = static_cast<float>(value); break;
+                        case 3: ms.tau_est() = static_cast<float>(value); break;
+                        case 4: ms.q_raw() = static_cast<float>(value); break;
+                        case 5: ms.dq_raw() = static_cast<float>(value); break;
+                        case 6: ms.ddq_raw() = static_cast<float>(value); break;
+                    }
+                }
+            }
+            lowstate->msg_.tick() =
+                static_cast<std::uint32_t>(
+                    std::llround(mj_data_->time / 1e-3));
+            lowstate->unlockAndPublish();
+        }
+        if (highstate->trylock())
+        {
+            if (frame_pos_adr_ >= 0)
+            {
+                highstate->msg_.position()[0] =
+                    mj_data_->sensordata[frame_pos_adr_ + 0];
+                highstate->msg_.position()[1] =
+                    mj_data_->sensordata[frame_pos_adr_ + 1];
+                highstate->msg_.position()[2] =
+                    mj_data_->sensordata[frame_pos_adr_ + 2];
+            }
+            if (frame_vel_adr_ >= 0)
+            {
+                highstate->msg_.velocity()[0] =
+                    mj_data_->sensordata[frame_vel_adr_ + 0];
+                highstate->msg_.velocity()[1] =
+                    mj_data_->sensordata[frame_vel_adr_ + 1];
+                highstate->msg_.velocity()[2] =
+                    mj_data_->sensordata[frame_vel_adr_ + 2];
+            }
+            highstate->unlockAndPublish();
+        }
+        if (wireless_controller->joystick)
+            wireless_controller->unlockAndPublish();
+    }
     unitree::robot::ChannelPtr<unitree_go::msg::dds_::HeightMap_> environment_heightmap;
     std::unique_ptr<WirelessController_t> wireless_controller;
-    std::shared_ptr<LowCmd_t> lowcmd;
+    std::shared_ptr<unitree::robot::SubscriptionBase<typename LowCmd_t::MsgType>> lowcmd;
     std::unique_ptr<LowState_t> lowstate;
+    std::shared_ptr<LockstepAckSubscriber> lockstep_ack_subscriber_;
     
 private:
     double last_environment_map_publish_s_ = -1.0e9;

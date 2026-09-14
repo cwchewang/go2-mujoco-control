@@ -233,6 +233,7 @@ void TrotExperiment::LowCmdWrite()
 
     // SECTION: publish-lowcmd
     PublishLowCmdWithCrc();
+    PublishLockstepAck(state_snapshot.tick());
     // SECTION: log-sample
         LogSample(state_snapshot, have_state, high_state_snapshot, have_high_state);
 }
@@ -242,7 +243,100 @@ void TrotExperiment::PublishLowCmdWithCrc()
     low_cmd_.crc() = crc32_core(
         (uint32_t *)&low_cmd_,
         (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
+#ifdef GO2_TROT_TESTING
+    if (suppress_lowcmd_publish_for_test_)
+        return;
+#endif
     lowcmd_publisher_->Write(low_cmd_);
+}
+#ifdef GO2_TROT_TESTING
+void TrotExperiment::TestPrepareMotionClock(std::uint32_t handoff_tick)
+{
+    InitLowCmd();
+    suppress_lowcmd_publish_for_test_ = true;
+    lockstep_ack_enabled_ = true;
+    last_consumed_state_tick_ = handoff_tick;
+    EngageLockstepWriterIfNeeded();
+    // Keep the production gait/timer consumers active for the call-chain
+    // probe; these are existing controller fields, not test-time clocks.
+    task_.gait_started_ = true;
+    task_.motion_stage_ = 2;
+    stop_brake_start_time_s_ = running_time_;
+    high_speed_stop_brake_start_time_s_ = running_time_;
+    high_speed_stop_hold_start_time_s_ = running_time_;
+}
+
+bool TrotExperiment::TestRunWallClockTick(
+    const unitree_go::msg::dds_::LowState_ &state)
+{
+    suppress_lowcmd_publish_for_test_ = true;
+    LowStateMessageHandler(&state);
+    if (!lockstep_writer_gate_.Engaged())
+        LowCmdWrite();
+    else
+        return false;
+    return true;
+}
+
+bool TrotExperiment::TestRunLockstepTick(
+    const unitree_go::msg::dds_::LowState_ &state)
+{
+    LowStateMessageHandler(&state);
+    if (!lockstep_writer_gate_.HasPendingTick())
+        return false;
+    std::uint32_t pending_tick = 0;
+    if (lockstep_writer_gate_.WaitForTick(
+        []() { return false; }, &pending_tick) !=
+        lockstep_writer::WaitResult::kTick)
+        return false;
+    LowCmdWrite();
+    lockstep_writer_gate_.RecordConsumed(pending_tick);
+    return true;
+}
+
+TrotExperiment::TestMotionClockSample
+TrotExperiment::TestLastMotionClockSample() const
+{
+    TestMotionClockSample sample;
+    sample.motion_dt_s = last_motion_dt_s_;
+    sample.cmd_time_s = running_time_;
+    sample.gait_time_s = running_time_ - task_.gait_start_time_s_;
+    sample.ramp_time_s = running_time_ - task_.gait_start_time_s_;
+    sample.governor_time_s = running_time_ -
+        high_speed_stop_brake_start_time_s_;
+    sample.stop_time_s = running_time_ - stop_brake_start_time_s_;
+    return sample;
+}
+#endif
+
+// Order-107 verification-only ack: ack{state_seq, command_seq} published
+// only after the LowCmd write of the same control cycle, only when the
+// adapter is enabled. `state_seq` is the tick side-channel of the LowState
+// snapshot the cycle consumed (Error_.source(), uint32_t; wraps after 2^32 ms
+// ~ 49.7 days at 1 kHz). The lockstep-local sequence epoch is established at
+// the first lockstep state consumed after the controller's lifecycle barrier
+// (start-gait); every subsequent LowCmd write increments the local
+// command_seq (Error_.state(), uint32_t) and the ack carries the exact pair,
+// so the simulator can bind the ack to the acked cycle's own LowCmd arrival.
+// No control math or message payload changes.
+void TrotExperiment::PublishLockstepAck(std::uint32_t state_seq)
+{
+    if (!lockstep_ack_enabled_ || !lockstep_ack_publisher_)
+        return;
+    // Order-108: record the exact tick this control update consumed so the
+    // writer gate can detect the next strictly-new tick (and so Engage()
+    // clears old events without missing the first lockstep tick).
+    last_consumed_state_tick_ = state_seq;
+    if (!lockstep_epoch_valid_ && task_.gait_started_)
+    {
+        lockstep_epoch_state_seq_ = state_seq;
+        lockstep_epoch_valid_ = true;
+    }
+    ++lockstep_cmd_seq_;
+    unitree_go::msg::dds_::Error_ ack;
+    ack.source(state_seq);
+    ack.state(lockstep_cmd_seq_);
+    lockstep_ack_publisher_->Write(ack);
 }
 
 bool TrotExperiment::PhaseStandUp(std::array<double, go2_trot::kMotorCount> &joint_targets)
@@ -747,6 +841,25 @@ double TrotExperiment::MotionClockStep(
         motion_dt = 0.0;
         motion_clock_paused = true;
     }
+    }
+    // Order-109: after the established writer handoff, simulator state time
+    // is authoritative even when wall_clock_motion remains configured. The
+    // handoff rebase makes this one state delta continuous with running_time_;
+    // WriterGate has already rejected missing, reordered, or gapped ticks.
+    if (lockstep_ack_enabled_ && lockstep_writer_gate_.Engaged())
+    {
+        double state_synchronous_dt = 0.0;
+        if (lockstep_motion_clock_.Step(
+                state_snapshot.tick(), state_synchronous_dt))
+        {
+            motion_dt = state_synchronous_dt;
+            motion_clock_paused = false;
+        }
+        else
+        {
+            motion_dt = 0.0;
+            motion_clock_paused = true;
+        }
     }
 
     last_motion_dt_s_ = motion_dt;

@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <memory>
 #include <mutex>
@@ -13,6 +14,7 @@
 #include <vector>
 
 #include <unitree/common/thread/thread.hpp>
+#include <unitree/idl/go2/Error_.hpp>
 #include <unitree/idl/go2/HeightMap_.hpp>
 #include <unitree/idl/go2/LowCmd_.hpp>
 #include <unitree/idl/go2/LowState_.hpp>
@@ -20,6 +22,8 @@
 #include <unitree/robot/channel/channel_publisher.hpp>
 #include <unitree/robot/channel/channel_subscriber.hpp>
 
+#include "lockstep_motion_clock.h"
+#include "lockstep_writer_gate.h"
 #include "go2_contact_torque_mapping.h"
 #include "locomotion_kernel.h"
 #include "trot_task.h"
@@ -41,6 +45,9 @@ using unitree::robot::ChannelSubscriberPtr;
 #endif
 #ifndef GO2_TROT_TOPIC_ENVIRONMENT_MAP
 #define GO2_TROT_TOPIC_ENVIRONMENT_MAP "rt/go2/environment_heightmap"
+#endif
+#ifndef GO2_TROT_TOPIC_LOCKSTEP_ACK
+#define GO2_TROT_TOPIC_LOCKSTEP_ACK "rt/lockstep/ack"
 #endif
 
 class TrotExperiment
@@ -78,6 +85,22 @@ public:
     void RequestStop();
     bool StopFileRequested() const;
     void Shutdown();
+#ifdef GO2_TROT_TESTING
+    struct TestMotionClockSample
+    {
+        double motion_dt_s = 0.0;
+        double cmd_time_s = 0.0;
+        double gait_time_s = 0.0;
+        double ramp_time_s = 0.0;
+        double governor_time_s = 0.0;
+        double stop_time_s = 0.0;
+    };
+
+    void TestPrepareMotionClock(std::uint32_t handoff_tick);
+    bool TestRunWallClockTick(const unitree_go::msg::dds_::LowState_ &state);
+    bool TestRunLockstepTick(const unitree_go::msg::dds_::LowState_ &state);
+    TestMotionClockSample TestLastMotionClockSample() const;
+#endif
 
 private:
     void EnvironmentHeightMapMessageHandler(const void *message);
@@ -94,6 +117,7 @@ private:
     void LowStateMessageHandler(const void *message);
     void HighStateMessageHandler(const void *message);
     void LowCmdWrite();
+    void EngageLockstepWriterIfNeeded();
     bool UpdateWbcShadowAndTorqueFf(
         const unitree_go::msg::dds_::LowState_ &state_snapshot,
         bool have_state,
@@ -162,6 +186,7 @@ private:
     bool PhaseLieDown(std::array<double, go2_trot::kMotorCount> &joint_targets);
     double UpdateCartesianForceBlend();
     void PublishLowCmdWithCrc();
+    void PublishLockstepAck(std::uint32_t state_seq);
     void LogSample(
         const unitree_go::msg::dds_::LowState_ &state_snapshot,
         bool have_state,
@@ -438,6 +463,29 @@ private:
     std::atomic<bool> external_stop_requested_{false};
 
     ChannelPublisherPtr<unitree_go::msg::dds_::LowCmd_> lowcmd_publisher_;
+    ChannelPublisherPtr<unitree_go::msg::dds_::Error_> lockstep_ack_publisher_;
+    bool lockstep_ack_enabled_ = false;
+#ifdef GO2_TROT_TESTING
+    bool suppress_lowcmd_publish_for_test_ = false;
+#endif
+    // Order-107: lockstep-local sequence epoch established at the first
+    // lockstep state consumed after the controller's lifecycle barrier
+    // (start-gait); the command sequence counts every LowCmd write 1:1 from
+    // the adapter's first ack (uint32, wraps after 2^32 writes) so the sim's
+    // exchange-local arrival ordinals match exactly.
+    bool lockstep_epoch_valid_ = false;
+    std::uint32_t lockstep_epoch_state_seq_ = 0;
+    std::uint32_t lockstep_cmd_seq_ = 0;
+    // Order-108 verification-only tick gate: once the writer handoff has
+    // completed the lowcmd writer consumes exactly ONE new physics tick per
+    // loop iteration (see lockstep_writer_gate.h); last_consumed_state_tick_
+    // is the exact tick the most recent control update consumed (the same
+    // state_seq the Order-107 ack carried). Flag-off: never engaged, so the
+    // wall-clock writer loop is unchanged.
+    lockstep_writer::WriterGate lockstep_writer_gate_;
+    // Order-109: authoritative motion elapsed time after lockstep handoff.
+    lockstep_motion::StateSynchronousClock lockstep_motion_clock_;
+    std::uint32_t last_consumed_state_tick_ = 0;
     ChannelSubscriberPtr<unitree_go::msg::dds_::LowState_> lowstate_subscriber_;
     ChannelSubscriberPtr<unitree_go::msg::dds_::SportModeState_>
         highstate_subscriber_;
