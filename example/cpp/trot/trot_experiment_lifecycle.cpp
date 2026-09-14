@@ -177,6 +177,25 @@ bool TrotExperiment::Init()
     }
     csv_ << std::fixed << std::setprecision(9);
     WriteCsvHeader();
+    const char *publish_diag_env =
+        std::getenv("TROT_LOCKSTEP_PUBLISH_DIAG");
+    lockstep_publish_diag_enabled_ =
+        publish_diag_env != nullptr && std::atof(publish_diag_env) > 0.5;
+    if (lockstep_publish_diag_enabled_)
+    {
+        lockstep_publish_diag_csv_.open(csv_path_ + ".lockstep_publish.csv");
+        if (!lockstep_publish_diag_csv_)
+        {
+            std::cerr << "Failed to open lockstep publish diagnostic CSV: "
+                      << csv_path_ << ".lockstep_publish.csv\n";
+            return false;
+        }
+        lockstep_publish_diag_csv_
+            << "publish_index,steady_clock_ns,state_tick,lockstep_cmd_seq,"
+               "lockstep_ack_enabled,lockstep_epoch_valid,gate_engaged,"
+               "writer_branch,gait_started,stop_requested,sequence_finished,"
+               "motion_stage,running_time_s\n";
+    }
     const char *closure_diag_env = std::getenv("TROT_DIAG_ID_CLOSURE");
     if (closure_diag_env != nullptr && std::atof(closure_diag_env) > 0.5)
     {
@@ -319,13 +338,13 @@ bool TrotExperiment::Init()
                     finished_.store(true);
                     break;
                 }
-                LowCmdWrite();
+                LowCmdWrite(true);
                 lockstep_writer_gate_.RecordConsumed(
                     last_consumed_state_tick_);
             }
             else
             {
-                LowCmdWrite();
+                LowCmdWrite(false);
                 next += interval;
                 std::this_thread::sleep_until(next);
                 if (std::chrono::steady_clock::now() > next + interval * 4)
@@ -353,6 +372,7 @@ void TrotExperiment::Shutdown()
         low_cmd_write_thread_.join();
     csv_.close();
     closure_csv_.close();
+    lockstep_publish_diag_csv_.close();
 }
 
 // --- TrotExperiment::RequestStop ---

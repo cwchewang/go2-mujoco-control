@@ -88,7 +88,7 @@ static_assert(TrotTask::kGaitBlendDuration == kGaitBlendDuration);
 // CONTROL LOOP — 500Hz LowCmdWrite state machine (see docs/CODE_GUIDE.md)
 
 // --- TrotExperiment::LowCmdWrite ---
-void TrotExperiment::LowCmdWrite()
+void TrotExperiment::LowCmdWrite(bool gated_writer)
 {
     // ROADMAP LowCmdWrite: stand-up -> gait -> wbc -> limits -> lie-down/stop -> publish
     // Jump via SECTION: markers below.
@@ -232,13 +232,15 @@ void TrotExperiment::LowCmdWrite()
         joint_targets);
 
     // SECTION: publish-lowcmd
-    PublishLowCmdWithCrc();
+    PublishLowCmdWithCrc(state_snapshot, gated_writer);
     PublishLockstepAck(state_snapshot.tick());
     // SECTION: log-sample
         LogSample(state_snapshot, have_state, high_state_snapshot, have_high_state);
 }
 
-void TrotExperiment::PublishLowCmdWithCrc()
+void TrotExperiment::PublishLowCmdWithCrc(
+    const unitree_go::msg::dds_::LowState_ &state_snapshot,
+    bool gated_writer)
 {
     low_cmd_.crc() = crc32_core(
         (uint32_t *)&low_cmd_,
@@ -248,6 +250,7 @@ void TrotExperiment::PublishLowCmdWithCrc()
         return;
 #endif
     lowcmd_publisher_->Write(low_cmd_);
+    RecordLockstepPublishDiagnostic(state_snapshot.tick(), gated_writer);
 }
 #ifdef GO2_TROT_TESTING
 void TrotExperiment::TestPrepareMotionClock(std::uint32_t handoff_tick)
@@ -1713,4 +1716,32 @@ void TrotExperiment::UpdateGaitWorldDiagnostics(
             world_feet,
             world_pose);
     }
+}
+void TrotExperiment::RecordLockstepPublishDiagnostic(
+    std::uint32_t state_tick, bool gated_writer)
+{
+    if (!lockstep_publish_diag_enabled_ ||
+        !lockstep_publish_diag_csv_.is_open())
+        return;
+    const auto steady_clock_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch())
+            .count();
+    const std::uint32_t associated_cmd_seq = lockstep_ack_enabled_
+        ? static_cast<std::uint32_t>(lockstep_cmd_seq_ + 1u)
+        : 0u;
+    lockstep_publish_diag_csv_
+        << ++lockstep_publish_diag_index_ << ","
+        << steady_clock_ns << ","
+        << state_tick << ","
+        << associated_cmd_seq << ","
+        << (lockstep_ack_enabled_ ? 1 : 0) << ","
+        << (lockstep_epoch_valid_ ? 1 : 0) << ","
+        << (lockstep_writer_gate_.Engaged() ? 1 : 0) << ","
+        << (gated_writer ? "gated" : "free") << ","
+        << (task_.gait_started_ ? 1 : 0) << ","
+        << (task_.stop_requested_ ? 1 : 0) << ","
+        << (task_.sequence_finished_ ? 1 : 0) << ","
+        << task_.motion_stage_ << ","
+        << std::setprecision(9) << running_time_ << "\n";
 }

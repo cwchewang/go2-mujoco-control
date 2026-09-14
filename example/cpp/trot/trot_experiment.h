@@ -116,7 +116,7 @@ private:
     bool CaptureWorldReference();
     void LowStateMessageHandler(const void *message);
     void HighStateMessageHandler(const void *message);
-    void LowCmdWrite();
+    void LowCmdWrite(bool gated_writer = false);
     void EngageLockstepWriterIfNeeded();
     bool UpdateWbcShadowAndTorqueFf(
         const unitree_go::msg::dds_::LowState_ &state_snapshot,
@@ -185,7 +185,11 @@ private:
     bool PhaseStopToStand(std::array<double, go2_trot::kMotorCount> &joint_targets);
     bool PhaseLieDown(std::array<double, go2_trot::kMotorCount> &joint_targets);
     double UpdateCartesianForceBlend();
-    void PublishLowCmdWithCrc();
+    void PublishLowCmdWithCrc(
+        const unitree_go::msg::dds_::LowState_ &state_snapshot,
+        bool gated_writer);
+    void RecordLockstepPublishDiagnostic(
+        std::uint32_t state_tick, bool gated_writer);
     void PublishLockstepAck(std::uint32_t state_seq);
     void LogSample(
         const unitree_go::msg::dds_::LowState_ &state_snapshot,
@@ -457,6 +461,9 @@ private:
     std::mutex state_mutex_;
     std::ofstream csv_;
     std::ofstream closure_csv_;
+    std::ofstream lockstep_publish_diag_csv_;
+    bool lockstep_publish_diag_enabled_ = false;
+    std::uint64_t lockstep_publish_diag_index_ = 0;
     std::atomic<bool> finished_{false};
     ChannelSubscriberPtr<unitree_go::msg::dds_::HeightMap_>
         environment_heightmap_subscriber_;
