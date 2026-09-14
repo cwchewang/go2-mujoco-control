@@ -1,0 +1,54 @@
+{
+  "A": {
+    "active_rows": 0,
+    "adapted_samples": 0,
+    "all_legs_raised_contact_010s": false,
+    "divergence_rows": 0,
+    "first_base_x_080_state_tick_s": NaN,
+    "first_base_x_145_state_tick_s": NaN,
+    "max_abs_pitch_rad": 0.404076308,
+    "max_abs_roll_rad": 0.087886736,
+    "max_base_x_m": NaN,
+    "no_hard_safety": false,
+    "p95_abs_base_vertical_velocity_mps": NaN,
+    "p95_abs_pitch_rad": 0.3970068988,
+    "p95_abs_roll_rad": 0.08514541960000001,
+    "persistent_command_actual_divergence": false,
+    "reached_x_145": false,
+    "rows": 4879,
+    "run": "A",
+    "solver_100pct": false,
+    "solver_residual_gate": false,
+    "solver_residual_p95": NaN,
+    "solver_success_fraction": NaN,
+    "statuses_zero": false,
+    "stayed_above_x_135_for_050s": false,
+    "torque_max_abs_nm": NaN,
+    "torque_p95_abs_nm": NaN,
+    "torque_rms_nm": NaN,
+    "traversal_success": false
+  },
+  "A_gate_pass": false,
+  "A_paired": {
+    "async_fallbacks": 0,
+    "cycles": 4879,
+    "validation_failures": 0
+  },
+  "A_traversal_success": false,
+  "B": {
+    "run": "B",
+    "status": "NOT_RUN",
+    "traversal_success": false
+  },
+  "B_gate": false,
+  "B_traversal_success": "NOT_RUN",
+  "adaptation_isolation_pass": "NOT_RUN",
+  "classification": "BASELINE_GATE_FAILED",
+  "domains": {
+    "A": "229",
+    "B": "NOT_RUN"
+  },
+  "launch_count": 1,
+  "preactivation_exact": "NOT_RUN",
+  "source_provenance_ok": true
+}

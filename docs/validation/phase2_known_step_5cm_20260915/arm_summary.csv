@@ -1,0 +1,3 @@
+run,rows,active_rows,max_base_x_m,first_base_x_080_state_tick_s,first_base_x_145_state_tick_s,reached_x_145,stayed_above_x_135_for_050s,all_legs_raised_contact_010s,no_hard_safety,statuses_zero,solver_success_fraction,solver_residual_p95,solver_100pct,solver_residual_gate,persistent_command_actual_divergence,divergence_rows,max_abs_roll_rad,p95_abs_roll_rad,max_abs_pitch_rad,p95_abs_pitch_rad,p95_abs_base_vertical_velocity_mps,torque_rms_nm,torque_p95_abs_nm,torque_max_abs_nm,adapted_samples,traversal_success,status
+A,4879,0,nan,nan,nan,False,False,False,False,False,nan,nan,False,False,False,0,0.087886736,0.08514541960000001,0.404076308,0.3970068988,nan,nan,nan,nan,0,False,
+B,,,,,,,,,,,,,,,,,,,,,,,,,,False,NOT_RUN

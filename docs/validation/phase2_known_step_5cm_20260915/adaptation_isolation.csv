@@ -1,0 +1,2 @@
+gate,status,detail
+B_not_run,NOT_RUN,A gate failed before B authorization

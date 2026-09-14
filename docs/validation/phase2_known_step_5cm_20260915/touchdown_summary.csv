@@ -1,0 +1,6 @@
+leg,floor_reference_z0_m,first_raised_touchdown_state_tick_s,first_raised_touchdown_x_m,first_raised_touchdown_z_m,raised_contact_time_s,raised_contact_gate,run,status
+fr,0.022546853,nan,nan,nan,0,False,,
+fl,0.0219259415,nan,nan,nan,0,False,,
+rr,0.022625465,nan,nan,nan,0,False,,
+rl,0.022492031,nan,nan,nan,0,False,,
+,,,,,,,B,NOT_RUN

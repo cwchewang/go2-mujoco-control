@@ -1,0 +1,16 @@
+run_id,gate,status,detail,run
+A,trace_present,PASS,rows=4879,
+A,constant_sim_tick,PASS,diffs=[2],
+A,no_protocol_violations,PASS,violations=[0],
+A,ack_state_matches_published_tick,PASS,intervals=4878,
+A,one_command_update_per_state_tick,PASS,intervals=4878 delta_counts=1:4878,
+A,ack_matched_exchange_trigger,PASS,triggers=['3'],
+A,no_fail_closed_marker,PASS,marker=False,
+,paired_highstate,PASS,"{'cycles': 4879, 'validation_failures': 0, 'async_fallbacks': 0}",A
+,adapter_disabled,PASS,values=[0.0] active=0,A
+,statuses_zero,FAIL,"{'controller_status': '0', 'safety_status': '1', 'quality_status': '0', 'analysis_status': '0', 'ground_truth_status': '0', 'dynamics_status': '0', 'completion_status': '1', 'manifest_status': 'MISSING', 'lockstep': 'true'}",A
+,no_hard_safety,FAIL,"TROT HARD SAFETY LIMIT REACHED,EMERGENCY_STOP",A
+,active_locomotion_to_pre_step,FAIL,rows=0 max_x=,A
+,solver_health,FAIL,"{'valid_rows': 0, 'success_fraction': nan, 'eq_residual_p95': nan}",A
+,source_provenance,PASS,head=89658121e002c9f95f47ee8d09ec83cd41f17845 dirty=false expected=89658121e002c9f95f47ee8d09ec83cd41f17845,A
+,launch_authorization,FAIL,A gate failed; B launch prohibited,B
