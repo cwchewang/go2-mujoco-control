@@ -1,0 +1,17 @@
+{
+  "classification": "UNSTRUCTURED_INSTABILITY",
+  "material_costs": [
+    "<=1-contact fraction up 0.265"
+  ],
+  "plot_notes": [],
+  "progressive_drift": false,
+  "protocol_errors": [],
+  "structured_rule_pass": false,
+  "thresholds": {
+    "contact_costs": "diag occupancy -0.20, <=1-contact +0.10, support p95 > max(1.5x,+0.05m/s), torque RMS >1.25x, saturation +0.02",
+    "cycle_corr_median_min": 0.7,
+    "cycle_rmse_p90_max_fraction_of_median_ptp": 0.35,
+    "phase_explained_variance_min": 0.4,
+    "progressive_ptp_growth": "predicted window growth > max(0.5*median_ptp, 2 deg)"
+  }
+}

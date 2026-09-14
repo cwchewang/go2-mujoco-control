@@ -18,8 +18,10 @@ MOTORS = (
 )
 ACTIVE = "diag_bounded_stance_dq_active_relative_time_s"
 START, END = 32.10, 39.90
+LEGS = ("FR", "FL", "RR", "RL")
 PRE_START, PRE_END = 31.90, 32.10
 NBINS = 50
+TAU_LIMIT_NM = 45.0
 PARENT_PROVENANCE = Path(
     "docs/validation/phase1_d4_deterministic_ab_20260914/provenance.csv"
 )
@@ -154,7 +156,7 @@ def linear_slope(xs, ys) -> float:
     return math.nan if den <= 1e-15 else sum((a-mx)*(b-my) for a, b in pairs) / den
 
 
-def phase_fold(arm: str, rows: list[dict], field: str, scale=1.0):
+def phase_fold(arm: str, rows: list[dict], field: str, scale=1.0, label=None):
     bins: dict[int, list[float]] = defaultdict(list)
     all_values = []
     for r in rows:
@@ -168,7 +170,7 @@ def phase_fold(arm: str, rows: list[dict], field: str, scale=1.0):
     for b in range(NBINS):
         s = summary(bins.get(b, []))
         means.append(s["mean"])
-        output.append({"arm": arm, "signal": field, "phase_bin": b,
+        output.append({"arm": arm, "signal": label or field, "phase_bin": b,
                        "phase_center": (b + .5) / NBINS, **s})
     total_mean = statistics.fmean(all_values) if all_values else math.nan
     total_sse = sum((v-total_mean)**2 for v in all_values) if all_values else math.nan
@@ -180,6 +182,21 @@ def phase_fold(arm: str, rows: list[dict], field: str, scale=1.0):
     explained = 1.0 - within_sse/total_sse if total_sse and total_sse > 0 else math.nan
     template = means
     return output, template, explained
+
+
+def effective_torque_proxy(row: dict) -> float:
+    values = []
+    for motor in MOTORS:
+        ff = num(row, motor + "_tau_ff")
+        qd, q = num(row, motor + "_q_target"), num(row, motor + "_q_state")
+        dqd, dq = num(row, motor + "_dq_target"), num(row, motor + "_dq_state")
+        kp, kd = num(row, motor + "_kp"), num(row, motor + "_kd")
+        if all(math.isfinite(v) for v in (ff, qd, q, dqd, dq, kp, kd)):
+            values.append(abs(ff + kp * (qd - q) + kd * (dqd - dq)))
+    return max(values, default=math.nan)
+
+def cycle_id_for_time(t: float, origin: float, period: float = 0.14) -> int:
+    return int(math.floor((t - origin) / period))
 
 
 def complete_cycles(rows: list[dict]) -> dict[int, list[dict]]:
@@ -202,9 +219,16 @@ def binned_cycle(cycle: list[dict], field: str, scale=1.0) -> list[float]:
     return [statistics.fmean(bins[b]) if bins.get(b) else math.nan for b in range(NBINS)]
 
 
-def cycle_attitude_rows(arm: str, phased: list[dict], roll_template, pitch_template):
+def cycle_attitude_rows(arm: str, phased: list[dict], roll_template, pitch_template,
+                        closure: list[dict] | None = None):
     rows = []
     cycles = complete_cycles(phased)
+    closure_by_cycle: dict[int, list[dict]] = defaultdict(list)
+    origin = min((num(r, ACTIVE) for r in phased if math.isfinite(num(r, ACTIVE))), default=START)
+    for closure_row in closure or []:
+        t = num(closure_row, "active_relative_time_s")
+        if math.isfinite(t):
+            closure_by_cycle[cycle_id_for_time(t, origin)].append(closure_row)
     for cid, cr in sorted(cycles.items()):
         t = [num(r, ACTIVE) for r in cr]
         roll = [math.degrees(num(r, "imu_roll_rad")) for r in cr]
@@ -212,7 +236,10 @@ def cycle_attitude_rows(arm: str, phased: list[dict], roll_template, pitch_templ
         z = [num(r, "world_base_z_m") for r in cr]
         excess = [num(r, "velocity_command_measured_mps")-num(r, "velocity_command_applied_mps") for r in cr]
         counts = [num(r, "contact_count") for r in cr]
-        support = [num(r, "support_foot_speed_mps") for r in cr]
+        support_valid = [num(r, "support_foot_kinematics_valid") > 0.5 for r in cr]
+        support = [num(r, "support_foot_speed_mps") for r, valid in zip(cr, support_valid) if valid]
+        proxy = [effective_torque_proxy(r) for r in cr]
+        saturation = [num(r, "torque_saturation_max") for r in closure_by_cycle.get(cid, [])]
         rb = binned_cycle(cr, "imu_roll_rad", 180.0/math.pi)
         pb = binned_cycle(cr, "imu_pitch_rad", 180.0/math.pi)
         def rmse(a, b):
@@ -229,6 +256,11 @@ def cycle_attitude_rows(arm: str, phased: list[dict], roll_template, pitch_templ
             "contact_count_min": min(finite(counts), default=math.nan),
             "support_foot_speed_median_mps": summary(support)["median"],
             "support_foot_speed_p95_mps": summary(support)["p95"],
+            "support_foot_speed_available_fraction": statistics.fmean(support_valid) if support_valid else math.nan,
+            "effective_torque_proxy_mean_nm": summary(proxy)["mean"],
+            "effective_torque_proxy_rms_nm": math.sqrt(statistics.fmean([v*v for v in finite(proxy)])) if finite(proxy) else math.nan,
+            "torque_saturation_max_nm": max(finite(saturation), default=math.nan),
+            "torque_saturation_mean_nm": summary(saturation)["mean"],
             "mask6_fraction": masks.get("6", 0)/len(cr), "mask9_fraction": masks.get("9", 0)/len(cr),
             "roll_template_corr": corr(rb, roll_template), "pitch_template_corr": corr(pb, pitch_template),
             "roll_template_rmse_deg": rmse(rb, roll_template), "pitch_template_rmse_deg": rmse(pb, pitch_template),
@@ -240,20 +272,51 @@ def contact_quality(arm: str, rows: list[dict]) -> list[dict]:
     total = len(rows)
     out = []
     counts = Counter(int(round(num(r, "contact_count", -1))) for r in rows)
-    for c in sorted(counts):
+    for c in range(5):
         out.append({"arm": arm, "metric": "physical_contact_count_fraction", "category": c,
-                    "value": counts[c]/total if total else math.nan})
+                    "value": counts.get(c, 0)/total if total else math.nan})
     masks = Counter(r.get("wbc_shadow_contact_mask", "") for r in rows)
     for m, n in sorted(masks.items(), key=lambda x: str(x[0])):
         out.append({"arm": arm, "metric": "wbc_contact_mask_fraction", "category": m,
                     "value": n/total if total else math.nan})
+    for leg in LEGS:
+        values = [num(r, "contact_" + leg) for r in rows]
+        out.append({"arm": arm, "metric": "physical_" + leg + "_contact_fraction",
+                    "category": "contact_" + leg, "value": statistics.fmean(finite(values)) if finite(values) else math.nan})
     out.append({"arm": arm, "metric": "expected_diagonal_mask_fraction", "category": "6_or_9",
                 "value": (masks.get("6",0)+masks.get("9",0))/total if total else math.nan})
     out.append({"arm": arm, "metric": "contact_le1_fraction", "category": "<=1",
                 "value": sum(n for c,n in counts.items() if c <= 1)/total if total else math.nan})
-    support = [num(r, "support_foot_speed_mps") for r in rows]
+    touchdown_times = []
+    touchdown_count = 0
+    touchdown_rows = 0
+    for r in rows:
+        event_count = num(r, "touchdown_event_count", 0.0)
+        if math.isfinite(event_count) and event_count > 0:
+            touchdown_count += event_count
+            touchdown_rows += 1
+            t = num(r, ACTIVE)
+            if math.isfinite(t):
+                touchdown_times.append(t)
+    touchdown_intervals = [b-a for a, b in zip(touchdown_times, touchdown_times[1:])]
+    interval_mean = statistics.fmean(touchdown_intervals) if touchdown_intervals else math.nan
+    interval_cv = (statistics.pstdev(touchdown_intervals)/interval_mean
+                   if touchdown_intervals and interval_mean > 0 else math.nan)
+    out += [
+        {"arm": arm, "metric": "touchdown_event_count", "category": "all", "value": touchdown_count},
+        {"arm": arm, "metric": "touchdown_event_row_count", "category": "all", "value": touchdown_rows},
+        {"arm": arm, "metric": "touchdown_interval_median_s", "category": "all", "value": summary(touchdown_intervals)["median"]},
+        {"arm": arm, "metric": "touchdown_interval_p05_s", "category": "all", "value": summary(touchdown_intervals)["p05"]},
+        {"arm": arm, "metric": "touchdown_interval_p95_s", "category": "all", "value": summary(touchdown_intervals)["p95"]},
+        {"arm": arm, "metric": "touchdown_interval_min_s", "category": "all", "value": summary(touchdown_intervals)["min"]},
+        {"arm": arm, "metric": "touchdown_interval_max_s", "category": "all", "value": summary(touchdown_intervals)["max"]},
+        {"arm": arm, "metric": "touchdown_interval_cv", "category": "all", "value": interval_cv},
+    ]
+    support_valid = [num(r, "support_foot_kinematics_valid") > 0.5 for r in rows]
+    support = [num(r, "support_foot_speed_mps") for r, valid in zip(rows, support_valid) if valid]
     lowfr = [num(r, "support_low_friction_evidence") for r in rows]
-    for name, value in (("support_foot_speed_median", summary(support)["median"]),
+    for name, value in (("support_foot_kinematics_valid_fraction", statistics.fmean(support_valid) if support_valid else math.nan),
+                        ("support_foot_speed_median", summary(support)["median"]),
                         ("support_foot_speed_p95", summary(support)["p95"]),
                         ("support_foot_speed_max", summary(support)["max"]),
                         ("low_friction_evidence_fraction", statistics.fmean(finite(lowfr)) if finite(lowfr) else math.nan)):
@@ -292,8 +355,9 @@ def actuation_quality(arm: str, rows: list[dict], closure: list[dict]) -> list[d
     cwin = [r for r in closure if START <= num(r,"active_relative_time_s") < END]
     sat = finite([num(r,"torque_saturation_max") for r in cwin])
     if sat:
-        out += [{"arm":arm,"metric":"torque_saturation_max","value":max(sat)},
-                {"arm":arm,"metric":"torque_saturation_gt_0p95_fraction","value":sum(v>=.95 for v in sat)/len(sat)}]
+        out += [{"arm":arm,"metric":"torque_saturation_max_nm","value":max(sat)},
+                {"arm":arm,"metric":"torque_saturation_p95_nm","value":quantile(sat,.95)},
+                {"arm":arm,"metric":"torque_at_limit_fraction","value":sum(v>=TAU_LIMIT_NM for v in sat)/len(sat)}]
     d4_s = []
     d4_dq = []
     d4_dt = []
@@ -355,7 +419,7 @@ def make_plots(output: Path, phase_rows: list[dict]):
     except Exception:
         return ["matplotlib unavailable; PNG plots not generated"]
     notes=[]
-    for signal, label in (("imu_roll_rad","roll (deg)"),("imu_pitch_rad","pitch (deg)"),("world_base_z_m","body z (m)"),("contact_count","contact count")):
+    for signal, label in (("roll_deg","roll (deg)"),("pitch_deg","pitch (deg)"),("world_base_z_m","body z (m)"),("contact_count","contact count")):
         subset=[r for r in phase_rows if r["signal"]==signal]
         if not subset:continue
         fig=plt.figure(figsize=(8,4.5));ax=fig.add_subplot(111)
@@ -380,10 +444,10 @@ def main() -> int:
         raw=read_csv(runs_root/arm/"data.csv");closure=read_csv(runs_root/arm/"data.csv.id_closure.csv")
         if not raw:errors.append(f"{arm}: missing/empty data.csv");continue
         phased=add_phase(raw);arm_data[arm]=phased
-        for field,scale in (("imu_roll_rad",180/math.pi),("imu_pitch_rad",180/math.pi),("world_base_z_m",1.0),("velocity_command_measured_mps",1.0),("velocity_command_applied_mps",1.0),("contact_count",1.0),("support_foot_speed_mps",1.0)):
-            rows,template,expl=phase_fold(arm,phased,field,scale);phase_rows.extend(rows);phase_metrics[(arm,field)]=(template,expl)
+        for field,label,scale in (("imu_roll_rad","roll_deg",180/math.pi),("imu_pitch_rad","pitch_deg",180/math.pi),("world_base_z_m","world_base_z_m",1.0),("velocity_command_measured_mps","velocity_command_measured_mps",1.0),("velocity_command_applied_mps","velocity_command_applied_mps",1.0),("contact_count","contact_count",1.0),("support_foot_speed_mps","support_foot_speed_mps",1.0)):
+            rows,template,expl=phase_fold(arm,phased,field,scale,label);phase_rows.extend(rows);phase_metrics[(arm,field)]=(template,expl)
         rt,re=phase_metrics[(arm,"imu_roll_rad")];pt,pe=phase_metrics[(arm,"imu_pitch_rad")]
-        cr=cycle_attitude_rows(arm,phased,rt,pt);cycle_rows.extend(cr)
+        cr=cycle_attitude_rows(arm,phased,rt,pt,closure);cycle_rows.extend(cr)
         roll=[math.degrees(num(r,"imu_roll_rad")) for r in phased];pitch=[math.degrees(num(r,"imu_pitch_rad")) for r in phased]
         for signal,vals,expl in (("roll_deg",roll,re),("pitch_deg",pitch,pe)):
             s=summary(vals); cfield=signal.split("_")[0]+"_template_corr"; rfield=signal.split("_")[0]+"_template_rmse_deg"; cs=[float(r[cfield]) for r in cr if math.isfinite(float(r[cfield]))];rs=[float(r[rfield]) for r in cr if math.isfinite(float(r[rfield]))]
@@ -400,7 +464,7 @@ def main() -> int:
         if not r:continue
         slope=float(r.get("cycle_ptp_slope_per_s",0));med=float(r.get("cycle_ptp_median",0));
         if math.isfinite(slope) and med>0 and slope*(END-START)>max(.5*med,2.0):drift=True
-    a_diag=lookup(contact_rows,"A","expected_diagonal_mask_fraction");b_diag=lookup(contact_rows,"B","expected_diagonal_mask_fraction");a_le1=lookup(contact_rows,"A","contact_le1_fraction");b_le1=lookup(contact_rows,"B","contact_le1_fraction");a_slip=lookup(contact_rows,"A","support_foot_speed_p95");b_slip=lookup(contact_rows,"B","support_foot_speed_p95");a_tau=lookup(act_rows,"A","abs_effective_torque_proxy_rms");b_tau=lookup(act_rows,"B","abs_effective_torque_proxy_rms");a_sat=lookup(act_rows,"A","torque_saturation_gt_0p95_fraction");b_sat=lookup(act_rows,"B","torque_saturation_gt_0p95_fraction")
+    a_diag=lookup(contact_rows,"A","expected_diagonal_mask_fraction");b_diag=lookup(contact_rows,"B","expected_diagonal_mask_fraction");a_le1=lookup(contact_rows,"A","contact_le1_fraction");b_le1=lookup(contact_rows,"B","contact_le1_fraction");a_slip=lookup(contact_rows,"A","support_foot_speed_p95");b_slip=lookup(contact_rows,"B","support_foot_speed_p95");a_tau=lookup(act_rows,"A","abs_effective_torque_proxy_rms");b_tau=lookup(act_rows,"B","abs_effective_torque_proxy_rms");a_sat=lookup(act_rows,"A","torque_at_limit_fraction");b_sat=lookup(act_rows,"B","torque_at_limit_fraction")
     costs=[]
     if math.isfinite(a_diag) and math.isfinite(b_diag) and a_diag-b_diag>.20:costs.append(f"diagonal-mask occupancy down {a_diag-b_diag:.3f}")
     if math.isfinite(a_le1) and math.isfinite(b_le1) and b_le1-a_le1>.10:costs.append(f"<=1-contact fraction up {b_le1-a_le1:.3f}")
