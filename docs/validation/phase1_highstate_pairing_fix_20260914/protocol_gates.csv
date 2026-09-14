@@ -1,0 +1,22 @@
+run_id,gate,status,detail
+L1,trace_present,PASS,rows=43554
+L1,constant_sim_tick,PASS,diffs=[2]
+L1,no_protocol_violations,PASS,violations=[0]
+L1,ack_state_matches_published_tick,PASS,intervals=43553
+L1,one_command_update_per_state_tick,PASS,intervals=43553 delta_counts=1:43553
+L1,ack_matched_exchange_trigger,PASS,triggers=['3']
+L1,no_fail_closed_marker,PASS,marker=False
+L2,trace_present,PASS,rows=43554
+L2,constant_sim_tick,PASS,diffs=[2]
+L2,no_protocol_violations,PASS,violations=[0]
+L2,ack_state_matches_published_tick,PASS,intervals=43553
+L2,one_command_update_per_state_tick,PASS,intervals=43553 delta_counts=1:43553
+L2,ack_matched_exchange_trigger,PASS,triggers=['3']
+L2,no_fail_closed_marker,PASS,marker=False
+L3,trace_present,PASS,rows=43554
+L3,constant_sim_tick,PASS,diffs=[2]
+L3,no_protocol_violations,PASS,violations=[0]
+L3,ack_state_matches_published_tick,PASS,intervals=43553
+L3,one_command_update_per_state_tick,PASS,intervals=43553 delta_counts=1:43553
+L3,ack_matched_exchange_trigger,PASS,triggers=['3']
+L3,no_fail_closed_marker,PASS,marker=False

@@ -1,0 +1,39 @@
+{
+  "binary_provenance_ok": true,
+  "boundary_clear": true,
+  "classification": "FIX_VALIDATED_FULL_BASELINE_REPRODUCIBLE",
+  "full_exact": true,
+  "full_exact_reasons": [],
+  "paired_summary_ok": true,
+  "protocol_ok": true,
+  "protocol_summaries": {
+    "L1": {
+      "dt_ms": "2",
+      "fail_closed": "false",
+      "intervals": "43553",
+      "protocol_status": "PASS",
+      "trace_rows": "43554",
+      "violations": "0"
+    },
+    "L2": {
+      "dt_ms": "2",
+      "fail_closed": "false",
+      "intervals": "43553",
+      "protocol_status": "PASS",
+      "trace_rows": "43554",
+      "violations": "0"
+    },
+    "L3": {
+      "dt_ms": "2",
+      "fail_closed": "false",
+      "intervals": "43553",
+      "protocol_status": "PASS",
+      "trace_rows": "43554",
+      "violations": "0"
+    }
+  },
+  "runtime_head": "9bf71c41349dbe0dde8dcbb7b9c76f396c87974e",
+  "semantic_errors": [],
+  "snapshot_clear": true,
+  "snapshot_detail": "NO_DIVERGENCE_IN_WINDOW"
+}

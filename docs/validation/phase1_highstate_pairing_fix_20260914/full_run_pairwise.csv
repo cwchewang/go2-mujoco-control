@@ -1,0 +1,4 @@
+pair,common_rows,measured_mps_p95_abs_diff,measured_mps_max_abs_diff,applied_mps_p95_abs_diff,applied_mps_max_abs_diff,tracking_error_mps_p95_abs_diff,tracking_error_mps_max_abs_diff,roll_rad_p95_abs_diff,roll_rad_max_abs_diff,pitch_rad_p95_abs_diff,pitch_rad_max_abs_diff,contact_count_p95_abs_diff,contact_count_max_abs_diff,gait_period_s_p95_abs_diff,gait_period_s_max_abs_diff,gait_duty_p95_abs_diff,gait_duty_max_abs_diff
+L1-L2,43554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+L1-L3,43554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+L2-L3,43554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

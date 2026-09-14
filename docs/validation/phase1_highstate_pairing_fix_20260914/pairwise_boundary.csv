@@ -1,0 +1,4 @@
+pair,consumed_high_first_tick,consumed_high_status,consumed_high_field,lowcmd_first_tick,lowcmd_status,semantic_classification
+L1-L2,,none,,,none,METADATA_ONLY_NOT_CAUSAL
+L1-L3,,none,,,none,METADATA_ONLY_NOT_CAUSAL
+L2-L3,,none,,,none,METADATA_ONLY_NOT_CAUSAL
