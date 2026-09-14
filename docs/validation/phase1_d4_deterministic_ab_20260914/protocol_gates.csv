@@ -1,0 +1,15 @@
+run_id,gate,status,detail
+A,trace_present,PASS,rows=43554
+A,constant_sim_tick,PASS,diffs=[2]
+A,no_protocol_violations,PASS,violations=[0]
+A,ack_state_matches_published_tick,PASS,intervals=43553
+A,one_command_update_per_state_tick,PASS,intervals=43553 delta_counts=1:43553
+A,ack_matched_exchange_trigger,PASS,triggers=['3']
+A,no_fail_closed_marker,PASS,marker=False
+B,trace_present,PASS,rows=43554
+B,constant_sim_tick,PASS,diffs=[2]
+B,no_protocol_violations,PASS,violations=[0]
+B,ack_state_matches_published_tick,PASS,intervals=43553
+B,one_command_update_per_state_tick,PASS,intervals=43553 delta_counts=1:43553
+B,ack_matched_exchange_trigger,PASS,triggers=['3']
+B,no_fail_closed_marker,PASS,marker=False

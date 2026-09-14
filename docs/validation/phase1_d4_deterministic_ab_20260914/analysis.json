@@ -1,0 +1,21 @@
+{
+  "A_gate_pass": true,
+  "B_safe": true,
+  "DID_excess_mps": -0.24299454499999973,
+  "classification": "SUPPORTED",
+  "isolation_pass": true,
+  "paired_A": {
+    "async_fallbacks": "0",
+    "cycles": 43554,
+    "validation_failures": "0"
+  },
+  "paired_B": {
+    "async_fallbacks": "0",
+    "cycles": 43554,
+    "validation_failures": "0"
+  },
+  "prewindow_exact": true,
+  "settling_A_s": 29.81,
+  "settling_B_s": 1.1900000000000013,
+  "settling_worse": false
+}
