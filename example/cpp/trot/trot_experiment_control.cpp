@@ -10,10 +10,13 @@
 #include <sstream>
 #include <thread>
 
+#include <Eigen/Dense>
+
 #include "contact_wrench_projected_allocator.h"
 #include "contact_state_filter.h"
 #include "go2_contact_torque_mapping.h"
 #include "go2_inverse_kinematics.h"
+#include "go2_leg_jacobian.h"
 #include "motion_frame_utils.h"
 #include "full2_campaign_env.h"
 
@@ -220,7 +223,9 @@ void TrotExperiment::LowCmdWrite()
     WriteMotorCommands(
         wbc_primary_active, gait_elapsed_s,
         joint_targets, joint_velocities,
-        wbc_torque_ff, apply_wbc_torque_ff);
+        wbc_torque_ff, apply_wbc_torque_ff,
+        state_snapshot, have_state,
+        high_state_snapshot, have_high_state);
     UpdateGaitWorldDiagnostics(
         state_snapshot, have_state,
         high_state_snapshot, have_high_state,
@@ -1162,8 +1167,31 @@ void TrotExperiment::WriteMotorCommands(
     const std::array<double, go2_trot::kMotorCount> &joint_targets,
     const std::array<double, go2_trot::kMotorCount> &joint_velocities,
     const std::array<double, go2_trot::kMotorCount> &wbc_torque_ff,
-    bool apply_wbc_torque_ff)
+    bool apply_wbc_torque_ff,
+    const unitree_go::msg::dds_::LowState_ &state_snapshot,
+    bool have_state,
+    const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+    bool have_high_state)
 {
+    bounded_stance_dq_gate_active_ = false;
+    bounded_stance_dq_active_time_s_ = gait_elapsed_s;
+    bounded_stance_dq_contact_mask_ = wbc_shadow_diagnostics_.contact_mask;
+    bounded_stance_dq_stance_leg_count_ = 0;
+    bounded_stance_dq_active_stance_leg_count_ = 0;
+    bounded_stance_dq_valid_solve_count_ = 0;
+    bounded_stance_dq_invalid_solve_count_ = 0;
+    bounded_stance_dq_fallback_count_ = 0;
+    bounded_stance_dq_stance_selector_.fill(0);
+    bounded_stance_dq_solve_valid_.fill(0);
+    bounded_stance_dq_fallback_.fill(0);
+    bounded_stance_dq_scalar_s_.fill(0.0);
+    bounded_stance_dq_max_abs_delta_dq_.fill(0.0);
+    bounded_stance_dq_max_abs_delta_d_target_.fill(0.0);
+    bounded_stance_dq_baseline_dq_ = {};
+    bounded_stance_dq_solved_dq_ = {};
+    bounded_stance_dq_applied_dq_ = {};
+    bounded_stance_dq_baseline_kd_ = {};
+    bounded_stance_dq_delta_d_target_ = {};
     // Delayed post-ID actuator-composition perturbation for the Phase1 A/B
     // experiment. The active-relative gait clock is shared with the
     // velocity-command profile; all targets, ID/WBC outputs, and tau_ff stay
@@ -1331,6 +1359,18 @@ void TrotExperiment::WriteMotorCommands(
                 (params_.wbc_full ? 1.0 : wbc_stance_blend_[leg]) *
                 swing_tau_scale * wbc_shadow_candidate_torques_[leg][joint];
         }
+        std::array<double, 3> baseline_dq{};
+        std::array<double, 3> baseline_kd{};
+        for (int joint = 0; joint < 3; ++joint)
+        {
+            const int i = 3 * static_cast<int>(leg) + joint;
+            baseline_dq[joint] = joint_velocities[i];
+            baseline_kd[joint] = low_cmd_.motor_cmd()[i].kd();
+        }
+        ApplyBoundedStanceDqCorrection(
+            static_cast<int>(leg), state_snapshot, have_state,
+            high_state_snapshot, have_high_state, gait_elapsed_s,
+            joint_targets, baseline_dq, baseline_kd);
     }
     wbc_shadow_diagnostics_.feedforward_applied = true;
     }
@@ -1353,6 +1393,134 @@ void TrotExperiment::WriteMotorCommands(
     }
     if (apply_wbc_torque_ff)
         wbc_shadow_diagnostics_.feedforward_applied = true;
+    }
+}
+
+void TrotExperiment::ApplyBoundedStanceDqCorrection(
+    int leg,
+    const unitree_go::msg::dds_::LowState_ &state_snapshot,
+    bool have_state,
+    const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+    bool have_high_state,
+    double gait_elapsed_s,
+    const std::array<double, kMotorCount> &joint_targets,
+    const std::array<double, 3> &baseline_dq,
+    const std::array<double, 3> &baseline_kd)
+{
+    if (leg < 0 || leg >= static_cast<int>(go2::kLegCount))
+        return;
+    const std::size_t leg_index = static_cast<std::size_t>(leg);
+    const bool controller_stance =
+        (wbc_shadow_diagnostics_.contact_mask & (1 << leg)) != 0;
+    bounded_stance_dq_stance_selector_[leg_index] =
+        controller_stance ? 1 : 0;
+    if (controller_stance)
+        ++bounded_stance_dq_stance_leg_count_;
+    for (int joint = 0; joint < 3; ++joint)
+    {
+        bounded_stance_dq_baseline_dq_[leg_index][joint] = baseline_dq[joint];
+        bounded_stance_dq_applied_dq_[leg_index][joint] = baseline_dq[joint];
+        bounded_stance_dq_baseline_kd_[leg_index][joint] = baseline_kd[joint];
+    }
+    const bool gate_active = bounded_stance_dq_enabled_ &&
+        controller_stance && have_state && have_high_state &&
+        task_.gait_started_ && task_.motion_stage_ == 2 &&
+        !task_.stop_requested_ && gait_elapsed_s >= 32.10 &&
+        gait_elapsed_s < 39.90;
+    if (!gate_active)
+        return;
+    bounded_stance_dq_gate_active_ = true;
+    ++bounded_stance_dq_active_stance_leg_count_;
+
+    const WorldPose pose = ComputeWorldPose(state_snapshot, high_state_snapshot);
+    go2_control::Vector3 base_velocity_world{
+        static_cast<double>(high_state_snapshot.velocity()[0]),
+        static_cast<double>(high_state_snapshot.velocity()[1]),
+        static_cast<double>(high_state_snapshot.velocity()[2])};
+    go2_control::Vector3 base_velocity_body{};
+    if (!go2_control::WorldToBodyVelocity(
+            pose.quaternion, base_velocity_world, base_velocity_body))
+    {
+        ++bounded_stance_dq_invalid_solve_count_;
+        ++bounded_stance_dq_fallback_count_;
+        bounded_stance_dq_fallback_[leg_index] = 1;
+        return;
+    }
+    const Eigen::Vector3d omega_body(
+        static_cast<double>(state_snapshot.imu_state().gyroscope()[0]),
+        static_cast<double>(state_snapshot.imu_state().gyroscope()[1]),
+        static_cast<double>(state_snapshot.imu_state().gyroscope()[2]));
+    const go2::Vec3 foot = go2::FootPosition(
+        static_cast<go2::Leg>(leg),
+        joint_targets[3 * leg], joint_targets[3 * leg + 1],
+        joint_targets[3 * leg + 2]);
+    const Eigen::Vector3d foot_body(foot.x, foot.y, foot.z);
+    const Eigen::Vector3d required_velocity = -(
+        Eigen::Vector3d(base_velocity_body[0], base_velocity_body[1],
+                        base_velocity_body[2]) +
+        omega_body.cross(foot_body));
+    const go2_control::LegFootJacobian repository_jacobian =
+        go2_control::FootJacobian(
+            static_cast<go2::Leg>(leg), joint_targets[3 * leg],
+            joint_targets[3 * leg + 1], joint_targets[3 * leg + 2]);
+    Eigen::Matrix3d jacobian = Eigen::Matrix3d::Zero();
+    for (int row = 0; row < 3; ++row)
+        for (int col = 0; col < 3; ++col)
+            jacobian(row, col) = repository_jacobian[row][col];
+    const Eigen::JacobiSVD<Eigen::Matrix3d> svd(
+        jacobian, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    const Eigen::Vector3d singular_values = svd.singularValues();
+    int rank = 0;
+    for (int i = 0; i < 3; ++i)
+        if (singular_values(i) > 1.0e-12)
+            ++rank;
+    const double condition = singular_values(2) > 0.0
+        ? singular_values(0) / singular_values(2)
+        : std::numeric_limits<double>::infinity();
+    const Eigen::Vector3d solved = svd.solve(required_velocity);
+    const double residual = (jacobian * solved - required_velocity).norm();
+    const bool valid = rank == 3 && std::isfinite(condition) &&
+        condition <= 1.0e4 && std::isfinite(residual) &&
+        residual <= 1.0e-6 && solved.allFinite();
+    if (!valid)
+    {
+        ++bounded_stance_dq_invalid_solve_count_;
+        ++bounded_stance_dq_fallback_count_;
+        bounded_stance_dq_fallback_[leg_index] = 1;
+        return;
+    }
+    ++bounded_stance_dq_valid_solve_count_;
+    bounded_stance_dq_solve_valid_[leg_index] = 1;
+    Eigen::Vector3d baseline(baseline_dq[0], baseline_dq[1], baseline_dq[2]);
+    const Eigen::Vector3d delta = solved - baseline;
+    double max_abs_delta_dq = 0.0;
+    double max_abs_delta_d_target = 0.0;
+    for (int joint = 0; joint < 3; ++joint)
+    {
+        bounded_stance_dq_solved_dq_[leg_index][joint] = solved(joint);
+        max_abs_delta_dq = std::max(max_abs_delta_dq, std::abs(delta(joint)));
+        const double delta_d_target = baseline_kd[joint] * delta(joint);
+        bounded_stance_dq_delta_d_target_[leg_index][joint] = delta_d_target;
+        max_abs_delta_d_target = std::max(
+            max_abs_delta_d_target, std::abs(delta_d_target));
+    }
+    const double dq_scale = max_abs_delta_dq > 1.0e-12
+        ? 2.0 / max_abs_delta_dq
+        : std::numeric_limits<double>::infinity();
+    const double d_target_scale = max_abs_delta_d_target > 1.0e-12
+        ? 4.0 / max_abs_delta_d_target
+        : std::numeric_limits<double>::infinity();
+    const double scalar_s = std::min({1.0, dq_scale, d_target_scale});
+    bounded_stance_dq_scalar_s_[leg_index] = scalar_s;
+    bounded_stance_dq_max_abs_delta_dq_[leg_index] =
+        scalar_s * max_abs_delta_dq;
+    bounded_stance_dq_max_abs_delta_d_target_[leg_index] =
+        scalar_s * max_abs_delta_d_target;
+    for (int joint = 0; joint < 3; ++joint)
+    {
+        const double applied = baseline_dq[joint] + scalar_s * delta(joint);
+        bounded_stance_dq_applied_dq_[leg_index][joint] = applied;
+        low_cmd_.motor_cmd()[3 * leg + joint].dq() = applied;
     }
 }
 bool TrotExperiment::UpdateWbcShadowAndTorqueFf(

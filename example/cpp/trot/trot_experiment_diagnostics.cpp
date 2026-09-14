@@ -91,7 +91,31 @@ void TrotExperiment::WriteCsvHeader()
          << ",diag_four_thigh_d90_fr_baseline_kd,diag_four_thigh_d90_fr_effective_kd"
          << ",diag_four_thigh_d90_fl_baseline_kd,diag_four_thigh_d90_fl_effective_kd"
          << ",diag_four_thigh_d90_rr_baseline_kd,diag_four_thigh_d90_rr_effective_kd"
-         << ",diag_four_thigh_d90_rl_baseline_kd,diag_four_thigh_d90_rl_effective_kd";
+         << ",diag_four_thigh_d90_rl_baseline_kd,diag_four_thigh_d90_rl_effective_kd"
+         << ",diag_bounded_stance_dq_enabled,diag_bounded_stance_dq_gate_active"
+         << ",diag_bounded_stance_dq_active_relative_time_s"
+         << ",diag_bounded_stance_dq_contact_mask"
+         << ",diag_bounded_stance_dq_stance_leg_count"
+         << ",diag_bounded_stance_dq_active_stance_leg_count"
+         << ",diag_bounded_stance_dq_valid_solve_count"
+         << ",diag_bounded_stance_dq_invalid_solve_count"
+         << ",diag_bounded_stance_dq_fallback_count";
+    for (int leg = 0; leg < 4; ++leg)
+        csv_ << ",diag_bounded_stance_dq_" << kMotorNames[3 * leg]
+             << "_stance_selector,diag_bounded_stance_dq_"
+             << kMotorNames[3 * leg] << "_solve_valid,diag_bounded_stance_dq_"
+             << kMotorNames[3 * leg] << "_fallback,diag_bounded_stance_dq_"
+             << kMotorNames[3 * leg] << "_scalar_s,diag_bounded_stance_dq_"
+             << kMotorNames[3 * leg] << "_max_abs_delta_dq,diag_bounded_stance_dq_"
+             << kMotorNames[3 * leg] << "_max_abs_delta_d_target";
+    for (int leg = 0; leg < 4; ++leg)
+        for (int joint = 0; joint < 3; ++joint)
+            csv_ << ",diag_bounded_stance_dq_" << kMotorNames[3 * leg + joint]
+                 << "_baseline_dq,diag_bounded_stance_dq_"
+                 << kMotorNames[3 * leg + joint] << "_solved_dq,diag_bounded_stance_dq_"
+                 << kMotorNames[3 * leg + joint] << "_applied_dq,diag_bounded_stance_dq_"
+                 << kMotorNames[3 * leg + joint] << "_baseline_kd,diag_bounded_stance_dq_"
+                 << kMotorNames[3 * leg + joint] << "_delta_d_target";
     for (int i = 0; i < 18; ++i)
         csv_ << ",diag_solver_qdd_" << i;
     for (int i = 0; i < 12; ++i)
@@ -918,6 +942,29 @@ void TrotExperiment::LogSample(
          << "," << four_thigh_d90_effective_kd_[2]
          << "," << four_thigh_d90_baseline_kd_[3]
          << "," << four_thigh_d90_effective_kd_[3];
+    csv_ << "," << (bounded_stance_dq_enabled_ ? 1 : 0)
+         << "," << (bounded_stance_dq_gate_active_ ? 1 : 0)
+         << "," << bounded_stance_dq_active_time_s_
+         << "," << bounded_stance_dq_contact_mask_
+         << "," << bounded_stance_dq_stance_leg_count_
+         << "," << bounded_stance_dq_active_stance_leg_count_
+         << "," << bounded_stance_dq_valid_solve_count_
+         << "," << bounded_stance_dq_invalid_solve_count_
+         << "," << bounded_stance_dq_fallback_count_;
+    for (int leg = 0; leg < 4; ++leg)
+        csv_ << "," << bounded_stance_dq_stance_selector_[leg]
+             << "," << bounded_stance_dq_solve_valid_[leg]
+             << "," << bounded_stance_dq_fallback_[leg]
+             << "," << bounded_stance_dq_scalar_s_[leg]
+             << "," << bounded_stance_dq_max_abs_delta_dq_[leg]
+             << "," << bounded_stance_dq_max_abs_delta_d_target_[leg];
+    for (int leg = 0; leg < 4; ++leg)
+        for (int joint = 0; joint < 3; ++joint)
+            csv_ << "," << bounded_stance_dq_baseline_dq_[leg][joint]
+                 << "," << bounded_stance_dq_solved_dq_[leg][joint]
+                 << "," << bounded_stance_dq_applied_dq_[leg][joint]
+                 << "," << bounded_stance_dq_baseline_kd_[leg][joint]
+                 << "," << bounded_stance_dq_delta_d_target_[leg][joint];
     const auto &solver_closure = wbc_shadow_diagnostics_.closure_solver;
     const auto &final_closure = wbc_shadow_diagnostics_.closure_final;
     for (double value : solver_closure.qdd)

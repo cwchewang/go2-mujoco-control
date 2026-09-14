@@ -189,6 +189,13 @@ bool TrotExperiment::Init()
         std::getenv("TROT_FOUR_THIGH_D90_AB");
     four_thigh_d90_enabled_ =
         four_thigh_d90_env != nullptr && std::atof(four_thigh_d90_env) > 0.5;
+    const char *bounded_stance_dq_env =
+        std::getenv("TROT_BOUNDED_STANCE_DQ_D4_AB");
+    bounded_stance_dq_enabled_ =
+        bounded_stance_dq_env != nullptr &&
+        std::atof(bounded_stance_dq_env) > 0.5;
+    std::cout << "Bounded stance dq D4 AB enabled="
+              << (bounded_stance_dq_enabled_ ? 1 : 0) << "\n";
 
     if (params_.wbc_full)
     {

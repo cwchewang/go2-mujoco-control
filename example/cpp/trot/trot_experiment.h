@@ -120,7 +120,21 @@ private:
         const std::array<double, go2_trot::kMotorCount> &joint_targets,
         const std::array<double, go2_trot::kMotorCount> &joint_velocities,
         const std::array<double, go2_trot::kMotorCount> &wbc_torque_ff,
-        bool apply_wbc_torque_ff);
+        bool apply_wbc_torque_ff,
+        const unitree_go::msg::dds_::LowState_ &state_snapshot,
+        bool have_state,
+        const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+        bool have_high_state);
+    void ApplyBoundedStanceDqCorrection(
+        int leg,
+        const unitree_go::msg::dds_::LowState_ &state_snapshot,
+        bool have_state,
+        const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+        bool have_high_state,
+        double gait_elapsed_s,
+        const std::array<double, go2_trot::kMotorCount> &joint_targets,
+        const std::array<double, 3> &baseline_dq,
+        const std::array<double, 3> &baseline_kd);
     bool SnapshotState(
         unitree_go::msg::dds_::LowState_ &state_snapshot,
         unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
@@ -235,6 +249,26 @@ private:
     bool four_thigh_d90_gate_active_ = false;
     std::array<double, 4> four_thigh_d90_baseline_kd_{};
     std::array<double, 4> four_thigh_d90_effective_kd_{};
+    bool bounded_stance_dq_enabled_ = false;
+    bool bounded_stance_dq_gate_active_ = false;
+    double bounded_stance_dq_active_time_s_ = 0.0;
+    int bounded_stance_dq_contact_mask_ = 0;
+    int bounded_stance_dq_stance_leg_count_ = 0;
+    int bounded_stance_dq_active_stance_leg_count_ = 0;
+    int bounded_stance_dq_valid_solve_count_ = 0;
+    int bounded_stance_dq_invalid_solve_count_ = 0;
+    int bounded_stance_dq_fallback_count_ = 0;
+    std::array<int, 4> bounded_stance_dq_stance_selector_{};
+    std::array<int, 4> bounded_stance_dq_solve_valid_{};
+    std::array<int, 4> bounded_stance_dq_fallback_{};
+    std::array<double, 4> bounded_stance_dq_scalar_s_{};
+    std::array<double, 4> bounded_stance_dq_max_abs_delta_dq_{};
+    std::array<double, 4> bounded_stance_dq_max_abs_delta_d_target_{};
+    std::array<std::array<double, 3>, 4> bounded_stance_dq_baseline_dq_{};
+    std::array<std::array<double, 3>, 4> bounded_stance_dq_solved_dq_{};
+    std::array<std::array<double, 3>, 4> bounded_stance_dq_applied_dq_{};
+    std::array<std::array<double, 3>, 4> bounded_stance_dq_baseline_kd_{};
+    std::array<std::array<double, 3>, 4> bounded_stance_dq_delta_d_target_{};
     const std::string stop_file_path_;
     go2_control::MotionSensorSample latest_motion_sensor_{};
     std::unique_ptr<go2_control::LocomotionKernel> locomotion_kernel_;
