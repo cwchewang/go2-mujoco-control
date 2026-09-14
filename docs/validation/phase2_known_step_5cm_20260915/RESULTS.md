@@ -1,6 +1,6 @@
 # Phase2 known-geometry 5 cm step closeout
 Classification: BASELINE_GATE_FAILED.
-Parent SHA f3d412f53d4d8a3eb924002863c9839565e8e6f9; runtime implementation HEAD before live 89658121e002c9f95f47ee8d09ec83cd41f17845; worktree clean before A.
+Parent SHA f3d412f53d4d8a3eb924002863c9839565e8e6f9; runtime implementation HEAD before live 89658121e002c9f95f47ee8d09ec83cd41f17845; final closeout HEAD 2f8143d9be468608e865230c2cff05d7352876c2; worktree clean before A.
 Exactly one live launch ran: A/domain 229. Lockstep 4879 rows at 2 ms; paired HighState cycles=4879 validation_failures=0 async_fallbacks=0. A stopped before active locomotion with safety_status=1 completion_status=1, hard posture/safety marker, no active rows, and base x<0.60 m; A gate failed.
 B/domain 230 was not authorized or launched. Launch count=1; preactivation comparison, B isolation, and traversal are NOT_RUN. No retry, retune, replicate, D4, reactive obstacle, or follow-up experiment ran.
 Hashes: simulator 8c0bca27acb41a810ff2440fb9f1a0477f043df82f99202a5df97fb60b47e1fd; controller a722a7819eeabce86429e6582dcb96885d7f89aaeaf671aefe585fafdb040806; scene 8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc. Exact argv/env are in A/run_metadata.txt and A/environment.txt.
