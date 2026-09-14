@@ -187,9 +187,45 @@ bool TrotExperiment::PrepareLockstepHandoff()
     lockstep_handoff_prepared_ = true;
     lockstep_writer_gate_.PrepareForHandoff(handoff_tick);
     lockstep_motion_clock_.Engage(handoff_tick);
+    std::cout << "Lockstep frozen capture tick=" << handoff_tick << "\n";
     std::cout << "Lockstep pre-motion handoff prepared: tick="
               << handoff_tick << "\n";
     return true;
+}
+
+void TrotExperiment::PublishLockstepReady(std::uint32_t state_tick)
+{
+    if (!lockstep_ack_enabled_)
+        return;
+#ifdef GO2_TROT_TESTING
+    if (!lockstep_ready_publisher_)
+    {
+        if (suppress_lowcmd_publish_for_test_ &&
+            state_tick == lockstep_handoff_state_tick_)
+        {
+            lockstep_ready_published_for_test_ = true;
+            lockstep_ready_published_tick_for_test_ = state_tick;
+        }
+        return;
+    }
+#else
+    if (!lockstep_ready_publisher_)
+        return;
+#endif
+    unitree_go::msg::dds_::Error_ ready;
+    ready.source(state_tick);
+    ready.state(1);
+    for (int i = 0; i < 3; ++i)
+    {
+        lockstep_ready_publisher_->Write(ready);
+        if (i != 2)
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+#ifdef GO2_TROT_TESTING
+    lockstep_ready_published_for_test_ = true;
+    lockstep_ready_published_tick_for_test_ = state_tick;
+#endif
+    std::cout << "Lockstep READY published: tick=" << state_tick << "\n";
 }
 
 
@@ -281,9 +317,15 @@ bool TrotExperiment::Init()
             new ChannelPublisher<unitree_go::msg::dds_::Error_>(
                 GO2_TROT_TOPIC_LOCKSTEP_ACK));
         lockstep_ack_publisher_->InitChannel();
+        lockstep_ready_publisher_.reset(
+            new ChannelPublisher<unitree_go::msg::dds_::Error_>(
+                GO2_TROT_TOPIC_LOCKSTEP_READY));
+        lockstep_ready_publisher_->InitChannel();
         lockstep_ack_enabled_ = true;
         std::cout << "Lockstep ack adapter enabled on "
                   << GO2_TROT_TOPIC_LOCKSTEP_ACK << "\n";
+        std::cout << "Lockstep READY publisher enabled on "
+                  << GO2_TROT_TOPIC_LOCKSTEP_READY << "\n";
     }
     if (const char *timeout_env =
             std::getenv("TROT_LOCKSTEP_TICK_TIMEOUT_S");
@@ -337,6 +379,7 @@ bool TrotExperiment::Init()
         std::cerr << "Lockstep pre-motion handoff preparation failed\n";
         return false;
     }
+    PublishLockstepReady(lockstep_handoff_state_tick_);
 
     writer_stop_.store(false);
     low_cmd_write_thread_ = std::thread([this]() {

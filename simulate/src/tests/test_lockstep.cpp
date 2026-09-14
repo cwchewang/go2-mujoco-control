@@ -1229,6 +1229,86 @@ void TestDtMsOverride()
 }
 
 } // namespace
+void TestFrozenReadyHandoff()
+{
+    lockstep::Coordinator::Config cfg;
+    cfg.barrier_timeout_s = 0.2;
+    cfg.exchange_timeout_s = 0.2;
+    cfg.step_wait_timeout_s = 0.2;
+    lockstep::Coordinator coord(cfg);
+    bool failed = false;
+    coord.SetFailClosedHandler([&failed]() { failed = true; });
+
+    coord.MarkPreMotionReady(8000);
+    for (int i = 0; i < 20; ++i)
+        Check(coord.OnFrozenPublish(8000) == lockstep::PublishOutcome::kIdle,
+              "repeated frozen publication remains idle before READY");
+    Check(coord.FrozenPublishCount() == 20,
+          "frozen publication count records immutable repeats");
+    Check(!coord.BarrierComplete() && !coord.ControllerReady(),
+          "frozen publication does not complete the ready barrier");
+    Check(coord.CommandsBeforeReady() == 0,
+          "no command arrives before READY in the frozen phase");
+
+    coord.OnReadyReceived(8000);
+    Check(coord.ControllerReady() && coord.BarrierComplete(),
+          "exact READY opens the frozen exchange");
+    Check(coord.OnFrozenPublish(8000) == lockstep::PublishOutcome::kIdle,
+          "READY alone does not grant a step");
+    coord.OnCommandArrived();
+    coord.OnAckReceived(8000, 1);
+    Check(coord.OnFrozenPublish(8000) ==
+              lockstep::PublishOutcome::kStepGranted,
+          "exact READY plus matching first command and ack grants one step");
+    coord.NotifyCommandApplied();
+    Check(coord.WaitForStepPermission() == lockstep::WaitOutcome::kReady,
+          "granted handoff permits exactly one physics step");
+    coord.NotifyStepCompleted(8002);
+    Check(coord.PostFreezeStepCount() == 1 &&
+              coord.FirstPostStepTick() == 8002,
+          "first post-command step is exactly 8002");
+    Check(coord.ViolationCount() == 0 && !failed,
+          "valid frozen READY handoff has no protocol violations");
+}
+
+void TestFrozenReadyValidation()
+{
+    {
+        lockstep::Coordinator coord(lockstep::Coordinator::Config{});
+        bool failed = false;
+        coord.SetFailClosedHandler([&failed]() { failed = true; });
+        coord.MarkPreMotionReady(8000);
+        coord.OnReadyReceived(7999);
+        Check(failed && coord.FailedClosed() &&
+                  (coord.ViolationCount() &
+                   lockstep::kViolationReadyStale) != 0,
+              "stale READY fails closed");
+    }
+    {
+        lockstep::Coordinator coord(lockstep::Coordinator::Config{});
+        bool failed = false;
+        coord.SetFailClosedHandler([&failed]() { failed = true; });
+        coord.MarkPreMotionReady(8000);
+        coord.OnReadyReceived(8001);
+        Check(failed && coord.FailedClosed() &&
+                  (coord.ViolationCount() &
+                   lockstep::kViolationReadyFuture) != 0,
+              "future READY fails closed");
+    }
+    {
+        lockstep::Coordinator coord(lockstep::Coordinator::Config{});
+        bool failed = false;
+        coord.SetFailClosedHandler([&failed]() { failed = true; });
+        coord.MarkPreMotionReady(8000);
+        coord.OnFrozenPublish(8000);
+        coord.OnCommandArrived();
+        Check(failed && coord.FailedClosed() &&
+                  (coord.ViolationCount() &
+                   lockstep::kViolationCommandBeforeReady) != 0,
+              "command before READY fails closed");
+    }
+}
+
 
 int main()
 {
@@ -1262,6 +1342,8 @@ int main()
     TestCommandSeqStaleAtWrapFailClosed();
     TestModularResolutionHelpers();
     TestDtMsOverride();
+    TestFrozenReadyHandoff();
+    TestFrozenReadyValidation();
 
     if (g_failures == 0)
     {

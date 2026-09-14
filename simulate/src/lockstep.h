@@ -70,6 +70,10 @@ constexpr std::uint32_t kViolationAckFuture = 1u << 6;
 constexpr std::uint32_t kViolationAckDuplicate = 1u << 7;
 constexpr std::uint32_t kViolationAckCmdMismatch = 1u << 8;
 constexpr std::uint32_t kViolationAckMissing = 1u << 9;
+constexpr std::uint32_t kViolationReadyStale = 1u << 10;
+constexpr std::uint32_t kViolationReadyFuture = 1u << 11;
+constexpr std::uint32_t kViolationReadyMissing = 1u << 12;
+constexpr std::uint32_t kViolationCommandBeforeReady = 1u << 13;
 
 enum class WaitOutcome : int
 {
@@ -210,9 +214,78 @@ public:
   void OnCommandArrived()
   {
     cmd_seq_.fetch_add(1, std::memory_order_relaxed);
+    bool command_before_ready = false;
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (pre_motion_ready_.load(std::memory_order_relaxed) &&
+          !controller_ready_)
+      {
+        ++commands_before_ready_;
+        command_before_ready = true;
+      }
+    }
+    if (command_before_ready)
+    {
+      AddViolation(kViolationCommandBeforeReady);
+      FailClosed("LowCmd arrived before exact READY");
+    }
   }
 
   // Order-107 causal handshake: the controller adapter acks the exact pair
+  void OnReadyReceived(std::uint32_t state_tick)
+  {
+    const char *reason = nullptr;
+    std::uint32_t violation = 0;
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (!pre_motion_ready_.load(std::memory_order_relaxed)) return;
+      const std::uint64_t expected = pre_motion_state_seq_;
+      const std::uint32_t expected_wire =
+          static_cast<std::uint32_t>(expected & 0xFFFFFFFFu);
+      if (state_tick != expected_wire)
+      {
+        const std::uint64_t delta =
+            (static_cast<std::uint64_t>(state_tick) - expected_wire) &
+            0xFFFFFFFFu;
+        if (delta >= (1ULL << 31))
+        {
+          violation = kViolationReadyStale;
+          reason = "stale READY for pre-motion state";
+        }
+        else
+        {
+          violation = kViolationReadyFuture;
+          reason = "future/wrong READY for pre-motion state";
+        }
+      }
+      else if (controller_ready_)
+      {
+        return;
+      }
+      else
+      {
+        controller_ready_ = true;
+        barrier_complete_.store(true, std::memory_order_release);
+        barrier_state_seq_ = expected;
+        last_consumed_state_seq_ = expected;
+        published_state_seq_ = expected;
+        last_published_tick_ = expected;
+        ack_validation_active_ = true;
+        exchange_open_ = true;
+        ack_latched_ = false;
+        first_publish_seq_ = cmd_seq_.load(std::memory_order_relaxed);
+        first_publish_wall_us_ = NowUs();
+        frozen_initial_exchange_ = true;
+        ready_state_seq_ = expected;
+      }
+    }
+    if (reason != nullptr)
+    {
+      AddViolation(violation);
+      FailClosed(reason);
+    }
+  }
+
   // {state_seq, command_seq} (Error_.source()/state(), both uint32_t) after
   // each LowCmd write. Validation against the frozen-state bookkeeping:
   //   * startup-phase acks (state resolves to a pre-handoff state) are
@@ -318,9 +391,68 @@ public:
   }
 
 
-  // ---- startup (bridge thread) ----
-  // Call once per startup-phase state publish (wall-clock behavior until the
+  // ---- frozen handoff (bridge thread) ----
+  bool ControllerReady() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return controller_ready_;
+  }
+
+  PublishOutcome OnFrozenPublish(std::uint64_t sim_tick_ms)
+  {
+    bool bad_tick = false;
+    bool ready = false;
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (sim_tick_ms != pre_motion_state_seq_)
+      {
+        AddViolation(kViolationTickGap);
+        bad_tick = true;
+      }
+      else
+      {
+        published_state_seq_ = sim_tick_ms;
+        last_published_tick_ = sim_tick_ms;
+        ++frozen_publish_count_;
+        ready = controller_ready_;
+      }
+    }
+    if (bad_tick)
+    {
+      FailClosed("frozen publication tick mismatch");
+      return PublishOutcome::kIdle;
+    }
+    if (!ready) return PublishOutcome::kIdle;
+    return OnPublish(sim_tick_ms);
+  }
+
+  // ---- handoff observability ----
+  std::uint64_t FrozenPublishCount() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return frozen_publish_count_;
+  }
+
+  std::uint64_t CommandsBeforeReady() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return commands_before_ready_;
+  }
+
+  std::uint64_t PostFreezeStepCount() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return post_freeze_steps_;
+  }
+
+  std::uint64_t FirstPostStepTick() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return first_post_step_tick_;
+  }
+
   // ready barrier). Returns true when the ready barrier completed on this
+  // ---- legacy startup barrier (bridge thread) ----
   // call: the first controller command (computed after the controller's
   // natural-settle + world-reference lifecycle boundary) arrived and the
   // first frozen step is permitted. `sim_tick_ms` is the tick of the state
@@ -447,15 +579,25 @@ public:
           {
             exchange_open_ = false;
             last_consumed_state_seq_ = published_state_seq_;
-            Record(IntervalRecord{
-                published_state_seq_, interval_index_, "lockstep",
-                first_publish_seq_,
-                cmd_seq_.load(std::memory_order_relaxed),
-                NowUs() - first_publish_wall_us_, first_publish_wall_us_,
-                ExchangeTrigger::kAckMatched,
-                violations_.load(std::memory_order_relaxed),
-                ack_latched_state_, ack_latched_cmd_});
-            ++interval_index_;
+            if (frozen_initial_exchange_)
+            {
+              barrier_seq_ = ack_latched_cmd_;
+              initial_ack_state_ = ack_latched_state_;
+              initial_ack_cmd_ = ack_latched_cmd_;
+              frozen_initial_exchange_ = false;
+            }
+            else
+            {
+              Record(IntervalRecord{
+                  published_state_seq_, interval_index_, "lockstep",
+                  first_publish_seq_,
+                  cmd_seq_.load(std::memory_order_relaxed),
+                  NowUs() - first_publish_wall_us_, first_publish_wall_us_,
+                  ExchangeTrigger::kAckMatched,
+                  violations_.load(std::memory_order_relaxed),
+                  ack_latched_state_, ack_latched_cmd_});
+              ++interval_index_;
+            }
             outcome = PublishOutcome::kStepGranted;
           }
           else if (m < 0)
@@ -509,9 +651,11 @@ public:
       {
         if (waiting_for_barrier)
         {
-          AddViolation(kViolationBarrierTimeout);
-          FailClosed("ready barrier timeout waiting for first controller "
-                     "command");
+          if (PreMotionReady() && !ControllerReady())
+            AddViolation(kViolationReadyMissing);
+          else
+            AddViolation(kViolationBarrierTimeout);
+          FailClosed("ready barrier timeout waiting for exact READY");
         }
         else
         {
@@ -535,6 +679,15 @@ public:
     bool step_tick_bad = false;
     {
       std::lock_guard<std::mutex> lock(mutex_);
+      if (pre_motion_ready_.load(std::memory_order_relaxed) &&
+          controller_ready_)
+      {
+        if (frozen_initial_exchange_)
+          ++post_freeze_steps_before_first_exact_;
+        else
+          ++post_freeze_steps_;
+        if (first_post_step_tick_ == 0) first_post_step_tick_ = sim_tick_ms;
+      }
       if (interval_index_ == 0)
       {
         // Handoff: barrier row at the tick the first frozen step started
@@ -544,7 +697,8 @@ public:
         Record(IntervalRecord{
             pre_tick, 0, "barrier", 0, barrier_seq_, 0, NowUs(),
             ExchangeTrigger::kBarrier,
-            violations_.load(std::memory_order_relaxed), 0, 0});
+            violations_.load(std::memory_order_relaxed),
+            initial_ack_state_, initial_ack_cmd_});
         interval_index_ = 1;
       }
       if (sim_tick_ms != last_published_tick_ + cfg_.dt_ms)
@@ -631,6 +785,17 @@ public:
              << " violations=" << violations_.load(std::memory_order_relaxed)
              << " fail_closed="
              << (failed_closed_.load(std::memory_order_relaxed) ? 1 : 0)
+             << " controller_ready=" << (controller_ready_ ? 1 : 0)
+             << " pre_motion_tick=" << pre_motion_state_seq_
+             << " ready_tick=" << ready_state_seq_
+             << " frozen_publishes=" << frozen_publish_count_
+             << " commands_before_ready=" << commands_before_ready_
+             << " post_freeze_steps_before_first_exact="
+             << post_freeze_steps_before_first_exact_
+             << " post_freeze_steps=" << post_freeze_steps_
+             << " first_post_step_tick=" << first_post_step_tick_
+             << " initial_ack_state=" << initial_ack_state_
+             << " initial_ack_cmd=" << initial_ack_cmd_
              << " dt_ms=" << cfg_.dt_ms << "\n";
       trace_.flush();
       trace_.close();
@@ -739,6 +904,16 @@ private:
 
   std::atomic<bool> pre_motion_ready_{false};
   std::uint64_t pre_motion_state_seq_ = 0;
+  bool controller_ready_ = false;
+  std::uint64_t ready_state_seq_ = 0;
+  std::uint64_t frozen_publish_count_ = 0;
+  std::uint64_t commands_before_ready_ = 0;
+  std::uint64_t post_freeze_steps_before_first_exact_ = 0;
+  std::uint64_t post_freeze_steps_ = 0;
+  std::uint64_t first_post_step_tick_ = 0;
+  std::uint32_t initial_ack_state_ = 0;
+  std::uint32_t initial_ack_cmd_ = 0;
+  bool frozen_initial_exchange_ = false;
 
 };
 

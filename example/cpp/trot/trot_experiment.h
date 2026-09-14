@@ -49,6 +49,9 @@ using unitree::robot::ChannelSubscriberPtr;
 #ifndef GO2_TROT_TOPIC_LOCKSTEP_ACK
 #define GO2_TROT_TOPIC_LOCKSTEP_ACK "rt/lockstep/ack"
 #endif
+#ifndef GO2_TROT_TOPIC_LOCKSTEP_READY
+#define GO2_TROT_TOPIC_LOCKSTEP_READY "rt/lockstep/ready"
+#endif
 
 class TrotExperiment
 {
@@ -101,6 +104,9 @@ public:
     bool TestRunLockstepTick(const unitree_go::msg::dds_::LowState_ &state);
     TestMotionClockSample TestLastMotionClockSample() const;
     void TestPrepareMotionHandoff(std::uint32_t handoff_tick);
+    void TestPublishLockstepReady(std::uint32_t state_tick);
+    bool TestReadyPublished() const;
+    std::uint32_t TestReadyPublishedTick() const;
     std::uint32_t TestLastConsumedStateTick() const;
 #endif
 
@@ -194,6 +200,7 @@ private:
     void RecordLockstepPublishDiagnostic(
         std::uint32_t state_tick, bool gated_writer);
     void PublishLockstepAck(std::uint32_t state_seq);
+    void PublishLockstepReady(std::uint32_t state_tick);
     void LogSample(
         const unitree_go::msg::dds_::LowState_ &state_snapshot,
         bool have_state,
@@ -474,9 +481,12 @@ private:
 
     ChannelPublisherPtr<unitree_go::msg::dds_::LowCmd_> lowcmd_publisher_;
     ChannelPublisherPtr<unitree_go::msg::dds_::Error_> lockstep_ack_publisher_;
+    ChannelPublisherPtr<unitree_go::msg::dds_::Error_> lockstep_ready_publisher_;
     bool lockstep_ack_enabled_ = false;
 #ifdef GO2_TROT_TESTING
     bool suppress_lowcmd_publish_for_test_ = false;
+    bool lockstep_ready_published_for_test_ = false;
+    std::uint32_t lockstep_ready_published_tick_for_test_ = 0;
 #endif
     // Order-107: lockstep-local sequence epoch established at the first
     // lockstep state consumed after the controller's lifecycle barrier

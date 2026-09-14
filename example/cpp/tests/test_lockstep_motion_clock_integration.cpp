@@ -33,6 +33,28 @@ unitree_go::msg::dds_::LowState_ State(std::uint32_t tick)
     return state;
 }
 
+void TestProductionReadyOrdering()
+{
+    go2_trot::TrotParams params;
+    params.wall_clock_motion = true;
+    params.wbc_full = true;
+    params.wbc_primary = true;
+    TrotExperiment experiment(
+        10.0, "/tmp/order109c_controller.csv", params,
+        1000, false, "", false);
+
+    experiment.TestPrepareMotionHandoff(8000);
+    Check(!experiment.TestReadyPublished(),
+          "controller has not emitted READY before explicit publish");
+    experiment.TestPublishLockstepReady(8000);
+    Check(experiment.TestReadyPublished() &&
+              experiment.TestReadyPublishedTick() == 8000,
+          "controller emits READY for the captured frozen tick");
+    Check(experiment.TestRunLockstepTick(State(8000)),
+          "first gated writer consumes tick 8000 after READY");
+    Check(!experiment.TestRunLockstepTick(State(8000)),
+          "duplicate frozen tick does not create another writer update");
+}
 void TestProductionPreMotionHandoff()
 {
     go2_trot::TrotParams params;
@@ -147,6 +169,7 @@ void TestProductionChain()
 
 int main()
 {
+    TestProductionReadyOrdering();
     TestProductionPreMotionHandoff();
     TestProductionChain();
     if (failures != 0)

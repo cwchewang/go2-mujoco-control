@@ -284,6 +284,21 @@ void TrotExperiment::TestPrepareMotionHandoff(std::uint32_t handoff_tick)
 }
 
 
+void TrotExperiment::TestPublishLockstepReady(std::uint32_t state_tick)
+{
+    PublishLockstepReady(state_tick);
+}
+
+bool TrotExperiment::TestReadyPublished() const
+{
+    return lockstep_ready_published_for_test_;
+}
+
+std::uint32_t TrotExperiment::TestReadyPublishedTick() const
+{
+    return lockstep_ready_published_tick_for_test_;
+}
+
 bool TrotExperiment::TestRunWallClockTick(
     const unitree_go::msg::dds_::LowState_ &state)
 {

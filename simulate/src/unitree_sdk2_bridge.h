@@ -285,6 +285,24 @@ public:
     }
 };
 
+// Controller lifecycle READY subscriber for the exact frozen handoff tick.
+class LockstepReadySubscriber
+    : public unitree::robot::SubscriptionBase<unitree_go::msg::dds_::Error_>
+{
+public:
+    explicit LockstepReadySubscriber(const std::string &topic,
+                                     lockstep::Coordinator *coord)
+        : unitree::robot::SubscriptionBase<unitree_go::msg::dds_::Error_>(
+              topic, [coord](const void *msg) {
+                  if (coord == nullptr) return;
+                  const auto *m = static_cast<
+                      const unitree_go::msg::dds_::Error_ *>(msg);
+                  coord->OnReadyReceived(m->source());
+              })
+    {
+    }
+};
+
 template <typename LowCmd_t, typename LowState_t>
 class RobotBridge : public UnitreeSDK2BridgeBase
 {
@@ -305,6 +323,9 @@ public:
             lockstep_ack_subscriber_ =
                 std::make_shared<LockstepAckSubscriber>(
                     "rt/lockstep/ack", ::g_lockstep);
+            lockstep_ready_subscriber_ =
+                std::make_shared<LockstepReadySubscriber>(
+                    "rt/lockstep/ready", ::g_lockstep);
         }
         else
         {
@@ -590,10 +611,10 @@ public:
     {
         if (!::g_lockstep->PreMotionReady())
             return;
-        if (!::g_lockstep->BarrierComplete())
+        if (!::g_lockstep->ControllerReady())
         {
             PublishStateSnapshot(/*blocking_lowstate=*/true);
-            ::g_lockstep->OnStartupPublish(CurrentTickMs());
+            ::g_lockstep->OnFrozenPublish(CurrentTickMs());
             return;
         }
         auto sim_lock = LockSimulation();
@@ -801,7 +822,8 @@ public:
     std::shared_ptr<unitree::robot::SubscriptionBase<typename LowCmd_t::MsgType>> lowcmd;
     std::unique_ptr<LowState_t> lowstate;
     std::shared_ptr<LockstepAckSubscriber> lockstep_ack_subscriber_;
-    
+    std::shared_ptr<LockstepReadySubscriber> lockstep_ready_subscriber_;
+
 private:
     double last_environment_map_publish_s_ = -1.0e9;
     unitree::common::RecurrentThreadPtr thread_;

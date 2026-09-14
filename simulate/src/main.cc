@@ -1501,7 +1501,7 @@ namespace
       // wall-clock path below runs unchanged (identical startup). Holding
       // the mutex during the wait would deadlock the bridge handshake.
       if (param::config.lockstep && g_lockstep != nullptr && m != nullptr &&
-          sim.run && g_lockstep->BarrierComplete())
+          sim.run && g_lockstep->PreMotionReady())
       {
         const lockstep::WaitOutcome outcome =
             g_lockstep->WaitForStepPermission();
