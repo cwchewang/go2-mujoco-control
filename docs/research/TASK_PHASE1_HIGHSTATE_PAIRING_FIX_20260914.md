@@ -38,7 +38,7 @@ If free, implement a lockstep-only sideband gated by `TROT_LOCKSTEP_PAIRED_HIGHS
 
 A compact suggested encoding is documented by the implementation itself; preserve all six HighState floats exactly as float values and carry an exact source tick plus marker/version. Do not repurpose any field found to have an existing semantic use.
 
-## Tests before live runs
+## Tests and runtime observability before live runs
 
 Add focused tests proving:
 
@@ -50,6 +50,12 @@ Add focused tests proving:
 6. inherited lockstep writer/ack tests still pass.
 
 Run the new focused tests, established controller lockstep tests, and `bash simulate/src/tests/run_lockstep_sim_tests.sh`. No live run before all pass.
+
+The controller must emit exactly one final summary line in `controller.log` for paired-mode runs:
+
+`PAIRED_HIGHSTATE_SUMMARY cycles=<N> validation_failures=<N> async_fallbacks=<N>`
+
+`cycles` must count control cycles that actually consumed the paired sideband. `validation_failures` counts marker/version/source-tick validation failures. `async_fallbacks` counts any control cycle that used cached asynchronous HighState while paired mode was active; correct implementation keeps this at zero. Emit this summary on normal shutdown and on controlled fail-closed shutdown when possible. The prepared analyzer requires the line.
 
 ## Prepared tools
 
@@ -80,16 +86,16 @@ python3 example/cpp/tools/analysis/analyze_phase1_highstate_pairing_fix.py \
   --output-dir docs/validation/phase1_highstate_pairing_fix_20260914
 ```
 
-Also run the existing `analyze_phase1_frozen_handoff_first_divergence.py` on the three new `mj_snapshot.bin` files and save its CSV in the validation directory. Interpret it component-semantically; its historical simulator label is not authoritative.
+The prepared analyzer also runs the existing frozen-handoff snapshot comparator on the three new `mj_snapshot.bin` files and writes `snapshot_first_divergence.csv`. Its historical simulator label is not authoritative; for this repair gate any value divergence in that window fails the exact-repeatability gate.
 
 ## Acceptance gates
 
 Full validation requires all of the following:
 
 1. L1–L3 lockstep protocol passes: constant 2 ms ticks, zero violations, exactly one command update per state tick, no fail-closed marker.
-2. Every lockstep control cycle in paired mode validates marker/version/source-tick == consumed LowState tick; no asynchronous fallback.
+2. Every lockstep control cycle in paired mode validates marker/version/source-tick == consumed LowState tick; the final summary has `cycles>0`, `validation_failures=0`, `async_fallbacks=0`.
 3. In ticks 11800–12600, no pair has a value-carrying consumed HighState divergence and no pair has a pre-publish LowCmd divergence.
-4. In the 7.999–13.0 s snapshot window, there is no component-aware value divergence across L1/L2/L3.
+4. In the 7.999–13.0 s snapshot window, there is no value divergence across L1/L2/L3.
 5. Across the full baseline run, all selected deterministic metrics used by `analyze_phase1_lockstep_baseline.py` have pairwise maximum absolute difference exactly 0, aligned row counts match, and terminal/status outcomes match.
 6. All three runs reach the same terminal outcome without posture failure.
 7. Build/runtime provenance matches except expected run/domain identifiers; raw artifacts are immutable and SHA-256 hashed.
