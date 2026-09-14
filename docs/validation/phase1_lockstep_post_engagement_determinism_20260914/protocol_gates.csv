@@ -1,0 +1,25 @@
+run_id,gate,status,detail
+L1,trace_present,PASS,lockstep_rows=42491
+L1,constant_post_engagement_sim_tick,PASS,post_intervals=41401 dt_ms=[2]
+L1,no_post_engagement_protocol_violations,PASS,post_intervals=41401 violations=[0]
+L1,post_engagement_ack_state_matches_published_tick,PASS,post_intervals=41401
+L1,post_engagement_exact_pair_trigger,PASS,triggers=['3']
+L1,no_fail_closed_marker,PASS,marker=False
+L1,one_command_update_per_state_tick_post_engagement,PASS,post_intervals=41401 delta_counts=1:41401
+L1,no_controller_same_state_duplicate_post_engagement,PASS,duplicate_groups=0 duplicate_extra_rows=0
+L2,trace_present,PASS,lockstep_rows=42546
+L2,constant_post_engagement_sim_tick,PASS,post_intervals=41401 dt_ms=[2]
+L2,no_post_engagement_protocol_violations,PASS,post_intervals=41401 violations=[0]
+L2,post_engagement_ack_state_matches_published_tick,PASS,post_intervals=41401
+L2,post_engagement_exact_pair_trigger,PASS,triggers=['3']
+L2,no_fail_closed_marker,PASS,marker=False
+L2,one_command_update_per_state_tick_post_engagement,PASS,post_intervals=41401 delta_counts=1:41401
+L2,no_controller_same_state_duplicate_post_engagement,PASS,duplicate_groups=0 duplicate_extra_rows=0
+L3,trace_present,PASS,lockstep_rows=42472
+L3,constant_post_engagement_sim_tick,PASS,post_intervals=41401 dt_ms=[2]
+L3,no_post_engagement_protocol_violations,PASS,post_intervals=41401 violations=[0]
+L3,post_engagement_ack_state_matches_published_tick,PASS,post_intervals=41401
+L3,post_engagement_exact_pair_trigger,PASS,triggers=['3']
+L3,no_fail_closed_marker,PASS,marker=False
+L3,one_command_update_per_state_tick_post_engagement,PASS,post_intervals=41401 delta_counts=1:41401
+L3,no_controller_same_state_duplicate_post_engagement,PASS,duplicate_groups=0 duplicate_extra_rows=0

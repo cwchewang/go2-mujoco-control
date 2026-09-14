@@ -1,0 +1,4 @@
+run_id,first_gated_publish_index,first_gated_state_tick,first_gated_cmd_seq,first_gated_running_time_s,first_post_trace_tick,pre_engagement_intervals,post_engagement_intervals,pre_interval_boundary_span_s,pre_delta_counts,post_delta_counts,post_duplicate_groups,post_duplicate_extra_rows
+L1,2152,3950,2152,4.302072280,3952,1090,41401,2.180000000,"1:50,2:1039,3:1",1:41401,0,0
+L2,2152,4074,2152,4.302073900,4076,1145,41401,2.290000000,"1:164,2:980,3:1",1:41401,0,0
+L3,2152,3486,2152,4.302074650,3488,1071,41401,2.142000000,"1:12,2:1059",1:41401,0,0
