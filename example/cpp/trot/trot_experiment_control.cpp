@@ -242,6 +242,7 @@ void TrotExperiment::PublishLowCmdWithCrc(
     const unitree_go::msg::dds_::LowState_ &state_snapshot,
     bool gated_writer)
 {
+    RecordBoundaryLowCmd(state_snapshot);
     low_cmd_.crc() = crc32_core(
         (uint32_t *)&low_cmd_,
         (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
@@ -824,7 +825,30 @@ bool TrotExperiment::SnapshotState(
             state_snapshot = low_state_;
         if (have_high_state)
             high_state_snapshot = high_state_;
+        if (boundary_trace_enabled_ && have_state)
+        {
+            boundary_pending_low_tick_ = state_snapshot.tick();
+            boundary_pending_low_receipt_seq_ = boundary_low_receipt_seq_;
+            boundary_pending_high_receipt_seq_ = boundary_high_receipt_seq_;
+            boundary_pending_control_seq_ = ++boundary_control_seq_;
+            const auto low_payload =
+                phase1_boundary_trace::CanonicalLowState(state_snapshot);
+            boundary_pending_low_hash_ =
+                phase1_boundary_trace::Hash(low_payload);
+            boundary_pending_high_hash_.clear();
+            if (have_high_state)
+            {
+                const auto high_payload =
+                    phase1_boundary_trace::CanonicalHighState(high_state_snapshot);
+                boundary_pending_high_hash_ =
+                    phase1_boundary_trace::Hash(high_payload);
+            }
+            boundary_pending_have_state_ = true;
+            boundary_pending_have_high_state_ = have_high_state;
+        }
     }
+    RecordBoundaryConsumption(
+        state_snapshot, have_state, high_state_snapshot, have_high_state);
     return have_state;
 }
 double TrotExperiment::MotionClockStep(

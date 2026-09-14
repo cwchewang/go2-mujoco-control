@@ -33,6 +33,7 @@
 #include "srbd_mpc.h"
 #include "inverse_dynamics_wbc.h"
 #include "cartesian_world_trot.h"
+#include "phase1_boundary_trace.h"
 
 using unitree::robot::ChannelPublisherPtr;
 using unitree::robot::ChannelSubscriberPtr;
@@ -199,6 +200,19 @@ private:
         bool gated_writer);
     void RecordLockstepPublishDiagnostic(
         std::uint32_t state_tick, bool gated_writer);
+    void WriteBoundaryTraceRow(
+        const std::array<std::string, 22> &row);
+    void RecordBoundaryLowReceipt(
+        const unitree_go::msg::dds_::LowState_ &message);
+    void RecordBoundaryHighReceipt(
+        const unitree_go::msg::dds_::SportModeState_ &message);
+    void RecordBoundaryConsumption(
+        const unitree_go::msg::dds_::LowState_ &state_snapshot,
+        bool have_state,
+        const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+        bool have_high_state);
+    void RecordBoundaryLowCmd(
+        const unitree_go::msg::dds_::LowState_ &state_snapshot);
     void PublishLockstepAck(std::uint32_t state_seq);
     void PublishLockstepReady(std::uint32_t state_tick);
     void LogSample(
@@ -471,6 +485,20 @@ private:
     std::mutex state_mutex_;
     std::ofstream csv_;
     std::ofstream closure_csv_;
+    std::ofstream boundary_trace_csv_;
+    bool boundary_trace_enabled_ = false;
+    std::mutex boundary_trace_mutex_;
+    std::uint64_t boundary_low_receipt_seq_ = 0;
+    std::uint64_t boundary_high_receipt_seq_ = 0;
+    std::uint64_t boundary_control_seq_ = 0;
+    std::uint32_t boundary_pending_low_tick_ = 0;
+    std::uint64_t boundary_pending_low_receipt_seq_ = 0;
+    std::uint64_t boundary_pending_high_receipt_seq_ = 0;
+    std::uint64_t boundary_pending_control_seq_ = 0;
+    std::string boundary_pending_low_hash_;
+    std::string boundary_pending_high_hash_;
+    bool boundary_pending_have_state_ = false;
+    bool boundary_pending_have_high_state_ = false;
     std::ofstream lockstep_publish_diag_csv_;
     bool lockstep_publish_diag_enabled_ = false;
     std::uint64_t lockstep_publish_diag_index_ = 0;

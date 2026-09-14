@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <vector>
 #include <limits>
 #include <mutex>
@@ -26,6 +27,7 @@
 #include "param.h"
 #include "physics_joystick.h"
 #include "lockstep.h"
+#include "../../example/cpp/trot/phase1_boundary_trace.h"
 
 
 #define MOTOR_SENSOR_NUM 3
@@ -339,6 +341,29 @@ public:
                 "rt/go2/environment_heightmap");
         wireless_controller = std::make_unique<WirelessController_t>();
         wireless_controller->joystick = joystick;
+        boundary_trace_enabled_ = phase1_boundary_trace::Enabled();
+        if (boundary_trace_enabled_)
+        {
+            const std::string base = phase1_boundary_trace::BasePath();
+            boundary_trace_csv_.open(base + ".bridge.csv");
+            if (!boundary_trace_csv_)
+            {
+                std::cerr << "Failed to open phase1 boundary bridge trace: "
+                          << base << ".bridge.csv" << std::endl;
+                boundary_trace_enabled_ = false;
+            }
+            else
+            {
+                boundary_trace_csv_
+                    << "record_type,tick,sequence,callback_seq,low_hash,"
+                       "high_hash,high_source_generation,high_source_tick,"
+                       "low_published,high_published,high_skipped,"
+                       "low_receipt_seq,high_receipt_seq,consumed_low_receipt_seq,"
+                       "consumed_high_receipt_seq,have_state,have_high_state,"
+                       "control_seq,lowcmd_hash,low_payload_hex,high_payload_hex,"
+                       "lowcmd_payload_hex\n";
+            }
+        }
     }
 
     void start()
@@ -683,6 +708,13 @@ public:
         auto sim_lock = LockSimulation();
         if (!mj_data_) return;
         PublishEnvironmentHeightMap();
+        const std::uint32_t trace_tick = CurrentTickMs();
+        bool lowstate_published = false;
+        bool highstate_published = false;
+        std::string low_hash;
+        std::string high_hash;
+        std::string low_payload_hex;
+        std::string high_payload_hex;
         const bool lowstate_locked =
             blocking_lowstate ? (lowstate->lock(), true) : lowstate->trylock();
         if (lowstate_locked)
@@ -790,7 +822,20 @@ public:
             lowstate->msg_.tick() =
                 static_cast<std::uint32_t>(
                     std::llround(mj_data_->time / 1e-3));
+            if (boundary_trace_enabled_)
+            {
+                if constexpr (std::is_same_v<
+                                  std::decay_t<decltype(lowstate->msg_)>,
+                                  unitree_go::msg::dds_::LowState_>)
+                {
+                    const auto payload =
+                        phase1_boundary_trace::CanonicalLowState(lowstate->msg_);
+                    low_hash = phase1_boundary_trace::Hash(payload);
+                    low_payload_hex = phase1_boundary_trace::Hex(payload);
+                }
+            }
             lowstate->unlockAndPublish();
+            lowstate_published = true;
         }
         if (highstate->trylock())
         {
@@ -812,7 +857,45 @@ public:
                 highstate->msg_.velocity()[2] =
                     mj_data_->sensordata[frame_vel_adr_ + 2];
             }
+            if (boundary_trace_enabled_)
+            {
+                if constexpr (std::is_same_v<
+                                  std::decay_t<decltype(lowstate->msg_)>,
+                                  unitree_go::msg::dds_::LowState_>)
+                {
+                    const auto payload =
+                        phase1_boundary_trace::CanonicalHighState(highstate->msg_);
+                    high_hash = phase1_boundary_trace::Hash(payload);
+                    high_payload_hex = phase1_boundary_trace::Hex(payload);
+                }
+            }
             highstate->unlockAndPublish();
+            highstate_published = true;
+            ++high_state_source_generation_;
+            high_state_source_tick_ = trace_tick;
+        }
+        if (boundary_trace_enabled_ &&
+            phase1_boundary_trace::InWindow(trace_tick))
+        {
+            std::array<std::string, 22> row{};
+            row[0] = "bridge_source";
+            row[1] = std::to_string(trace_tick);
+            row[2] = std::to_string(++boundary_trace_index_);
+            row[4] = low_hash;
+            row[5] = high_hash;
+            row[6] = std::to_string(high_state_source_generation_);
+            row[7] = std::to_string(high_state_source_tick_);
+            row[8] = lowstate_published ? "1" : "0";
+            row[9] = highstate_published ? "1" : "0";
+            row[10] = highstate_published ? "0" : "1";
+            row[19] = low_payload_hex;
+            row[20] = high_payload_hex;
+            for (std::size_t i = 0; i < row.size(); ++i)
+            {
+                if (i != 0) boundary_trace_csv_ << ',';
+                boundary_trace_csv_ << row[i];
+            }
+            boundary_trace_csv_ << std::endl;
         }
         if (wireless_controller->joystick)
             wireless_controller->unlockAndPublish();
@@ -823,6 +906,11 @@ public:
     std::unique_ptr<LowState_t> lowstate;
     std::shared_ptr<LockstepAckSubscriber> lockstep_ack_subscriber_;
     std::shared_ptr<LockstepReadySubscriber> lockstep_ready_subscriber_;
+    std::ofstream boundary_trace_csv_;
+    bool boundary_trace_enabled_ = false;
+    std::uint64_t boundary_trace_index_ = 0;
+    std::uint64_t high_state_source_generation_ = 0;
+    std::uint32_t high_state_source_tick_ = 0;
 
 private:
     double last_environment_map_publish_s_ = -1.0e9;

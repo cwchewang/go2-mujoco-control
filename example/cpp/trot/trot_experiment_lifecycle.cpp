@@ -21,6 +21,145 @@ using namespace unitree::robot;
 using namespace go2_trot;
 
 // --- TrotExperiment::InitLowCmd ---
+void TrotExperiment::WriteBoundaryTraceRow(
+    const std::array<std::string, 22> &row)
+{
+    if (!boundary_trace_enabled_)
+        return;
+    std::lock_guard<std::mutex> lock(boundary_trace_mutex_);
+    if (!boundary_trace_csv_)
+        return;
+    for (std::size_t i = 0; i < row.size(); ++i)
+    {
+        if (i != 0) boundary_trace_csv_ << ',';
+        boundary_trace_csv_ << row[i];
+    }
+    boundary_trace_csv_ << '\n';
+    boundary_trace_csv_.flush();
+}
+
+void TrotExperiment::RecordBoundaryLowReceipt(
+    const unitree_go::msg::dds_::LowState_ &message)
+{
+    const auto payload = phase1_boundary_trace::CanonicalLowState(message);
+    const std::string hash = phase1_boundary_trace::Hash(payload);
+    std::uint64_t sequence = 0;
+    bool have_high_state = false;
+    {
+        std::lock_guard<std::mutex> lock(state_mutex_);
+        low_state_ = message;
+        have_low_state_ = true;
+        sequence = ++boundary_low_receipt_seq_;
+        have_high_state = have_high_state_;
+    }
+    if (!boundary_trace_enabled_ ||
+        !phase1_boundary_trace::InWindow(message.tick()))
+        return;
+    std::array<std::string, 22> row{};
+    row[0] = "controller_receipt_low";
+    row[1] = std::to_string(message.tick());
+    row[3] = std::to_string(sequence);
+    row[4] = hash;
+    row[11] = std::to_string(sequence);
+    row[15] = "1";
+    row[16] = have_high_state ? "1" : "0";
+    row[19] = phase1_boundary_trace::Hex(payload);
+    WriteBoundaryTraceRow(row);
+}
+
+void TrotExperiment::RecordBoundaryHighReceipt(
+    const unitree_go::msg::dds_::SportModeState_ &message)
+{
+    const auto payload = phase1_boundary_trace::CanonicalHighState(message);
+    const std::string hash = phase1_boundary_trace::Hash(payload);
+    std::uint64_t sequence = 0;
+    std::uint32_t low_tick = 0;
+    bool have_low_state = false;
+    {
+        std::lock_guard<std::mutex> lock(state_mutex_);
+        high_state_ = message;
+        have_high_state_ = true;
+        sequence = ++boundary_high_receipt_seq_;
+        have_low_state = have_low_state_;
+        if (have_low_state)
+            low_tick = low_state_.tick();
+    }
+    if (!boundary_trace_enabled_ ||
+        !phase1_boundary_trace::InWindow(low_tick))
+        return;
+    std::array<std::string, 22> row{};
+    row[0] = "controller_receipt_high";
+    row[1] = std::to_string(low_tick);
+    row[3] = std::to_string(sequence);
+    row[5] = hash;
+    row[12] = std::to_string(sequence);
+    row[15] = have_low_state ? "1" : "0";
+    row[16] = "1";
+    row[20] = phase1_boundary_trace::Hex(payload);
+    WriteBoundaryTraceRow(row);
+}
+
+void TrotExperiment::RecordBoundaryConsumption(
+    const unitree_go::msg::dds_::LowState_ &state_snapshot,
+    bool have_state,
+    const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot,
+    bool have_high_state)
+{
+    if (!boundary_trace_enabled_ || !have_state ||
+        !phase1_boundary_trace::InWindow(state_snapshot.tick()))
+        return;
+    const auto low_payload =
+        phase1_boundary_trace::CanonicalLowState(state_snapshot);
+    std::array<std::string, 22> row{};
+    row[0] = "controller_consumption";
+    row[1] = std::to_string(state_snapshot.tick());
+    row[4] = boundary_pending_low_hash_;
+    row[5] = boundary_pending_high_hash_;
+    row[11] = std::to_string(boundary_pending_low_receipt_seq_);
+    row[12] = std::to_string(boundary_pending_high_receipt_seq_);
+    row[13] = std::to_string(boundary_pending_low_receipt_seq_);
+    row[14] = std::to_string(boundary_pending_high_receipt_seq_);
+    row[15] = "1";
+    row[16] = have_high_state ? "1" : "0";
+    row[17] = std::to_string(boundary_pending_control_seq_);
+    row[19] = phase1_boundary_trace::Hex(low_payload);
+    if (have_high_state)
+    {
+        const auto high_payload =
+            phase1_boundary_trace::CanonicalHighState(high_state_snapshot);
+        row[20] = phase1_boundary_trace::Hex(high_payload);
+    }
+    WriteBoundaryTraceRow(row);
+}
+
+void TrotExperiment::RecordBoundaryLowCmd(
+    const unitree_go::msg::dds_::LowState_ &state_snapshot)
+{
+    if (!boundary_trace_enabled_ ||
+        !phase1_boundary_trace::InWindow(state_snapshot.tick()))
+        return;
+    const auto state_payload =
+        phase1_boundary_trace::CanonicalLowState(state_snapshot);
+    const auto cmd_payload =
+        phase1_boundary_trace::CanonicalLowCmd(low_cmd_);
+    std::array<std::string, 22> row{};
+    row[0] = "controller_lowcmd_prepublish";
+    row[1] = std::to_string(state_snapshot.tick());
+    row[4] = boundary_pending_low_hash_;
+    row[5] = boundary_pending_high_hash_;
+    row[11] = std::to_string(boundary_pending_low_receipt_seq_);
+    row[12] = std::to_string(boundary_pending_high_receipt_seq_);
+    row[13] = std::to_string(boundary_pending_low_receipt_seq_);
+    row[14] = std::to_string(boundary_pending_high_receipt_seq_);
+    row[15] = boundary_pending_have_state_ ? "1" : "0";
+    row[16] = boundary_pending_have_high_state_ ? "1" : "0";
+    row[17] = std::to_string(boundary_pending_control_seq_);
+    row[18] = phase1_boundary_trace::Hash(cmd_payload);
+    row[19] = phase1_boundary_trace::Hex(state_payload);
+    row[21] = phase1_boundary_trace::Hex(cmd_payload);
+    WriteBoundaryTraceRow(row);
+}
+
 void TrotExperiment::InitLowCmd()
 {
     low_cmd_.head()[0] = 0xFE;
@@ -43,11 +182,7 @@ void TrotExperiment::LowStateMessageHandler(const void *message)
 {
     const unitree_go::msg::dds_::LowState_ *msg =
         static_cast<const unitree_go::msg::dds_::LowState_ *>(message);
-    {
-        std::lock_guard<std::mutex> lock(state_mutex_);
-        low_state_ = *msg;
-        have_low_state_ = true;
-    }
+    RecordBoundaryLowReceipt(*msg);
     // Order-108 verification-only tick gate: strictly-new-tick detection
     // and (once engaged) stale/reorder/gap fail-closed. No-op for the
     // wall-clock runner (adapter off -> gate never engaged).
@@ -58,9 +193,8 @@ void TrotExperiment::LowStateMessageHandler(const void *message)
 // --- TrotExperiment::HighStateMessageHandler ---
 void TrotExperiment::HighStateMessageHandler(const void *message)
 {
-    std::lock_guard<std::mutex> lock(state_mutex_);
-    high_state_ = *(unitree_go::msg::dds_::SportModeState_ *)message;
-    have_high_state_ = true;
+    RecordBoundaryHighReceipt(
+        *(const unitree_go::msg::dds_::SportModeState_ *)message);
 }
 
 void TrotExperiment::EnvironmentHeightMapMessageHandler(const void *message)
@@ -240,6 +374,29 @@ bool TrotExperiment::Init()
     }
     csv_ << std::fixed << std::setprecision(9);
     WriteCsvHeader();
+    boundary_trace_enabled_ = phase1_boundary_trace::Enabled();
+    if (boundary_trace_enabled_)
+    {
+        const std::string base = phase1_boundary_trace::BasePath();
+        boundary_trace_csv_.open(base + ".controller.csv");
+        if (!boundary_trace_csv_)
+        {
+            std::cerr << "Failed to open phase1 boundary controller trace: "
+                      << base << ".controller.csv" << std::endl;
+            boundary_trace_enabled_ = false;
+        }
+        else
+        {
+            boundary_trace_csv_
+                << "record_type,tick,sequence,callback_seq,low_hash,"
+                   "high_hash,high_source_generation,high_source_tick,"
+                   "low_published,high_published,high_skipped,"
+                   "low_receipt_seq,high_receipt_seq,consumed_low_receipt_seq,"
+                   "consumed_high_receipt_seq,have_state,have_high_state,"
+                   "control_seq,lowcmd_hash,low_payload_hex,high_payload_hex,"
+                   "lowcmd_payload_hex\n";
+        }
+    }
     const char *publish_diag_env =
         std::getenv("TROT_LOCKSTEP_PUBLISH_DIAG");
     lockstep_publish_diag_enabled_ =
