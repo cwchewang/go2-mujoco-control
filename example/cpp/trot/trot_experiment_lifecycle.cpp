@@ -375,6 +375,9 @@ bool TrotExperiment::Init()
     csv_ << std::fixed << std::setprecision(9);
     WriteCsvHeader();
     boundary_trace_enabled_ = phase1_boundary_trace::Enabled();
+    paired_highstate_enabled_ = go2_highstate_pairing::Enabled();
+    if (paired_highstate_enabled_)
+        std::cout << "Paired HighState lockstep sideband enabled\n";
     if (boundary_trace_enabled_)
     {
         const std::string base = phase1_boundary_trace::BasePath();
@@ -596,6 +599,21 @@ void TrotExperiment::EngageLockstepWriterIfNeeded()
     lockstep_motion_clock_.Engage(last_consumed_state_tick_);
 }
 
+void TrotExperiment::EmitPairedHighStateSummary()
+{
+    if (!paired_highstate_enabled_ || paired_summary_emitted_)
+        return;
+    std::cout << "PAIRED_HIGHSTATE_SUMMARY cycles="
+              << paired_cycles_
+              << " validation_failures="
+              << paired_validation_failures_
+              << " async_fallbacks="
+              << paired_async_fallbacks_
+              << "\n";
+    std::cout.flush();
+    paired_summary_emitted_ = true;
+}
+
 // --- TrotExperiment::Shutdown ---
 void TrotExperiment::Shutdown()
 {
@@ -605,6 +623,7 @@ void TrotExperiment::Shutdown()
     csv_.close();
     closure_csv_.close();
     lockstep_publish_diag_csv_.close();
+    EmitPairedHighStateSummary();
 }
 
 // --- TrotExperiment::RequestStop ---

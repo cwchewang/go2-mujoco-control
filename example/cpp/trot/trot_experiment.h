@@ -34,6 +34,7 @@
 #include "inverse_dynamics_wbc.h"
 #include "cartesian_world_trot.h"
 #include "phase1_boundary_trace.h"
+#include "highstate_pairing_sideband.h"
 
 using unitree::robot::ChannelPublisherPtr;
 using unitree::robot::ChannelSubscriberPtr;
@@ -213,6 +214,7 @@ private:
         bool have_high_state);
     void RecordBoundaryLowCmd(
         const unitree_go::msg::dds_::LowState_ &state_snapshot);
+    void EmitPairedHighStateSummary();
     void PublishLockstepAck(std::uint32_t state_seq);
     void PublishLockstepReady(std::uint32_t state_tick);
     void LogSample(
@@ -479,6 +481,11 @@ private:
     unitree_go::msg::dds_::SportModeState_ high_state_{};
     unitree_go::msg::dds_::HeightMap_ environment_heightmap_{};
     bool have_low_state_ = false;
+    bool paired_highstate_enabled_ = false;
+    bool paired_summary_emitted_ = false;
+    std::uint64_t paired_cycles_ = 0;
+    std::uint64_t paired_validation_failures_ = 0;
+    std::uint64_t paired_async_fallbacks_ = 0;
     bool have_high_state_ = false;
     bool have_environment_heightmap_ = false;
 

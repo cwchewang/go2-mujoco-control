@@ -28,6 +28,7 @@
 #include "physics_joystick.h"
 #include "lockstep.h"
 #include "../../example/cpp/trot/phase1_boundary_trace.h"
+#include "../../example/cpp/trot/highstate_pairing_sideband.h"
 
 
 #define MOTOR_SENSOR_NUM 3
@@ -339,6 +340,8 @@ public:
         environment_heightmap = unitree::robot::ChannelFactory::Instance()
             ->CreateSendChannel<unitree_go::msg::dds_::HeightMap_>(
                 "rt/go2/environment_heightmap");
+        paired_highstate_enabled_ =
+            param::config.lockstep && go2_highstate_pairing::Enabled();
         wireless_controller = std::make_unique<WirelessController_t>();
         wireless_controller->joystick = joystick;
         boundary_trace_enabled_ = phase1_boundary_trace::Enabled();
@@ -819,6 +822,33 @@ public:
                     }
                 }
             }
+            if constexpr (std::is_same_v<
+                              std::decay_t<decltype(lowstate->msg_)>,
+                              unitree_go::msg::dds_::LowState_>)
+            {
+            if (paired_highstate_enabled_)
+            {
+                go2_highstate_pairing::Payload payload;
+                if (frame_pos_adr_ >= 0)
+                {
+                    for (std::size_t i = 0; i < 3; ++i)
+                        payload.position[i] = static_cast<float>(
+                            mj_data_->sensordata[frame_pos_adr_ + i]);
+                }
+                if (frame_vel_adr_ >= 0)
+                {
+                    for (std::size_t i = 0; i < 3; ++i)
+                        payload.velocity[i] = static_cast<float>(
+                            mj_data_->sensordata[frame_vel_adr_ + i]);
+                }
+                payload.source_tick = trace_tick;
+                const auto slots = go2_highstate_pairing::Pack(payload);
+                go2_highstate_pairing::WriteMotorStateFields(
+                    lowstate->msg_.motor_state()[18], slots[0]);
+                go2_highstate_pairing::WriteMotorStateFields(
+                    lowstate->msg_.motor_state()[19], slots[1]);
+            }
+            }
             lowstate->msg_.tick() =
                 static_cast<std::uint32_t>(
                     std::llround(mj_data_->time / 1e-3));
@@ -912,6 +942,7 @@ public:
     std::uint64_t high_state_source_generation_ = 0;
     std::uint32_t high_state_source_tick_ = 0;
 
+    bool paired_highstate_enabled_ = false;
 private:
     double last_environment_map_publish_s_ = -1.0e9;
     unitree::common::RecurrentThreadPtr thread_;

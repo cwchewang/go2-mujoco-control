@@ -817,19 +817,59 @@ bool TrotExperiment::SnapshotState(
 {
     have_state = false;
     have_high_state = false;
+    bool paired_validation_failed = false;
     {
         std::lock_guard<std::mutex> lock(state_mutex_);
         have_state = have_low_state_;
-        have_high_state = have_high_state_;
         if (have_state)
             state_snapshot = low_state_;
-        if (have_high_state)
+        const bool have_async_high_state = have_high_state_;
+        go2_highstate_pairing::DecodeResult paired;
+        if (paired_highstate_enabled_ && have_state)
+        {
+            paired = go2_highstate_pairing::Decode(
+                go2_highstate_pairing::ReadMotorStateFields(
+                    state_snapshot.motor_state()[18]),
+                go2_highstate_pairing::ReadMotorStateFields(
+                    state_snapshot.motor_state()[19]),
+                state_snapshot.tick());
+        }
+        const auto resolution = have_state
+            ? go2_highstate_pairing::Resolve(
+                  paired_highstate_enabled_, have_async_high_state, paired.valid)
+            : go2_highstate_pairing::Resolution::kNoHighState;
+        switch (resolution)
+        {
+        case go2_highstate_pairing::Resolution::kUseAsync:
+            have_high_state = true;
             high_state_snapshot = high_state_;
+            if (paired_highstate_enabled_)
+                ++paired_async_fallbacks_;
+            break;
+        case go2_highstate_pairing::Resolution::kUsePaired:
+            for (std::size_t i = 0; i < 3; ++i)
+            {
+                high_state_snapshot.position()[i] = paired.payload.position[i];
+                high_state_snapshot.velocity()[i] = paired.payload.velocity[i];
+            }
+            have_high_state = true;
+            ++paired_cycles_;
+            break;
+        case go2_highstate_pairing::Resolution::kFailClosed:
+            ++paired_validation_failures_;
+            paired_validation_failed = true;
+            have_high_state = false;
+            break;
+        case go2_highstate_pairing::Resolution::kNoHighState:
+            have_high_state = false;
+            break;
+        }
         if (boundary_trace_enabled_ && have_state)
         {
             boundary_pending_low_tick_ = state_snapshot.tick();
             boundary_pending_low_receipt_seq_ = boundary_low_receipt_seq_;
-            boundary_pending_high_receipt_seq_ = boundary_high_receipt_seq_;
+            boundary_pending_high_receipt_seq_ =
+                paired_highstate_enabled_ ? 0 : boundary_high_receipt_seq_;
             boundary_pending_control_seq_ = ++boundary_control_seq_;
             const auto low_payload =
                 phase1_boundary_trace::CanonicalLowState(state_snapshot);
@@ -847,9 +887,15 @@ bool TrotExperiment::SnapshotState(
             boundary_pending_have_high_state_ = have_high_state;
         }
     }
+    if (paired_validation_failed)
+    {
+        std::cerr << "TROT_PAIRED_HIGHSTATE_FAIL_CLOSED tick="
+                  << state_snapshot.tick() << "\n";
+        finished_.store(true);
+    }
     RecordBoundaryConsumption(
         state_snapshot, have_state, high_state_snapshot, have_high_state);
-    return have_state;
+    return have_state && !paired_validation_failed;
 }
 double TrotExperiment::MotionClockStep(
     const unitree_go::msg::dds_::LowState_ &state_snapshot,

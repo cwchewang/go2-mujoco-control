@@ -189,6 +189,10 @@ go2_add_ctest(test_lockstep_writer_gate)
 # Order-109 verification-only state-synchronous motion clock (DDS-free).
 add_executable(test_lockstep_motion_clock tests/test_lockstep_motion_clock.cpp)
 go2_add_ctest(test_lockstep_motion_clock)
+# Deterministic lockstep HighState sideband codec and selection policy.
+add_executable(test_highstate_pairing_sideband
+    tests/test_highstate_pairing_sideband.cpp)
+go2_add_ctest(test_highstate_pairing_sideband)
 
 # Order-109b production call-chain integration test. The controller sources
 # are compiled unchanged except for a test-only publish suppression and
