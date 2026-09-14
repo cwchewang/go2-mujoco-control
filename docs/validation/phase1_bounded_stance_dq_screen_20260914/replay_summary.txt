@@ -1,0 +1,14 @@
+targets,552
+stance_legs,1100
+solved_legs,1100
+invalid_legs,0
+target_join_failures,0
+max_snapshot_ctrl_residual_Nm,0
+max_bridge_formula_residual_Nm,0
+max_actual_replay_residual_mps2,0
+max_candidate_formula_residual_Nm,0
+max_dq_change_radps,2
+max_d_target_change_Nm,6.0000000000000009
+max_swing_dq_change_radps,0
+contact_mismatches,0
+candidate_formula_rows,1656
