@@ -1171,6 +1171,29 @@ void TrotExperiment::WriteMotorCommands(
     const bool pd_pulse_active =
         pd_pulse_enabled_ &&
         gait_elapsed_s >= 32.10 && gait_elapsed_s < 32.40;
+    const bool four_thigh_d90_gate_active =
+        four_thigh_d90_enabled_ &&
+        gait_elapsed_s >= 32.10 && gait_elapsed_s < 39.90;
+    four_thigh_d90_gate_active_ = four_thigh_d90_gate_active;
+    const auto effective_thigh_d90_kd =
+        [this, four_thigh_d90_gate_active](int motor, double baseline_kd) {
+        int slot = -1;
+        switch (motor)
+        {
+        case 1: slot = 0; break;
+        case 4: slot = 1; break;
+        case 7: slot = 2; break;
+        case 10: slot = 3; break;
+        default: break;
+        }
+        if (slot < 0)
+            return baseline_kd;
+        four_thigh_d90_baseline_kd_[slot] = baseline_kd;
+        const double effective_kd = four_thigh_d90_gate_active
+            ? 0.90 * baseline_kd : baseline_kd;
+        four_thigh_d90_effective_kd_[slot] = effective_kd;
+        return effective_kd;
+    };
     if (wbc_primary_active)
     {
     // 扭矩渐变注入:激活后 0.5s 内从 0 线性升到 1,避免跳变冲击
@@ -1279,7 +1302,10 @@ void TrotExperiment::WriteMotorCommands(
                 cmd_kd = stance_kd;
             }
             low_cmd_.motor_cmd()[i].kp() = pd_pulse_active ? 0.0 : cmd_kp;
-            low_cmd_.motor_cmd()[i].kd() = pd_pulse_active ? 0.0 : cmd_kd;
+            const double effective_kd =
+                effective_thigh_d90_kd(i, cmd_kd);
+            low_cmd_.motor_cmd()[i].kd() =
+                pd_pulse_active ? 0.0 : effective_kd;
             // 低接触数(过渡/对角支撑)时减弱 WBC 扭矩,避免力分配
             // 在支撑切换瞬间扰动姿态
             const double contact_scale = params_.wbc_full
@@ -1316,8 +1342,12 @@ void TrotExperiment::WriteMotorCommands(
         low_cmd_.motor_cmd()[i].dq() = joint_velocities[i];
         low_cmd_.motor_cmd()[i].kp() = pd_pulse_active ? 0.0
             : (task_.motion_stage_ == 0 ? 100.0 : params_.kp);
+        const double baseline_kd =
+            task_.motion_stage_ == 0 ? 3.5 : params_.kd;
+        const double effective_kd =
+            effective_thigh_d90_kd(i, baseline_kd);
         low_cmd_.motor_cmd()[i].kd() = pd_pulse_active ? 0.0
-            : (task_.motion_stage_ == 0 ? 3.5 : params_.kd);
+            : effective_kd;
         low_cmd_.motor_cmd()[i].tau() =
             apply_wbc_torque_ff ? wbc_torque_ff[i] : 0.0;
     }

@@ -231,6 +231,10 @@ private:
     const int max_cycles_;
     const bool continuous_mode_;
     bool pd_pulse_enabled_ = false;
+    bool four_thigh_d90_enabled_ = false;
+    bool four_thigh_d90_gate_active_ = false;
+    std::array<double, 4> four_thigh_d90_baseline_kd_{};
+    std::array<double, 4> four_thigh_d90_effective_kd_{};
     const std::string stop_file_path_;
     go2_control::MotionSensorSample latest_motion_sensor_{};
     std::unique_ptr<go2_control::LocomotionKernel> locomotion_kernel_;

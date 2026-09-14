@@ -185,6 +185,10 @@ bool TrotExperiment::Init()
     const char *pd_pulse_env = std::getenv("TROT_PD_PULSE_AB");
     pd_pulse_enabled_ =
         pd_pulse_env != nullptr && std::atof(pd_pulse_env) > 0.5;
+    const char *four_thigh_d90_env =
+        std::getenv("TROT_FOUR_THIGH_D90_AB");
+    four_thigh_d90_enabled_ =
+        four_thigh_d90_env != nullptr && std::atof(four_thigh_d90_env) > 0.5;
 
     if (params_.wbc_full)
     {

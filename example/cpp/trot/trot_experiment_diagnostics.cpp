@@ -85,7 +85,13 @@ void TrotExperiment::WriteCsvHeader()
          << ",wbc_full_id_contact_force_x_n"
          << ",diag_active_relative_time_s"
          << ",diag_closure_enabled,diag_solver_returned,diag_contact_mask"
-         << ",diag_force_post_delta_norm,diag_tau_post_delta_norm";
+         << ",diag_force_post_delta_norm,diag_tau_post_delta_norm"
+         << ",diag_four_thigh_d90_enabled,diag_four_thigh_d90_gate_active"
+         << ",diag_four_thigh_d90_active_relative_time_s"
+         << ",diag_four_thigh_d90_fr_baseline_kd,diag_four_thigh_d90_fr_effective_kd"
+         << ",diag_four_thigh_d90_fl_baseline_kd,diag_four_thigh_d90_fl_effective_kd"
+         << ",diag_four_thigh_d90_rr_baseline_kd,diag_four_thigh_d90_rr_effective_kd"
+         << ",diag_four_thigh_d90_rl_baseline_kd,diag_four_thigh_d90_rl_effective_kd";
     for (int i = 0; i < 18; ++i)
         csv_ << ",diag_solver_qdd_" << i;
     for (int i = 0; i < 12; ++i)
@@ -901,6 +907,17 @@ void TrotExperiment::LogSample(
          << "," << wbc_shadow_diagnostics_.closure_contact_mask
          << "," << wbc_shadow_diagnostics_.closure_force_post_delta_norm
          << "," << wbc_shadow_diagnostics_.closure_tau_post_delta_norm;
+    csv_ << "," << (four_thigh_d90_enabled_ ? 1 : 0)
+         << "," << (four_thigh_d90_gate_active_ ? 1 : 0)
+         << "," << diagnostic_velocity_command_active_time_s_
+         << "," << four_thigh_d90_baseline_kd_[0]
+         << "," << four_thigh_d90_effective_kd_[0]
+         << "," << four_thigh_d90_baseline_kd_[1]
+         << "," << four_thigh_d90_effective_kd_[1]
+         << "," << four_thigh_d90_baseline_kd_[2]
+         << "," << four_thigh_d90_effective_kd_[2]
+         << "," << four_thigh_d90_baseline_kd_[3]
+         << "," << four_thigh_d90_effective_kd_[3];
     const auto &solver_closure = wbc_shadow_diagnostics_.closure_solver;
     const auto &final_closure = wbc_shadow_diagnostics_.closure_final;
     for (double value : solver_closure.qdd)
