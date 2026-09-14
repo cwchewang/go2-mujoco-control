@@ -145,6 +145,9 @@ target_link_libraries(test_raibert_trot_kernel Eigen3::Eigen)
 add_executable(test_cartesian_world_trot tests/test_cartesian_world_trot.cpp)
 go2_add_ctest(test_cartesian_world_trot)
 
+add_executable(test_known_step_terrain_adapter tests/test_known_step_terrain_adapter.cpp)
+go2_add_ctest(test_known_step_terrain_adapter)
+
 add_executable(test_motion_frame_utils tests/test_motion_frame_utils.cpp)
 
 add_executable(test_velocity_filter tests/test_velocity_filter.cpp)

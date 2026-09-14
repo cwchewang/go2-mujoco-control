@@ -100,6 +100,33 @@ void TrotExperiment::WriteCsvHeader()
          << ",diag_bounded_stance_dq_valid_solve_count"
          << ",diag_bounded_stance_dq_invalid_solve_count"
          << ",diag_bounded_stance_dq_fallback_count";
+    csv_ << ",known_step_feature_enabled,known_step_edge_x_m"
+         << ",known_step_height_m,known_step_half_width_y_m";
+    const char *const known_step_leg_names[4] = {"fr", "fl", "rr", "rl"};
+    for (int leg = 0; leg < 4; ++leg)
+        csv_ << ",known_step_" << known_step_leg_names[leg]
+             << "_scheduled_stance,known_step_"
+             << known_step_leg_names[leg] << "_scheduled_swing"
+             << ",known_step_" << known_step_leg_names[leg]
+             << "_swing_start_x_m,known_step_"
+             << known_step_leg_names[leg] << "_swing_start_z_m"
+             << ",known_step_" << known_step_leg_names[leg]
+             << "_nominal_touchdown_x_m,known_step_"
+             << known_step_leg_names[leg] << "_nominal_touchdown_y_m"
+             << ",known_step_" << known_step_leg_names[leg]
+             << "_nominal_touchdown_z_m,known_step_"
+             << known_step_leg_names[leg] << "_h0_m,known_step_"
+             << known_step_leg_names[leg] << "_h1_m,known_step_"
+             << known_step_leg_names[leg] << "_rise_m,known_step_"
+             << known_step_leg_names[leg] << "_effective_lift_m"
+             << ",known_step_" << known_step_leg_names[leg]
+             << "_final_target_world_x_m,known_step_"
+             << known_step_leg_names[leg] << "_final_target_world_y_m"
+             << ",known_step_" << known_step_leg_names[leg]
+             << "_final_target_world_z_m,known_step_"
+             << known_step_leg_names[leg] << "_actual_x_m,known_step_"
+             << known_step_leg_names[leg] << "_actual_z_m,known_step_"
+             << known_step_leg_names[leg] << "_adaptation_active";
     for (int leg = 0; leg < 4; ++leg)
         csv_ << ",diag_bounded_stance_dq_" << kMotorNames[3 * leg]
              << "_stance_selector,diag_bounded_stance_dq_"
@@ -951,6 +978,37 @@ void TrotExperiment::LogSample(
          << "," << bounded_stance_dq_valid_solve_count_
          << "," << bounded_stance_dq_invalid_solve_count_
          << "," << bounded_stance_dq_fallback_count_;
+    csv_ << "," << (cartesian_state_.known_step_geometry.enabled ? 1 : 0)
+         << "," << cartesian_state_.known_step_geometry.edge_x_m
+         << "," << cartesian_state_.known_step_geometry.height_m
+         << "," << cartesian_state_.known_step_geometry.half_width_y_m;
+    for (int leg = 0; leg < 4; ++leg)
+    {
+        const auto &swing_start = cartesian_state_.swing_start_world[leg];
+        const auto &nominal =
+            cartesian_state_.known_step_nominal_touchdown_world[leg];
+        const auto &final_target =
+            cartesian_state_.known_step_final_touchdown_world[leg];
+        const auto &actual =
+            cartesian_state_.known_step_actual_world_feet[leg];
+        csv_ << "," << (cartesian_state_.known_step_scheduled_stance[leg] ? 1 : 0)
+             << "," << (cartesian_state_.known_step_scheduled_swing[leg] ? 1 : 0)
+             << "," << swing_start.x
+             << "," << swing_start.z
+             << "," << nominal.x
+             << "," << nominal.y
+             << "," << nominal.z
+             << "," << cartesian_state_.known_step_h0_m[leg]
+             << "," << cartesian_state_.known_step_h1_m[leg]
+             << "," << cartesian_state_.known_step_rise_m[leg]
+             << "," << cartesian_state_.known_step_effective_lift_m[leg]
+             << "," << final_target.x
+             << "," << final_target.y
+             << "," << final_target.z
+             << "," << actual.x
+             << "," << actual.z
+             << "," << (cartesian_state_.known_step_adaptation_active[leg] ? 1 : 0);
+    }
     for (int leg = 0; leg < 4; ++leg)
         csv_ << "," << bounded_stance_dq_stance_selector_[leg]
              << "," << bounded_stance_dq_solve_valid_[leg]

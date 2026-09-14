@@ -1255,6 +1255,7 @@ bool TrotExperiment::BuildGaitTargets(
         cart.world_heading = Full2EnvDouble("FULL2_WORLD_HEADING", 0.0) > 0.5;
         cart.yaw_gain = Full2EnvDouble("FULL2_YAW_GAIN", 0.0);
         cart.pattern = params_.gait_pattern;
+        cart.known_step_geometry = go2_control::KnownStepGeometryFromEnv();
         cart.foot_lift_m =
             gait_result.duty_factor > 0.0
                 ? std::max(params_.foot_lift_m, 0.022)

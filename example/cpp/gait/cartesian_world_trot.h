@@ -10,6 +10,7 @@
 
 #include "go2_forward_kinematics.h"
 #include "locomotion_kernel.h"
+#include "known_step_terrain_adapter.h"
 
 namespace go2_control
 {
@@ -223,6 +224,17 @@ struct CartesianWorldState
     std::array<go2::Vec3, go2::kLegCount> swing_target_world{};
     std::array<go2::Vec3, go2::kLegCount> target_world{};
     std::array<go2::Vec3, go2::kLegCount> target_world_vel{};
+    KnownStepGeometry known_step_geometry{};
+    std::array<bool, go2::kLegCount> known_step_scheduled_stance{};
+    std::array<bool, go2::kLegCount> known_step_scheduled_swing{};
+    std::array<go2::Vec3, go2::kLegCount> known_step_nominal_touchdown_world{};
+    std::array<go2::Vec3, go2::kLegCount> known_step_final_touchdown_world{};
+    std::array<go2::Vec3, go2::kLegCount> known_step_actual_world_feet{};
+    std::array<double, go2::kLegCount> known_step_h0_m{};
+    std::array<double, go2::kLegCount> known_step_h1_m{};
+    std::array<double, go2::kLegCount> known_step_rise_m{};
+    std::array<double, go2::kLegCount> known_step_effective_lift_m{};
+    std::array<bool, go2::kLegCount> known_step_adaptation_active{};
     std::array<bool, go2::kLegCount> stance_valid{};
     std::array<bool, go2::kLegCount> in_stance{};
     std::array<bool, go2::kLegCount> prev_stance{};
@@ -259,7 +271,28 @@ struct CartesianWorldInput
     // Front/rear differential Y from yaw. 0 = off. W1 left yaw at -27 deg.
     double yaw_gain = 0.0;
     GaitPattern pattern = GaitPattern::kDiagonalTrot;
+    KnownStepGeometry known_step_geometry{};
 };
+inline KnownStepAdaptation RecordKnownStepAdaptation(
+    const CartesianWorldInput &in,
+    CartesianWorldState &state,
+    std::size_t leg,
+    const go2::Vec3 &nominal_touchdown_world)
+{
+    const auto result = AdaptKnownStepTouchdown(
+        in.known_step_geometry, state.swing_start_world[leg],
+        nominal_touchdown_world, in.foot_lift_m);
+    state.known_step_nominal_touchdown_world[leg] =
+        result.nominal_touchdown_world;
+    state.known_step_final_touchdown_world[leg] =
+        result.final_touchdown_world;
+    state.known_step_h0_m[leg] = result.h0_m;
+    state.known_step_h1_m[leg] = result.h1_m;
+    state.known_step_rise_m[leg] = result.rise_m;
+    state.known_step_effective_lift_m[leg] = result.effective_lift_m;
+    state.known_step_adaptation_active[leg] = result.adaptation_active;
+    return result;
+}
 
 inline bool LegScheduledStance(
     std::size_t leg,
@@ -380,6 +413,7 @@ inline void ApplyCartesianWorldTrot(
     CommandedWorldVelocity(in.v_cmd_mps, yaw, in.world_heading, vx_des, vy_des);
     const double t_st = std::max(0.05, in.duty_factor * in.period_s);
     const double blend = std::clamp(in.blend, 0.0, 1.0);
+    state.known_step_geometry = in.known_step_geometry;
 
     for (std::size_t leg = 0; leg < go2::kLegCount; ++leg)
     {
@@ -387,6 +421,14 @@ inline void ApplyCartesianWorldTrot(
             leg, in.phase, in.duty_factor, in.pattern);
         const bool entering_stance = stance && (!state.have_prev || !state.prev_stance[leg]);
         const bool entering_swing = !stance && (!state.have_prev || state.prev_stance[leg]);
+        state.known_step_scheduled_stance[leg] = stance;
+        state.known_step_scheduled_swing[leg] = !stance;
+        state.known_step_actual_world_feet[leg] = in.actual_world_feet[leg];
+        if (stance)
+        {
+            state.known_step_effective_lift_m[leg] = in.foot_lift_m;
+            state.known_step_adaptation_active[leg] = false;
+        }
 
         if (entering_stance || (stance && !state.stance_valid[leg]))
         {
@@ -427,6 +469,9 @@ inline void ApplyCartesianWorldTrot(
                            0.08 * in.gyro_x;
             state.swing_target_world[leg] = PlanWorldTouchdown(td);
             ApplyLateralFootOffsets(leg, in, state.swing_target_world[leg]);
+            const auto adaptation = RecordKnownStepAdaptation(
+                in, state, leg, state.swing_target_world[leg]);
+            state.swing_target_world[leg] = adaptation.final_touchdown_world;
             state.stance_valid[leg] = false;
         }
         else if (!stance)
@@ -459,6 +504,9 @@ inline void ApplyCartesianWorldTrot(
             }
             state.swing_target_world[leg] = PlanWorldTouchdown(td);
             ApplyLateralFootOffsets(leg, in, state.swing_target_world[leg]);
+            const auto adaptation = RecordKnownStepAdaptation(
+                in, state, leg, state.swing_target_world[leg]);
+            state.swing_target_world[leg] = adaptation.final_touchdown_world;
         }
 
         go2::Vec3 p_world = in.actual_world_feet[leg];
@@ -476,16 +524,18 @@ inline void ApplyCartesianWorldTrot(
                 state.swing_start_world[leg],
                 state.swing_target_world[leg],
                 swing_phase,
-                in.foot_lift_m);
+                state.known_step_effective_lift_m[leg]);
             v_world = SwingWorldVelocity(
                 state.swing_start_world[leg],
                 state.swing_target_world[leg],
                 swing_phase,
-                in.foot_lift_m,
+                state.known_step_effective_lift_m[leg],
                 std::max(0.05, (1.0 - in.duty_factor) * in.period_s));
         }
         state.target_world[leg] = p_world;
         state.target_world_vel[leg] = v_world;
+        state.known_step_final_touchdown_world[leg] = state.swing_target_world[leg];
+        state.known_step_actual_world_feet[leg] = in.actual_world_feet[leg];
         state.in_stance[leg] = stance;
         state.prev_stance[leg] = stance;
 
