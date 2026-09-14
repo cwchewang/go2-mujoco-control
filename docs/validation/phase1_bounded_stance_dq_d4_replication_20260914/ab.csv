@@ -1,0 +1,3 @@
+arm,window,status,data_rows,active_time_max_s,measured_mps,applied_mps,velocity_excess_mps,realized_ax_mps2,wbc_desired_ax_mps2,srbd_ax_mps2,id_qdd_x_mps2,negative_wbc_fraction,negative_srbd_fraction,negative_id_fraction,hard_safety_status,notes
+A,"[32,33)",FAIL_A_GATE_NO_ROWS,0,29.020011491,,,,,,,,,,1,"hard posture stop before the 2.3 m/s gate window"
+B,"[32,33)",NOT_LAUNCHED,0,,,,,,,,,,,,,"B forbidden after A gate failure"
