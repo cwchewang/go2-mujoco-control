@@ -1,85 +1,134 @@
-# Phase1 experiment contract
+# Phase 1 planner–executor contract
 
-## Mission
+## Purpose
 
-Finish Phase1 arbitrary continuous forward-velocity control well enough to unblock the terrain-aware locomotion research path. Do not turn Phase1 into an open-ended controller rewrite or parameter-search project.
+This contract defines how Phase 1 research work is handed from the planning/review side to the Atlas execution agent. It is a governance document, not a task-specific research hypothesis.
 
-The current research question is narrow: explain and reduce the remaining low/mid/high-speed tracking bias in the B-semantic controller while preserving the already demonstrated dynamic-trot stability.
+The workflow is deliberately split:
 
-## Canonical starting point
+- **Planner / reviewer:** decides what question is being tested, selects the exact base SHA and working branch, preregisters the experiment, prepares or authorizes analysis tooling, and judges the returned evidence.
+- **Atlas executor (Codex Luna EH):** pulls the already-prepared research branch, reads the contract and current task document, executes the authorized work exactly, records evidence, commits the closeout, and stops.
 
-This branch was created from checkpoint:
+The executor must not replace the preregistered research question with its own plan merely because another experiment looks interesting.
 
-`1fc68a34233551ac9ed1e57f68cc86357fd560ad`
+## Authority order
 
-That checkpoint contains the correctly aligned targeted ID-dynamics audit. Its controller lineage is the B-semantic Phase1 controller:
+For a given checkpoint, resolve instructions in this order:
 
-- `step_length = applied_velocity * period`
-- effective-speed convention disabled
-- period `0.14 s`
-- duty factor `0.44`
-- existing shaper/governor/Raibert/preview/SRBD/WBC/contact logic unchanged unless a task explicitly authorizes one conceptual variable.
+1. the current `docs/research/TASK_*.md` named by the handoff prompt;
+2. this `PHASE1_AGENT_CONTRACT.md`;
+3. predecessor task/result documents referenced by the current task;
+4. other repository documentation and historical results.
 
-Do not use failed experiment checkpoint `e836edc4458759e15a7a0b33539c072427ac42ac` as an implementation base. It is evidence only. Its simulator-wide `tau_ff-only` switch removed PD from stand-up/preflight as well as gait and therefore did not test endpoint overspeed causality.
+A current task may intentionally supersede an older task's base SHA, run matrix, hypothesis, or stopping rule. Historical task documents are evidence, not standing instructions.
 
-## Established evidence
+If two current-authority instructions genuinely conflict and the conflict changes the experiment, stop and report the conflict instead of choosing silently.
 
-Treat these as current evidence, not immutable truth:
+## Branch and source discipline
 
-1. The original Phase1 speed-semantic mapping was inconsistent across layers. Switching to B semantic materially improved several low/mid-speed tracking cases, but did not eliminate residual overspeed.
-2. Period `0.18 s` caused serious stability regressions and is not an accepted solution.
-3. Duty `0.50` did not solve the mid/high-speed tracking bias.
-4. In the main `varying 1.4→2.3` failure window, WBC desired x acceleration, SRBD x acceleration, and ID-WBC `qdd[0]` all request braking while realized body acceleration remains near zero.
-5. Exact same-tick ID dynamics closure at the real failure window is numerically tight: the ID-WBC solution itself is dynamically self-consistent.
-6. Solver torque → final torque → LowCmd `tau_ff` mapping is numerically intact in that window.
-7. The simulator bridge then applies joint PD on top of `tau_ff`; this changes effective actuator commands by tens of Nm. This is the first directly observed post-ID deviation, but it has NOT yet been shown to cause the residual overspeed.
-8. Removing PD globally from simulator startup prevents normal preflight/gait entry. Therefore `tau_ff-only from t=0` is invalid for deciding the endpoint-overspeed hypothesis.
+- Every checkpoint uses the exact base SHA and dedicated research branch named by its task document.
+- When the planner has already created that branch and committed the preregistration, **pull and work on that branch; do not create a replacement branch from `main`**.
+- Do not reset the branch to an older canonical point mentioned only by historical documentation.
+- Record the branch name and the exact pre-run HEAD that contains the preregistration and all authorized diagnostic tooling.
+- Do not merge to `main`, rebase onto `main`, cherry-pick unrelated work, or integrate another research branch unless the task explicitly authorizes it.
+- Keep the working tree clean before the first runtime execution. If local pre-existing changes are present, preserve them and stop rather than discarding or mixing them into the checkpoint.
 
-## Experimental discipline
+## Preregistration rule
+
+No live runtime experiment starts until the current task document exists on the research branch and specifies, at minimum:
+
+- problem / hypothesis;
+- exact branch and base lineage;
+- invariants and causal intervention state;
+- authorized run matrix;
+- measurements / comparison method;
+- acceptance or classification rules;
+- stop conditions;
+- required deliverables.
+
+The executor may clarify factual execution details in the results, but must not retroactively rewrite preregistered thresholds, hypotheses, run counts, or decision rules after seeing outcomes.
+
+## Executor operating rules
+
+The Atlas executor should begin by:
+
+1. fetching remote refs;
+2. checking out the exact task branch;
+3. fast-forwarding it to the remote branch without rebasing;
+4. verifying branch name, `git rev-parse HEAD`, and clean status;
+5. reading this contract and the complete current task document before editing code or running binaries.
+
+Then execute the task to completion without asking the user to approve routine intermediate steps.
+
+The executor may make only the smallest implementation or diagnostic change explicitly authorized by the task. Default behavior is to preserve controller policy, model, gait, benchmark, solver settings, and established protocol.
+
+Never silently:
+
+- add runs beyond the authorized matrix;
+- retry a failed run to obtain a nicer outcome;
+- replace a failed/missing run with a new run ID;
+- change a seed, domain ID, profile, model, gait, speed script, threshold, time window, or metric;
+- tune gains or controller parameters;
+- enable an intervention that the task states must remain off;
+- use wall-clock alignment when the task requires simulation-tick/state alignment.
+
+If a task explicitly defines a staged procedure (for example Stage A followed conditionally by Stage B), the executor may proceed to the next stage only under the preregistered condition.
+
+## Runtime environment
+
+For the Go2 MuJoCo research pipeline, live simulator/controller runs are executed on **Atlas in the established native WSL/Linux environment**, using the repository's existing build/runtime tooling unless the current task says otherwise.
+
+Do not substitute a different host, container image, simulator build, Python implementation, or platform merely because it is convenient. Record compiler/runtime/MuJoCo and relevant binary hashes when required by the task.
+
+Before a live run, perform the task-required build/tests/protocol gates. A gate failure is evidence and normally a stop condition, not permission to improvise a repair unless repair is explicitly in scope.
+
+## Evidence and provenance
+
+For every runtime checkpoint:
+
+- raw runtime artifacts are immutable after capture;
+- record SHA-256 for raw captures used in the conclusion;
+- record exact source/pre-run HEAD and, if implementation changed after preregistration, the exact runtime code commit;
+- record exact command/environment or a script that reproduces it;
+- preserve run IDs exactly as preregistered;
+- commit derived tables, analysis code, protocol summaries, and `RESULTS.md` sufficient for independent audit;
+- large raw data may remain local when repository policy requires it, but its path/role/hash must be documented.
+
+Do not hand-edit raw logs or binary captures to repair malformed or inconvenient evidence.
+
+## Causal discipline
 
 Use the lean loop:
 
-`one hypothesis → one controlled experiment → one auditable checkpoint → stop`
+`one preregistered question → one bounded experiment → one auditable result → stop`
 
-For each experiment:
+Do not infer a downstream cause when an earlier causal boundary already differs. Do not turn correlation, timing coincidence, or a visually plausible trajectory into a stronger causal claim than the measurements support.
 
-- Change exactly one conceptual variable.
-- Keep controller/model/profile/acceptance behavior fixed unless the task explicitly names a variable.
-- Prefer same binary, same seed, same instrumentation, and paired A/B runs.
-- Record exact source SHA, simulator/controller binary SHA256, scene/profile SHA256, command line, run IDs, and raw file SHA256.
-- Never silently substitute a different benchmark, threshold, gait mode, profile, or seed.
-- Do not convert a failed or missing endpoint into evidence for endpoint tracking.
-- Do not infer body-axis propulsion/braking directly from individual joint torque signs.
-- Do not treat simple summed world `Fx` as a substitute for full floating-base dynamics.
-- Do not claim a physical root cause when the evidence only identifies an upstream candidate.
+When evidence is insufficient, use the task's inconclusive / unresolved classification rather than inventing certainty.
 
-## Safety and stopping rules
+## Stop conditions
 
-Stop the current task and report instead of improvising when any of the following occurs:
+Unless the current task is more specific, stop the checkpoint and report rather than improvising when:
 
-- the requested single-variable isolation cannot be implemented without changing another control behavior;
-- the A baseline no longer reproduces the expected continuous-trot regime;
-- instrumentation changes controller timing/behavior materially;
-- a safety/posture failure makes the requested causal window unavailable;
-- more than the task-authorized number of runs would be required;
-- the evidence rejects the task hypothesis;
-- a controller architecture change, gain scan, gait-regime change, benchmark change, or acceptance-criterion change appears necessary.
+- branch/source provenance is wrong or cannot be made clean without destroying local work;
+- a required baseline/protocol gate fails;
+- the requested isolation cannot be implemented without changing additional control behavior;
+- instrumentation materially changes the behavior being measured;
+- the authorized causal window is unavailable;
+- completing the conclusion would require extra unregistered runs or changed thresholds;
+- a new controller architecture, broad parameter scan, benchmark change, gait change, or Phase 2/terrain work appears necessary.
 
-Do not automatically fix the next thing after a result. End with one recommended next step only.
+Do not automatically fix the next discovered issue after the current checkpoint has localized its result. End with one evidence-based recommended next checkpoint unless the current task explicitly authorizes an in-task repair stage.
 
-## Scope boundaries
+## Closeout
 
-Do not expand this work into terrain/Phase2, RL, a new gait state machine, a broad WBC rewrite, or global parameter optimization. The long-term terrain project remains separate and should resume only after Phase1 is sufficiently understood and stable.
+At the end of the task, the executor must:
 
-## Reporting standard
+1. run the required analysis and protocol checks;
+2. create the task's required machine-readable tables and `RESULTS.md`;
+3. include raw hashes and exact provenance;
+4. commit all authorized source/analysis/result changes to the same research branch;
+5. push the branch;
+6. report the final branch, final commit SHA, classification/result, key evidence, and any blocker.
 
-A useful checkpoint contains only what another reviewer needs to reproduce and judge the experiment:
-
-- hypothesis and unique variable;
-- exact A/B provenance;
-- primary causal-window measurements;
-- safety/stability observations;
-- conclusion with calibrated confidence;
-- one next step, not executed.
-
-Keep raw evidence locally if large, but commit derived data sufficient to audit the stated conclusion and record hashes for all raw artifacts.
+A pushed result commit is the handoff back to the planner/reviewer. Do not merge it to `main` unless explicitly instructed.
