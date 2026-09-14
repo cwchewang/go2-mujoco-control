@@ -1,0 +1,9 @@
+component,start_index,end_index_exclusive,scalar_count,state_56_meaning,state_sig,state_size,mjtNum_size,nq,nv,na,nu,method_evidence
+time,0,1,1,,8191,194,8,19,18,0,12,Method B exact-model layout
+qpos,1,20,19,,8191,194,8,19,18,0,12,Method B exact-model layout
+qvel,20,38,18,,8191,194,8,19,18,0,12,Method B exact-model layout
+act,38,38,0,,8191,194,8,19,18,0,12,Method B exact-model layout; na=0
+warmstart,38,56,18,,8191,194,8,19,18,0,12,Method B exact-model layout
+ctrl,56,68,12,ctrl[0],8191,194,8,19,18,0,12,Method B; Method A state[56:68] equals actual_ctrl_raw for 2500/2500 records in each L1-L3 capture
+qfrc_applied,68,86,18,,8191,194,8,19,18,0,12,Method B exact-model layout
+xfrc_applied,86,194,108,,8191,194,8,19,18,0,12,Method B exact-model layout
