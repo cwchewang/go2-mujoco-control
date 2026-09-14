@@ -1,0 +1,45 @@
+run_id,gate,status,detail
+L1,trace_present,PASS,lockstep_rows=43551
+L1,constant_2ms_after_handoff,PASS,dt_ms=[2]
+L1,no_protocol_violations,PASS,violations=[0]
+L1,ack_state_matches_published_tick,PASS,intervals=43551
+L1,exact_pair_trigger,PASS,triggers=[3]
+L1,one_command_update_per_state_tick,FAIL,"delta_counts=1:43550,2:1"
+L1,no_same_tick_duplicate_active_lowcmd,PASS,duplicate_groups=0 duplicate_extra_rows=0
+L1,no_fail_closed_marker,PASS,marker=False
+L1,premotion_handoff_before_active_motion,PASS,free_after_handoff=False active_before_handoff=False
+L1,first_active_command_consumes_handoff,FAIL,first_state_tick=9496 handoff_state_tick=9496 gait_started=0
+L1,controller_handoff_tick_matches_simulator,FAIL,controller_handoff_tick=9496 simulator_handoff_tick=8000
+L1,controller_gated_ticks_strictly_new,PASS,gated_rows=43554
+L2,trace_present,PASS,lockstep_rows=43551
+L2,constant_2ms_after_handoff,PASS,dt_ms=[2]
+L2,no_protocol_violations,PASS,violations=[0]
+L2,ack_state_matches_published_tick,PASS,intervals=43551
+L2,exact_pair_trigger,PASS,triggers=[3]
+L2,one_command_update_per_state_tick,PASS,delta_counts=1:43551
+L2,no_same_tick_duplicate_active_lowcmd,PASS,duplicate_groups=0 duplicate_extra_rows=0
+L2,no_fail_closed_marker,PASS,marker=False
+L2,premotion_handoff_before_active_motion,PASS,free_after_handoff=False active_before_handoff=False
+L2,first_active_command_consumes_handoff,FAIL,first_state_tick=9090 handoff_state_tick=9090 gait_started=0
+L2,controller_handoff_tick_matches_simulator,FAIL,controller_handoff_tick=9090 simulator_handoff_tick=8000
+L2,controller_gated_ticks_strictly_new,PASS,gated_rows=43554
+L3,trace_present,FAIL,lockstep_rows=0
+L3,constant_2ms_after_handoff,FAIL,dt_ms=[]
+L3,no_protocol_violations,FAIL,violations=[]
+L3,ack_state_matches_published_tick,FAIL,intervals=0
+L3,exact_pair_trigger,FAIL,triggers=[]
+L3,one_command_update_per_state_tick,FAIL,delta_counts=
+L3,no_same_tick_duplicate_active_lowcmd,PASS,duplicate_groups=0 duplicate_extra_rows=0
+L3,no_fail_closed_marker,FAIL,marker=True
+L3,premotion_handoff_before_active_motion,PASS,free_after_handoff=False active_before_handoff=False
+L3,first_active_command_consumes_handoff,FAIL,first_state_tick=9122 handoff_state_tick=9122 gait_started=0
+L3,controller_handoff_tick_matches_simulator,FAIL,controller_handoff_tick=9122 simulator_handoff_tick=8000
+L3,controller_gated_ticks_strictly_new,PASS,gated_rows=2
+L1,handoff_record_present,PASS,sim_tick_ms=8000 binary=bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137
+L2,handoff_record_present,PASS,sim_tick_ms=8000 binary=bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137
+L3,handoff_record_present,PASS,sim_tick_ms=8000 binary=bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137
+ALL,handoff_exact_binary_sha256,PASS,sha256_count=1
+ALL,handoff_qpos_max_abs_le_1e-12,PASS,max_abs=0
+ALL,handoff_qvel_max_abs_le_1e-12,PASS,max_abs=0
+ALL,handoff_actuated_q_max_abs_le_1e-12,PASS,max_abs=0
+ALL,handoff_actuated_dq_max_abs_le_1e-12,PASS,max_abs=0

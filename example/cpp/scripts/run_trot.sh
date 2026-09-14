@@ -23,6 +23,7 @@ sim_headless=false
 sim_camera_follow=false
 sim_lockstep=false
 sim_lockstep_trace=""
+sim_lockstep_handoff=""
 sim_push_args=()
 sim_affinity="${TROT_CPU_AFFINITY_SIM:-}"
 ctrl_affinity="${TROT_CPU_AFFINITY_CTRL:-}"
@@ -177,6 +178,7 @@ if [[ "${SIM_LOCKSTEP:-0}" == "1" ]]; then
   sim_lockstep=true
   sim_lockstep_trace="${SIM_LOCKSTEP_TRACE:-$experiment_dir/lockstep_trace.csv}"
   export TROT_LOCKSTEP_ACK=1
+  sim_lockstep_handoff="${SIM_LOCKSTEP_HANDOFF:-$experiment_dir/lockstep_handoff.csv}"
 fi
 env | LC_ALL=C sort | grep -E "^(TROT_|FULL2_|SUSTAINED_SPRINT_|SIM_LOCKSTEP)" >"$environment_file" || true
 {
@@ -193,6 +195,7 @@ env | LC_ALL=C sort | grep -E "^(TROT_|FULL2_|SUSTAINED_SPRINT_|SIM_LOCKSTEP)" >
   printf "camera_follow=%s\n" "$([[ "$sim_camera_follow" == true ]] && echo true || echo false)"
   printf "lockstep=%s\n" "$([[ "$sim_lockstep" == true ]] && echo true || echo false)"
   printf "lockstep_trace=%s\n" "$sim_lockstep_trace"
+  printf "lockstep_handoff=%s\n" "$sim_lockstep_handoff"
   printf "sim_cpu_affinity=%s\n" "${sim_affinity:-auto}"
   printf "controller_cpu_affinity=%s\n" "${ctrl_affinity:-auto}"
   printf "argv=%s\n" "$*"
@@ -279,6 +282,7 @@ PULSE_SERVER="$pulse_server" \
   $([[ "$sim_camera_follow" == true ]] && printf %s --camera-follow) \
   $([[ "$sim_lockstep" == true ]] && printf %s --lockstep) \
   $([[ "$sim_lockstep" == true ]] && printf '%s %s' --lockstep-trace "$sim_lockstep_trace") \
+  $([[ "$sim_lockstep" == true ]] && printf '%s %s' --lockstep-handoff "$sim_lockstep_handoff") \
   "${sim_push_args[@]}" \
   >"$experiment_dir/simulator.log" 2>&1 &
 sim_pid=$!

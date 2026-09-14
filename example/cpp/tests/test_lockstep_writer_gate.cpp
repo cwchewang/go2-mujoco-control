@@ -231,6 +231,43 @@ void TestDuplicateDoesNotTriggerAndTimeoutFailClosed()
           "timeout violation flag set");
 }
 
+// The startup handoff itself is a frozen state.  It must produce exactly one
+// first active update, and a duplicate republish of that frozen tick must not
+// produce a second update.
+void TestPreMotionHandoffFirstUpdate()
+{
+    lockstep_writer::WriterGate::Config cfg;
+    cfg.dt_ms = 2;
+    cfg.tick_wait_timeout_s = 1.0;
+    lockstep_writer::WriterGate gate(cfg);
+    gate.SetFailClosedHandler([](const char *) {});
+
+    gate.OnLowState(100); // frozen handoff state observed
+    gate.PrepareForHandoff(100);
+
+    std::uint32_t tick = 0;
+    Check(gate.HasPendingTick(),
+          "pre-motion handoff exposes one initial pending update");
+    Check(gate.WaitForTick([]() { return false; }, &tick) ==
+              lockstep_writer::WaitResult::kTick &&
+              tick == 100,
+          "first active update consumes the frozen handoff tick");
+    gate.RecordConsumed(100);
+    Check(!gate.HasPendingTick(),
+          "consuming the frozen handoff clears its one-shot pending update");
+
+    gate.OnLowState(100); // duplicate frozen-state republish
+    Check(!gate.HasPendingTick(),
+          "duplicate frozen-state republish does not trigger another update");
+    gate.OnLowState(102); // first strictly-new post-handoff tick
+    Check(gate.WaitForTick([]() { return false; }, &tick) ==
+              lockstep_writer::WaitResult::kTick &&
+              tick == 102,
+          "first strictly-new post-handoff tick is accepted");
+    gate.RecordConsumed(102);
+    Check(!gate.FailedClosed(),
+          "pre-motion handoff and first new tick stay fail-closed clean");
+}
 // Handoff: pre-handoff (wall-clock) ticks with gaps and backward publishes
 // are recorded without fail-closed; Engage() clears those old events but
 // never misses the first strictly-new lockstep tick.
@@ -375,6 +412,7 @@ int main()
     TestOneWritePerPhysicsTick();
     TestUngatedWriterSeesDuplicateTicks();
     TestDuplicateDoesNotTriggerAndTimeoutFailClosed();
+    TestPreMotionHandoffFirstUpdate();
     TestHandoffFirstLockstepTickNotMissed();
     TestReorderStaleFailClosed();
     TestGapFailClosed();

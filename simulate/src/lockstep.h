@@ -293,6 +293,31 @@ public:
     }
   }
 
+  // The pre-motion verification path publishes no state until the
+  // simulator-side deterministic pre-settle and state serialization have
+  // completed. The controller may then capture this frozen state before
+  // the first command opens the normal ready barrier.
+  void MarkPreMotionReady(std::uint64_t sim_tick_ms)
+  {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      pre_motion_state_seq_ = sim_tick_ms;
+    }
+    pre_motion_ready_.store(true, std::memory_order_release);
+  }
+
+  bool PreMotionReady() const
+  {
+    return pre_motion_ready_.load(std::memory_order_acquire);
+  }
+
+  std::uint64_t PreMotionStateSeq() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return pre_motion_state_seq_;
+  }
+
+
   // ---- startup (bridge thread) ----
   // Call once per startup-phase state publish (wall-clock behavior until the
   // ready barrier). Returns true when the ready barrier completed on this
@@ -711,6 +736,10 @@ private:
   std::uint64_t published_state_seq_ = 0;
   std::uint64_t last_consumed_state_seq_ = 0;
   std::uint64_t pending_step_tick_ = 0;
+
+  std::atomic<bool> pre_motion_ready_{false};
+  std::uint64_t pre_motion_state_seq_ = 0;
+
 };
 
 } // namespace lockstep

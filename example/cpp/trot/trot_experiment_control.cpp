@@ -269,6 +269,21 @@ void TrotExperiment::TestPrepareMotionClock(std::uint32_t handoff_tick)
     high_speed_stop_hold_start_time_s_ = running_time_;
 }
 
+void TrotExperiment::TestPrepareMotionHandoff(std::uint32_t handoff_tick)
+{
+    InitLowCmd();
+    suppress_lowcmd_publish_for_test_ = true;
+    lockstep_ack_enabled_ = true;
+    lockstep_handoff_prepared_ = true;
+    lockstep_handoff_state_tick_ = handoff_tick;
+    lockstep_epoch_valid_ = true;
+    lockstep_epoch_state_seq_ = handoff_tick;
+    last_consumed_state_tick_ = handoff_tick;
+    lockstep_writer_gate_.PrepareForHandoff(handoff_tick);
+    lockstep_motion_clock_.Engage(handoff_tick);
+}
+
+
 bool TrotExperiment::TestRunWallClockTick(
     const unitree_go::msg::dds_::LowState_ &state)
 {
@@ -293,6 +308,7 @@ bool TrotExperiment::TestRunLockstepTick(
         lockstep_writer::WaitResult::kTick)
         return false;
     LowCmdWrite();
+    last_consumed_state_tick_ = pending_tick;
     lockstep_writer_gate_.RecordConsumed(pending_tick);
     return true;
 }
@@ -310,6 +326,12 @@ TrotExperiment::TestLastMotionClockSample() const
     sample.stop_time_s = running_time_ - stop_brake_start_time_s_;
     return sample;
 }
+
+std::uint32_t TrotExperiment::TestLastConsumedStateTick() const
+{
+    return last_consumed_state_tick_;
+}
+
 #endif
 
 // Order-107 verification-only ack: ack{state_seq, command_seq} published
@@ -317,8 +339,8 @@ TrotExperiment::TestLastMotionClockSample() const
 // adapter is enabled. `state_seq` is the tick side-channel of the LowState
 // snapshot the cycle consumed (Error_.source(), uint32_t; wraps after 2^32 ms
 // ~ 49.7 days at 1 kHz). The lockstep-local sequence epoch is established at
-// the first lockstep state consumed after the controller's lifecycle barrier
-// (start-gait); every subsequent LowCmd write increments the local
+// the frozen pre-motion handoff state; every subsequent LowCmd write
+// increments the local
 // command_seq (Error_.state(), uint32_t) and the ack carries the exact pair,
 // so the simulator can bind the ack to the acked cycle's own LowCmd arrival.
 // No control math or message payload changes.
@@ -1743,5 +1765,7 @@ void TrotExperiment::RecordLockstepPublishDiagnostic(
         << (task_.stop_requested_ ? 1 : 0) << ","
         << (task_.sequence_finished_ ? 1 : 0) << ","
         << task_.motion_stage_ << ","
-        << std::setprecision(9) << running_time_ << "\n";
+        << std::setprecision(9) << running_time_ << ","
+        << (lockstep_handoff_prepared_ ? 1 : 0) << ","
+        << lockstep_handoff_state_tick_ << "\n";
 }

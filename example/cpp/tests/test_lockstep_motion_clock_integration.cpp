@@ -33,6 +33,40 @@ unitree_go::msg::dds_::LowState_ State(std::uint32_t tick)
     return state;
 }
 
+void TestProductionPreMotionHandoff()
+{
+    go2_trot::TrotParams params;
+    params.wall_clock_motion = true;
+    params.wbc_full = true;
+    params.wbc_primary = true;
+    TrotExperiment experiment(
+        10.0, "/tmp/order109b_premotion_controller.csv", params,
+        1000, false, "", false);
+
+    experiment.TestPrepareMotionHandoff(100);
+    Check(experiment.TestRunLockstepTick(State(100)),
+          "first active LowCmdWrite consumes the frozen handoff state");
+    Check(experiment.TestLastConsumedStateTick() == 100,
+          "first active update records the frozen handoff tick");
+    const auto first = experiment.TestLastMotionClockSample();
+    Check(std::fabs(first.motion_dt_s) < 1e-12,
+          "frozen handoff update does not advance state time");
+
+    Check(!experiment.TestRunLockstepTick(State(100)),
+          "duplicate frozen handoff state does not invoke LowCmdWrite");
+    const auto duplicate = experiment.TestLastMotionClockSample();
+    Check(std::fabs(duplicate.cmd_time_s - first.cmd_time_s) < 1e-12,
+          "duplicate frozen handoff state does not advance controller time");
+
+    Check(experiment.TestRunLockstepTick(State(102)),
+          "first strictly-new state after handoff invokes LowCmdWrite");
+    Check(experiment.TestLastConsumedStateTick() == 102,
+          "new state tick is recorded after the frozen handoff");
+    const auto next = experiment.TestLastMotionClockSample();
+    Check(std::fabs(next.motion_dt_s - 0.002) < 1e-12,
+          "new state after handoff advances state time by 2 ms");
+}
+
 void TestProductionChain()
 {
     go2_trot::TrotParams params;
@@ -113,6 +147,7 @@ void TestProductionChain()
 
 int main()
 {
+    TestProductionPreMotionHandoff();
     TestProductionChain();
     if (failures != 0)
     {

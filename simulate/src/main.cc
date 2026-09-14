@@ -1174,6 +1174,112 @@ namespace
     }
   }
 
+  void WriteStableU64(std::ofstream &stream, std::uint64_t value)
+  {
+    unsigned char bytes[sizeof(value)] = {};
+    for (std::size_t i = 0; i < sizeof(value); ++i)
+      bytes[i] = static_cast<unsigned char>((value >> (8 * i)) & 0xffu);
+    stream.write(reinterpret_cast<const char *>(bytes), sizeof(bytes));
+  }
+
+  void WriteStableDouble(std::ofstream &stream, double value)
+  {
+    std::uint64_t bits = 0;
+    static_assert(sizeof(bits) == sizeof(value));
+    std::memcpy(&bits, &value, sizeof(bits));
+    WriteStableU64(stream, bits);
+  }
+
+  bool WriteLockstepHandoffState(
+      const std::filesystem::path &path, const mjModel *model,
+      const mjData *data, std::uint64_t pre_motion_steps)
+  {
+    if (path.empty() || model == nullptr || data == nullptr)
+      return false;
+    std::error_code error;
+    const auto parent = path.parent_path();
+    if (!parent.empty())
+      std::filesystem::create_directories(parent, error);
+    if (error)
+      return false;
+    std::ofstream csv(path, std::ios::out | std::ios::trunc);
+    std::ofstream binary(path.string() + ".bin",
+                         std::ios::out | std::ios::binary | std::ios::trunc);
+    if (!csv || !binary)
+      return false;
+    csv << "pre_motion_steps,sim_tick_ms,sim_time_s,nq,nv,nu";
+    for (int i = 0; i < model->nq; ++i) csv << ",qpos_" << i;
+    for (int i = 0; i < model->nv; ++i) csv << ",qvel_" << i;
+    for (int i = 0; i < model->nu; ++i) csv << ",actuated_q_" << i;
+    for (int i = 0; i < model->nu; ++i) csv << ",actuated_dq_" << i;
+    csv << "\n" << pre_motion_steps << ","
+        << static_cast<std::uint64_t>(std::llround(data->time * 1000.0))
+        << "," << std::setprecision(17) << data->time << ","
+        << model->nq << "," << model->nv << "," << model->nu;
+    for (int i = 0; i < model->nq; ++i) csv << "," << data->qpos[i];
+    for (int i = 0; i < model->nv; ++i) csv << "," << data->qvel[i];
+    for (int i = 0; i < model->nu; ++i)
+    {
+      const int joint_id =
+          model->actuator_trntype[i] == mjTRN_JOINT
+              ? model->actuator_trnid[2 * i] : -1;
+      const int qpos_adr = joint_id >= 0 ? model->jnt_qposadr[joint_id] : -1;
+      csv << "," << (qpos_adr >= 0 ? data->qpos[qpos_adr]
+                                    : std::numeric_limits<double>::quiet_NaN());
+    }
+    for (int i = 0; i < model->nu; ++i)
+    {
+      const int joint_id =
+          model->actuator_trntype[i] == mjTRN_JOINT
+              ? model->actuator_trnid[2 * i] : -1;
+      const int dof_adr = joint_id >= 0 ? model->jnt_dofadr[joint_id] : -1;
+      csv << "," << (dof_adr >= 0 ? data->qvel[dof_adr]
+                                   : std::numeric_limits<double>::quiet_NaN());
+    }
+    csv << "\n";
+
+    WriteStableU64(binary, 1);
+    WriteStableU64(binary, pre_motion_steps);
+    WriteStableU64(binary, static_cast<std::uint64_t>(model->nq));
+    WriteStableU64(binary, static_cast<std::uint64_t>(model->nv));
+    WriteStableU64(binary, static_cast<std::uint64_t>(model->nu));
+    for (int i = 0; i < model->nq; ++i)
+      WriteStableDouble(binary, static_cast<double>(data->qpos[i]));
+    for (int i = 0; i < model->nv; ++i)
+      WriteStableDouble(binary, static_cast<double>(data->qvel[i]));
+    return csv.good() && binary.good();
+  }
+
+  bool PrepareLockstepPreMotion(mj::Simulate &sim)
+  {
+    if (!param::config.lockstep || g_lockstep == nullptr)
+      return true;
+    const std::unique_lock<std::recursive_mutex> lock(sim.mtx);
+    if (m == nullptr || d == nullptr)
+      return false;
+    constexpr std::uint64_t kPreMotionSteps = 4000;
+    for (std::uint64_t step = 0; step < kPreMotionSteps; ++step)
+    {
+      for (int i = 0; i < m->nu; ++i) d->ctrl[i] = 0.0;
+      for (int i = 0; i < m->nv; ++i) d->qfrc_applied[i] = 0.0;
+      counterfactual_snapshot_logger.Begin(m, d);
+      mj_step(m, d);
+      ground_truth_logger.Log(m, d);
+      counterfactual_snapshot_logger.End(m, d);
+    }
+    if (!WriteLockstepHandoffState(
+            param::config.lockstep_handoff, m, d, kPreMotionSteps))
+      return false;
+    g_lockstep->MarkPreMotionReady(
+        static_cast<std::uint64_t>(std::llround(d->time * 1000.0)));
+    std::cout << "LOCKSTEP pre-motion handoff ready: steps="
+              << kPreMotionSteps << " tick="
+              << static_cast<std::uint64_t>(std::llround(d->time * 1000.0))
+              << "\n";
+    return true;
+  }
+
+
   // simulate in background thread (while rendering in main thread)
   void PhysicsLoop(mj::Simulate &sim)
   {
@@ -1611,7 +1717,15 @@ void PhysicsThread(mj::Simulate *sim, const char *filename)
       free(ctrlnoise);
       ctrlnoise = static_cast<mjtNum *>(malloc(sizeof(mjtNum) * m->nu));
       mju_zero(ctrlnoise, m->nu);
+      if (param::config.lockstep && g_lockstep != nullptr &&
+          !PrepareLockstepPreMotion(*sim))
+      {
+        std::cerr << "LOCKSTEP pre-motion preparation failed\n";
+        sim->exitrequest.store(1);
+      }
     }
+
+
     else
     {
       sim->LoadMessageClear();
@@ -1768,6 +1882,16 @@ int main(int argc, char **argv)
   std::filesystem::path proj_dir = std::filesystem::path(getExecutableDir()).parent_path();
   param::config.load_from_yaml(proj_dir / "config.yaml");
   param::helper(argc, argv);
+
+  if (param::config.lockstep && param::config.lockstep_handoff.empty())
+  {
+    if (!param::config.ground_truth_log.empty())
+      param::config.lockstep_handoff =
+          param::config.ground_truth_log.parent_path() / "lockstep_handoff.csv";
+    else
+      param::config.lockstep_handoff = "lockstep_handoff.csv";
+  }
+
   if (param::config.lockstep)
   {
     lockstep::Coordinator::Config lockstep_cfg;

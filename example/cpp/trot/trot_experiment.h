@@ -100,6 +100,8 @@ public:
     bool TestRunWallClockTick(const unitree_go::msg::dds_::LowState_ &state);
     bool TestRunLockstepTick(const unitree_go::msg::dds_::LowState_ &state);
     TestMotionClockSample TestLastMotionClockSample() const;
+    void TestPrepareMotionHandoff(std::uint32_t handoff_tick);
+    std::uint32_t TestLastConsumedStateTick() const;
 #endif
 
 private:
@@ -114,6 +116,7 @@ private:
         bool have_high_state);
     bool WaitForNaturalSettle(double timeout_s);
     bool CaptureWorldReference();
+    bool PrepareLockstepHandoff();
     void LowStateMessageHandler(const void *message);
     void HighStateMessageHandler(const void *message);
     void LowCmdWrite(bool gated_writer = false);
@@ -482,6 +485,8 @@ private:
     // exchange-local arrival ordinals match exactly.
     bool lockstep_epoch_valid_ = false;
     std::uint32_t lockstep_epoch_state_seq_ = 0;
+    bool lockstep_handoff_prepared_ = false;
+    std::uint32_t lockstep_handoff_state_tick_ = 0;
     std::uint32_t lockstep_cmd_seq_ = 0;
     // Order-108 verification-only tick gate: once the writer handoff has
     // completed the lowcmd writer consumes exactly ONE new physics tick per

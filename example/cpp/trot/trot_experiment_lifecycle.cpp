@@ -166,6 +166,33 @@ bool TrotExperiment::CaptureWorldReference()
     return true;
 }
 
+// --- TrotExperiment::PrepareLockstepHandoff ---
+bool TrotExperiment::PrepareLockstepHandoff()
+{
+    if (!lockstep_ack_enabled_)
+        return true;
+    std::uint32_t handoff_tick = 0;
+    {
+        std::lock_guard<std::mutex> lock(state_mutex_);
+        if (!have_low_state_)
+        {
+            std::cerr << "Lockstep handoff state unavailable\n";
+            return false;
+        }
+        handoff_tick = low_state_.tick();
+    }
+    lockstep_handoff_state_tick_ = handoff_tick;
+    lockstep_epoch_state_seq_ = handoff_tick;
+    lockstep_epoch_valid_ = true;
+    lockstep_handoff_prepared_ = true;
+    lockstep_writer_gate_.PrepareForHandoff(handoff_tick);
+    lockstep_motion_clock_.Engage(handoff_tick);
+    std::cout << "Lockstep pre-motion handoff prepared: tick="
+              << handoff_tick << "\n";
+    return true;
+}
+
+
 // --- TrotExperiment::Init ---
 bool TrotExperiment::Init()
 {
@@ -194,7 +221,7 @@ bool TrotExperiment::Init()
             << "publish_index,steady_clock_ns,state_tick,lockstep_cmd_seq,"
                "lockstep_ack_enabled,lockstep_epoch_valid,gate_engaged,"
                "writer_branch,gait_started,stop_requested,sequence_finished,"
-               "motion_stage,running_time_s\n";
+               "motion_stage,running_time_s,handoff_prepared,handoff_state_tick\n";
     }
     const char *closure_diag_env = std::getenv("TROT_DIAG_ID_CLOSURE");
     if (closure_diag_env != nullptr && std::atof(closure_diag_env) > 0.5)
@@ -305,6 +332,11 @@ bool TrotExperiment::Init()
         return false;
     }
     CaptureWorldReference();
+    if (!PrepareLockstepHandoff())
+    {
+        std::cerr << "Lockstep pre-motion handoff preparation failed\n";
+        return false;
+    }
 
     writer_stop_.store(false);
     low_cmd_write_thread_ = std::thread([this]() {
@@ -322,7 +354,7 @@ bool TrotExperiment::Init()
             // then it waits for the next tick. Before the handoff -- and
             // whenever the adapter is off -- the original wall-clock
             // lifecycle below is unchanged.
-            if (lockstep_ack_enabled_ && lockstep_epoch_valid_)
+            if (lockstep_ack_enabled_ && lockstep_handoff_prepared_)
             {
                 EngageLockstepWriterIfNeeded();
                 const lockstep_writer::WaitResult wait =

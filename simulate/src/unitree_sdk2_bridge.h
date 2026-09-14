@@ -588,9 +588,11 @@ public:
     std::unique_ptr<HighState_t> highstate;
     void RunLockstep()
     {
+        if (!::g_lockstep->PreMotionReady())
+            return;
         if (!::g_lockstep->BarrierComplete())
         {
-            RunWallClock();
+            PublishStateSnapshot(/*blocking_lowstate=*/true);
             ::g_lockstep->OnStartupPublish(CurrentTickMs());
             return;
         }

@@ -1,0 +1,5 @@
+run_id,pre_motion_steps,sim_tick_ms,sim_time_s,nq,nv,nu,binary_sha256,pairwise_max_qpos_abs,pairwise_max_qvel_abs,pairwise_max_actuated_q_abs,pairwise_max_actuated_dq_abs,controller_handoff_state_tick,controller_first_gated_state_tick,controller_first_gated_gait_started
+L1,4000,8000,8,19,18,12,bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137,0,0,0,0,9496,9496,0
+L2,4000,8000,8,19,18,12,bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137,0,0,0,0,9090,9090,0
+L3,4000,8000,8,19,18,12,bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137,0,0,0,0,9122,9122,0
+PAIRWISE_MAX,,,,,,,IDENTICAL,0,0,0,0,,,

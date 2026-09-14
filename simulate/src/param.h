@@ -37,6 +37,7 @@ inline struct SimulationConfig
     // the wall-clock runner is unchanged.
     bool lockstep = false;
     std::filesystem::path lockstep_trace;
+    std::filesystem::path lockstep_handoff;
 
     // Disturbance push on the base link (disabled when push_time_s < 0).
     double push_time_s = -1.0;
@@ -92,6 +93,7 @@ inline po::variables_map helper(int argc, char** argv)
         ("camera-follow", po::bool_switch(&config.camera_follow), "Track the Go2 base body with the GUI camera")
         ("lockstep", po::bool_switch(&config.lockstep), "Verification-only sim-time lockstep harness (Order-103)")
         ("lockstep-trace", po::value<std::filesystem::path>(&config.lockstep_trace), "Lockstep interval trace CSV output path")
+        ("lockstep-handoff", po::value<std::filesystem::path>(&config.lockstep_handoff), "Deterministic pre-motion handoff state CSV output path")
         ("push-time", po::value<double>(&config.push_time_s), "Disturbance push start time (s); <0 disables")
         ("push-force-x", po::value<double>(&config.push_force_x_n), "Disturbance push force along world x (N)")
         ("push-torque-pitch", po::value<double>(&config.push_torque_pitch_nm), "Disturbance pitch torque (Nm)")

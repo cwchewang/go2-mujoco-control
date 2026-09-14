@@ -129,6 +129,18 @@ public:
     consumed_tick_ = consumed_tick;
   }
 
+  // Pre-motion handoff: allow exactly one initial control update on the
+  // already-frozen handoff state. After that the normal strictly-new tick
+  // rule applies. Engage() retains its original post-handoff semantics.
+  void PrepareForHandoff(std::uint32_t handoff_tick)
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    engaged_ = true;
+    consumed_tick_ = handoff_tick;
+    handoff_pending_ = true;
+  }
+
+
   // Blocks until a strictly-new tick is pending. *tick_out receives the
   // pending tick. kTimeout means the gate failed closed (handler-side
   // violation or wait timeout); the diagnostic was already emitted.
@@ -142,6 +154,13 @@ public:
     for (;;)
     {
       if (failed_closed_) return WaitResult::kTimeout;
+
+      if (engaged_ && handoff_pending_)
+      {
+        if (tick_out != nullptr) *tick_out = consumed_tick_;
+        return WaitResult::kTick;
+      }
+
       if (engaged_ && handler_tick_ != consumed_tick_)
       {
         if (tick_out != nullptr) *tick_out = handler_tick_;
@@ -164,6 +183,10 @@ public:
   void RecordConsumed(std::uint32_t tick)
   {
     std::lock_guard<std::mutex> lock(mutex_);
+
+    if (handoff_pending_ && tick == consumed_tick_)
+      handoff_pending_ = false;
+
     consumed_tick_ = tick;
   }
 
@@ -184,7 +207,8 @@ public:
   bool HasPendingTick() const
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    return engaged_ && !failed_closed_ && handler_tick_ != consumed_tick_;
+    return engaged_ && !failed_closed_ &&
+           (handoff_pending_ || handler_tick_ != consumed_tick_);
   }
 
   std::uint32_t Violations() const
@@ -233,6 +257,9 @@ private:
   std::uint32_t violations_ = 0;
   std::uint32_t handler_tick_ = 0;
   std::uint32_t consumed_tick_ = 0;
+
+  bool handoff_pending_ = false;
+
   const char *fail_reason_ = "";
   std::function<void(const char *)> fail_closed_handler_;
 };
