@@ -21,10 +21,11 @@ MOTORS = tuple(
 )
 MOTOR_JOINTS = ("hip", "thigh", "calf")
 EXPECTED_A_HEAD = "df5d7663adc9e96d153107e071d7b49676bcdad6"
+EXPECTED_V2_RUNTIME_HEAD = "be1e9acca1c6650be7d500e1e3fb63dcd5594826"
 EXPECTED_SCENE_SHA = "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
 EXPECTED_A_DOMAIN = "231"
 EXPECTED_B_DOMAIN = "232"
-EXPECTED_C_DOMAIN = "233"
+EXPECTED_C_DOMAIN = "230"
 HARD_POSTURE_RAD = math.radians(22.0)
 EDGE_X_M = 0.800
 X_ENTRY_M = 0.777
@@ -1159,15 +1160,15 @@ def source_provenance(root: Path, a_dir: Path, b_dir: Path, c_dir: Path, c_meta:
     c_records, _ = raw_hash_records("C_raw", c_dir)
     records = a_records + b_records + c_records
     for path, kind, expected_hash in (
-        (root / "example/cpp/scripts/run_phase2_known_step_edge_aware_v2.sh", "runner", ""),
+        (root / "example/cpp/scripts/run_phase2_known_step_edge_aware_v2_protocol_repair.sh", "protocol_repair_runner", ""),
         (Path(__file__), "analysis_source", ""),
         (root / "unitree_robots/go2/scene_known_step_5cm.xml", "scene", EXPECTED_SCENE_SHA),
     ):
         actual = sha256(path)
         records.append({"scope": kind, "artifact": str(path.relative_to(root)) if path.is_relative_to(root) else str(path), "path": str(path), "bytes": path.stat().st_size if path.is_file() else "MISSING", "sha256": actual, "expected_sha256": expected_hash, "matches": actual == expected_hash if expected_hash else ""})
-    records.append({"scope": "C_runtime_metadata", "artifact": "run_metadata.txt", "path": str(c_dir / "run_metadata.txt"), "git_head": c_meta.get("git_head", ""), "expected_git_head": expected_c_head, "git_dirty": c_meta.get("git_dirty", ""), "controller_sha256": c_meta.get("controller_sha256", ""), "simulator_sha256": c_meta.get("simulator_sha256", ""), "scene_sha256": c_meta.get("scene_sha256", "")})
+    records.append({"scope": "C_runtime_metadata", "artifact": "run_metadata.txt", "path": str(c_dir / "run_metadata.txt"), "recorded_git_head": c_meta.get("git_head", ""), "expected_recorded_git_head": expected_c_head, "frozen_v2_runtime_head": EXPECTED_V2_RUNTIME_HEAD, "git_dirty": c_meta.get("git_dirty", ""), "controller_sha256": c_meta.get("controller_sha256", ""), "simulator_sha256": c_meta.get("simulator_sha256", ""), "scene_sha256": c_meta.get("scene_sha256", "")})
     metadata_ok = c_meta.get("git_head") == expected_c_head and c_meta.get("git_dirty") == "false" and bool(c_meta.get("controller_sha256")) and bool(c_meta.get("simulator_sha256")) and c_meta.get("scene_sha256") == EXPECTED_SCENE_SHA
-    details = {"A_raw_hashes_match": a_ok, "V1_B_raw_hashes_match": b_ok, "C_runtime_metadata_match": metadata_ok, "C_runtime_head": c_meta.get("git_head", ""), "expected_C_runtime_head": expected_c_head, "C_controller_sha256": c_meta.get("controller_sha256", ""), "C_simulator_sha256": c_meta.get("simulator_sha256", ""), "C_scene_sha256": c_meta.get("scene_sha256", EXPECTED_SCENE_SHA)}
+    details = {"A_raw_hashes_match": a_ok, "V1_B_raw_hashes_match": b_ok, "C_runtime_metadata_match": metadata_ok, "C_recorded_head": c_meta.get("git_head", ""), "expected_C_recorded_head": expected_c_head, "frozen_v2_runtime_head": EXPECTED_V2_RUNTIME_HEAD, "C_controller_sha256": c_meta.get("controller_sha256", ""), "C_simulator_sha256": c_meta.get("simulator_sha256", ""), "C_scene_sha256": c_meta.get("scene_sha256", EXPECTED_SCENE_SHA)}
     return records, details
 
 
@@ -1193,7 +1194,7 @@ Primary classification: `{classification}`
 
 ## Scope and launch budget
 
-Exactly one C/domain 233 live run was authorized and used with `example/cpp/scripts/run_phase2_known_step_edge_aware_v2.sh`. A and V1 B were not rerun. The analyzer is pure offline and does not invoke a simulator, controller, runner, or replay. Frozen raw captures were read without modification.
+Exactly one C/domain 230 live run was authorized and used with `example/cpp/scripts/run_phase2_known_step_edge_aware_v2_protocol_repair.sh`. A and V1 B were not rerun. The analyzer is pure offline and does not invoke a simulator, controller, runner, or replay. Frozen raw captures were read without modification.
 
 A raw root: `{a_dir}`
 V1 B raw root: `{b_dir}`
@@ -1255,8 +1256,8 @@ def main() -> int:
             for name, _ in required_runs
         ]
         protocol_records.extend([
-            gate("C", "domain_233", c_protocol["domain_matches"], c_protocol["domain_id"]),
-            gate("C", "simulator_ready_capture", False, "simulator aborted before DDS bridge ready; no controller capture"),
+            gate("C", "domain_230", c_protocol["domain_matches"], c_protocol["domain_id"]),
+            gate("C", "simulator_ready_capture", False, "C data.csv is missing; simulator/controller capture is unavailable"),
             gate("A", "frozen_raw_hashes", provenance_details["A_raw_hashes_match"], provenance_details["A_raw_hashes_match"]),
             gate("V1_B", "frozen_raw_hashes", provenance_details["V1_B_raw_hashes_match"], provenance_details["V1_B_raw_hashes_match"]),
             gate("C", "runtime_metadata", bool(c_meta), c_meta),
@@ -1268,16 +1269,16 @@ def main() -> int:
         write_csv(output / "edge_tracking_timeline.csv", placeholder)
         write_csv(output / "touchdown_summary.csv", placeholder)
         write_csv(output / "protocol_gates.csv", protocol_records)
-        write_csv(output / "body_contact_chronology.csv", [{"arm": "C", "event": "simulator_abort_before_dds_ready", "state_time_s": None, "detail": c_protocol["metadata"].get("domain_id", "") }])
+        write_csv(output / "body_contact_chronology.csv", [{"arm": "C", "event": "c_capture_unavailable", "state_time_s": None, "detail": c_protocol["metadata"].get("domain_id", "") }])
         write_csv(output / "provenance.csv", provenance_records)
         analysis = {
             "schema_version": 1,
-            "experiment": "phase2_known_step_edge_aware_v2_20260915",
+            "experiment": "phase2_known_step_edge_aware_v2_protocol_repair_20260915",
             "classification": "PROTOCOL_FAILURE",
             "live_process_launched_by_analyzer": False,
             "launch_budget": {"authorized_C_launches": 1, "observed_C_launches": 1, "A_launches": 0, "V1_B_launches": 0, "retries": 0, "extra_experiments": 0},
             "missing_raw_runs": missing_runs,
-            "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "capture_rows": 0, "simulator_abort": "DDS domain 233 port numbers out of range", "controller_capture": False},
+            "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "capture_rows": 0, "controller_capture": False},
             "protocol": {"pass": False, "gates": protocol_records},
             "provenance": provenance_details,
             "pre_live_tests": tests,
@@ -1285,7 +1286,7 @@ def main() -> int:
         }
         (output / "analysis.json").write_text(json.dumps(jsonable(analysis), indent=2, sort_keys=True) + "\n", encoding="utf-8")
         (output / "RESULTS.md").write_text(
-            f"# Phase2 known-step edge-aware V2 closeout\n\nDate: 2026-09-15\nPrimary classification: `PROTOCOL_FAILURE`\n\nExactly one C/domain 233 launch was consumed using the prepared runner. The simulator aborted before DDS bridge readiness because CycloneDDS reported domain 233 port numbers out of range; no controller data.csv was produced. A and V1 B were not rerun, and the offline analyzer launched no process. Required machine-readable placeholders and provenance are written in this directory. No retry is authorized.\n",
+            f"# Phase2 known-step edge-aware V2 protocol-repair closeout\n\nDate: 2026-09-15\nPrimary classification: `PROTOCOL_FAILURE`\n\nExactly one C/domain 230 launch was authorized using the prepared protocol-repair runner, but no controller data.csv was available. A and V1 B were not rerun, and the offline analyzer launched no process. Required machine-readable placeholders and provenance are written in this directory. No retry is authorized.\n",
             encoding="utf-8",
         )
         print("classification=PROTOCOL_FAILURE capture=missing_c_data")
@@ -1326,7 +1327,7 @@ def main() -> int:
         gate("A", "raw_schema", not missing_a, f"missing={missing_a or 'none'}"),
         gate("V1_B", "raw_schema", not missing_b, f"missing={missing_b or 'none'}"),
         gate("C", "raw_schema", not missing_c, f"missing={missing_c or 'none'}"),
-        gate("C", "domain_233", c_protocol["domain_matches"], c_protocol["domain_id"]),
+        gate("C", "domain_230", c_protocol["domain_matches"], c_protocol["domain_id"]),
         gate("C", "lockstep_trace_present", c_protocol["trace_present"] and c_protocol["trace_rows"] > 0, c_protocol["trace_rows"]),
         gate("C", "constant_sim_tick", c_protocol["sim_tick_diffs_ms"] == [2.0], c_protocol["sim_tick_diffs_ms"]),
         gate("C", "no_protocol_violations", c_protocol["trace_violations"] == 0, c_protocol["trace_violations"]),
@@ -1373,7 +1374,7 @@ def main() -> int:
     write_csv(output / "provenance.csv", provenance_records)
     analysis = {
         "schema_version": 1,
-        "experiment": "phase2_known_step_edge_aware_v2_20260915",
+        "experiment": "phase2_known_step_edge_aware_v2_protocol_repair_20260915",
         "classification": classification,
         "live_process_launched_by_analyzer": False,
         "launch_budget": {"authorized_C_launches": 1, "observed_C_launches": 1, "A_launches": 0, "V1_B_launches": 0, "retries": 0, "extra_experiments": 0},

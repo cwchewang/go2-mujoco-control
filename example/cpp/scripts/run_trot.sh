@@ -129,8 +129,8 @@ for ((i=0; i < ${#controller_args[@]}; ++i)); do
   fi
 done
 
-if ! [[ "$domain_id" =~ ^[0-9]+$ ]] || (( domain_id < 0 || domain_id > 233 )); then
-  echo "DDS domain must be an integer in [0, 233]; domain $domain_id is outside the configured CycloneDDS UDP port range." >&2
+if ! [[ "$domain_id" =~ ^[0-9]+$ ]] || (( domain_id < 0 || domain_id > 232 )); then
+  echo "DDS domain must be an integer in [0, 232]; domain $domain_id is outside the configured CycloneDDS UDP port range." >&2
   exit 2
 fi
 
