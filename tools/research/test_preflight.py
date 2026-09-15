@@ -33,12 +33,36 @@ class PreflightRegressionTest(unittest.TestCase):
         self.assertTrue(preflight.domain_in_linux_safe_pool(232))
         self.assertFalse(preflight.domain_in_linux_safe_pool(233))
 
-    def test_runner_domain_parser_requires_explicit_domain(self) -> None:
+    def test_runner_domain_parser_reads_both_cli_forms(self) -> None:
         script = "run_trot.sh --domain-id 230\nother --domain-id=231\n"
         self.assertEqual(preflight.runner_domains(script), [230, 231])
 
-    def test_runner_domain_parser_does_not_match_comments_without_flag(self) -> None:
-        self.assertEqual(preflight.runner_domains("# domain 230\n"), [])
+    def test_runner_domain_parser_ignores_comment_flags(self) -> None:
+        script = "# --domain-id 233\nreal --domain-id 230 # --domain-id 231\n"
+        self.assertEqual(preflight.runner_domains(script), [230])
+
+    def test_process_matching_uses_argv_basenames_not_arbitrary_text(self) -> None:
+        self.assertEqual(
+            preflight.process_argv_matches(
+                ["python3", "tools/research/preflight.py", "--require-file", "simulate/build/unitree_mujoco"],
+                preflight.DEFAULT_PROCESS_NAMES,
+            ),
+            [],
+        )
+        self.assertEqual(
+            preflight.process_argv_matches(
+                ["/usr/bin/bash", "example/cpp/scripts/run_trot.sh", "80", "foo"],
+                preflight.DEFAULT_PROCESS_NAMES,
+            ),
+            ["run_trot.sh"],
+        )
+        self.assertEqual(
+            preflight.process_argv_matches(
+                ["/tmp/build/unitree_mujoco", "-i", "230"],
+                preflight.DEFAULT_PROCESS_NAMES,
+            ),
+            ["unitree_mujoco"],
+        )
 
 
 if __name__ == "__main__":
