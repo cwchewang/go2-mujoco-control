@@ -218,7 +218,7 @@ def main() -> int:
     ap.add_argument("--repo-root", type=Path, default=Path.cwd())
     ap.add_argument("--experiment-id", required=True)
     ap.add_argument("--expected-branch", required=True)
-    ap.add_argument("--expected-head")
+    ap.add_argument("--expected-head", required=True, help="exact HEAD prepared and reviewed for this checkpoint")
     ap.add_argument("--runner", type=Path, required=True)
     ap.add_argument("--run-dir", type=Path, required=True)
     ap.add_argument("--domain", type=int, required=True)
