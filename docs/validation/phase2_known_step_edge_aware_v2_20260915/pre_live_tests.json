@@ -10,5 +10,6 @@
   "source_diff_allowlist": "PASS",
   "prohibited_runtime_diff": "NONE",
   "scene_diff": "NONE",
-  "live_runs_before_c": "0"
+  "live_runs_before_c": "0",
+  "preflight_bookkeeping_repair": "PASS: run_trot domain validation extended from 232 to 233 before any process launch"
 }
