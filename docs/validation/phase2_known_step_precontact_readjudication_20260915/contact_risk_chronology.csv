@@ -1,0 +1,4 @@
+event,ordering,delta_hard_minus_risk_s,raw_row_index,state_time_s,leg,coincident_legs,foot_x_m,foot_z_m,base_x_m,x_threshold_m,z_threshold_m,roll_rad,pitch_rad,fr_foot_x_m,fr_foot_z_m,fl_foot_x_m,fl_foot_z_m,rr_foot_x_m,rr_foot_z_m,rl_foot_x_m,rl_foot_z_m
+first_plausible_contact_risk,first_plausible_contact_risk_at_or_before_first_hard_posture_crossing,0.33999999999999986,3308,14.616,fr,"[""fr""]",0.782261435,0.040634785,0.613635701,0.778,0.07200000000000001,,,,,,,,,,
+first_hard_posture_crossing,first_plausible_contact_risk_at_or_before_first_hard_posture_crossing,0.33999999999999986,3478,14.956,,,,,0.607232999,,,-0.033537924,0.386607796,0.764411865,0.024527419,0.777681812,0.025341173,0.465088789,0.0349651,0.437802035,0.024180513
+ordering_summary,first_plausible_contact_risk_at_or_before_first_hard_posture_crossing,0.33999999999999986,,,,,,,,,,,,,,,,,,,

@@ -1,0 +1,340 @@
+{
+  "activity": {
+    "corrected_active_rows": 1327,
+    "corrected_predicate": "motion_stage == 2",
+    "old_active_rows": 0,
+    "old_predicate": "motion_stage == 2 AND velocity_command_active",
+    "velocity_command_active_rows": 0
+  },
+  "chronology": {
+    "contact_risk": {
+      "base_x_m": 0.613635701,
+      "coincident_legs": [
+        "fr"
+      ],
+      "event": "first_plausible_contact_risk",
+      "foot_x_m": 0.782261435,
+      "foot_z_m": 0.040634785,
+      "leg": "fr",
+      "raw_row_index": 3308,
+      "state_time_s": 14.616,
+      "x_threshold_m": 0.778,
+      "z_threshold_m": 0.07200000000000001
+    },
+    "contact_risk_definition": "actual foot-center x >= 0.778 m and z <= 0.072 m",
+    "delta_hard_minus_risk_s": 0.33999999999999986,
+    "hard_posture": {
+      "base_x_m": 0.607232999,
+      "event": "first_hard_posture_crossing",
+      "fl_foot_x_m": 0.777681812,
+      "fl_foot_z_m": 0.025341173,
+      "fr_foot_x_m": 0.764411865,
+      "fr_foot_z_m": 0.024527419,
+      "pitch_rad": 0.386607796,
+      "raw_row_index": 3478,
+      "rl_foot_x_m": 0.437802035,
+      "rl_foot_z_m": 0.024180513,
+      "roll_rad": -0.033537924,
+      "rr_foot_x_m": 0.465088789,
+      "rr_foot_z_m": 0.0349651,
+      "state_time_s": 14.956
+    },
+    "literal_contact_claim": false,
+    "ordering": "first_plausible_contact_risk_at_or_before_first_hard_posture_crossing"
+  },
+  "classification": "PRECONTACT_BASELINE_HEALTHY_CONTACT_CONFOUNDED",
+  "clean_precontact_mask": {
+    "actual_foot_x_limit_m": 0.75,
+    "base_x_limit_m": 0.4,
+    "predicate": "motion_stage == 2 AND world_base_x_m <= 0.40 AND every actual foot-center x < 0.75",
+    "rows": 870,
+    "state_time_end_s": 14.04,
+    "state_time_span_s": 1.7379999999999995,
+    "state_time_start_s": 12.302
+  },
+  "experiment": "phase2_known_step_precontact_readjudication_20260915",
+  "gates": [
+    {
+      "detail": "missing=none",
+      "gate": "required_columns",
+      "status": "PASS"
+    },
+    {
+      "detail": "rows=870 required>=250",
+      "gate": "clean_row_count",
+      "status": "PASS"
+    },
+    {
+      "detail": "span_s=1.7379999999999995 required>=0.50",
+      "gate": "clean_state_time_span",
+      "status": "PASS"
+    },
+    {
+      "detail": "enabled=0 active=0",
+      "gate": "known_step_adaptation_disabled",
+      "status": "PASS"
+    },
+    {
+      "detail": "max_abs_rad=0.034321602",
+      "gate": "roll_abs_max",
+      "status": "PASS"
+    },
+    {
+      "detail": "max_abs_rad=0.086687908",
+      "gate": "pitch_abs_max",
+      "status": "PASS"
+    },
+    {
+      "detail": "crossing_rows=0",
+      "gate": "clean_no_22_degree_crossing",
+      "status": "PASS"
+    },
+    {
+      "detail": "valid_rows=870 required>=100",
+      "gate": "wbc_solver_valid_rows",
+      "status": "PASS"
+    },
+    {
+      "detail": "srbd=1.0 id=1.0",
+      "gate": "wbc_solver_success",
+      "status": "PASS"
+    },
+    {
+      "detail": "p95=6.427199999999998e-06 required<=1e-3",
+      "gate": "wbc_equality_residual_p95",
+      "status": "PASS"
+    },
+    {
+      "detail": "{\"fail_closed_markers\": [], \"paired_async_fallbacks\": 0, \"paired_cycles\": 4879, \"paired_summary_present\": true, \"paired_validation_failures\": 0, \"sim_tick_diffs_ms\": [2.0], \"trace_present\": true, \"trace_rows\": 4880, \"trace_violations\": 0}",
+      "gate": "lockstep_and_paired_highstate",
+      "status": "PASS"
+    },
+    {
+      "detail": "runtime_head=df5d7663adc9e96d153107e071d7b49676bcdad6 raw_hashes_match=True source_hashes_match=True",
+      "gate": "runtime_and_raw_provenance",
+      "status": "PASS"
+    }
+  ],
+  "health": {
+    "actual_foot_extrema_clean": {
+      "fl": {
+        "x": {
+          "count": 870,
+          "max": 0.523368665,
+          "min": 0.139289255,
+          "p95": 0.5217346792499999
+        },
+        "z": {
+          "count": 870,
+          "max": 0.053404719,
+          "min": 0.020537131,
+          "p95": 0.04096747259999995
+        }
+      },
+      "fr": {
+        "x": {
+          "count": 870,
+          "max": 0.591472432,
+          "min": 0.139199663,
+          "p95": 0.3983827754
+        },
+        "z": {
+          "count": 870,
+          "max": 0.049174813,
+          "min": 0.020705212,
+          "p95": 0.03860165214999999
+        }
+      },
+      "rl": {
+        "x": {
+          "count": 870,
+          "max": 0.208170101,
+          "min": -0.250115984,
+          "p95": 0.01479798604999996
+        },
+        "z": {
+          "count": 870,
+          "max": 0.048485345,
+          "min": 0.021359846,
+          "p95": 0.03494654209999999
+        }
+      },
+      "rr": {
+        "x": {
+          "count": 870,
+          "max": 0.143177354,
+          "min": -0.250262783,
+          "p95": 0.14137123294999998
+        },
+        "z": {
+          "count": 870,
+          "max": 0.051290522,
+          "min": 0.022356126,
+          "p95": 0.041735887649999984
+        }
+      }
+    },
+    "actual_foot_extrema_raw": {
+      "fl": {
+        "x": {
+          "count": 4879,
+          "max": 0.780125401,
+          "min": 0.0,
+          "p95": 0.777681812
+        },
+        "z": {
+          "count": 4879,
+          "max": 0.053404719,
+          "min": 0.0,
+          "p95": 0.025341173
+        }
+      },
+      "fr": {
+        "x": {
+          "count": 4879,
+          "max": 0.797621061,
+          "min": 0.0,
+          "p95": 0.764411865
+        },
+        "z": {
+          "count": 4879,
+          "max": 0.049174813,
+          "min": 0.0,
+          "p95": 0.026020918399999954
+        }
+      },
+      "rl": {
+        "x": {
+          "count": 4879,
+          "max": 0.464283421,
+          "min": -0.250115984,
+          "p95": 0.437802035
+        },
+        "z": {
+          "count": 4879,
+          "max": 0.05342664,
+          "min": 0.0,
+          "p95": 0.0245663487
+        }
+      },
+      "rr": {
+        "x": {
+          "count": 4879,
+          "max": 0.465088789,
+          "min": -0.250262783,
+          "p95": 0.465088789
+        },
+        "z": {
+          "count": 4879,
+          "max": 0.051290522,
+          "min": 0.0,
+          "p95": 0.0349651
+        }
+      }
+    },
+    "adaptation_active_samples": 0,
+    "adaptation_enabled_samples": 0,
+    "hard_posture_rows": 0,
+    "pitch": {
+      "absolute_max": 0.086687908,
+      "absolute_p95": 0.08328978395,
+      "count": 870,
+      "signed_max": 0.086687908,
+      "signed_min": -0.086465485,
+      "signed_p95": 0.07812565749999997
+    },
+    "protocol": {
+      "fail_closed_markers": [],
+      "paired_async_fallbacks": 0,
+      "paired_cycles": 4879,
+      "paired_summary_present": true,
+      "paired_validation_failures": 0,
+      "sim_tick_diffs_ms": [
+        2.0
+      ],
+      "trace_present": true,
+      "trace_rows": 4880,
+      "trace_violations": 0
+    },
+    "protocol_ok": true,
+    "roll": {
+      "absolute_max": 0.034321602,
+      "absolute_p95": 0.029366392349999992,
+      "count": 870,
+      "signed_max": 0.029665351,
+      "signed_min": -0.034321602,
+      "signed_p95": 0.022157871899999994
+    },
+    "solver": {
+      "all_id_ok": true,
+      "all_srbd_ok": true,
+      "both_success_fraction": 1.0,
+      "id_success_fraction": 1.0,
+      "residual": {
+        "count": 870,
+        "max": 1.341e-05,
+        "min": 2e-09,
+        "p95": 6.427199999999998e-06
+      },
+      "srbd_success_fraction": 1.0,
+      "valid_rows": 870
+    }
+  },
+  "health_gate_pass": true,
+  "live_process_launched_by_analyzer": false,
+  "no_B_launch": true,
+  "provenance": {
+    "raw_hashes_match_frozen_wallclock_closeout": true,
+    "runtime_and_raw_provenance_gate": true,
+    "runtime_source_hashes_match": true
+  },
+  "raw_capture": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A",
+  "raw_capture_scope": "A only",
+  "runtime_head_expected": "df5d7663adc9e96d153107e071d7b49676bcdad6",
+  "runtime_metadata": {
+    "analysis_status": "0",
+    "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231",
+    "camera_follow": "false",
+    "completion_status": "1",
+    "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/contact_ground_truth_analysis.txt",
+    "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+    "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/contact_ground_truth.csv",
+    "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231 ",
+    "controller_cpu_affinity": "3",
+    "controller_duration_s": "34",
+    "controller_sha256": "80c05a7750ef6782ff24955f7952dd391afce4c5406a15182bc712b36ef49ab3",
+    "controller_status": "0",
+    "display": ":0",
+    "domain_id": "231",
+    "dynamics_status": "0",
+    "dynamics_tolerance_n": "20",
+    "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/environment.txt",
+    "event_script_hash": "",
+    "finished_at": "2026-09-15T08:01:31+08:00",
+    "git_branch": "research/phase2-known-step-wallclock-repair-20260915",
+    "git_dirty": "false",
+    "git_head": "df5d7663adc9e96d153107e071d7b49676bcdad6",
+    "ground_truth_status": "0",
+    "headless": "true",
+    "lockstep": "true",
+    "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/lockstep_handoff.csv",
+    "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/lockstep_trace.csv",
+    "max_cycles_requested": "40",
+    "profile_path": "",
+    "profile_sha256": "",
+    "quality_status": "0",
+    "run_mode": "bounded",
+    "runtime_dir": "/run/user/1000",
+    "safety_status": "1",
+    "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+    "seed": "",
+    "sim_cpu_affinity": "2",
+    "simulator_sha256": "b9f9e44a40d9b08cd6dce6632038819fab5ec0099e1628078c07185d5a808c9d",
+    "started_at": "2026-09-15T08:01:16+08:00",
+    "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A/stop.request",
+    "task": "",
+    "wall_timeout_s": "80"
+  },
+  "runtime_source_changed": false,
+  "schema_version": 1
+}
