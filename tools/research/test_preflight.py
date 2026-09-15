@@ -36,6 +36,8 @@ class PreflightRegressionTest(unittest.TestCase):
     def test_runner_domain_parser_reads_both_cli_forms(self) -> None:
         script = "run_trot.sh --domain-id 230\nother --domain-id=231\n"
         self.assertEqual(preflight.runner_domains(script), [230, 231])
+        script = "domain_id=230\nrun_trot.sh --domain-id " + chr(36) + "domain_id\n"
+        self.assertEqual(preflight.runner_domains(script), [230])
 
     def test_runner_domain_parser_ignores_comment_flags(self) -> None:
         script = "# --domain-id 233\nreal --domain-id 230 # --domain-id 231\n"
@@ -62,6 +64,13 @@ class PreflightRegressionTest(unittest.TestCase):
                 preflight.DEFAULT_PROCESS_NAMES,
             ),
             ["unitree_mujoco"],
+        )
+        self.assertEqual(
+            preflight.process_argv_matches(
+                ["/usr/bin/bash", "-lc", "exec simulate/build/unitree_mujoco -i 230"],
+                preflight.DEFAULT_PROCESS_NAMES,
+            ),
+            [],
         )
 
 

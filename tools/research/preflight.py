@@ -99,12 +99,24 @@ def read_ephemeral_range() -> tuple[int, int] | None:
 
 def runner_domains(text: str) -> list[int]:
     values: list[int] = []
+    assigned_domains: list[int] = []
     for line in text.splitlines():
         code = line.split("#", 1)[0]
+        assignment_match = re.fullmatch(r"""\s*domain_id\s*=\s*["\x27]?([0-9]+)["\x27]?\s*""", code)
+        if assignment_match:
+            assigned_domains.append(int(assignment_match.group(1)))
         values.extend(
             int(value)
             for value in re.findall(r"--domain-id(?:\s+|=)([0-9]+)", code)
         )
+        if re.search(r"""--domain-id(?:\s+|=)["\x27]?$domain_id["\x27]?""", code):
+            values.extend(assigned_domains)
+        domain_variable = re.escape(chr(36) + "domain_id")
+        if re.search(
+            r"""--domain-id(?:\s+|=)["\x27]?""" + domain_variable + r"""["\x27]?""",
+            code,
+        ):
+            values.extend(assigned_domains)
     return values
 
 
@@ -126,11 +138,15 @@ def ancestor_pids(pid: int) -> set[int]:
 
 
 def process_argv_matches(argv: list[str], names: tuple[str, ...]) -> list[str]:
-    # Match executable/script basenames, not arbitrary substrings. This avoids
-    # flagging the shell that invoked preflight just because a path appears in
-    # its argument string.
-    basenames = {Path(token).name for token in argv[:4] if token}
-    return [name for name in names if name in basenames]
+    # Match the executable, or a script directly interpreted by a shell. Never
+    # scan flags and arbitrary arguments: a preflight command may mention the
+    # simulator/controller binary path without running it.
+    if not argv:
+        return []
+    candidates = {Path(argv[0]).name}
+    if candidates & {"bash", "sh", "dash", "zsh", "ksh"} and len(argv) > 1:
+        candidates.add(Path(argv[1]).name)
+    return [name for name in names if name in candidates]
 
 
 def find_processes(names: tuple[str, ...]) -> list[dict[str, Any]]:
@@ -416,6 +432,7 @@ def main() -> int:
         )
 
     output: Path | None = None
+    output_writable = True
     if args.output:
         output = (args.output if args.output.is_absolute() else repo / args.output).resolve()
         if inside(output, repo):
@@ -427,6 +444,7 @@ def main() -> int:
                 ignore_rc == 0,
                 {"output": str(output), "inside_repo": True, "gitignored": ignore_rc == 0},
             )
+            output_writable = ignore_rc == 0
         else:
             add_check(
                 checks,
@@ -435,6 +453,8 @@ def main() -> int:
                 {"output": str(output), "inside_repo": False},
             )
 
+    if output is not None:
+        report["output"] = {"path": str(output), "written": output_writable}
     hard_failures = [
         item for item in checks if item["severity"] == "hard" and item["status"] == "FAIL"
     ]
@@ -444,7 +464,7 @@ def main() -> int:
     report["warning_count"] = len(warnings)
 
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
-    if output is not None:
+    if output is not None and output_writable:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding="utf-8")
     sys.stdout.write(rendered)
