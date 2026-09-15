@@ -1,0 +1,2 @@
+scope,status,recorded_C_runtime_head,source_path,source_sha256,prohibited_science_paths_modified,note
+runtime_source_read_at_C_head,PASS,b281993b81b3bf6a083eccfb5805789026913837,\\wsl.localhost\Ubuntu-22.04\home\che\dev\go2-workspace\phase2-known-step-edge-aware-v2-protocol-repair-20260915\example\cpp\trot\trot_experiment_diagnostics.cpp,ea8096a7fdce67be85fe4988e376703d95da9a741643e8f8262bf9a439c6e07c,NOT_IN_THIS_CHECKPOINT,Current source was read before the authorized minimal logger repair; the four nonempty extra-token construction is proven.

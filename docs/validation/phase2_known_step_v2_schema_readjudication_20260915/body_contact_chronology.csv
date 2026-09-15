@@ -1,0 +1,5 @@
+arm,event,state_time_s,controller_log_line,detail
+C,controller_hard_posture_limit,15.208,57,"Trot hard posture limit: roll=22.1498 deg, pitch=5.13829 deg"
+C,controller_hard_safety_limit_reached,15.208,58,Trot hard safety limit reached; stopping
+C,safety_status_1_preserved,15.208,57,run_metadata safety_status=1; independent hard-posture evidence
+C,completion_status_1_preserved,,58,run_metadata completion_status=1; no normal completion marker; hard-safety stop and incomplete requested cycles

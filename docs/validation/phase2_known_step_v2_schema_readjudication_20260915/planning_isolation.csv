@@ -1,0 +1,2 @@
+run,gate,status,detail
+C,scientific_readjudication,FAIL,literal four-empty-header-token gate failed; candidate contains four nonempty known_step_v2_ tokens

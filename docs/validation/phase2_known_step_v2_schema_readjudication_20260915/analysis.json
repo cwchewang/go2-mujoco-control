@@ -1,0 +1,475 @@
+{
+  "classification": "SCHEMA_RECOVERY_AMBIGUOUS",
+  "experiment": "phase2_known_step_v2_schema_readjudication_20260915",
+  "launch_budget": {
+    "A_reruns": 0,
+    "C_reruns": 0,
+    "V1_B_reruns": 0,
+    "analyzer_live_launches": 0,
+    "authorized_prior_C_launches": 1,
+    "retries": 0
+  },
+  "live_process_launched_by_analyzer": false,
+  "logger_fix_status": "PASS: removed one duplicated header prefix in WriteCsvHeader loop; source sha after=7b5c575f8dbad7effb3478ad26ff828d20ea9b3a16ff1b79d9dde595c126140a",
+  "protocol": {
+    "gates": [
+      {
+        "detail": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\example\\cpp\\experiments\\_runs\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\C\\data.csv",
+        "gate": "C_raw_capture_present",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "header": 780,
+          "rows": {
+            "776": 5005
+          }
+        },
+        "gate": "C_raw_csv_widths_original",
+        "status": "FAIL"
+      },
+      {
+        "detail": "230",
+        "gate": "C_domain_230",
+        "status": "PASS"
+      },
+      {
+        "detail": 5006,
+        "gate": "C_lockstep_trace",
+        "status": "PASS"
+      },
+      {
+        "detail": [
+          2.0
+        ],
+        "gate": "C_constant_sim_tick",
+        "status": "PASS"
+      },
+      {
+        "detail": 0,
+        "gate": "C_no_lockstep_violations",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "domain_expected": "230",
+          "domain_id": "230",
+          "domain_matches": true,
+          "fail_closed_markers": [],
+          "metadata": {
+            "analysis_status": "1",
+            "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 230",
+            "camera_follow": "false",
+            "completion_status": "1",
+            "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth_analysis.txt",
+            "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth_dynamics_analysis.txt",
+            "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth.csv",
+            "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 230 ",
+            "controller_cpu_affinity": "3",
+            "controller_duration_s": "34",
+            "controller_sha256": "f57c2ec86ae520f15a782151058f56578486d18b46b273027a6b7b9182385e97",
+            "controller_status": "0",
+            "display": ":0",
+            "domain_id": "230",
+            "dynamics_status": "0",
+            "dynamics_tolerance_n": "20",
+            "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/environment.txt",
+            "event_script_hash": "",
+            "finished_at": "2026-09-15T12:12:10+08:00",
+            "git_branch": "research/phase2-known-step-edge-aware-v2-protocol-repair-20260915",
+            "git_dirty": "false",
+            "git_head": "b281993b81b3bf6a083eccfb5805789026913837",
+            "ground_truth_status": "0",
+            "headless": "true",
+            "lockstep": "true",
+            "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/lockstep_handoff.csv",
+            "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/lockstep_trace.csv",
+            "max_cycles_requested": "40",
+            "profile_path": "",
+            "profile_sha256": "",
+            "quality_status": "0",
+            "run_mode": "bounded",
+            "runtime_dir": "/run/user/1000",
+            "safety_status": "1",
+            "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+            "seed": "",
+            "sim_cpu_affinity": "2",
+            "simulator_sha256": "ed22f0889b5bd299f7130936ac526c0c33a861c8a44e60d963fc03eb70486c89",
+            "started_at": "2026-09-15T12:11:53+08:00",
+            "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/stop.request",
+            "task": "",
+            "wall_timeout_s": "80"
+          },
+          "paired_async_fallbacks": 0,
+          "paired_cycles": 5005,
+          "paired_summary_present": true,
+          "paired_validation_failures": 0,
+          "sim_tick_diffs_ms": [
+            2.0
+          ],
+          "trace_present": true,
+          "trace_rows": 5006,
+          "trace_violations": 0
+        },
+        "gate": "C_paired_highstate",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "A_raw_hashes_match": true,
+          "C_raw_hashes_match_parent_closeout": true,
+          "C_runtime_metadata_match": true,
+          "V1_B_raw_hashes_match": true,
+          "parent_provenance": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\docs\\validation\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\provenance.csv"
+        },
+        "gate": "A_hashes_unchanged",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "A_raw_hashes_match": true,
+          "C_raw_hashes_match_parent_closeout": true,
+          "C_runtime_metadata_match": true,
+          "V1_B_raw_hashes_match": true,
+          "parent_provenance": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\docs\\validation\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\provenance.csv"
+        },
+        "gate": "V1_B_hashes_unchanged",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "A_raw_hashes_match": true,
+          "C_raw_hashes_match_parent_closeout": true,
+          "C_runtime_metadata_match": true,
+          "V1_B_raw_hashes_match": true,
+          "parent_provenance": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\docs\\validation\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\provenance.csv"
+        },
+        "gate": "C_raw_hashes_unchanged_from_parent",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "analysis_status": "1",
+          "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 230",
+          "camera_follow": "false",
+          "completion_status": "1",
+          "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth_analysis.txt",
+          "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth_dynamics_analysis.txt",
+          "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/contact_ground_truth.csv",
+          "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 230 ",
+          "controller_cpu_affinity": "3",
+          "controller_duration_s": "34",
+          "controller_sha256": "f57c2ec86ae520f15a782151058f56578486d18b46b273027a6b7b9182385e97",
+          "controller_status": "0",
+          "display": ":0",
+          "domain_id": "230",
+          "dynamics_status": "0",
+          "dynamics_tolerance_n": "20",
+          "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/environment.txt",
+          "event_script_hash": "",
+          "finished_at": "2026-09-15T12:12:10+08:00",
+          "git_branch": "research/phase2-known-step-edge-aware-v2-protocol-repair-20260915",
+          "git_dirty": "false",
+          "git_head": "b281993b81b3bf6a083eccfb5805789026913837",
+          "ground_truth_status": "0",
+          "headless": "true",
+          "lockstep": "true",
+          "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/lockstep_handoff.csv",
+          "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/lockstep_trace.csv",
+          "max_cycles_requested": "40",
+          "profile_path": "",
+          "profile_sha256": "",
+          "quality_status": "0",
+          "run_mode": "bounded",
+          "runtime_dir": "/run/user/1000",
+          "safety_status": "1",
+          "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+          "seed": "",
+          "sim_cpu_affinity": "2",
+          "simulator_sha256": "ed22f0889b5bd299f7130936ac526c0c33a861c8a44e60d963fc03eb70486c89",
+          "started_at": "2026-09-15T12:11:53+08:00",
+          "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-protocol-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C/stop.request",
+          "task": "",
+          "wall_timeout_s": "80"
+        },
+        "gate": "C_runtime_metadata",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "candidate_mapping_unique": true,
+          "literal_task_shape_gate": false,
+          "recovery_validation_all_pass": true
+        },
+        "gate": "schema_recovery_authorized",
+        "status": "FAIL"
+      }
+    ],
+    "pass": false
+  },
+  "provenance": {
+    "A_raw_hashes_match": true,
+    "C_raw_hashes_match_parent_closeout": true,
+    "C_runtime_metadata_match": true,
+    "V1_B_raw_hashes_match": true,
+    "parent_provenance": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\docs\\validation\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\provenance.csv"
+  },
+  "regression_status": "PASS: python test_trot_csv_schema.py; no runtime process",
+  "schema_recovery": {
+    "candidate_drop_indices": [
+      211,
+      264,
+      317,
+      370
+    ],
+    "candidate_mapping_unique": true,
+    "candidate_repaired_duplicate_names": [],
+    "candidate_repaired_width": 776,
+    "derived_header_hash_definition": "UTF-8 bytes of comma-joined candidate repaired header plus LF",
+    "derived_header_sha256": "b39e0b7c2357623c2555ab3576fda204b779bf4e04cee3343e241997910cf517",
+    "expected_empty_transitions": [],
+    "header_line_bytes": 20527,
+    "literal_task_shape_gate": false,
+    "observed_extra_transitions": [
+      {
+        "following": "known_step_v2_fr_command_world_x_m",
+        "index": 211,
+        "leg": "fr",
+        "previous": "known_step_v2_fr_s_exit",
+        "token": "known_step_v2_"
+      },
+      {
+        "following": "known_step_v2_fl_command_world_x_m",
+        "index": 264,
+        "leg": "fl",
+        "previous": "known_step_v2_fl_s_exit",
+        "token": "known_step_v2_"
+      },
+      {
+        "following": "known_step_v2_rr_command_world_x_m",
+        "index": 317,
+        "leg": "rr",
+        "previous": "known_step_v2_rr_s_exit",
+        "token": "known_step_v2_"
+      },
+      {
+        "following": "known_step_v2_rl_command_world_x_m",
+        "index": 370,
+        "leg": "rl",
+        "previous": "known_step_v2_rl_s_exit",
+        "token": "known_step_v2_"
+      }
+    ],
+    "observed_nonempty_extra_tokens": [
+      "known_step_v2_",
+      "known_step_v2_",
+      "known_step_v2_",
+      "known_step_v2_"
+    ],
+    "raw_data_path": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\example\\cpp\\experiments\\_runs\\phase2_known_step_edge_aware_v2_protocol_repair_20260915\\C\\data.csv",
+    "raw_data_rows": 5005,
+    "raw_header_duplicate_names": [
+      "known_step_v2_"
+    ],
+    "raw_header_empty_indices": [],
+    "raw_header_empty_tokens": [],
+    "raw_header_line_sha256": "7bd4f1116739a3a65d3a0488d5fbf8a98c232451739f1ffc2016074d5c375ca9",
+    "raw_header_width": 780,
+    "raw_width_counts": {
+      "776": 5005
+    },
+    "recovery_authorized": false,
+    "recovery_validation": [
+      {
+        "detail": [
+          "0",
+          "1"
+        ],
+        "gate": "v2_boolean_like_values",
+        "status": "PASS"
+      },
+      {
+        "detail": [
+          "1"
+        ],
+        "gate": "v2_enabled_during_active_locomotion",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "codes": [
+            0,
+            1,
+            2
+          ],
+          "failures": []
+        },
+        "gate": "planning_failure_code_enum",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "failures": [],
+          "reasons": [
+            "invalid_edge_ordering",
+            "none",
+            "not_crossing"
+          ]
+        },
+        "gate": "planning_failure_reason_enum",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "errors": [],
+          "populated": 4206,
+          "target": 0.777,
+          "unique": [
+            0.777
+          ]
+        },
+        "gate": "x_entry_m_source_invariant",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "errors": [],
+          "populated": 4206,
+          "target": 0.823,
+          "unique": [
+            0.823
+          ]
+        },
+        "gate": "x_exit_m_source_invariant",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "errors": [],
+          "populated": 20020,
+          "target": 0.85,
+          "unique": [
+            0.85
+          ]
+        },
+        "gate": "x_land_min_m_source_invariant",
+        "status": "PASS"
+      },
+      {
+        "detail": [
+          "0",
+          "1"
+        ],
+        "gate": "scheduled_stance_swing_boolean_like",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "failures": [],
+          "fields": 24,
+          "pass": true,
+          "populated_values": 120120
+        },
+        "gate": "finite_command_actual_values",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "blocks": [
+            {
+              "end": 218,
+              "leg": "fr",
+              "next": "known_step_fl_scheduled_stance",
+              "start": 184
+            },
+            {
+              "end": 270,
+              "leg": "fl",
+              "next": "known_step_rr_scheduled_stance",
+              "start": 236
+            },
+            {
+              "end": 322,
+              "leg": "rr",
+              "next": "known_step_rl_scheduled_stance",
+              "start": 288
+            },
+            {
+              "end": 374,
+              "leg": "rl",
+              "next": "diag_bounded_stance_dq_FR_hip_stance_selector",
+              "start": 340
+            }
+          ],
+          "failures": [],
+          "following_d4_field": "diag_bounded_stance_dq_FR_hip_stance_selector"
+        },
+        "gate": "v2_leg_blocks_no_column_drift",
+        "status": "PASS"
+      }
+    ],
+    "recovery_validation_all_pass": true,
+    "source_proof": {
+      "header_exact_double_delimiter": false,
+      "header_extra_prefix_construction": true,
+      "header_extra_token_lines": [
+        166
+      ],
+      "interpretation": "source emits a literal known_step_v2_ token between s_exit and command_world_x_m; it is not an empty CSV token",
+      "log_sample_command_world_x_lines": [
+        1091
+      ],
+      "log_sample_contiguous_sequence": true,
+      "log_sample_s_exit_lines": [
+        1090
+      ],
+      "path": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\che\\dev\\go2-workspace\\phase2-known-step-edge-aware-v2-protocol-repair-20260915\\example\\cpp\\trot\\trot_experiment_diagnostics.cpp",
+      "sha256": "ea8096a7fdce67be85fe4988e376703d95da9a741643e8f8262bf9a439c6e07c"
+    }
+  },
+  "schema_version": 1,
+  "scientific_readjudication": "NOT_RUN",
+  "source_diff_status": "PASS: logger-only diff; no V2 planner/control/science paths changed",
+  "status_context": {
+    "completion_interpretation": "completion_status=1 is preserved; controller.log has no normal completion marker and stops on the hard-safety marker",
+    "completion_marker_present": false,
+    "controller_log_sha256": "cb1468e01b50647458e8585fe457463a9945ba3f1b098fde626e3b2d87f64be1",
+    "first_22_degree_telemetry_crossing": {
+      "base_x_m": 0.660596886,
+      "pitch_deg": 5.138294559466385,
+      "pitch_rad": 0.089680158,
+      "raw_row_index": 3604,
+      "roll_deg": 22.149763865944532,
+      "roll_rad": 0.386586308,
+      "state_tick_s": 15.208
+    },
+    "first_controller_hard_posture_marker": {
+      "line": 57,
+      "pitch_deg": 5.13829,
+      "roll_deg": 22.1498,
+      "text": "Trot hard posture limit: roll=22.1498 deg, pitch=5.13829 deg"
+    },
+    "first_controller_hard_safety_marker": {
+      "line": 58,
+      "text": "Trot hard safety limit reached; stopping"
+    },
+    "hard_posture_marker_count": 1394,
+    "hard_safety_marker_count": 1394,
+    "max_started_cycle": 4,
+    "metadata_statuses": {
+      "analysis_status": "1",
+      "completion_status": "1",
+      "controller_status": "0",
+      "dynamics_status": "0",
+      "ground_truth_status": "0",
+      "quality_status": "0",
+      "safety_status": "1"
+    },
+    "started_cycle_numbers": [
+      1,
+      2,
+      3,
+      4
+    ]
+  }
+}

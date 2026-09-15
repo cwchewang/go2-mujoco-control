@@ -163,7 +163,7 @@ void TrotExperiment::WriteCsvHeader()
              << "_z_corridor_m,known_step_v2_"
              << known_step_leg_names[leg] << "_s,known_step_v2_"
              << known_step_leg_names[leg] << "_s_entry,known_step_v2_"
-             << known_step_leg_names[leg] << "_s_exit,known_step_v2_"
+             << known_step_leg_names[leg] << "_s_exit"
              << ",known_step_v2_" << known_step_leg_names[leg]
              << "_command_world_x_m,known_step_v2_"
              << known_step_leg_names[leg] << "_command_world_z_m"
