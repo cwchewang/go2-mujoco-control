@@ -1,0 +1,6 @@
+leg,floor_reference_z0_m,first_raised_touchdown_state_tick_s,first_raised_touchdown_x_m,first_raised_touchdown_z_m,raised_contact_time_s,raised_contact_gate,qualified_rows
+fr,0.02349693,,,,0,False,0
+fl,0.023444499,,,,0,False,0
+rr,0.023452305,,,,0,False,0
+rl,0.023179432,,,,0,False,0
+all,"{""fl"":0.023444499,""fr"":0.02349693,""rl"":0.023179432,""rr"":0.023452305}",,,,,,

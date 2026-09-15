@@ -1,0 +1,8 @@
+status,a_handoff_state_tick_s,c_handoff_state_tick_s,common_handoff_state_tick_s,a_handoff_source,c_handoff_source,a_start_row,c_start_row,rows_compared,first_v2_latch,causal_fields_compared,allowed_metadata_fields,ignored_noncausal_diagnostics,mismatch_count_capped,row,field,a,c
+FAIL,8.0,8.0,8.0,lockstep_handoff.csv:sim_tick_ms,lockstep_handoff.csv:sim_tick_ms,0,0,3127,"{""base_x_m"":0.511724145,""event"":""first_v2_crossing_latched"",""legs"":[""fl""],""raw_row_index"":3127,""state_time_s"":14.254}",629,"[""known_step_edge_x_m"",""known_step_feature_enabled"",""known_step_half_width_y_m"",""known_step_height_m""]","[""motion_clock_wall_dt_s"",""wbc_shadow_elapsed_us""]",6,,,,
+,,,,,,,,,,,,,,0,wbc_shadow_within_budget,1,0
+,,,,,,,,,,,,,,1,wbc_full_id_contact_force_x_n,-2.586720231,-2.586756627
+,,,,,,,,,,,,,,1,wbc_full_id_ok,0,1
+,,,,,,,,,,,,,,1,wbc_full_id_qdd_x_mps2,-0.314606651,-0.314609274
+,,,,,,,,,,,,,,1,wbc_shadow_max_abs_tau,6.633410043,6.633402892
+,,,,,,,,,,,,,,1,wbc_shadow_min_contact_normal_force_n,2.191589063,2.191619437
