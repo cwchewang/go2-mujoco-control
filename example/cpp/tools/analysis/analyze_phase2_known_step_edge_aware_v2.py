@@ -172,6 +172,49 @@ def read_rows(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(stream))
 
 
+def csv_schema(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {
+            "present": False,
+            "header_columns": 0,
+            "data_rows": 0,
+            "width_counts": {},
+            "mismatch_rows": [],
+            "pass": False,
+        }
+    width_counts: dict[str, int] = {}
+    mismatch_rows: list[int] = []
+    with path.open(newline="", encoding="utf-8") as stream:
+        reader = csv.reader(stream)
+        try:
+            header = next(reader)
+        except StopIteration:
+            return {
+                "present": True,
+                "header_columns": 0,
+                "data_rows": 0,
+                "width_counts": {},
+                "mismatch_rows": [],
+                "pass": False,
+            }
+        data_rows = 0
+        for row_index, row in enumerate(reader, start=2):
+            data_rows += 1
+            width = len(row)
+            width_counts[str(width)] = width_counts.get(str(width), 0) + 1
+            if width != len(header) and len(mismatch_rows) < 1000:
+                mismatch_rows.append(row_index)
+    return {
+        "present": True,
+        "header_columns": len(header),
+        "data_rows": data_rows,
+        "width_counts": width_counts,
+        "mismatch_rows": mismatch_rows,
+        "pass": bool(header) and data_rows > 0 and not mismatch_rows,
+    }
+
+
+
 def read_kv(path: Path) -> dict[str, str]:
     values: dict[str, str] = {}
     if not path.is_file():
@@ -1244,25 +1287,29 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
     tests = json.loads(args.pre_live_tests_json.read_text(encoding="utf-8")) if args.pre_live_tests_json and args.pre_live_tests_json.is_file() else {}
     required_runs = [("A", a_dir), ("V1_B", b_dir), ("C", c_dir)]
+    csv_shapes = {name: csv_schema(path / "data.csv") for name, path in required_runs}
     missing_runs = [name for name, path in required_runs if not (path / "data.csv").is_file()]
-    if missing_runs:
+    if missing_runs or not csv_shapes["C"]["pass"]:
         c_meta = read_kv(c_dir / "run_metadata.txt")
         a_meta = read_kv(a_dir / "run_metadata.txt")
         b_meta = read_kv(b_dir / "run_metadata.txt")
         provenance_records, provenance_details = source_provenance(root, a_dir, b_dir, c_dir, c_meta, args.expected_c_head)
         c_protocol = parse_protocol(c_dir, EXPECTED_C_DOMAIN)
+        status_ok, statuses = status_zero(c_meta)
         protocol_records = [
             gate(name, "required_raw_capture", name not in missing_runs, "data.csv present" if name not in missing_runs else "data.csv missing" )
             for name, _ in required_runs
         ]
+        protocol_records.append(gate("C", "csv_row_widths", csv_shapes["C"]["pass"], csv_shapes["C"]))
         protocol_records.extend([
             gate("C", "domain_230", c_protocol["domain_matches"], c_protocol["domain_id"]),
-            gate("C", "simulator_ready_capture", False, "C data.csv is missing; simulator/controller capture is unavailable"),
+            gate("C", "simulator_ready_capture", c_protocol["trace_present"] and c_protocol["trace_rows"] > 0, c_protocol["trace_rows"]),
+            gate("C", "run_completion_statuses_zero", status_ok, statuses),
             gate("A", "frozen_raw_hashes", provenance_details["A_raw_hashes_match"], provenance_details["A_raw_hashes_match"]),
             gate("V1_B", "frozen_raw_hashes", provenance_details["V1_B_raw_hashes_match"], provenance_details["V1_B_raw_hashes_match"]),
             gate("C", "runtime_metadata", bool(c_meta), c_meta),
         ])
-        placeholder = [{"status": "FAIL", "reason": f"missing data.csv: {missing_runs}", "live_process_launched_by_analyzer": False}]
+        placeholder = [{"status": "FAIL", "reason": f"C raw capture protocol/schema failure: missing_runs={missing_runs}; csv_schema={csv_shapes['C']}", "live_process_launched_by_analyzer": False}]
         write_csv(output / "preactivation_exact.csv", placeholder)
         write_csv(output / "planning_isolation.csv", [gate("C", "planning_not_run", False, "C data.csv missing")])
         write_csv(output / "front_crossing_summary.csv", placeholder)
@@ -1278,7 +1325,7 @@ def main() -> int:
             "live_process_launched_by_analyzer": False,
             "launch_budget": {"authorized_C_launches": 1, "observed_C_launches": 1, "A_launches": 0, "V1_B_launches": 0, "retries": 0, "extra_experiments": 0},
             "missing_raw_runs": missing_runs,
-            "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "capture_rows": 0, "controller_capture": False},
+            "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "csv_schema": csv_shapes["C"], "statuses": statuses, "capture_rows": csv_shapes["C"]["data_rows"], "controller_capture": csv_shapes["C"]["present"], "usable_controller_capture": False},
             "protocol": {"pass": False, "gates": protocol_records},
             "provenance": provenance_details,
             "pre_live_tests": tests,
@@ -1286,10 +1333,10 @@ def main() -> int:
         }
         (output / "analysis.json").write_text(json.dumps(jsonable(analysis), indent=2, sort_keys=True) + "\n", encoding="utf-8")
         (output / "RESULTS.md").write_text(
-            f"# Phase2 known-step edge-aware V2 protocol-repair closeout\n\nDate: 2026-09-15\nPrimary classification: `PROTOCOL_FAILURE`\n\nExactly one C/domain 230 launch was authorized using the prepared protocol-repair runner, but no controller data.csv was available. A and V1 B were not rerun, and the offline analyzer launched no process. Required machine-readable placeholders and provenance are written in this directory. No retry is authorized.\n",
+            f"# Phase2 known-step edge-aware V2 protocol-repair closeout\n\nDate: 2026-09-15\nPrimary classification: `PROTOCOL_FAILURE`\n\nExactly one C/domain 230 launch was authorized using the prepared protocol-repair runner. C produced 5005 rows, but every data row had 776 columns against a 780-column header and the run statuses were non-zero, so no usable scientific capture was available. A and V1 B were not rerun, and the offline analyzer launched no process. Required machine-readable placeholders and provenance are written in this directory. No retry is authorized.\n",
             encoding="utf-8",
         )
-        print("classification=PROTOCOL_FAILURE capture=missing_c_data")
+        print("classification=PROTOCOL_FAILURE capture=protocol_schema_failure")
         return 0
     a_rows = read_rows(a_dir / "data.csv")
     b_rows = read_rows(b_dir / "data.csv")
@@ -1297,6 +1344,9 @@ def main() -> int:
     a_meta = read_kv(a_dir / "run_metadata.txt")
     b_meta = read_kv(b_dir / "run_metadata.txt")
     c_meta = read_kv(c_dir / "run_metadata.txt")
+    a_shape = csv_shapes["A"]
+    b_shape = csv_shapes["V1_B"]
+    c_shape = csv_shapes["C"]
     missing_a = sorted(BASE_COLUMNS - set(a_rows[0])) if a_rows else sorted(BASE_COLUMNS)
     missing_b = sorted(BASE_COLUMNS - set(b_rows[0])) if b_rows else sorted(BASE_COLUMNS)
     missing_c = sorted((BASE_COLUMNS | v2_columns()) - set(c_rows[0])) if c_rows else sorted(BASE_COLUMNS | v2_columns())
@@ -1327,6 +1377,9 @@ def main() -> int:
         gate("A", "raw_schema", not missing_a, f"missing={missing_a or 'none'}"),
         gate("V1_B", "raw_schema", not missing_b, f"missing={missing_b or 'none'}"),
         gate("C", "raw_schema", not missing_c, f"missing={missing_c or 'none'}"),
+        gate("A", "csv_row_widths", a_shape["pass"], a_shape),
+        gate("V1_B", "csv_row_widths", b_shape["pass"], b_shape),
+        gate("C", "csv_row_widths", c_shape["pass"], c_shape),
         gate("C", "domain_230", c_protocol["domain_matches"], c_protocol["domain_id"]),
         gate("C", "lockstep_trace_present", c_protocol["trace_present"] and c_protocol["trace_rows"] > 0, c_protocol["trace_rows"]),
         gate("C", "constant_sim_tick", c_protocol["sim_tick_diffs_ms"] == [2.0], c_protocol["sim_tick_diffs_ms"]),
@@ -1379,9 +1432,9 @@ def main() -> int:
         "live_process_launched_by_analyzer": False,
         "launch_budget": {"authorized_C_launches": 1, "observed_C_launches": 1, "A_launches": 0, "V1_B_launches": 0, "retries": 0, "extra_experiments": 0},
         "activity_predicate": "motion_stage == 2; velocity_command_active is not used",
-        "a": {"run": str(a_dir), "metadata": a_meta, "protocol": a_protocol, "clean_precontact": clean_mask_summary(a_rows), "floor_reference_z0_m": a_references, "chronology": chronology_a, "traversal_success": False},
-        "v1_b": {"run": str(b_dir), "metadata": b_meta, "protocol": b_protocol, "clean_precontact": clean_mask_summary(b_rows), "floor_reference_z0_m": b_references, "chronology": chronology_b},
-        "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "clean_precontact": clean_mask_summary(c_rows), "floor_reference_z0_m": c_references, "first_v2_latch": first_latch, "first_plausible_contact_risk": risk_event(c_rows), "first_22_degree_hard_posture_crossing": c_first_hard, "planning": planning_details, "front_crossings": front_summaries, "body_contact_solver": c_metrics, "traversal_success": traversal["success"]},
+        "a": {"run": str(a_dir), "metadata": a_meta, "protocol": a_protocol, "csv_schema": a_shape, "clean_precontact": clean_mask_summary(a_rows), "floor_reference_z0_m": a_references, "chronology": chronology_a, "traversal_success": False},
+        "v1_b": {"run": str(b_dir), "metadata": b_meta, "protocol": b_protocol, "csv_schema": b_shape, "clean_precontact": clean_mask_summary(b_rows), "floor_reference_z0_m": b_references, "chronology": chronology_b},
+        "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "csv_schema": c_shape, "clean_precontact": clean_mask_summary(c_rows), "floor_reference_z0_m": c_references, "first_v2_latch": first_latch, "first_plausible_contact_risk": risk_event(c_rows), "first_22_degree_hard_posture_crossing": c_first_hard, "planning": planning_details, "front_crossings": front_summaries, "body_contact_solver": c_metrics, "traversal_success": traversal["success"]},
         "preactivation": {"pass": pre_ok, "summary": pre_summary, "mismatches": pre_mismatches},
         "protocol": {"pass": protocol_ok, "gates": protocol_records},
         "planning_isolation": {"pass": planning_ok, "gates": planning_records, "details": planning_details},

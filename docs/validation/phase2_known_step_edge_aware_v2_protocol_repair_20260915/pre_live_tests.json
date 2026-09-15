@@ -1,0 +1,10 @@
+{
+  "run_trot_bash_n": "PASS",
+  "protocol_repair_runner_bash_n": "PASS",
+  "analyzer_help": "PASS",
+  "focused_v2_ctest": {"status": "PASS", "passed": 2, "total": 2},
+  "motion_clock_integration_ctest": {"status": "PASS", "passed": 1, "total": 1},
+  "controller_full_ctest": {"status": "PASS", "passed": 31, "total": 31},
+  "simulator_test_lockstep": "PASS",
+  "simulator_full_ctest": {"status": "PASS", "passed": 2, "total": 2}
+}
