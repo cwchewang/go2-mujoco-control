@@ -78,15 +78,19 @@ def read_ephemeral_range() -> tuple[int, int] | None:
 def runner_domains(text: str) -> list[int]:
     assigned: list[int] = []
     values: list[int] = []
+    ambiguous = False
     for raw in text.splitlines():
         code = raw.split("#", 1)[0]
         m = re.fullmatch(r"\s*domain_id\s*=\s*['\"]?([0-9]+)['\"]?\s*", code)
         if m:
-            assigned = [int(m.group(1))]
+            assigned.append(int(m.group(1)))
         values.extend(int(v) for v in re.findall(r"--domain-id(?:\s+|=)([0-9]+)", code))
         if re.search(r"--domain-id(?:\s+|=)['\"]?\$domain_id['\"]?", code):
-            values.extend(assigned)
-    return values
+            if len(set(assigned)) != 1:
+                ambiguous = True
+            else:
+                values.extend(assigned)
+    return [] if ambiguous else values
 
 
 def parent_pid(pid: int) -> int | None:

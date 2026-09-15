@@ -36,6 +36,14 @@ class PreflightRegressionTest(unittest.TestCase):
             [230],
         )
         self.assertEqual(
+            preflight.runner_domains(
+                "domain_id=229\n"
+                "domain_id=230\n"
+                "run --domain-id " + chr(36) + "domain_id\n"
+            ),
+            [],
+        )
+        self.assertEqual(
             preflight.runner_domains("# --domain-id 233\nrun --domain-id=230 # ignored\n"),
             [230],
         )
