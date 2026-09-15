@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [[ $# -ne 3 ]]; then echo "usage: $0 A|C DOMAIN RUN_DIR" >&2; exit 2; fi
-arm="$1"; domain_id="$2"; run_dir="$3"
+if [[ $# -ne 2 ]]; then echo "usage: $0 A|C RUN_DIR" >&2; exit 2; fi
+arm="$1"; run_dir="$2"; domain_id=231
 case "$arm" in
   A) unset TROT_KNOWN_STEP_TRAVERSAL_V2 TROT_KNOWN_STEP_TRAVERSAL ;;
   C) export TROT_KNOWN_STEP_TRAVERSAL_V2=1; unset TROT_KNOWN_STEP_TRAVERSAL ;;
