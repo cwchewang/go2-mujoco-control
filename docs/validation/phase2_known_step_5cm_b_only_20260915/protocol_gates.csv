@@ -1,0 +1,27 @@
+run,gate,status,detail
+A,raw_schema,PASS,missing=none
+B,raw_schema,PASS,missing=none
+B,clean_precontact_mask,PASS,rows=870 span_s=1.7379999999999995
+A_B,floor_reference_compatible,PASS,"a={'fr': 0.02349693, 'fl': 0.023444499, 'rr': 0.023452305, 'rl': 0.023179432} b={'fr': 0.02349693, 'fl': 0.023444499, 'rr': 0.023452305, 'rl': 0.023179432} diffs={'fr': 0.0, 'fl': 0.0, 'rr': 0.0, 'rl': 0.0}"
+A,frozen_raw_hashes,PASS,matches=True
+A,accepted_runtime_provenance,PASS,head=df5d7663adc9e96d153107e071d7b49676bcdad6
+B,domain_232,PASS,domain=232
+B,lockstep_trace_present,PASS,rows=5013
+B,constant_sim_tick,PASS,diffs=[2.0]
+B,no_protocol_violations,PASS,violations=0
+B,paired_highstate,PASS,cycles=5012 failures=0 fallbacks=0
+B,no_fail_closed_marker,PASS,markers=[]
+B,runtime_binary_scene_provenance,PASS,head=c44314b451ea77d460263052b7f274347881137c controller=6d9931fce67ec3092fb8867828ae6447a5f44f89c3dd08b7c4104efa1134ce2e simulator=a24721b84bea2854df36428190e38d163a780e9fead37258bd590e974117e280 scene=8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc
+A_B,exact_preactivation,PASS,rows=3277 mismatches=0
+B,feature_enabled,PASS,"capture_values=['0', '1'] active_values=['1'] active_rows=1460"
+B,d4_enabled,PASS,field=diag_bounded_stance_dq_enabled values=[0.0]
+B,d4_gate_active,PASS,field=diag_bounded_stance_dq_gate_active values=[0.0]
+B,d90_enabled,PASS,field=diag_four_thigh_d90_enabled values=[0.0]
+B,d90_gate_active,PASS,field=diag_four_thigh_d90_gate_active values=[0.0]
+B,pd_pulse_off,PASS,PD_PULSE absent from captured environment/argv
+B,adaptation_scope,PASS,active_samples=1585 errors=none
+B,nominal_xy_unchanged,PASS,max_error_m=0.0
+B,final_z_formula,PASS,max_error_m=1.3877787807814457e-17
+B,floor_to_plateau_rise,PASS,values=[0.05]
+B,floor_to_plateau_lift,PASS,values=[0.08]
+B,plateau_to_plateau_no_accumulation,PASS,errors=none

@@ -1,0 +1,14 @@
+run,gate,status,detail
+B,feature_enabled,PASS,"capture_values=['0', '1'] active_values=['1'] active_rows=1460"
+B,d4_enabled,PASS,field=diag_bounded_stance_dq_enabled values=[0.0]
+B,d4_gate_active,PASS,field=diag_bounded_stance_dq_gate_active values=[0.0]
+B,d90_enabled,PASS,field=diag_four_thigh_d90_enabled values=[0.0]
+B,d90_gate_active,PASS,field=diag_four_thigh_d90_gate_active values=[0.0]
+B,pd_pulse_off,PASS,PD_PULSE absent from captured environment/argv
+B,adaptation_scope,PASS,active_samples=1585 errors=none
+B,nominal_xy_unchanged,PASS,max_error_m=0.0
+B,final_z_formula,PASS,max_error_m=1.3877787807814457e-17
+B,floor_to_plateau_rise,PASS,values=[0.05]
+B,floor_to_plateau_lift,PASS,values=[0.08]
+B,plateau_to_plateau_no_accumulation,PASS,errors=none
+B,isolation_summary,PASS,"{""active_lift_values_m"":[0.08],""active_rise_values_m"":[0.05],""active_samples"":1585,""crossing_lift_values_m"":[0.08],""crossing_rise_values_m"":[0.05],""diag"":{""d4_enabled"":{""field"":""diag_bounded_stance_dq_enabled"",""pass"":true,""present"":true,""values"":[0.0]},""d4_gate_active"":{""field"":""diag_bounded_stance_dq_gate_active"",""pass"":true,""present"":true,""values"":[0.0]},""d90_enabled"":{""field"":""diag_four_thigh_d90_enabled"",""pass"":true,""present"":true,""values"":[0.0]},""d90_gate_active"":{""field"":""diag_four_thigh_d90_gate_active"",""pass"":true,""present"":true,""values"":[0.0]}},""max_final_z_formula_error_m"":1.3877787807814457e-17,""max_nominal_xy_error_m"":0.0,""pd_pulse_off"":true,""plateau_errors"":[]}"

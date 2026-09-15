@@ -220,6 +220,54 @@ def clean_precontact(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return selected
 
 
+def clean_mask_summary(rows: list[dict[str, str]]) -> dict[str, Any]:
+    clean = clean_precontact(rows)
+    times = [number(row, "state_tick_s") for row in clean]
+    times = [value for value in times if value is not None]
+    return {
+        "predicate": "motion_stage == 2 AND world_base_x_m <= 0.40 AND every actual foot-center x < 0.75",
+        "base_x_limit_m": 0.40,
+        "actual_foot_x_limit_m": 0.75,
+        "rows": len(clean),
+        "state_time_start_s": min(times) if times else None,
+        "state_time_end_s": max(times) if times else None,
+        "state_time_span_s": max(times) - min(times) if times else None,
+    }
+
+
+def actual_foot_extrema(rows: list[dict[str, str]]) -> dict[str, Any]:
+    return {
+        leg: {
+            "x": stats(number(row, f"known_step_{leg}_actual_x_m") for row in rows if number(row, f"known_step_{leg}_actual_x_m") is not None),
+            "z": stats(number(row, f"known_step_{leg}_actual_z_m") for row in rows if number(row, f"known_step_{leg}_actual_z_m") is not None),
+        }
+        for leg in LEGS
+    }
+
+
+def contact_intervals(rows: list[dict[str, str]]) -> dict[str, list[dict[str, Any]]]:
+    result: dict[str, list[dict[str, Any]]] = {}
+    for leg in LEGS:
+        intervals = []
+        start: int | None = None
+        for index in range(len(rows) + 1):
+            active = index < len(rows) and truthy(rows[index], f"contact_{leg.upper()}")
+            if active and start is None:
+                start = index
+            elif not active and start is not None:
+                end = index - 1
+                intervals.append({
+                    "start_state_tick_s": number(rows[start], "state_tick_s"),
+                    "end_state_tick_s": number(rows[end], "state_tick_s"),
+                    "duration_s": sum(dt(rows, item) for item in range(start, end + 1)),
+                    "start_row_index": start,
+                    "end_row_index": end,
+                })
+                start = None
+        result[leg] = intervals
+    return result
+
+
 def risk_event(rows: list[dict[str, str]]) -> dict[str, Any] | None:
     for index, row in enumerate(rows):
         for leg in LEGS:
@@ -286,7 +334,8 @@ def exact_preactivation(a_rows: list[dict[str, str]], b_rows: list[dict[str, str
     b_slice = b_rows[b_start:b_end]
     common = set(a_rows[0]) & set(b_rows[0]) if a_rows and b_rows else set()
     allowed_metadata = {"known_step_feature_enabled", "known_step_edge_x_m", "known_step_height_m", "known_step_half_width_y_m"}
-    fields = sorted(common - allowed_metadata)
+    ignored_noncausal_diagnostics = {"motion_clock_wall_dt_s", "wbc_shadow_elapsed_us"}
+    fields = sorted(common - allowed_metadata - ignored_noncausal_diagnostics)
     mismatches: list[dict[str, Any]] = []
     if len(a_slice) != len(b_slice):
         mismatches.append({"row": "COUNT", "field": "row_count", "a": len(a_slice), "b": len(b_slice)})
@@ -309,6 +358,7 @@ def exact_preactivation(a_rows: list[dict[str, str]], b_rows: list[dict[str, str
         "b_first_adaptation": b_adaptation,
         "causal_fields_compared": len(fields),
         "allowed_metadata_fields": sorted(allowed_metadata),
+        "ignored_noncausal_diagnostics": sorted(ignored_noncausal_diagnostics),
         "mismatch_count_capped": len(mismatches),
     }
     return not mismatches, summary, mismatches or [{"row": "ALL", "field": "causal_fields", "a": "exact", "b": "exact"}]
@@ -336,8 +386,11 @@ def solver_metrics(rows: list[dict[str, str]]) -> dict[str, Any]:
 
 def isolation(rows: list[dict[str, str]], metadata: dict[str, str]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     records: list[dict[str, Any]] = []
-    enabled = [truthy(row, "known_step_feature_enabled") for row in rows]
-    records.append(gate("B", "feature_enabled", bool(enabled) and all(enabled), f"values={sorted(set(row.get('known_step_feature_enabled', '') for row in rows))}"))
+    active_rows = [row for row in rows if number(row, "motion_stage") == 2]
+    enabled = [truthy(row, "known_step_feature_enabled") for row in active_rows]
+    capture_values = sorted(set(row.get("known_step_feature_enabled", "") for row in rows))
+    active_values = sorted(set(row.get("known_step_feature_enabled", "") for row in active_rows))
+    records.append(gate("B", "feature_enabled", bool(enabled) and all(enabled), f"capture_values={capture_values} active_values={active_values} active_rows={len(active_rows)}"))
     diag_fields = {
         "d4_enabled": "diag_bounded_stance_dq_enabled",
         "d4_gate_active": "diag_bounded_stance_dq_gate_active",
@@ -438,6 +491,32 @@ def first_crossing(rows: list[dict[str, str]], threshold: float) -> float | None
     return None
 
 
+def first_hard_posture_crossing(rows: list[dict[str, str]]) -> dict[str, Any] | None:
+    for index, row in enumerate(rows):
+        roll = number(row, "imu_roll_rad")
+        pitch = number(row, "imu_pitch_rad")
+        if roll is None or pitch is None or max(abs(roll), abs(pitch)) <= HARD_POSTURE_RAD:
+            continue
+        feet = {
+            leg: {
+                "x_m": number(row, f"known_step_{leg}_actual_x_m"),
+                "z_m": number(row, f"known_step_{leg}_actual_z_m"),
+            }
+            for leg in LEGS
+        }
+        return {
+            "event": "first_22_degree_hard_posture_crossing",
+            "threshold_rad": HARD_POSTURE_RAD,
+            "raw_row_index": index,
+            "state_time_s": number(row, "state_tick_s"),
+            "roll_rad": roll,
+            "pitch_rad": pitch,
+            "base_x_m": number(row, "world_base_x_m"),
+            "feet": feet,
+        }
+    return None
+
+
 def floor_reference(rows: list[dict[str, str]]) -> dict[str, float | None]:
     clean = clean_precontact(rows)
     result: dict[str, float | None] = {}
@@ -474,6 +553,8 @@ def raised_contact(rows: list[dict[str, str]], references: dict[str, float | Non
                 "first_raised_touchdown_state_tick_s": number(first, "state_tick_s") if first else None,
                 "first_raised_touchdown_x_m": number(first, f"known_step_{leg}_actual_x_m") if first else None,
                 "first_raised_touchdown_z_m": number(first, f"known_step_{leg}_actual_z_m") if first else None,
+                "first_raised_commanded_z_m": number(first, f"known_step_{leg}_final_target_world_z_m") if first else None,
+                "first_raised_actual_minus_commanded_z_m": (number(first, f"known_step_{leg}_actual_z_m") - number(first, f"known_step_{leg}_final_target_world_z_m")) if first and number(first, f"known_step_{leg}_actual_z_m") is not None and number(first, f"known_step_{leg}_final_target_world_z_m") is not None else None,
                 "raised_contact_time_s": contact_time,
                 "raised_contact_gate": contact_time >= 0.10,
             }
@@ -484,6 +565,7 @@ def raised_contact(rows: list[dict[str, str]], references: dict[str, float | Non
 def run_metrics(rows: list[dict[str, str]], metadata: dict[str, str], run_dir: Path, references: dict[str, float | None]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     adaptation = first_adaptation(rows)
     risk = risk_event(rows)
+    hard_posture = first_hard_posture_crossing(rows)
     cross_080 = first_crossing(rows, 0.80)
     cross_145 = first_crossing(rows, 1.45)
     hold = False
@@ -533,8 +615,13 @@ def run_metrics(rows: list[dict[str, str]], metadata: dict[str, str], run_dir: P
     metrics = {
         "rows": len(rows),
         "activity_rows": sum(number(row, "motion_stage") == 2 for row in rows),
+        "clean_precontact_mask": clean_mask_summary(rows),
+        "floor_reference_z0_m": references,
+        "actual_foot_extrema_raw": actual_foot_extrema(rows),
+        "actual_foot_extrema_clean": actual_foot_extrema(clean_precontact(rows)),
         "first_adaptation": adaptation,
         "first_plausible_contact_risk": risk,
+        "first_22_degree_hard_posture_crossing": hard_posture,
         "first_base_x_080_state_tick_s": cross_080,
         "first_base_x_145_state_tick_s": cross_145,
         "max_base_x_m": max((number(row, "world_base_x_m") for row in rows if number(row, "world_base_x_m") is not None), default=None),
@@ -546,6 +633,7 @@ def run_metrics(rows: list[dict[str, str]], metadata: dict[str, str], run_dir: P
         "torque_abs": stats(torque),
         "torque_saturation_samples_at_35Nm": sum(value >= 35.0 for value in torque),
         "contact_count_distribution": contact_counts,
+        "contact_intervals": contact_intervals(rows),
         "divergence_abs_z": stats(divergence),
         "raised_contact": raised,
         "statuses": statuses,
@@ -595,6 +683,13 @@ def render_results(path: Path, classification: str, a_dir: Path, b_dir: Path, a_
     b = b_metrics
     adaptation = b.get("first_adaptation") or {}
     risk = b.get("first_plausible_contact_risk") or {}
+    hard = b.get("first_22_degree_hard_posture_crossing") or {}
+    risk_time = risk.get("state_time_s")
+    hard_time = hard.get("state_time_s")
+    if risk_time is not None and hard_time is not None:
+        temporal = f"risk precedes hard posture by {hard_time - risk_time:.3f} s" if hard_time >= risk_time else f"hard posture precedes risk by {risk_time - hard_time:.3f} s"
+    else:
+        temporal = "ordering unresolved"
     raised = ", ".join(f"{item['leg']}={text(item['raised_contact_time_s'])} s" for item in b.get("raised_contact", []))
     path.write_text(f"""# Phase2 known-step B-only closeout
 
@@ -609,13 +704,19 @@ Accepted A runtime HEAD: `{a_meta.get('git_head', 'MISSING')}`. B runtime HEAD: 
 
 Pre-live tests: {json.dumps(tests, sort_keys=True)}
 
+Clean B pre-contact mask: {b.get('clean_precontact_mask')}. B floor-contact references z0={b.get('floor_reference_z0_m')}; these match the independently derived A references.
+
 ## Exact pre-activation comparison
 
-Result: `{'PASS' if pre_ok else 'FAIL'}`. Compared {pre_summary.get('rows_compared', 0)} rows and {pre_summary.get('causal_fields_compared', 0)} causal fields from common deterministic handoff state tick {text(pre_summary.get('common_handoff_state_tick_s'))} through the final row before first B adaptation. Allowed metadata-only differences were `{pre_summary.get('allowed_metadata_fields')}`. First adaptation: time={text(adaptation.get('state_time_s'))} s, base_x={text(adaptation.get('base_x_m'))} m, legs={adaptation.get('legs', [])}.
+Result: `{'PASS' if pre_ok else 'FAIL'}`. Compared {pre_summary.get('rows_compared', 0)} rows and {pre_summary.get('causal_fields_compared', 0)} causal fields from common deterministic handoff state tick {text(pre_summary.get('common_handoff_state_tick_s'))} through the final row before first B adaptation. Allowed metadata-only differences were `{pre_summary.get('allowed_metadata_fields')}`; ignored noncausal diagnostics were `{pre_summary.get('ignored_noncausal_diagnostics')}`. First adaptation: time={text(adaptation.get('state_time_s'))} s, base_x={text(adaptation.get('base_x_m'))} m, legs={adaptation.get('legs', [])}.
+
+The comparator and active-locomotion isolation gate were corrected after capture as analysis-only repairs. Raw A/B captures were not edited and B was not rerun.
 
 ## B isolation and traversal
 
 First plausible contact-risk: time={text(risk.get('state_time_s'))} s, leg={risk.get('leg')}, foot=({text(risk.get('foot_x_m'))}, {text(risk.get('foot_z_m'))}) m, base_x={text(risk.get('base_x_m'))} m. This is a geometry risk proxy, not a literal geom-pair contact claim.
+
+First 22-degree hard-posture crossing: time={text(hard.get('state_time_s'))} s, roll={text(hard.get('roll_rad'))} rad, pitch={text(hard.get('pitch_rad'))} rad, base_x={text(hard.get('base_x_m'))} m, feet={json.dumps(hard.get('feet', {}), sort_keys=True)}. Temporal ordering: {temporal}.
 
 Raised-platform qualified contact time: {raised or 'not observed'}.
 
@@ -670,9 +771,17 @@ def main() -> int:
     b_metrics, raised = run_metrics(b_rows, b_meta, b_dir, floor_reference(b_rows))
     pre_ok, pre_summary, pre_mismatches = exact_preactivation(a_rows, b_rows, a_dir, b_dir)
     isolation_records, isolation_details = isolation(b_rows, b_meta)
+    b_clean = b_metrics["clean_precontact_mask"]
+    a_refs = a_metrics["floor_reference_z0_m"]
+    b_refs = b_metrics["floor_reference_z0_m"]
+    reference_diffs = {leg: (b_refs.get(leg) - a_refs.get(leg)) if b_refs.get(leg) is not None and a_refs.get(leg) is not None else None for leg in LEGS}
+    clean_mask_ok = b_clean["rows"] >= 250 and (b_clean["state_time_span_s"] or 0.0) >= 0.50
+    reference_ok = all(value is not None and abs(value) <= 1e-9 for value in reference_diffs.values())
     protocol_records = [
         gate("A", "raw_schema", not missing_a, f"missing={missing_a or 'none'}"),
         gate("B", "raw_schema", not missing_b, f"missing={missing_b or 'none'}"),
+        gate("B", "clean_precontact_mask", clean_mask_ok, f"rows={b_clean['rows']} span_s={b_clean['state_time_span_s']}"),
+        gate("A_B", "floor_reference_compatible", reference_ok, f"a={a_refs} b={b_refs} diffs={reference_diffs}"),
         gate("A", "frozen_raw_hashes", a_hash_ok, f"matches={a_hash_ok}"),
         gate("A", "accepted_runtime_provenance", a_sources_ok, f"head={a_meta.get('git_head', 'MISSING')}"),
         gate("B", "domain_232", b_protocol["domain_matches"], f"domain={b_protocol['domain_id']}"),

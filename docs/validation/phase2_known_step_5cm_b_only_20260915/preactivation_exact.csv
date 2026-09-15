@@ -1,0 +1,3 @@
+status,a_handoff_state_tick_s,b_handoff_state_tick_s,common_handoff_state_tick_s,a_handoff_source,b_handoff_source,a_start_row,b_start_row,rows_compared,b_first_adaptation,causal_fields_compared,allowed_metadata_fields,ignored_noncausal_diagnostics,mismatch_count_capped,row,field,a,b
+PASS,8.0,8.0,8.0,lockstep_handoff.csv:sim_tick_ms,lockstep_handoff.csv:sim_tick_ms,0,0,3277,"{""base_x_m"":0.584462284,""legs"":[""fr""],""raw_row_index"":3277,""state_time_s"":14.554}",629,"[""known_step_edge_x_m"",""known_step_feature_enabled"",""known_step_half_width_y_m"",""known_step_height_m""]","[""motion_clock_wall_dt_s"",""wbc_shadow_elapsed_us""]",0,,,,
+,,,,,,,,,,,,,,ALL,causal_fields,exact,exact

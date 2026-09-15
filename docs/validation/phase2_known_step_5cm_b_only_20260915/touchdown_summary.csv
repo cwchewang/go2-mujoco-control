@@ -1,0 +1,5 @@
+leg,floor_reference_z0_m,first_raised_touchdown_state_tick_s,first_raised_touchdown_x_m,first_raised_touchdown_z_m,first_raised_commanded_z_m,first_raised_actual_minus_commanded_z_m,raised_contact_time_s,raised_contact_gate
+fr,0.02349693,,,,,,0,False
+fl,0.023444499,,,,,,0,False
+rr,0.023452305,,,,,,0,False
+rl,0.023179432,,,,,,0,False
