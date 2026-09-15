@@ -1,0 +1,96 @@
+{
+  "checkpoint": "phase2_known_step_edge_aware_v2_protocol_repair_20260915",
+  "branch": "research/phase2-known-step-edge-aware-v2-protocol-repair-20260915",
+  "parent_closeout_head": "11e79eaba861d0e4fd26fdbaf4e9ec5f2caaacb6",
+  "failed_v2_runtime_head": "be1e9acca1c6650be7d500e1e3fb63dcd5594826",
+  "pre_live_source_repair_head": "451f531599b3536ddbc4b0081acf0017425723fe",
+  "provenance_audit": {
+    "status": "PASS",
+    "prohibited_source_diff_vs_failed_runtime": [],
+    "allowed_repair_files": [
+      "example/cpp/scripts/run_trot.sh",
+      "example/cpp/scripts/run_phase2_known_step_edge_aware_v2_protocol_repair.sh",
+      "example/cpp/tools/analysis/analyze_phase2_known_step_edge_aware_v2.py"
+    ],
+    "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+    "v2_scientific_runtime_head_frozen": "be1e9acca1c6650be7d500e1e3fb63dcd5594826"
+  },
+  "dds_domain_preflight": [
+    {
+      "domain": 233,
+      "accepted": false,
+      "return_code": 2,
+      "rejection_stage": "run_trot.sh domain validation",
+      "stderr": "DDS domain must be an integer in [0, 232]; domain 233 is outside the configured CycloneDDS UDP port range.",
+      "simulator_started": false,
+      "controller_started": false
+    },
+    {
+      "domain": 230,
+      "accepted": true,
+      "return_code": 2,
+      "post_validation_guard": "Missing simulator, trot controller, or scene file.",
+      "simulator_started": false,
+      "controller_started": false
+    }
+  ],
+  "tests": {
+    "run_trot_bash_n": "PASS",
+    "protocol_repair_runner_bash_n": "PASS",
+    "analyzer_help": "PASS",
+    "focused_v2_ctest": {"status": "PASS", "passed": 2, "total": 2},
+    "motion_clock_integration_ctest": {"status": "PASS", "passed": 1, "total": 1},
+    "controller_full_ctest": {"status": "PASS", "passed": 31, "total": 31},
+    "simulator_test_lockstep": "PASS",
+    "simulator_full_ctest": {"status": "PASS", "passed": 2, "total": 2}
+  },
+  "frozen_captures": {
+    "A": {
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-wallclock-repair-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_wallclock_repair_20260915/A",
+      "runtime_head": "df5d7663adc9e96d153107e071d7b49676bcdad6",
+      "controller_sha256": "80c05a7750ef6782ff24955f7952dd391afce4c5406a15182bc712b36ef49ab3",
+      "simulator_sha256": "b9f9e44a40d9b08cd6dce6632038819fab5ec0099e1628078c07185d5a808c9d",
+      "data_csv_sha256": "947a7b4d077221fd7678a25ced4068c84f6e8c5156b374f574b0ff13e13b8296",
+      "run_metadata_sha256": "d86f5cd9b3c87c7b8ef8274cfe59d626c9ff53f2041bbc66bd19b595c2f906ff",
+      "lockstep_trace_sha256": "221b6a88a47bc9ba68b3030f5679df7686286c5d79a6c97325fb75442afe71d7",
+      "lockstep_handoff_sha256": "a3d7a12dfce3e9cac9565ad59e0c7925bf5edbf394c6a6fafd3625d0aa0d7abc",
+      "lockstep_handoff_bin_sha256": "bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137"
+    },
+    "V1_B": {
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B",
+      "runtime_head": "c44314b451ea77d460263052b7f274347881137c",
+      "controller_sha256": "6d9931fce67ec3092fb8867828ae6447a5f44f89c3dd08b7c4104efa1134ce2e",
+      "simulator_sha256": "a24721b84bea2854df36428190e38d163a780e9fead37258bd590e974117e280",
+      "data_csv_sha256": "62f9c06f0942de9d993165ec72c063b9517be825e0ab99fa9f86f6c6615d95f7",
+      "run_metadata_sha256": "9718d52e2d1f88396a394d58fba3da2dff4355ac6021d7905ea0025e14d8ada7",
+      "lockstep_trace_sha256": "77223dae0923863543eda303105cb78387fba785165b531952a026971d14d69b",
+      "lockstep_handoff_sha256": "a3d7a12dfce3e9cac9565ad59e0c7925bf5edbf394c6a6fafd3625d0aa0d7abc",
+      "lockstep_handoff_bin_sha256": "bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137"
+    },
+    "parent_failed_v2_C": {
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-edge-aware-v2-20260915/example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_20260915/C",
+      "runtime_head": "be1e9acca1c6650be7d500e1e3fb63dcd5594826",
+      "domain": 233,
+      "immutable_manifest": {
+        "contact_ground_truth.csv": "a5de401c497a12a0cc58355e99f7b07791384f8a2dc9a709912b0ea6a61f8b56",
+        "environment.txt": "71101629bcf85a24d40756f252f5cf2b8fe2f383dbf42829b4fec75e7dcf3025",
+        "lockstep_trace.csv": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "run_metadata.txt": "6944eec0a6c66903bd985a4ec27da2c29c78c0e7246277c7b4719416a0ec0d23",
+        "simulator.log": "6d557c933508bd086e7c01b124228af4db4c2498068ba140aa1011d32c608201"
+      }
+    }
+  },
+  "built_artifacts": {
+    "controller_sha256": "f57c2ec86ae520f15a782151058f56578486d18b46b273027a6b7b9182385e97",
+    "simulator_sha256": "ed22f0889b5bd299f7130936ac526c0c33a861c8a44e60d963fc03eb70486c89",
+    "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+  },
+  "live_authorization": {
+    "new_run": "example/cpp/experiments/_runs/phase2_known_step_edge_aware_v2_protocol_repair_20260915/C",
+    "domain": 230,
+    "authorized_c_launches": 1,
+    "a_launches": 0,
+    "v1_b_launches": 0,
+    "parent_failed_c_overwritten": false
+  }
+}
