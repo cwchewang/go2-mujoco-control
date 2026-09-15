@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Fail-closed preflight for expensive Go2 research runs.
 
-The tool deliberately checks execution integrity, not scientific merit. The current
-TASK/SOP owns scientific variables and classifications.
+The tool checks execution integrity, not scientific merit. The current task/SOP
+owns scientific variables and classifications.
 """
 from __future__ import annotations
 
@@ -18,8 +18,9 @@ import sys
 from typing import Any
 
 
-DEFAULT_PROCESS_PATTERNS = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
+DEFAULT_PROCESS_NAMES = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
 LINUX_SAFE_DOMAIN_RANGES = ((0, 101), (215, 232))
+REVIEW_SURFACES = {"runtime", "runner", "logger", "schema", "scene", "analyzer"}
 
 
 def command(argv: list[str], cwd: Path) -> tuple[int, str, str]:
@@ -97,26 +98,68 @@ def read_ephemeral_range() -> tuple[int, int] | None:
 
 
 def runner_domains(text: str) -> list[int]:
-    values = re.findall(r"--domain-id(?:\s+|=)([0-9]+)", text)
-    return [int(value) for value in values]
+    values: list[int] = []
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        values.extend(
+            int(value)
+            for value in re.findall(r"--domain-id(?:\s+|=)([0-9]+)", code)
+        )
+    return values
 
 
-def find_processes(patterns: tuple[str, ...]) -> list[dict[str, Any]]:
-    found: list[dict[str, Any]] = []
+def parent_pid(pid: int) -> int | None:
+    try:
+        fields = Path(f"/proc/{pid}/stat").read_text().split()
+        return int(fields[3]) if len(fields) > 3 else None
+    except (OSError, ValueError):
+        return None
+
+
+def ancestor_pids(pid: int) -> set[int]:
+    ancestors: set[int] = set()
+    current = parent_pid(pid)
+    while current and current > 1 and current not in ancestors:
+        ancestors.add(current)
+        current = parent_pid(current)
+    return ancestors
+
+
+def process_argv_matches(argv: list[str], names: tuple[str, ...]) -> list[str]:
+    # Match executable/script basenames, not arbitrary substrings. This avoids
+    # flagging the shell that invoked preflight just because a path appears in
+    # its argument string.
+    basenames = {Path(token).name for token in argv[:4] if token}
+    return [name for name in names if name in basenames]
+
+
+def find_processes(names: tuple[str, ...]) -> list[dict[str, Any]]:
+    proc_root = Path("/proc")
+    if not proc_root.is_dir():
+        return []
     own_pid = os.getpid()
-    for entry in Path("/proc").iterdir() if Path("/proc").is_dir() else []:
-        if not entry.name.isdigit() or int(entry.name) == own_pid:
+    excluded = {own_pid} | ancestor_pids(own_pid)
+    found: list[dict[str, Any]] = []
+    for entry in proc_root.iterdir():
+        if not entry.name.isdigit():
+            continue
+        pid = int(entry.name)
+        if pid in excluded:
             continue
         try:
             raw = (entry / "cmdline").read_bytes()
         except OSError:
             continue
-        cmdline = raw.replace(b"\0", b" ").decode("utf-8", errors="replace").strip()
-        if not cmdline:
+        argv = [
+            token.decode("utf-8", errors="replace")
+            for token in raw.split(b"\0")
+            if token
+        ]
+        if not argv:
             continue
-        matches = [pattern for pattern in patterns if pattern in cmdline]
+        matches = process_argv_matches(argv, names)
         if matches:
-            found.append({"pid": int(entry.name), "matches": matches, "cmdline": cmdline})
+            found.append({"pid": pid, "matches": matches, "argv": argv[:8]})
     return found
 
 
@@ -144,11 +187,20 @@ def parse_hash_requirement(raw: str, repo: Path) -> tuple[Path, str]:
     return path.resolve(), expected.lower()
 
 
+def inside(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root", type=Path, default=Path.cwd())
     parser.add_argument("--experiment-id", required=True)
     parser.add_argument("--expected-branch", required=True)
+    parser.add_argument("--expected-head", help="optional exact task/prepared HEAD")
     parser.add_argument("--runner", type=Path, required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--domain", type=int, required=True)
@@ -156,13 +208,13 @@ def main() -> int:
         "--dds-policy",
         choices=("linux-safe", "spec-only"),
         default="linux-safe",
-        help="linux-safe avoids the standard Linux ephemeral-port region; spec-only only enforces DDS port legality",
+        help="linux-safe also avoids the standard Linux ephemeral-port region",
     )
     parser.add_argument("--baseline-runner", type=Path)
     parser.add_argument(
         "--changed-surface",
         action="append",
-        choices=("runtime", "runner", "logger", "schema", "scene", "analyzer"),
+        choices=tuple(sorted(REVIEW_SURFACES)),
         default=[],
         help="repeat for execution surfaces changed since the accepted baseline",
     )
@@ -171,19 +223,20 @@ def main() -> int:
     parser.add_argument("--require-file", action="append", default=[])
     parser.add_argument("--hash", dest="hash_requirements", action="append", default=[])
     parser.add_argument("--test", action="append", default=[], help="no-live/build test command; repeatable")
-    parser.add_argument("--process-pattern", action="append", default=[])
-    parser.add_argument("--output", type=Path)
+    parser.add_argument("--process-name", action="append", default=[])
+    parser.add_argument("--output", type=Path, help="JSON report; use stdout or an ignored/out-of-repo path for final arming")
     args = parser.parse_args()
 
     repo = args.repo_root.resolve()
-    runner = args.runner if args.runner.is_absolute() else repo / args.runner
-    runner = runner.resolve()
-    run_dir = args.run_dir if args.run_dir.is_absolute() else repo / args.run_dir
-    run_dir = run_dir.resolve()
+    runner = (args.runner if args.runner.is_absolute() else repo / args.runner).resolve()
+    run_dir = (args.run_dir if args.run_dir.is_absolute() else repo / args.run_dir).resolve()
     baseline_runner = None
     if args.baseline_runner:
-        baseline_runner = args.baseline_runner if args.baseline_runner.is_absolute() else repo / args.baseline_runner
-        baseline_runner = baseline_runner.resolve()
+        baseline_runner = (
+            args.baseline_runner
+            if args.baseline_runner.is_absolute()
+            else repo / args.baseline_runner
+        ).resolve()
 
     checks: list[dict[str, Any]] = []
     report: dict[str, Any] = {
@@ -198,7 +251,19 @@ def main() -> int:
     branch_rc, branch, branch_err = command(["git", "branch", "--show-current"], repo)
     status_rc, status, status_err = command(["git", "status", "--porcelain"], repo)
     add_check(checks, "git_head_readable", git_rc == 0, head if git_rc == 0 else git_err)
-    add_check(checks, "expected_branch", branch_rc == 0 and branch == args.expected_branch, {"actual": branch, "expected": args.expected_branch, "stderr": branch_err})
+    add_check(
+        checks,
+        "expected_branch",
+        branch_rc == 0 and branch == args.expected_branch,
+        {"actual": branch, "expected": args.expected_branch, "stderr": branch_err},
+    )
+    if args.expected_head:
+        add_check(
+            checks,
+            "expected_head",
+            git_rc == 0 and head == args.expected_head,
+            {"actual": head, "expected": args.expected_head},
+        )
     add_check(checks, "worktree_clean", status_rc == 0 and status == "", status if status else status_err)
     report["git"] = {"head": head, "branch": branch, "clean": status_rc == 0 and status == ""}
 
@@ -226,11 +291,10 @@ def main() -> int:
     add_check(checks, "dds_domain_spec_range", in_spec_range, {"domain": args.domain, "allowed": [0, 232]})
     add_check(checks, "dds_rtps_ports_legal", ports_legal, ports)
     if args.dds_policy == "linux-safe":
-        safe_pool = domain_in_linux_safe_pool(args.domain)
         add_check(
             checks,
             "dds_linux_safe_pool",
-            safe_pool,
+            domain_in_linux_safe_pool(args.domain),
             {"domain": args.domain, "allowed_ranges": list(LINUX_SAFE_DOMAIN_RANGES)},
         )
     ephemeral = read_ephemeral_range()
@@ -245,15 +309,20 @@ def main() -> int:
             severity="hard" if args.dds_policy == "linux-safe" else "warn",
         )
     else:
-        add_check(checks, "dds_ephemeral_port_range_readable", ephemeral is not None, ephemeral or "unavailable", severity="warn")
+        add_check(
+            checks,
+            "dds_ephemeral_port_range_readable",
+            ephemeral is not None,
+            ephemeral or "unavailable",
+            severity="warn",
+        )
 
     lock_ok, lock_path = domain_lock_free(args.domain)
     add_check(checks, "dds_domain_lock_free", lock_ok, lock_path)
-
     add_check(checks, "run_directory_fresh", not run_dir.exists(), str(run_dir))
 
-    patterns = tuple(args.process_pattern) if args.process_pattern else DEFAULT_PROCESS_PATTERNS
-    processes = find_processes(patterns)
+    names = tuple(args.process_name) if args.process_name else DEFAULT_PROCESS_NAMES
+    processes = find_processes(names)
     add_check(checks, "no_stale_runtime_process", not processes, processes)
 
     for raw in args.require_file:
@@ -285,21 +354,46 @@ def main() -> int:
             # git diff --no-index returns 1 when files differ, 0 when identical.
             diff_valid = diff_rc in (0, 1)
             runner_diff = diff_out
-            add_check(checks, "baseline_runner_diff_generated", diff_valid, diff_err or ("identical" if diff_rc == 0 else "different; diff recorded"))
+            add_check(
+                checks,
+                "baseline_runner_diff_generated",
+                diff_valid,
+                diff_err or ("identical" if diff_rc == 0 else "different; diff recorded"),
+            )
         else:
-            add_check(checks, "baseline_runner_diff_generated", False, {"baseline": str(baseline_runner), "runner": str(runner)})
+            add_check(
+                checks,
+                "baseline_runner_diff_generated",
+                False,
+                {"baseline": str(baseline_runner), "runner": str(runner)},
+            )
     report["runner_diff"] = runner_diff
 
     test_results: list[dict[str, Any]] = []
     for index, test in enumerate(args.test, start=1):
         rc, stdout, stderr = shell_command(test, repo)
-        result = {"index": index, "command": test, "return_code": rc, "stdout": stdout, "stderr": stderr}
+        result = {
+            "index": index,
+            "command": test,
+            "return_code": rc,
+            "stdout": stdout,
+            "stderr": stderr,
+        }
         test_results.append(result)
         add_check(checks, f"test_{index}", rc == 0, result)
     report["tests"] = test_results
 
+    changed = set(args.changed_surface)
+    if changed:
+        add_check(
+            checks,
+            "changed_surface_has_no_live_test",
+            bool(args.test),
+            {"changed_surfaces": sorted(changed), "test_count": len(args.test)},
+        )
+
     runner_changed = bool(runner_diff)
-    review_required = bool(args.requires_sol_review or args.changed_surface or runner_changed)
+    review_required = bool(args.requires_sol_review or changed or runner_changed)
     report["sol_review"] = {
         "required": review_required,
         "approved_head": args.approved_head,
@@ -314,17 +408,43 @@ def main() -> int:
             {"approved_head": args.approved_head, "current_head": head},
         )
     else:
-        add_check(checks, "sol_review_exact_head", True, "not required for this frozen execution surface")
+        add_check(
+            checks,
+            "sol_review_exact_head",
+            True,
+            "not required for this frozen execution surface",
+        )
 
-    hard_failures = [item for item in checks if item["severity"] == "hard" and item["status"] == "FAIL"]
+    output: Path | None = None
+    if args.output:
+        output = (args.output if args.output.is_absolute() else repo / args.output).resolve()
+        if inside(output, repo):
+            rel = output.relative_to(repo)
+            ignore_rc, _, _ = command(["git", "check-ignore", "-q", "--", str(rel)], repo)
+            add_check(
+                checks,
+                "output_preserves_clean_worktree",
+                ignore_rc == 0,
+                {"output": str(output), "inside_repo": True, "gitignored": ignore_rc == 0},
+            )
+        else:
+            add_check(
+                checks,
+                "output_preserves_clean_worktree",
+                True,
+                {"output": str(output), "inside_repo": False},
+            )
+
+    hard_failures = [
+        item for item in checks if item["severity"] == "hard" and item["status"] == "FAIL"
+    ]
     warnings = [item for item in checks if item["status"] == "WARN"]
     report["pass"] = not hard_failures
     report["hard_failure_count"] = len(hard_failures)
     report["warning_count"] = len(warnings)
 
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
-    if args.output:
-        output = args.output if args.output.is_absolute() else repo / args.output
+    if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding="utf-8")
     sys.stdout.write(rendered)
