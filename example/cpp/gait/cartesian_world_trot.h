@@ -217,6 +217,129 @@ inline go2::Vec3 PlanWorldTouchdown(const WorldTouchdownInput &in)
             in.ground_z};
 }
 
+constexpr double kKnownStepV2FootRadiusM = 0.022;
+constexpr double kKnownStepV2GeomMarginM = 0.001;
+constexpr double kKnownStepV2LandingMinXM = 0.850;
+
+enum KnownStepV2PlanningFailureCode
+{
+    kKnownStepV2PlanningOk = 0,
+    kKnownStepV2NotACrossing = 1,
+    kKnownStepV2InvalidEdgeOrdering = 2
+};
+
+inline const char *KnownStepV2PlanningFailureReason(int code)
+{
+    switch (code)
+    {
+    case kKnownStepV2PlanningOk:
+        return "none";
+    case kKnownStepV2NotACrossing:
+        return "not_crossing";
+    case kKnownStepV2InvalidEdgeOrdering:
+        return "invalid_edge_ordering";
+    default:
+        return "unknown";
+    }
+}
+
+struct KnownStepV2Plan
+{
+    go2::Vec3 swing_start_world{};
+    go2::Vec3 ordinary_nominal_touchdown_world{};
+    go2::Vec3 detection_probe_touchdown_world{};
+    go2::Vec3 final_touchdown_world{};
+    double h0_m = 0.0;
+    double h_nom_m = 0.0;
+    double h_probe_m = 0.0;
+    double rise_m = 0.0;
+    double x_entry_m = 0.0;
+    double x_exit_m = 0.0;
+    double x_land_min_m = kKnownStepV2LandingMinXM;
+    double effective_lift_m = 0.0;
+    double z_corridor_m = 0.0;
+    double s_entry = 0.0;
+    double s_exit = 0.0;
+    bool crossing_latched = false;
+    bool planning_valid = true;
+    int planning_failure_code = kKnownStepV2PlanningOk;
+};
+
+inline KnownStepV2Plan PlanKnownStepV2Crossing(
+    const KnownStepGeometry &geometry,
+    const go2::Vec3 &swing_start_world,
+    const go2::Vec3 &ordinary_nominal_touchdown_world,
+    const go2::Vec3 &detection_probe_touchdown_world,
+    double base_foot_lift_m)
+{
+    KnownStepV2Plan out;
+    out.swing_start_world = swing_start_world;
+    out.ordinary_nominal_touchdown_world = ordinary_nominal_touchdown_world;
+    out.detection_probe_touchdown_world = detection_probe_touchdown_world;
+    out.final_touchdown_world = ordinary_nominal_touchdown_world;
+    out.h0_m = KnownStepTerrainHeight(
+        geometry, swing_start_world.x, swing_start_world.y);
+    out.h_nom_m = KnownStepTerrainHeight(
+        geometry, ordinary_nominal_touchdown_world.x,
+        ordinary_nominal_touchdown_world.y);
+    out.h_probe_m = KnownStepTerrainHeight(
+        geometry, detection_probe_touchdown_world.x,
+        detection_probe_touchdown_world.y);
+    out.x_entry_m = geometry.edge_x_m - kKnownStepV2FootRadiusM -
+                    kKnownStepV2GeomMarginM;
+    out.x_exit_m = geometry.edge_x_m + kKnownStepV2FootRadiusM +
+                   kKnownStepV2GeomMarginM;
+    out.x_land_min_m = std::max(
+        kKnownStepV2LandingMinXM,
+        geometry.edge_x_m + 2.0 * kKnownStepV2FootRadiusM +
+            kKnownStepV2GeomMarginM);
+    out.effective_lift_m = base_foot_lift_m;
+    out.planning_failure_code = kKnownStepV2NotACrossing;
+
+    const double raised_height = std::max(out.h_nom_m, out.h_probe_m);
+    out.crossing_latched = geometry.v2_enabled &&
+                           out.h0_m < geometry.height_m &&
+                           raised_height > out.h0_m;
+    if (!out.crossing_latched)
+        return out;
+
+    out.planning_failure_code = kKnownStepV2PlanningOk;
+    out.rise_m = raised_height - out.h0_m;
+    out.final_touchdown_world.x = std::max(
+        ordinary_nominal_touchdown_world.x, out.x_land_min_m);
+    out.final_touchdown_world.y = ordinary_nominal_touchdown_world.y;
+    out.final_touchdown_world.z = swing_start_world.z + out.rise_m;
+    out.effective_lift_m = std::max(
+        base_foot_lift_m, std::max(0.0, out.rise_m) + 0.030);
+    out.z_corridor_m = std::max(
+        geometry.height_m + kKnownStepV2FootRadiusM +
+            kKnownStepV2GeomMarginM,
+        0.5 * (swing_start_world.z + out.final_touchdown_world.z) +
+            out.effective_lift_m);
+    const double dx = out.final_touchdown_world.x - swing_start_world.x;
+    if (std::abs(dx) > 1.0e-12)
+    {
+        out.s_entry = (out.x_entry_m - swing_start_world.x) / dx;
+        out.s_exit = (out.x_exit_m - swing_start_world.x) / dx;
+    }
+    out.planning_valid = swing_start_world.x < out.x_entry_m &&
+                         out.x_entry_m < out.x_exit_m &&
+                         out.x_exit_m < out.final_touchdown_world.x &&
+                         0.0 < out.s_entry && out.s_entry < out.s_exit &&
+                         out.s_exit < 1.0;
+    if (!out.planning_valid)
+    {
+        out.planning_failure_code = kKnownStepV2InvalidEdgeOrdering;
+        out.final_touchdown_world = ordinary_nominal_touchdown_world;
+        out.rise_m = 0.0;
+        out.effective_lift_m = base_foot_lift_m;
+        out.z_corridor_m = 0.0;
+        out.s_entry = 0.0;
+        out.s_exit = 0.0;
+    }
+    return out;
+}
+
 struct CartesianWorldState
 {
     std::array<go2::Vec3, go2::kLegCount> stance_anchor_world{};
@@ -235,6 +358,12 @@ struct CartesianWorldState
     std::array<double, go2::kLegCount> known_step_rise_m{};
     std::array<double, go2::kLegCount> known_step_effective_lift_m{};
     std::array<bool, go2::kLegCount> known_step_adaptation_active{};
+    std::array<KnownStepV2Plan, go2::kLegCount> known_step_v2_plan{};
+    std::array<double, go2::kLegCount> known_step_v2_s{};
+    std::array<double, go2::kLegCount> known_step_v2_command_x_m{};
+    std::array<double, go2::kLegCount> known_step_v2_command_z_m{};
+    std::array<double, go2::kLegCount> known_step_v2_command_vx_mps{};
+    std::array<double, go2::kLegCount> known_step_v2_command_vz_mps{};
     std::array<bool, go2::kLegCount> stance_valid{};
     std::array<bool, go2::kLegCount> in_stance{};
     std::array<bool, go2::kLegCount> prev_stance{};
@@ -367,6 +496,85 @@ inline go2::Vec3 SwingWorldVelocity(
     return v;
 }
 
+inline double HistoricalHorizontalProgress(double swing_phase)
+{
+    return Quintic01(std::min(1.0, swing_phase / 0.80));
+}
+
+inline double HistoricalHorizontalProgressDerivative(
+    double swing_phase, double swing_duration_s)
+{
+    const double t_sw = std::max(0.05, swing_duration_s);
+    if (swing_phase >= 0.80)
+        return 0.0;
+    return Quintic01Dot(std::min(1.0, swing_phase / 0.80)) /
+           0.80 / t_sw;
+}
+
+inline go2::Vec3 KnownStepV2SwingTarget(
+    const KnownStepV2Plan &plan, double swing_phase)
+{
+    if (!plan.crossing_latched || !plan.planning_valid)
+        return SwingWorldTarget(
+            plan.swing_start_world, plan.final_touchdown_world,
+            swing_phase, plan.effective_lift_m);
+
+    const double s = HistoricalHorizontalProgress(swing_phase);
+    go2::Vec3 p = {
+        plan.swing_start_world.x +
+            (plan.final_touchdown_world.x - plan.swing_start_world.x) * s,
+        plan.swing_start_world.y +
+            (plan.final_touchdown_world.y - plan.swing_start_world.y) * s,
+        plan.swing_start_world.z};
+    if (s <= plan.s_entry)
+    {
+        p.z += (plan.z_corridor_m - plan.swing_start_world.z) *
+               Quintic01(s / plan.s_entry);
+    }
+    else if (s < plan.s_exit)
+    {
+        p.z = plan.z_corridor_m;
+    }
+    else
+    {
+        p.z = plan.z_corridor_m +
+              (plan.final_touchdown_world.z - plan.z_corridor_m) *
+                  Quintic01((s - plan.s_exit) / (1.0 - plan.s_exit));
+    }
+    return p;
+}
+
+inline go2::Vec3 KnownStepV2SwingVelocity(
+    const KnownStepV2Plan &plan,
+    double swing_phase,
+    double swing_duration_s)
+{
+    if (!plan.crossing_latched || !plan.planning_valid)
+        return SwingWorldVelocity(
+            plan.swing_start_world, plan.final_touchdown_world,
+            swing_phase, plan.effective_lift_m, swing_duration_s);
+
+    const double s = HistoricalHorizontalProgress(swing_phase);
+    const double ds_dt = HistoricalHorizontalProgressDerivative(
+        swing_phase, swing_duration_s);
+    go2::Vec3 v = {
+        (plan.final_touchdown_world.x - plan.swing_start_world.x) * ds_dt,
+        (plan.final_touchdown_world.y - plan.swing_start_world.y) * ds_dt,
+        0.0};
+    if (s <= plan.s_entry)
+    {
+        v.z = (plan.z_corridor_m - plan.swing_start_world.z) *
+              Quintic01Dot(s / plan.s_entry) / plan.s_entry * ds_dt;
+    }
+    else if (s >= plan.s_exit)
+    {
+        v.z = (plan.final_touchdown_world.z - plan.z_corridor_m) *
+              Quintic01Dot((s - plan.s_exit) / (1.0 - plan.s_exit)) /
+              (1.0 - plan.s_exit) * ds_dt;
+    }
+    return v;
+}
+
 inline void CommandedWorldVelocity(
     double v_cmd_mps, double yaw_rad, bool world_heading,
     double &vx_des, double &vy_des)
@@ -428,6 +636,8 @@ inline void ApplyCartesianWorldTrot(
         {
             state.known_step_effective_lift_m[leg] = in.foot_lift_m;
             state.known_step_adaptation_active[leg] = false;
+            state.known_step_v2_plan[leg] = KnownStepV2Plan{};
+            state.known_step_v2_s[leg] = 0.0;
         }
 
         if (entering_stance || (stance && !state.stance_valid[leg]))
@@ -469,44 +679,79 @@ inline void ApplyCartesianWorldTrot(
                            0.08 * in.gyro_x;
             state.swing_target_world[leg] = PlanWorldTouchdown(td);
             ApplyLateralFootOffsets(leg, in, state.swing_target_world[leg]);
-            const auto adaptation = RecordKnownStepAdaptation(
-                in, state, leg, state.swing_target_world[leg]);
-            state.swing_target_world[leg] = adaptation.final_touchdown_world;
+            if (in.known_step_geometry.v2_enabled)
+            {
+                const go2::Vec3 ordinary_nominal = state.swing_target_world[leg];
+                WorldTouchdownInput probe_td = td;
+                probe_td.swing_remaining_s = std::max(
+                    0.05, (1.0 - in.duty_factor) * in.period_s);
+                go2::Vec3 detection_probe = PlanWorldTouchdown(probe_td);
+                ApplyLateralFootOffsets(leg, in, detection_probe);
+                state.known_step_v2_plan[leg] = PlanKnownStepV2Crossing(
+                    in.known_step_geometry, state.swing_start_world[leg],
+                    ordinary_nominal, detection_probe, in.foot_lift_m);
+                const auto &plan = state.known_step_v2_plan[leg];
+                state.swing_target_world[leg] = plan.final_touchdown_world;
+                state.known_step_nominal_touchdown_world[leg] =
+                    plan.ordinary_nominal_touchdown_world;
+                state.known_step_final_touchdown_world[leg] =
+                    plan.final_touchdown_world;
+                state.known_step_h0_m[leg] = plan.h0_m;
+                state.known_step_h1_m[leg] = std::max(plan.h_nom_m, plan.h_probe_m);
+                state.known_step_rise_m[leg] = plan.rise_m;
+                state.known_step_effective_lift_m[leg] = plan.effective_lift_m;
+                state.known_step_adaptation_active[leg] = false;
+            }
+            else
+            {
+                const auto adaptation = RecordKnownStepAdaptation(
+                    in, state, leg, state.swing_target_world[leg]);
+                state.swing_target_world[leg] = adaptation.final_touchdown_world;
+            }
             state.stance_valid[leg] = false;
         }
         else if (!stance)
         {
-            WorldTouchdownInput td;
-            td.hip_world = HipWorld(
-                in.base, in.quaternion, static_cast<go2::Leg>(leg));
-            td.vx_world = in.vx_world;
-            td.vy_world = in.vy_world +
-                          0.22 * in.roll_rad / std::max(0.08, t_st) +
-                          0.08 * in.gyro_x;
-            td.vx_des_world = vx_des;
-            td.vy_des_world = vy_des;
-            td.stance_time_s = t_st;
-            td.velocity_gain_s = in.raibert_gain_s;
-            td.velocity_gain_y = in.raibert_gain_y;
-            td.max_adjustment_m = in.raibert_max_adj_m;
-            td.ypos_gain = in.ypos_gain;
-            td.y_ref = in.y_ref;
-            td.ground_z = state.swing_start_world[leg].z;
-            td.measured_placement = in.measured_placement;
-            if (in.predict_hip_at_td)
+            if (in.known_step_geometry.v2_enabled &&
+                state.known_step_v2_plan[leg].crossing_latched)
             {
-                const double t_sw = std::max(
-                    0.05, (1.0 - in.duty_factor) * in.period_s);
-                td.swing_remaining_s =
-                    (1.0 - LegSwingPhase(
-                        leg, in.phase, in.duty_factor, in.pattern)) *
-                    t_sw;
+                state.swing_target_world[leg] =
+                    state.known_step_v2_plan[leg].final_touchdown_world;
             }
-            state.swing_target_world[leg] = PlanWorldTouchdown(td);
-            ApplyLateralFootOffsets(leg, in, state.swing_target_world[leg]);
-            const auto adaptation = RecordKnownStepAdaptation(
-                in, state, leg, state.swing_target_world[leg]);
-            state.swing_target_world[leg] = adaptation.final_touchdown_world;
+            else
+            {
+                WorldTouchdownInput td;
+                td.hip_world = HipWorld(
+                    in.base, in.quaternion, static_cast<go2::Leg>(leg));
+                td.vx_world = in.vx_world;
+                td.vy_world = in.vy_world +
+                              0.22 * in.roll_rad / std::max(0.08, t_st) +
+                              0.08 * in.gyro_x;
+                td.vx_des_world = vx_des;
+                td.vy_des_world = vy_des;
+                td.stance_time_s = t_st;
+                td.velocity_gain_s = in.raibert_gain_s;
+                td.velocity_gain_y = in.raibert_gain_y;
+                td.max_adjustment_m = in.raibert_max_adj_m;
+                td.ypos_gain = in.ypos_gain;
+                td.y_ref = in.y_ref;
+                td.ground_z = state.swing_start_world[leg].z;
+                td.measured_placement = in.measured_placement;
+                if (in.predict_hip_at_td)
+                {
+                    const double t_sw = std::max(
+                        0.05, (1.0 - in.duty_factor) * in.period_s);
+                    td.swing_remaining_s =
+                        (1.0 - LegSwingPhase(
+                            leg, in.phase, in.duty_factor, in.pattern)) *
+                        t_sw;
+                }
+                state.swing_target_world[leg] = PlanWorldTouchdown(td);
+                ApplyLateralFootOffsets(leg, in, state.swing_target_world[leg]);
+                const auto adaptation = RecordKnownStepAdaptation(
+                    in, state, leg, state.swing_target_world[leg]);
+                state.swing_target_world[leg] = adaptation.final_touchdown_world;
+            }
         }
 
         go2::Vec3 p_world = in.actual_world_feet[leg];
@@ -520,20 +765,37 @@ inline void ApplyCartesianWorldTrot(
             const double swing_phase =
                 LegSwingPhase(
                     leg, in.phase, in.duty_factor, in.pattern);
-            p_world = SwingWorldTarget(
-                state.swing_start_world[leg],
-                state.swing_target_world[leg],
-                swing_phase,
-                state.known_step_effective_lift_m[leg]);
-            v_world = SwingWorldVelocity(
-                state.swing_start_world[leg],
-                state.swing_target_world[leg],
-                swing_phase,
-                state.known_step_effective_lift_m[leg],
-                std::max(0.05, (1.0 - in.duty_factor) * in.period_s));
+            if (in.known_step_geometry.v2_enabled &&
+                state.known_step_v2_plan[leg].crossing_latched)
+            {
+                p_world = KnownStepV2SwingTarget(
+                    state.known_step_v2_plan[leg], swing_phase);
+                v_world = KnownStepV2SwingVelocity(
+                    state.known_step_v2_plan[leg], swing_phase,
+                    std::max(0.05, (1.0 - in.duty_factor) * in.period_s));
+            }
+            else
+            {
+                p_world = SwingWorldTarget(
+                    state.swing_start_world[leg],
+                    state.swing_target_world[leg],
+                    swing_phase,
+                    state.known_step_effective_lift_m[leg]);
+                v_world = SwingWorldVelocity(
+                    state.swing_start_world[leg],
+                    state.swing_target_world[leg],
+                    swing_phase,
+                    state.known_step_effective_lift_m[leg],
+                    std::max(0.05, (1.0 - in.duty_factor) * in.period_s));
+            }
+            state.known_step_v2_s[leg] = HistoricalHorizontalProgress(swing_phase);
         }
         state.target_world[leg] = p_world;
         state.target_world_vel[leg] = v_world;
+        state.known_step_v2_command_x_m[leg] = p_world.x;
+        state.known_step_v2_command_z_m[leg] = p_world.z;
+        state.known_step_v2_command_vx_mps[leg] = v_world.x;
+        state.known_step_v2_command_vz_mps[leg] = v_world.z;
         state.known_step_final_touchdown_world[leg] = state.swing_target_world[leg];
         state.known_step_actual_world_feet[leg] = in.actual_world_feet[leg];
         state.in_stance[leg] = stance;

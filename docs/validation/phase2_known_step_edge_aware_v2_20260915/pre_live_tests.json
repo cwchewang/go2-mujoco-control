@@ -1,0 +1,14 @@
+{
+  "analyzer_syntax_and_help": "PASS",
+  "controller_full_ctest": "31/31 PASS",
+  "controller_build": "PASS",
+  "focused_known_step_v2_test": "PASS",
+  "lockstep_motion_clock_integration": "PASS",
+  "simulator_build": "PASS",
+  "simulator_test_lockstep": "PASS",
+  "simulator_full_ctest": "2/2 PASS",
+  "source_diff_allowlist": "PASS",
+  "prohibited_runtime_diff": "NONE",
+  "scene_diff": "NONE",
+  "live_runs_before_c": "0"
+}

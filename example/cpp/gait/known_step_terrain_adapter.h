@@ -16,6 +16,7 @@ struct KnownStepGeometry
     double edge_x_m = 0.80;
     double height_m = 0.05;
     double half_width_y_m = 1.00;
+    bool v2_enabled = false;
 };
 
 inline double KnownStepEnvDouble(const char *name, double fallback)
@@ -34,13 +35,20 @@ inline bool KnownStepEnvEnabled()
     return value != nullptr && std::strcmp(value, "1") == 0;
 }
 
+inline bool KnownStepV2EnvEnabled()
+{
+    const char *value = std::getenv("TROT_KNOWN_STEP_TRAVERSAL_V2");
+    return value != nullptr && std::strcmp(value, "1") == 0;
+}
+
 inline KnownStepGeometry KnownStepGeometryFromEnv()
 {
     return {
         KnownStepEnvEnabled(),
         KnownStepEnvDouble("TROT_KNOWN_STEP_EDGE_X_M", 0.80),
         KnownStepEnvDouble("TROT_KNOWN_STEP_HEIGHT_M", 0.05),
-        KnownStepEnvDouble("TROT_KNOWN_STEP_HALF_WIDTH_Y_M", 1.00)};
+        KnownStepEnvDouble("TROT_KNOWN_STEP_HALF_WIDTH_Y_M", 1.00),
+        KnownStepV2EnvEnabled()};
 }
 
 inline double KnownStepTerrainHeight(

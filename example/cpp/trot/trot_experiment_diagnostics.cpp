@@ -101,7 +101,8 @@ void TrotExperiment::WriteCsvHeader()
          << ",diag_bounded_stance_dq_invalid_solve_count"
          << ",diag_bounded_stance_dq_fallback_count";
     csv_ << ",known_step_feature_enabled,known_step_edge_x_m"
-         << ",known_step_height_m,known_step_half_width_y_m";
+         << ",known_step_height_m,known_step_half_width_y_m"
+         << ",known_step_v2_feature_enabled";
     const char *const known_step_leg_names[4] = {"fr", "fl", "rr", "rl"};
     for (int leg = 0; leg < 4; ++leg)
         csv_ << ",known_step_" << known_step_leg_names[leg]
@@ -126,7 +127,55 @@ void TrotExperiment::WriteCsvHeader()
              << "_final_target_world_z_m,known_step_"
              << known_step_leg_names[leg] << "_actual_x_m,known_step_"
              << known_step_leg_names[leg] << "_actual_z_m,known_step_"
-             << known_step_leg_names[leg] << "_adaptation_active";
+             << known_step_leg_names[leg] << "_adaptation_active"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_crossing_latched,known_step_v2_"
+             << known_step_leg_names[leg] << "_planning_valid,known_step_v2_"
+             << known_step_leg_names[leg] << "_planning_failure_code"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_planning_failure_reason,known_step_v2_"
+             << known_step_leg_names[leg] << "_swing_start_x_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_swing_start_z_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_ordinary_nominal_touchdown_x_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_ordinary_nominal_touchdown_y_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_ordinary_nominal_touchdown_z_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_probe_touchdown_x_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_probe_touchdown_y_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_probe_touchdown_z_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_h0_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_h_nom_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_h_probe_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_x_entry_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_x_exit_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_x_land_min_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_final_touchdown_x_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_final_touchdown_y_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_final_touchdown_z_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_nominal_x_shift_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_effective_lift_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_z_corridor_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_s,known_step_v2_"
+             << known_step_leg_names[leg] << "_s_entry,known_step_v2_"
+             << known_step_leg_names[leg] << "_s_exit,known_step_v2_"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_command_world_x_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_command_world_z_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_command_world_vx_mps,known_step_v2_"
+             << known_step_leg_names[leg] << "_command_world_vz_mps"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_actual_world_x_m,known_step_v2_"
+             << known_step_leg_names[leg] << "_actual_world_z_m"
+             << ",known_step_v2_" << known_step_leg_names[leg]
+             << "_scheduled_stance,known_step_v2_"
+             << known_step_leg_names[leg] << "_scheduled_swing";
     for (int leg = 0; leg < 4; ++leg)
         csv_ << ",diag_bounded_stance_dq_" << kMotorNames[3 * leg]
              << "_stance_selector,diag_bounded_stance_dq_"
@@ -981,7 +1030,8 @@ void TrotExperiment::LogSample(
     csv_ << "," << (cartesian_state_.known_step_geometry.enabled ? 1 : 0)
          << "," << cartesian_state_.known_step_geometry.edge_x_m
          << "," << cartesian_state_.known_step_geometry.height_m
-         << "," << cartesian_state_.known_step_geometry.half_width_y_m;
+         << "," << cartesian_state_.known_step_geometry.half_width_y_m
+         << "," << (cartesian_state_.known_step_geometry.v2_enabled ? 1 : 0);
     for (int leg = 0; leg < 4; ++leg)
     {
         const auto &swing_start = cartesian_state_.swing_start_world[leg];
@@ -1008,6 +1058,44 @@ void TrotExperiment::LogSample(
              << "," << actual.x
              << "," << actual.z
              << "," << (cartesian_state_.known_step_adaptation_active[leg] ? 1 : 0);
+        const auto &v2 = cartesian_state_.known_step_v2_plan[leg];
+        csv_ << "," << (v2.crossing_latched ? 1 : 0)
+             << "," << (v2.planning_valid ? 1 : 0)
+             << "," << v2.planning_failure_code
+             << "," << go2_control::KnownStepV2PlanningFailureReason(
+                    v2.planning_failure_code)
+             << "," << v2.swing_start_world.x
+             << "," << v2.swing_start_world.z
+             << "," << v2.ordinary_nominal_touchdown_world.x
+             << "," << v2.ordinary_nominal_touchdown_world.y
+             << "," << v2.ordinary_nominal_touchdown_world.z
+             << "," << v2.detection_probe_touchdown_world.x
+             << "," << v2.detection_probe_touchdown_world.y
+             << "," << v2.detection_probe_touchdown_world.z
+             << "," << v2.h0_m
+             << "," << v2.h_nom_m
+             << "," << v2.h_probe_m
+             << "," << v2.x_entry_m
+             << "," << v2.x_exit_m
+             << "," << v2.x_land_min_m
+             << "," << v2.final_touchdown_world.x
+             << "," << v2.final_touchdown_world.y
+             << "," << v2.final_touchdown_world.z
+             << "," << (v2.final_touchdown_world.x -
+                           v2.ordinary_nominal_touchdown_world.x)
+             << "," << v2.effective_lift_m
+             << "," << v2.z_corridor_m
+             << "," << cartesian_state_.known_step_v2_s[leg]
+             << "," << v2.s_entry
+             << "," << v2.s_exit
+             << "," << cartesian_state_.known_step_v2_command_x_m[leg]
+             << "," << cartesian_state_.known_step_v2_command_z_m[leg]
+             << "," << cartesian_state_.known_step_v2_command_vx_mps[leg]
+             << "," << cartesian_state_.known_step_v2_command_vz_mps[leg]
+             << "," << actual.x
+             << "," << actual.z
+             << "," << (cartesian_state_.known_step_scheduled_stance[leg] ? 1 : 0)
+             << "," << (cartesian_state_.known_step_scheduled_swing[leg] ? 1 : 0);
     }
     for (int leg = 0; leg < 4; ++leg)
         csv_ << "," << bounded_stance_dq_stance_selector_[leg]
