@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_known_step_v2_c_continuation_20260915",
+  "mode": "confirmatory",
+  "classification": "PROTOCOL_FAILURE",
+  "reason_code": "EXECUTION_BINARY_HASH_MISMATCH",
+  "failure_boundary": "execution",
+  "live_process_launched_by_analyzer": false,
+  "launch_budget": {
+    "authorized_new_A": 0,
+    "authorized_C": 1,
+    "observed_new_A": 0,
+    "observed_C": 0,
+    "retries": 0
+  },
+  "task": {
+    "branch": "research/phase2-known-step-v2-c-continuation-20260915",
+    "prepared_head": "446350bf3a29fb4390e841f2624277bf5384bd1f",
+    "parent": "f5ec48caeb78179b1a1a9b4b20fbef34cacf41cd",
+    "parent_A_runtime_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+    "A_rerun": false
+  },
+  "parent_A": {
+    "run": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A",
+    "runtime_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+    "runtime_dirty": false,
+    "raw_hashes_match_parent_provenance": true,
+    "rejudication": {
+      "predicate": "motion_stage == 2 AND world_base_x_m <= 0.40 AND every actual foot-center x < 0.75",
+      "all_gates_pass": true,
+      "raw_rows": 4879,
+      "clean_rows": 870,
+      "clean_state_time_span_s": 1.7379999999999995,
+      "adaptation_enabled_samples": 0,
+      "adaptation_active_samples": 0,
+      "roll_absolute_max_rad": 0.034321602,
+      "pitch_absolute_max_rad": 0.086687908,
+      "hard_posture_rows_in_clean": 0,
+      "wbc_valid_rows": 870,
+      "srbd_success_fraction": 1.0,
+      "id_success_fraction": 1.0,
+      "wbc_eq_residual_p95": 0.0000064272,
+      "lockstep_trace_rows": 4880,
+      "paired_highstate_cycles": 4879,
+      "paired_highstate_validation_failures": 0,
+      "paired_highstate_async_fallbacks": 0,
+      "first_plausible_contact_risk_s": 14.616,
+      "first_hard_posture_crossing_s": 14.956,
+      "gates": {
+        "required_columns": "PASS",
+        "clean_row_count": "PASS",
+        "clean_state_time_span": "PASS",
+        "known_step_adaptation_disabled": "PASS",
+        "roll_abs_max": "PASS",
+        "pitch_abs_max": "PASS",
+        "clean_no_22_degree_crossing": "PASS",
+        "wbc_solver_valid_rows": "PASS",
+        "wbc_solver_success": "PASS",
+        "wbc_equality_residual_p95": "PASS",
+        "lockstep_and_paired_highstate": "PASS",
+        "runtime_and_raw_provenance": "PASS"
+      }
+    }
+  },
+  "installed_artifacts": {
+    "controller": {
+      "path": "/home/che/dev/go2-workspace/current/example/cpp/build/real_trot_go2",
+      "actual_sha256": "d14358e42da7cf57e0f1ae7f4738ae5da277e7eaa951a473836dbf759894f5fd",
+      "required_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+      "matches": false
+    },
+    "simulator": {
+      "path": "/home/che/dev/go2-workspace/current/simulate/build/unitree_mujoco",
+      "actual_sha256": "8c9df32482df3e2e92fb4c1cdf0faa8a3ab50f8d418388977e553f9a40c8f210",
+      "required_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+      "matches": false
+    },
+    "scene": {
+      "path": "/home/che/dev/go2-workspace/current/unitree_robots/go2/scene_known_step_5cm.xml",
+      "actual_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+      "required_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+      "matches": true
+    },
+    "all_required_match": false
+  },
+  "preflight": {
+    "pass": false,
+    "hard_failure_count": 2,
+    "failed_checks": [
+      "hash:/home/che/dev/go2-workspace/current/example/cpp/build/real_trot_go2",
+      "hash:/home/che/dev/go2-workspace/current/simulate/build/unitree_mujoco"
+    ],
+    "other_checks": "branch, HEAD, clean worktree, runner syntax/domain, DDS legality/free lock, fresh run directory, no stale runtime process, and scene hash passed",
+    "report": "/tmp/go2_phase2_known_step_v2_c_continuation_preflight.json"
+  },
+  "c": {
+    "run": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/phase2_known_step_v2_c_continuation_20260915/C",
+    "status": "NOT_RUN",
+    "reason": "EXECUTION_BINARY_HASH_MISMATCH"
+  },
+  "protocol": {
+    "pass": false,
+    "gate": "C_not_launched_after_required_binary_identity_check"
+  },
+  "provenance": {
+    "parent_A_raw_and_runtime": "docs/validation/phase2_known_step_v2_c_continuation_20260915/provenance.csv",
+    "current_preflight_head": "446350bf3a29fb4390e841f2624277bf5384bd1f",
+    "no_rebuild": true,
+    "no_binary_replacement": true,
+    "no_live_process": true
+  }
+}
