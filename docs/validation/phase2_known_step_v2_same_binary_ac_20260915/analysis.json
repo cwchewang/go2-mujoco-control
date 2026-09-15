@@ -1,0 +1,2037 @@
+{
+  "a": {
+    "gates": [
+      {
+        "detail": {
+          "missing": [],
+          "schema": {
+            "data_rows": 4879,
+            "header_columns": 776,
+            "mismatch_rows": [],
+            "pass": true,
+            "present": true,
+            "width_counts": {
+              "776": 4879
+            }
+          }
+        },
+        "gate": "raw_schema",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": "231",
+        "gate": "domain",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": 4880,
+        "gate": "lockstep_trace",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": [
+          2.0
+        ],
+        "gate": "constant_sim_tick",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": 0,
+        "gate": "no_lockstep_violations",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "domain_expected": "231",
+          "domain_id": "231",
+          "domain_matches": true,
+          "fail_closed_markers": [],
+          "metadata": {
+            "analysis_status": "0",
+            "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231",
+            "camera_follow": "false",
+            "completion_status": "1",
+            "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_analysis.txt",
+            "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+            "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth.csv",
+            "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231 ",
+            "controller_cpu_affinity": "3",
+            "controller_duration_s": "34",
+            "controller_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+            "controller_status": "0",
+            "display": ":0",
+            "domain_id": "231",
+            "dynamics_status": "0",
+            "dynamics_tolerance_n": "20",
+            "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/environment.txt",
+            "event_script_hash": "",
+            "finished_at": "2026-09-15T17:12:05+08:00",
+            "git_branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+            "git_dirty": "false",
+            "git_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+            "ground_truth_status": "0",
+            "headless": "true",
+            "lockstep": "true",
+            "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv",
+            "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_trace.csv",
+            "max_cycles_requested": "40",
+            "profile_path": "",
+            "profile_sha256": "",
+            "quality_status": "0",
+            "run_mode": "bounded",
+            "runtime_dir": "/run/user/1000",
+            "safety_status": "1",
+            "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+            "seed": "",
+            "sim_cpu_affinity": "2",
+            "simulator_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+            "started_at": "2026-09-15T17:11:50+08:00",
+            "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/stop.request",
+            "task": "",
+            "wall_timeout_s": "80"
+          },
+          "paired_async_fallbacks": 0,
+          "paired_cycles": 4879,
+          "paired_summary_present": true,
+          "paired_validation_failures": 0,
+          "sim_tick_diffs_ms": [
+            2.0
+          ],
+          "trace_present": true,
+          "trace_rows": 4880,
+          "trace_violations": 0
+        },
+        "gate": "paired_highstate",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": [],
+        "gate": "no_fail_closed_marker",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "analysis_status": "0",
+          "completion_status": "1",
+          "controller_status": "0",
+          "dynamics_status": "0",
+          "ground_truth_status": "0",
+          "quality_status": "0",
+          "safety_status": "1"
+        },
+        "gate": "statuses_zero",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": "1",
+        "gate": "completion_status_zero",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": [
+          "TROT HARD SAFETY LIMIT REACHED",
+          "TROT HARD POSTURE LIMIT",
+          "EMERGENCY_STOP"
+        ],
+        "gate": "no_hard_safety",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": {
+          "missing": [],
+          "schema": {
+            "data_rows": 5012,
+            "header_columns": 635,
+            "mismatch_rows": [],
+            "pass": true,
+            "present": true,
+            "width_counts": {
+              "635": 5012
+            }
+          }
+        },
+        "gate": "frozen_raw_schema",
+        "run": "V1_B",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "changes": {
+            "auto_surfaces": [
+              "analyzer",
+              "runner"
+            ],
+            "diff_base": "867a5668d355fe4c77ef0063c393349d3819459d",
+            "manual_surfaces": [],
+            "paths": [
+              "docs/research/SOP.md",
+              "docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+              "tools/research/preflight.py",
+              "tools/research/test_preflight.py"
+            ],
+            "surfaces": [
+              "analyzer",
+              "runner"
+            ]
+          },
+          "checks": [
+            {
+              "detail": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+              "name": "git_head_readable",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "research/phase2-known-step-v2-same-binary-ac-20260915",
+                "expected": "research/phase2-known-step-v2-same-binary-ac-20260915",
+                "stderr": ""
+              },
+              "name": "expected_branch",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+                "expected": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+              },
+              "name": "expected_head",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "",
+              "name": "worktree_clean_before_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "base": "867a5668d355fe4c77ef0063c393349d3819459d",
+                "error": ""
+              },
+              "name": "diff_base_resolved",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "name": "runner_exists",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "PASS",
+              "name": "runner_bash_syntax",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "expected": 231,
+                "runner_domains": [
+                  231
+                ]
+              },
+              "name": "runner_domain_matches",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "allowed": [
+                  0,
+                  232
+                ],
+                "domain": 231
+              },
+              "name": "dds_domain_spec_range",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "discovery_multicast": 65150,
+                "discovery_unicast": 65160,
+                "user_multicast": 65151,
+                "user_unicast": 65161
+              },
+              "name": "dds_rtps_ports_legal",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "allowed_ranges": [
+                  [
+                    0,
+                    101
+                  ],
+                  [
+                    215,
+                    232
+                  ]
+                ],
+                "domain": 231
+              },
+              "name": "dds_linux_safe_pool",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "ephemeral_range": [
+                  44620,
+                  48715
+                ],
+                "overlap": {}
+              },
+              "name": "dds_ephemeral_port_overlap",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/tmp/unitree_mujoco_run_trot_domain_231.lock",
+              "name": "dds_domain_lock_free",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A",
+              "name": "run_directory_fresh",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": [],
+              "name": "no_stale_runtime_process",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/PHASE1_AGENT_CONTRACT.md",
+              "name": "required_file:docs/research/PHASE1_AGENT_CONTRACT.md",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "name": "required_file:docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+              "name": "required_file:unitree_robots/go2/scene_known_step_5cm.xml",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build/unitree_mujoco",
+              "name": "required_file:simulate/build/unitree_mujoco",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build/real_trot_go2",
+              "name": "required_file:example/cpp/build/real_trot_go2",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+                "expected": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+              },
+              "name": "hash:/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "additions": 15,
+                "changed": true,
+                "deletions": 18,
+                "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+              },
+              "name": "baseline_runner_diff_generated",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+                "index": 1,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": ""
+              },
+              "name": "test_1",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+                "index": 2,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": ""
+              },
+              "name": "test_2",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+                "index": 3,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+              },
+              "name": "test_3",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "python3 tools/research/test_preflight.py",
+                "index": 4,
+                "return_code": 0,
+                "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+                "stdout": ""
+              },
+              "name": "test_4",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "ctest --test-dir example/cpp/build --output-on-failure",
+                "index": 5,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+              },
+              "name": "test_5",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "ctest --test-dir simulate/build --output-on-failure",
+                "index": 6,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+              },
+              "name": "test_6",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "surfaces": [
+                  "analyzer"
+                ],
+                "test_count": 6
+              },
+              "name": "changed_surface_has_no_live_test",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "not required",
+              "name": "sol_review_exact_head",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "after": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+                "before": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+              },
+              "name": "head_unchanged_after_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "",
+              "name": "worktree_clean_after_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "inside_repo": false,
+                "output": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json"
+              },
+              "name": "output_preserves_clean_worktree",
+              "severity": "hard",
+              "status": "PASS"
+            }
+          ],
+          "experiment_id": "phase2_known_step_v2_same_binary_ac_20260915_A",
+          "git": {
+            "branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+            "head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+          },
+          "hard_failure_count": 0,
+          "output": {
+            "path": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json",
+            "written": true
+          },
+          "pass": true,
+          "repo_root": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915",
+          "runner_diff": {
+            "additions": 15,
+            "changed": true,
+            "deletions": 18,
+            "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+          },
+          "schema_version": 2,
+          "sol_review": {
+            "approved_head": null,
+            "auto_trigger_surfaces": [],
+            "current_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+            "required": false
+          },
+          "tests": [
+            {
+              "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "index": 1,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": ""
+            },
+            {
+              "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+              "index": 2,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": ""
+            },
+            {
+              "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+              "index": 3,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+            },
+            {
+              "command": "python3 tools/research/test_preflight.py",
+              "index": 4,
+              "return_code": 0,
+              "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+              "stdout": ""
+            },
+            {
+              "command": "ctest --test-dir example/cpp/build --output-on-failure",
+              "index": 5,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+            },
+            {
+              "command": "ctest --test-dir simulate/build --output-on-failure",
+              "index": 6,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+            }
+          ],
+          "warning_count": 0
+        },
+        "gate": "pre_live_tests_all_pass",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "reason": "A_BASELINE_GATE_FAILED",
+          "status": "NOT_RUN"
+        },
+        "gate": "not_run_after_A_gate_failure",
+        "run": "C",
+        "status": "PASS"
+      }
+    ],
+    "metadata": {
+      "analysis_status": "0",
+      "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231",
+      "camera_follow": "false",
+      "completion_status": "1",
+      "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_analysis.txt",
+      "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+      "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth.csv",
+      "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231 ",
+      "controller_cpu_affinity": "3",
+      "controller_duration_s": "34",
+      "controller_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+      "controller_status": "0",
+      "display": ":0",
+      "domain_id": "231",
+      "dynamics_status": "0",
+      "dynamics_tolerance_n": "20",
+      "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/environment.txt",
+      "event_script_hash": "",
+      "finished_at": "2026-09-15T17:12:05+08:00",
+      "git_branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+      "git_dirty": "false",
+      "git_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+      "ground_truth_status": "0",
+      "headless": "true",
+      "lockstep": "true",
+      "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv",
+      "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_trace.csv",
+      "max_cycles_requested": "40",
+      "profile_path": "",
+      "profile_sha256": "",
+      "quality_status": "0",
+      "run_mode": "bounded",
+      "runtime_dir": "/run/user/1000",
+      "safety_status": "1",
+      "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+      "seed": "",
+      "sim_cpu_affinity": "2",
+      "simulator_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+      "started_at": "2026-09-15T17:11:50+08:00",
+      "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/stop.request",
+      "task": "",
+      "wall_timeout_s": "80"
+    },
+    "protocol": {
+      "domain_expected": "231",
+      "domain_id": "231",
+      "domain_matches": true,
+      "fail_closed_markers": [],
+      "metadata": {
+        "analysis_status": "0",
+        "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231",
+        "camera_follow": "false",
+        "completion_status": "1",
+        "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_analysis.txt",
+        "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+        "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth.csv",
+        "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231 ",
+        "controller_cpu_affinity": "3",
+        "controller_duration_s": "34",
+        "controller_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+        "controller_status": "0",
+        "display": ":0",
+        "domain_id": "231",
+        "dynamics_status": "0",
+        "dynamics_tolerance_n": "20",
+        "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/environment.txt",
+        "event_script_hash": "",
+        "finished_at": "2026-09-15T17:12:05+08:00",
+        "git_branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+        "git_dirty": "false",
+        "git_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+        "ground_truth_status": "0",
+        "headless": "true",
+        "lockstep": "true",
+        "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv",
+        "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_trace.csv",
+        "max_cycles_requested": "40",
+        "profile_path": "",
+        "profile_sha256": "",
+        "quality_status": "0",
+        "run_mode": "bounded",
+        "runtime_dir": "/run/user/1000",
+        "safety_status": "1",
+        "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+        "seed": "",
+        "sim_cpu_affinity": "2",
+        "simulator_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+        "started_at": "2026-09-15T17:11:50+08:00",
+        "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/stop.request",
+        "task": "",
+        "wall_timeout_s": "80"
+      },
+      "paired_async_fallbacks": 0,
+      "paired_cycles": 4879,
+      "paired_summary_present": true,
+      "paired_validation_failures": 0,
+      "sim_tick_diffs_ms": [
+        2.0
+      ],
+      "trace_present": true,
+      "trace_rows": 4880,
+      "trace_violations": 0
+    },
+    "run": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A",
+    "schema": {
+      "data_rows": 4879,
+      "header_columns": 776,
+      "mismatch_rows": [],
+      "pass": true,
+      "present": true,
+      "width_counts": {
+        "776": 4879
+      }
+    }
+  },
+  "c": {
+    "reason": "A_BASELINE_GATE_FAILED",
+    "run": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/C",
+    "status": "NOT_RUN"
+  },
+  "classification": "PROTOCOL_FAILURE",
+  "experiment": "phase2_known_step_v2_same_binary_ac_20260915",
+  "launch_budget": {
+    "authorized_A": 1,
+    "authorized_C": 1,
+    "observed_A": 1,
+    "observed_C": 0,
+    "retries": 0
+  },
+  "live_process_launched_by_analyzer": false,
+  "missing_runs": [
+    "C"
+  ],
+  "pre_live_tests": {
+    "changes": {
+      "auto_surfaces": [
+        "analyzer",
+        "runner"
+      ],
+      "diff_base": "867a5668d355fe4c77ef0063c393349d3819459d",
+      "manual_surfaces": [],
+      "paths": [
+        "docs/research/SOP.md",
+        "docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+        "example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+        "example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+        "tools/research/preflight.py",
+        "tools/research/test_preflight.py"
+      ],
+      "surfaces": [
+        "analyzer",
+        "runner"
+      ]
+    },
+    "checks": [
+      {
+        "detail": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+        "name": "git_head_readable",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "actual": "research/phase2-known-step-v2-same-binary-ac-20260915",
+          "expected": "research/phase2-known-step-v2-same-binary-ac-20260915",
+          "stderr": ""
+        },
+        "name": "expected_branch",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "actual": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+          "expected": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+        },
+        "name": "expected_head",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "",
+        "name": "worktree_clean_before_tests",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "base": "867a5668d355fe4c77ef0063c393349d3819459d",
+          "error": ""
+        },
+        "name": "diff_base_resolved",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+        "name": "runner_exists",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "PASS",
+        "name": "runner_bash_syntax",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "expected": 231,
+          "runner_domains": [
+            231
+          ]
+        },
+        "name": "runner_domain_matches",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "allowed": [
+            0,
+            232
+          ],
+          "domain": 231
+        },
+        "name": "dds_domain_spec_range",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "discovery_multicast": 65150,
+          "discovery_unicast": 65160,
+          "user_multicast": 65151,
+          "user_unicast": 65161
+        },
+        "name": "dds_rtps_ports_legal",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "allowed_ranges": [
+            [
+              0,
+              101
+            ],
+            [
+              215,
+              232
+            ]
+          ],
+          "domain": 231
+        },
+        "name": "dds_linux_safe_pool",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "ephemeral_range": [
+            44620,
+            48715
+          ],
+          "overlap": {}
+        },
+        "name": "dds_ephemeral_port_overlap",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/tmp/unitree_mujoco_run_trot_domain_231.lock",
+        "name": "dds_domain_lock_free",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A",
+        "name": "run_directory_fresh",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": [],
+        "name": "no_stale_runtime_process",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/PHASE1_AGENT_CONTRACT.md",
+        "name": "required_file:docs/research/PHASE1_AGENT_CONTRACT.md",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+        "name": "required_file:docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+        "name": "required_file:unitree_robots/go2/scene_known_step_5cm.xml",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build/unitree_mujoco",
+        "name": "required_file:simulate/build/unitree_mujoco",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build/real_trot_go2",
+        "name": "required_file:example/cpp/build/real_trot_go2",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "actual": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+          "expected": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+        },
+        "name": "hash:/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "additions": 15,
+          "changed": true,
+          "deletions": 18,
+          "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+        },
+        "name": "baseline_runner_diff_generated",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+          "index": 1,
+          "return_code": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "name": "test_1",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+          "index": 2,
+          "return_code": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "name": "test_2",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+          "index": 3,
+          "return_code": 0,
+          "stderr": "",
+          "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+        },
+        "name": "test_3",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "python3 tools/research/test_preflight.py",
+          "index": 4,
+          "return_code": 0,
+          "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+          "stdout": ""
+        },
+        "name": "test_4",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "ctest --test-dir example/cpp/build --output-on-failure",
+          "index": 5,
+          "return_code": 0,
+          "stderr": "",
+          "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+        },
+        "name": "test_5",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "command": "ctest --test-dir simulate/build --output-on-failure",
+          "index": 6,
+          "return_code": 0,
+          "stderr": "",
+          "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+        },
+        "name": "test_6",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "surfaces": [
+            "analyzer"
+          ],
+          "test_count": 6
+        },
+        "name": "changed_surface_has_no_live_test",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "not required",
+        "name": "sol_review_exact_head",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "after": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+          "before": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+        },
+        "name": "head_unchanged_after_tests",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": "",
+        "name": "worktree_clean_after_tests",
+        "severity": "hard",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "inside_repo": false,
+          "output": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json"
+        },
+        "name": "output_preserves_clean_worktree",
+        "severity": "hard",
+        "status": "PASS"
+      }
+    ],
+    "experiment_id": "phase2_known_step_v2_same_binary_ac_20260915_A",
+    "git": {
+      "branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+      "head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+    },
+    "hard_failure_count": 0,
+    "output": {
+      "path": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json",
+      "written": true
+    },
+    "pass": true,
+    "repo_root": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915",
+    "runner_diff": {
+      "additions": 15,
+      "changed": true,
+      "deletions": 18,
+      "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+    },
+    "schema_version": 2,
+    "sol_review": {
+      "approved_head": null,
+      "auto_trigger_surfaces": [],
+      "current_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+      "required": false
+    },
+    "tests": [
+      {
+        "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+        "index": 1,
+        "return_code": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+        "index": 2,
+        "return_code": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+        "index": 3,
+        "return_code": 0,
+        "stderr": "",
+        "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+      },
+      {
+        "command": "python3 tools/research/test_preflight.py",
+        "index": 4,
+        "return_code": 0,
+        "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+        "stdout": ""
+      },
+      {
+        "command": "ctest --test-dir example/cpp/build --output-on-failure",
+        "index": 5,
+        "return_code": 0,
+        "stderr": "",
+        "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+      },
+      {
+        "command": "ctest --test-dir simulate/build --output-on-failure",
+        "index": 6,
+        "return_code": 0,
+        "stderr": "",
+        "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+      }
+    ],
+    "warning_count": 0
+  },
+  "protocol": {
+    "gates": [
+      {
+        "detail": {
+          "missing": [],
+          "schema": {
+            "data_rows": 4879,
+            "header_columns": 776,
+            "mismatch_rows": [],
+            "pass": true,
+            "present": true,
+            "width_counts": {
+              "776": 4879
+            }
+          }
+        },
+        "gate": "raw_schema",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": "231",
+        "gate": "domain",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": 4880,
+        "gate": "lockstep_trace",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": [
+          2.0
+        ],
+        "gate": "constant_sim_tick",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": 0,
+        "gate": "no_lockstep_violations",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "domain_expected": "231",
+          "domain_id": "231",
+          "domain_matches": true,
+          "fail_closed_markers": [],
+          "metadata": {
+            "analysis_status": "0",
+            "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231",
+            "camera_follow": "false",
+            "completion_status": "1",
+            "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_analysis.txt",
+            "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+            "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth.csv",
+            "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 231 ",
+            "controller_cpu_affinity": "3",
+            "controller_duration_s": "34",
+            "controller_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+            "controller_status": "0",
+            "display": ":0",
+            "domain_id": "231",
+            "dynamics_status": "0",
+            "dynamics_tolerance_n": "20",
+            "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/environment.txt",
+            "event_script_hash": "",
+            "finished_at": "2026-09-15T17:12:05+08:00",
+            "git_branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+            "git_dirty": "false",
+            "git_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+            "ground_truth_status": "0",
+            "headless": "true",
+            "lockstep": "true",
+            "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv",
+            "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_trace.csv",
+            "max_cycles_requested": "40",
+            "profile_path": "",
+            "profile_sha256": "",
+            "quality_status": "0",
+            "run_mode": "bounded",
+            "runtime_dir": "/run/user/1000",
+            "safety_status": "1",
+            "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+            "seed": "",
+            "sim_cpu_affinity": "2",
+            "simulator_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+            "started_at": "2026-09-15T17:11:50+08:00",
+            "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/stop.request",
+            "task": "",
+            "wall_timeout_s": "80"
+          },
+          "paired_async_fallbacks": 0,
+          "paired_cycles": 4879,
+          "paired_summary_present": true,
+          "paired_validation_failures": 0,
+          "sim_tick_diffs_ms": [
+            2.0
+          ],
+          "trace_present": true,
+          "trace_rows": 4880,
+          "trace_violations": 0
+        },
+        "gate": "paired_highstate",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": [],
+        "gate": "no_fail_closed_marker",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "analysis_status": "0",
+          "completion_status": "1",
+          "controller_status": "0",
+          "dynamics_status": "0",
+          "ground_truth_status": "0",
+          "quality_status": "0",
+          "safety_status": "1"
+        },
+        "gate": "statuses_zero",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": "1",
+        "gate": "completion_status_zero",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": [
+          "TROT HARD SAFETY LIMIT REACHED",
+          "TROT HARD POSTURE LIMIT",
+          "EMERGENCY_STOP"
+        ],
+        "gate": "no_hard_safety",
+        "run": "A",
+        "status": "FAIL"
+      },
+      {
+        "detail": {
+          "missing": [],
+          "schema": {
+            "data_rows": 5012,
+            "header_columns": 635,
+            "mismatch_rows": [],
+            "pass": true,
+            "present": true,
+            "width_counts": {
+              "635": 5012
+            }
+          }
+        },
+        "gate": "frozen_raw_schema",
+        "run": "V1_B",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "changes": {
+            "auto_surfaces": [
+              "analyzer",
+              "runner"
+            ],
+            "diff_base": "867a5668d355fe4c77ef0063c393349d3819459d",
+            "manual_surfaces": [],
+            "paths": [
+              "docs/research/SOP.md",
+              "docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+              "tools/research/preflight.py",
+              "tools/research/test_preflight.py"
+            ],
+            "surfaces": [
+              "analyzer",
+              "runner"
+            ]
+          },
+          "checks": [
+            {
+              "detail": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+              "name": "git_head_readable",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "research/phase2-known-step-v2-same-binary-ac-20260915",
+                "expected": "research/phase2-known-step-v2-same-binary-ac-20260915",
+                "stderr": ""
+              },
+              "name": "expected_branch",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+                "expected": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+              },
+              "name": "expected_head",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "",
+              "name": "worktree_clean_before_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "base": "867a5668d355fe4c77ef0063c393349d3819459d",
+                "error": ""
+              },
+              "name": "diff_base_resolved",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "name": "runner_exists",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "PASS",
+              "name": "runner_bash_syntax",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "expected": 231,
+                "runner_domains": [
+                  231
+                ]
+              },
+              "name": "runner_domain_matches",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "allowed": [
+                  0,
+                  232
+                ],
+                "domain": 231
+              },
+              "name": "dds_domain_spec_range",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "discovery_multicast": 65150,
+                "discovery_unicast": 65160,
+                "user_multicast": 65151,
+                "user_unicast": 65161
+              },
+              "name": "dds_rtps_ports_legal",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "allowed_ranges": [
+                  [
+                    0,
+                    101
+                  ],
+                  [
+                    215,
+                    232
+                  ]
+                ],
+                "domain": 231
+              },
+              "name": "dds_linux_safe_pool",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "ephemeral_range": [
+                  44620,
+                  48715
+                ],
+                "overlap": {}
+              },
+              "name": "dds_ephemeral_port_overlap",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/tmp/unitree_mujoco_run_trot_domain_231.lock",
+              "name": "dds_domain_lock_free",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A",
+              "name": "run_directory_fresh",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": [],
+              "name": "no_stale_runtime_process",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/PHASE1_AGENT_CONTRACT.md",
+              "name": "required_file:docs/research/PHASE1_AGENT_CONTRACT.md",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "name": "required_file:docs/research/TASK_PHASE2_KNOWN_STEP_V2_SAME_BINARY_AC_20260915.md",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+              "name": "required_file:unitree_robots/go2/scene_known_step_5cm.xml",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build/unitree_mujoco",
+              "name": "required_file:simulate/build/unitree_mujoco",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build/real_trot_go2",
+              "name": "required_file:example/cpp/build/real_trot_go2",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "actual": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+                "expected": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+              },
+              "name": "hash:/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "additions": 15,
+                "changed": true,
+                "deletions": 18,
+                "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+              },
+              "name": "baseline_runner_diff_generated",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+                "index": 1,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": ""
+              },
+              "name": "test_1",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+                "index": 2,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": ""
+              },
+              "name": "test_2",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+                "index": 3,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+              },
+              "name": "test_3",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "python3 tools/research/test_preflight.py",
+                "index": 4,
+                "return_code": 0,
+                "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+                "stdout": ""
+              },
+              "name": "test_4",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "ctest --test-dir example/cpp/build --output-on-failure",
+                "index": 5,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+              },
+              "name": "test_5",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "command": "ctest --test-dir simulate/build --output-on-failure",
+                "index": 6,
+                "return_code": 0,
+                "stderr": "",
+                "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+              },
+              "name": "test_6",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "surfaces": [
+                  "analyzer"
+                ],
+                "test_count": 6
+              },
+              "name": "changed_surface_has_no_live_test",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "not required",
+              "name": "sol_review_exact_head",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "after": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+                "before": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+              },
+              "name": "head_unchanged_after_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": "",
+              "name": "worktree_clean_after_tests",
+              "severity": "hard",
+              "status": "PASS"
+            },
+            {
+              "detail": {
+                "inside_repo": false,
+                "output": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json"
+              },
+              "name": "output_preserves_clean_worktree",
+              "severity": "hard",
+              "status": "PASS"
+            }
+          ],
+          "experiment_id": "phase2_known_step_v2_same_binary_ac_20260915_A",
+          "git": {
+            "branch": "research/phase2-known-step-v2-same-binary-ac-20260915",
+            "head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+          },
+          "hard_failure_count": 0,
+          "output": {
+            "path": "/tmp/phase2_known_step_v2_same_binary_ac_A_preflight_final.json",
+            "written": true
+          },
+          "pass": true,
+          "repo_root": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915",
+          "runner_diff": {
+            "additions": 15,
+            "changed": true,
+            "deletions": 18,
+            "diff_sha256": "8af88b2f3f3179dd7bc1f1a0a1e039c21d2460b67301563397e477b83a0d67c0"
+          },
+          "schema_version": 2,
+          "sol_review": {
+            "approved_head": null,
+            "auto_trigger_surfaces": [],
+            "current_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+            "required": false
+          },
+          "tests": [
+            {
+              "command": "bash -n example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+              "index": 1,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": ""
+            },
+            {
+              "command": "python3 -m py_compile example/cpp/tools/analysis/analyze_phase2_known_step_v2_same_binary_ac.py",
+              "index": 2,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": ""
+            },
+            {
+              "command": "PYTHONPATH=example/cpp/tools/analysis python3 example/cpp/tests/test_trot_csv_schema.py",
+              "index": 3,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "PASS no-live CSV schema regression: corrected header/sample widths and no empty V2 token"
+            },
+            {
+              "command": "python3 tools/research/test_preflight.py",
+              "index": 4,
+              "return_code": 0,
+              "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
+              "stdout": ""
+            },
+            {
+              "command": "ctest --test-dir example/cpp/build --output-on-failure",
+              "index": 5,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/build\n      Start  1: test_go2_forward_kinematics\n 1/31 Test  #1: test_go2_forward_kinematics ...................   Passed    0.41 sec\n      Start  2: test_cartesian_world_trot\n 2/31 Test  #2: test_cartesian_world_trot .....................   Passed    0.00 sec\n      Start  3: test_known_step_terrain_adapter\n 3/31 Test  #3: test_known_step_terrain_adapter ...............   Passed    0.00 sec\n      Start  4: test_velocity_command\n 4/31 Test  #4: test_velocity_command .........................   Passed    0.00 sec\n      Start  5: test_lockstep_writer_gate\n 5/31 Test  #5: test_lockstep_writer_gate .....................   Passed    0.51 sec\n      Start  6: test_lockstep_motion_clock\n 6/31 Test  #6: test_lockstep_motion_clock ....................   Passed    0.00 sec\n      Start  7: test_highstate_pairing_sideband\n 7/31 Test  #7: test_highstate_pairing_sideband ...............   Passed    0.00 sec\n      Start  8: test_lockstep_motion_clock_integration\n 8/31 Test  #8: test_lockstep_motion_clock_integration ........   Passed    0.01 sec\n      Start  9: test_go2_rigid_body\n 9/31 Test  #9: test_go2_rigid_body ...........................   Passed    0.40 sec\n      Start 10: test_inverse_dynamics_wbc\n10/31 Test #10: test_inverse_dynamics_wbc .....................   Passed    0.46 sec\n      Start 11: test_srbd_mpc\n11/31 Test #11: test_srbd_mpc .................................   Passed    0.00 sec\n      Start 12: test_go2_inverse_kinematics\n12/31 Test #12: test_go2_inverse_kinematics ...................   Passed    0.00 sec\n      Start 13: test_raibert_footstep_planner\n13/31 Test #13: test_raibert_footstep_planner .................   Passed    0.00 sec\n      Start 14: test_raibert_trot_kernel\n14/31 Test #14: test_raibert_trot_kernel ......................   Passed    0.00 sec\n      Start 15: test_motion_frame_utils\n15/31 Test #15: test_motion_frame_utils .......................   Passed    0.00 sec\n      Start 16: test_trot_task\n16/31 Test #16: test_trot_task ................................   Passed    0.00 sec\n      Start 17: test_velocity_filter\n17/31 Test #17: test_velocity_filter ..........................   Passed    0.00 sec\n      Start 18: test_contact_state_filter\n18/31 Test #18: test_contact_state_filter .....................   Passed    0.00 sec\n      Start 19: test_contact_wrench_allocator\n19/31 Test #19: test_contact_wrench_allocator .................   Passed    0.00 sec\n      Start 20: test_go2_leg_jacobian\n20/31 Test #20: test_go2_leg_jacobian .........................   Passed    0.00 sec\n      Start 21: test_contact_wrench_constraints\n21/31 Test #21: test_contact_wrench_constraints ...............   Passed    0.00 sec\n      Start 22: test_contact_torque_mapping\n22/31 Test #22: test_contact_torque_mapping ...................   Passed    0.00 sec\n      Start 23: test_projected_contact_wrench_allocator\n23/31 Test #23: test_projected_contact_wrench_allocator .......   Passed    0.00 sec\n      Start 24: test_contact_wrench_lexicographic_allocator\n24/31 Test #24: test_contact_wrench_lexicographic_allocator ...   Passed    0.00 sec\n      Start 25: test_dynamic_acceleration_target\n25/31 Test #25: test_dynamic_acceleration_target ..............   Passed    0.00 sec\n      Start 26: test_motion_event_response\n26/31 Test #26: test_motion_event_response ....................   Passed    0.00 sec\n      Start 27: test_wbc_runtime_gate\n27/31 Test #27: test_wbc_runtime_gate .........................   Passed    0.00 sec\n      Start 28: test_centroidal_wbc\n28/31 Test #28: test_centroidal_wbc ...........................   Passed    0.00 sec\n      Start 29: test_preview_footstep_horizon\n29/31 Test #29: test_preview_footstep_horizon .................   Passed    0.00 sec\n      Start 30: test_dense_qp\n30/31 Test #30: test_dense_qp .................................   Passed    0.00 sec\n      Start 31: test_contact_wrench_qp\n31/31 Test #31: test_contact_wrench_qp ........................   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 31\n\nTotal Test time (real) =   1.84 sec"
+            },
+            {
+              "command": "ctest --test-dir simulate/build --output-on-failure",
+              "index": 6,
+              "return_code": 0,
+              "stderr": "",
+              "stdout": "Internal ctest changing into directory: /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\nTest project /home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/simulate/build\n    Start 1: test_lockstep\n1/2 Test #1: test_lockstep ....................   Passed    2.01 sec\n    Start 2: test_lockstep_sim\n2/2 Test #2: test_lockstep_sim ................   Passed    8.72 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  10.74 sec"
+            }
+          ],
+          "warning_count": 0
+        },
+        "gate": "pre_live_tests_all_pass",
+        "run": "A",
+        "status": "PASS"
+      },
+      {
+        "detail": {
+          "reason": "A_BASELINE_GATE_FAILED",
+          "status": "NOT_RUN"
+        },
+        "gate": "not_run_after_A_gate_failure",
+        "run": "C",
+        "status": "PASS"
+      }
+    ],
+    "pass": false
+  },
+  "provenance": {
+    "A_controller_sha256": "fe7339d50346e53069d81a27504ae4de4217baab29a6695cdd5073d1898b1fd2",
+    "A_hard_markers": [
+      "TROT HARD SAFETY LIMIT REACHED",
+      "TROT HARD POSTURE LIMIT",
+      "EMERGENCY_STOP"
+    ],
+    "A_simulator_sha256": "29caa74aa8e5cf1988190ecb8978d2fe15ce6a21146182c66e5efc91121c022b",
+    "A_statuses": {
+      "analysis_status": "0",
+      "completion_status": "1",
+      "controller_status": "0",
+      "dynamics_status": "0",
+      "ground_truth_status": "0",
+      "quality_status": "0",
+      "safety_status": "1"
+    },
+    "V1_B_frozen_hashes_match": true,
+    "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+  },
+  "provenance_records": [
+    {
+      "artifact": "contact_ground_truth.csv",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth.csv",
+      "scope": "A_fresh_raw",
+      "sha256": "56c29af4d067b508e0e16f8645544134566cd7db45d1af7b47d5e0f2f0ca0951"
+    },
+    {
+      "artifact": "contact_ground_truth_analysis.txt",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_analysis.txt",
+      "scope": "A_fresh_raw",
+      "sha256": "fa23d71241b4ecb24c434930beb796b8f771052096a74c612b105d7082cd277f"
+    },
+    {
+      "artifact": "contact_ground_truth_dynamics_analysis.txt",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/contact_ground_truth_dynamics_analysis.txt",
+      "scope": "A_fresh_raw",
+      "sha256": "f22cb8171aad8b6fcd27ca2d4022bcdaf0ec9e5538b343a0ea14025afedf5217"
+    },
+    {
+      "artifact": "controller.log",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/controller.log",
+      "scope": "A_fresh_raw",
+      "sha256": "04ea23690a8b13fcb5d85b70d7cb087f738bbb785a2d1b216dcf9cad860f2010"
+    },
+    {
+      "artifact": "data.csv",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/data.csv",
+      "scope": "A_fresh_raw",
+      "sha256": "5f0e3e276bfeee82510bcf9035cf537d4703103074dc0ee30ab87209f483342a"
+    },
+    {
+      "artifact": "environment.txt",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/environment.txt",
+      "scope": "A_fresh_raw",
+      "sha256": "a3b3a783893551638f3ad3b97bcebd650005b276dc5636b34ccdcde49fc3d348"
+    },
+    {
+      "artifact": "lockstep_handoff.csv",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv",
+      "scope": "A_fresh_raw",
+      "sha256": "a3d7a12dfce3e9cac9565ad59e0c7925bf5edbf394c6a6fafd3625d0aa0d7abc"
+    },
+    {
+      "artifact": "lockstep_handoff.csv.bin",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_handoff.csv.bin",
+      "scope": "A_fresh_raw",
+      "sha256": "bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137"
+    },
+    {
+      "artifact": "lockstep_trace.csv",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/lockstep_trace.csv",
+      "scope": "A_fresh_raw",
+      "sha256": "a770f3541c091096f6348ba8da2e3d81fa560d207dd365d39e7bad5af3f5a93e"
+    },
+    {
+      "artifact": "run_manifest.json",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/run_manifest.json",
+      "scope": "A_fresh_raw",
+      "sha256": "4c11a6a7caf2c958b54fd2e78903a5da3ef0adcf6d5a187038c4ebaeab9c6917"
+    },
+    {
+      "artifact": "run_metadata.txt",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/run_metadata.txt",
+      "scope": "A_fresh_raw",
+      "sha256": "376e9af77c2e2f13328e8e9a74a50fefb3a9125850be973835261657bdaf8f7f"
+    },
+    {
+      "artifact": "simulator.log",
+      "expected_sha256": "",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/simulator.log",
+      "scope": "A_fresh_raw",
+      "sha256": "4c4eeee915f7c4d819ddad1f5b0b6aef984d01510d0c688fc5b86328c0d132c7"
+    },
+    {
+      "artifact": "contact_ground_truth.csv",
+      "expected_sha256": "993dab46af112758603c898e57fea0c1cc57b4ba73604b266fa95a11dc9c6a81",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth.csv",
+      "scope": "V1_B_frozen",
+      "sha256": "993dab46af112758603c898e57fea0c1cc57b4ba73604b266fa95a11dc9c6a81"
+    },
+    {
+      "artifact": "contact_ground_truth_analysis.txt",
+      "expected_sha256": "6c427940eb5c69efad7f3e9d70657615db6f4be8d33178959e9202bb40be0815",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_analysis.txt",
+      "scope": "V1_B_frozen",
+      "sha256": "6c427940eb5c69efad7f3e9d70657615db6f4be8d33178959e9202bb40be0815"
+    },
+    {
+      "artifact": "contact_ground_truth_dynamics_analysis.txt",
+      "expected_sha256": "be9d022bbe0e9788c9164ae89d454caca837365e351e7c1187bc69de23693355",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_dynamics_analysis.txt",
+      "scope": "V1_B_frozen",
+      "sha256": "be9d022bbe0e9788c9164ae89d454caca837365e351e7c1187bc69de23693355"
+    },
+    {
+      "artifact": "controller.log",
+      "expected_sha256": "4f2b20d87479f65b64fd0cf48bd14ba5e72191066fc3a356728ee80dc2d6d69a",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/controller.log",
+      "scope": "V1_B_frozen",
+      "sha256": "4f2b20d87479f65b64fd0cf48bd14ba5e72191066fc3a356728ee80dc2d6d69a"
+    },
+    {
+      "artifact": "data.csv",
+      "expected_sha256": "62f9c06f0942de9d993165ec72c063b9517be825e0ab99fa9f86f6c6615d95f7",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/data.csv",
+      "scope": "V1_B_frozen",
+      "sha256": "62f9c06f0942de9d993165ec72c063b9517be825e0ab99fa9f86f6c6615d95f7"
+    },
+    {
+      "artifact": "environment.txt",
+      "expected_sha256": "6ae547ad8ad05379bc944752f83f28749cc310b7f9c6abcf848c299ccce0858c",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/environment.txt",
+      "scope": "V1_B_frozen",
+      "sha256": "6ae547ad8ad05379bc944752f83f28749cc310b7f9c6abcf848c299ccce0858c"
+    },
+    {
+      "artifact": "lockstep_handoff.csv",
+      "expected_sha256": "a3d7a12dfce3e9cac9565ad59e0c7925bf5edbf394c6a6fafd3625d0aa0d7abc",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_handoff.csv",
+      "scope": "V1_B_frozen",
+      "sha256": "a3d7a12dfce3e9cac9565ad59e0c7925bf5edbf394c6a6fafd3625d0aa0d7abc"
+    },
+    {
+      "artifact": "lockstep_handoff.csv.bin",
+      "expected_sha256": "bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_handoff.csv.bin",
+      "scope": "V1_B_frozen",
+      "sha256": "bf3a4379adfab77a4c0cf01587ac05888c7525b4326d31020b8a1e4a0cfc1137"
+    },
+    {
+      "artifact": "lockstep_trace.csv",
+      "expected_sha256": "77223dae0923863543eda303105cb78387fba785165b531952a026971d14d69b",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_trace.csv",
+      "scope": "V1_B_frozen",
+      "sha256": "77223dae0923863543eda303105cb78387fba785165b531952a026971d14d69b"
+    },
+    {
+      "artifact": "run_manifest.json",
+      "expected_sha256": "8136102cf3cd3eb81946e26c6f499fe5e14881558c92920e6b58b642a689db02",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/run_manifest.json",
+      "scope": "V1_B_frozen",
+      "sha256": "8136102cf3cd3eb81946e26c6f499fe5e14881558c92920e6b58b642a689db02"
+    },
+    {
+      "artifact": "run_metadata.txt",
+      "expected_sha256": "9718d52e2d1f88396a394d58fba3da2dff4355ac6021d7905ea0025e14d8ada7",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/run_metadata.txt",
+      "scope": "V1_B_frozen",
+      "sha256": "9718d52e2d1f88396a394d58fba3da2dff4355ac6021d7905ea0025e14d8ada7"
+    },
+    {
+      "artifact": "simulator.log",
+      "expected_sha256": "60058d69a7d577d6e02ebaa44ef83276ac7ed9b005bd7197caa2c1c27eeb988d",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/simulator.log",
+      "scope": "V1_B_frozen",
+      "sha256": "60058d69a7d577d6e02ebaa44ef83276ac7ed9b005bd7197caa2c1c27eeb988d"
+    },
+    {
+      "artifact": "unitree_robots/go2/scene_known_step_5cm.xml",
+      "expected_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/unitree_robots/go2/scene_known_step_5cm.xml",
+      "scope": "scene",
+      "sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc"
+    },
+    {
+      "artifact": "example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/scripts/run_phase2_known_step_v2_same_binary_ac.sh",
+      "scope": "runner",
+      "sha256": "00f5efaffbf07758a496810500e707f33aeaa33624d48999111776bda1159e7a"
+    },
+    {
+      "artifact": "run_metadata.txt",
+      "captured_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+      "domain_id": "231",
+      "expected_head": "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d",
+      "matches": true,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/A/run_metadata.txt",
+      "scope": "A_runtime_metadata",
+      "sha256": "376e9af77c2e2f13328e8e9a74a50fefb3a9125850be973835261657bdaf8f7f"
+    },
+    {
+      "artifact": "capture",
+      "matches": false,
+      "path": "/home/che/dev/go2-workspace/phase2-known-step-v2-same-binary-ac-20260915/example/cpp/experiments/_runs/phase2_known_step_v2_same_binary_ac_20260915/C",
+      "reason": "A_BASELINE_GATE_FAILED",
+      "scope": "C_fresh_raw",
+      "sha256": "NOT_RUN",
+      "status": "NOT_RUN"
+    }
+  ],
+  "reason_code": "A_BASELINE_GATE_FAILED",
+  "v1_b": {
+    "metadata": {
+      "analysis_status": "0",
+      "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 232",
+      "camera_follow": "false",
+      "completion_status": "1",
+      "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_analysis.txt",
+      "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_dynamics_analysis.txt",
+      "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth.csv",
+      "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 232 ",
+      "controller_cpu_affinity": "3",
+      "controller_duration_s": "34",
+      "controller_sha256": "6d9931fce67ec3092fb8867828ae6447a5f44f89c3dd08b7c4104efa1134ce2e",
+      "controller_status": "0",
+      "display": ":0",
+      "domain_id": "232",
+      "dynamics_status": "0",
+      "dynamics_tolerance_n": "20",
+      "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/environment.txt",
+      "event_script_hash": "",
+      "finished_at": "2026-09-15T09:08:09+08:00",
+      "git_branch": "research/phase2-known-step-b-only-20260915",
+      "git_dirty": "false",
+      "git_head": "c44314b451ea77d460263052b7f274347881137c",
+      "ground_truth_status": "0",
+      "headless": "true",
+      "lockstep": "true",
+      "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_handoff.csv",
+      "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_trace.csv",
+      "max_cycles_requested": "40",
+      "profile_path": "",
+      "profile_sha256": "",
+      "quality_status": "0",
+      "run_mode": "bounded",
+      "runtime_dir": "/run/user/1000",
+      "safety_status": "1",
+      "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+      "seed": "",
+      "sim_cpu_affinity": "2",
+      "simulator_sha256": "a24721b84bea2854df36428190e38d163a780e9fead37258bd590e974117e280",
+      "started_at": "2026-09-15T09:07:53+08:00",
+      "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/stop.request",
+      "task": "",
+      "wall_timeout_s": "80"
+    },
+    "protocol": {
+      "domain_expected": "232",
+      "domain_id": "232",
+      "domain_matches": true,
+      "fail_closed_markers": [],
+      "metadata": {
+        "analysis_status": "0",
+        "argv": "--headless --wall-clock-motion --controller-duration 34 --scene-file unitree_robots/go2/scene_known_step_5cm.xml --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 232",
+        "camera_follow": "false",
+        "completion_status": "1",
+        "contact_ground_truth_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_analysis.txt",
+        "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth_dynamics_analysis.txt",
+        "contact_ground_truth_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/contact_ground_truth.csv",
+        "controller_argv_shell": "--wall-clock-motion --cartesian-world --wbc-full --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.028 --raibert-velocity-gain 0.12 --raibert-max-adjustment 0.140 --no-world-feedback --no-attitude-feedback --tau-limit 35 --preview-horizon 4 --max-cycles 40 --domain-id 232 ",
+        "controller_cpu_affinity": "3",
+        "controller_duration_s": "34",
+        "controller_sha256": "6d9931fce67ec3092fb8867828ae6447a5f44f89c3dd08b7c4104efa1134ce2e",
+        "controller_status": "0",
+        "display": ":0",
+        "domain_id": "232",
+        "dynamics_status": "0",
+        "dynamics_tolerance_n": "20",
+        "environment_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/environment.txt",
+        "event_script_hash": "",
+        "finished_at": "2026-09-15T09:08:09+08:00",
+        "git_branch": "research/phase2-known-step-b-only-20260915",
+        "git_dirty": "false",
+        "git_head": "c44314b451ea77d460263052b7f274347881137c",
+        "ground_truth_status": "0",
+        "headless": "true",
+        "lockstep": "true",
+        "lockstep_handoff": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_handoff.csv",
+        "lockstep_trace": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/lockstep_trace.csv",
+        "max_cycles_requested": "40",
+        "profile_path": "",
+        "profile_sha256": "",
+        "quality_status": "0",
+        "run_mode": "bounded",
+        "runtime_dir": "/run/user/1000",
+        "safety_status": "1",
+        "scene_sha256": "8293c8b635e6ff052fa72a02155c1b220c1aa08f80c0d4068f24a6844baf49dc",
+        "seed": "",
+        "sim_cpu_affinity": "2",
+        "simulator_sha256": "a24721b84bea2854df36428190e38d163a780e9fead37258bd590e974117e280",
+        "started_at": "2026-09-15T09:07:53+08:00",
+        "stop_file": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B/stop.request",
+        "task": "",
+        "wall_timeout_s": "80"
+      },
+      "paired_async_fallbacks": 0,
+      "paired_cycles": 5012,
+      "paired_summary_present": true,
+      "paired_validation_failures": 0,
+      "sim_tick_diffs_ms": [
+        2.0
+      ],
+      "trace_present": true,
+      "trace_rows": 5013,
+      "trace_violations": 0
+    },
+    "run": "/home/che/dev/go2-workspace/phase2-known-step-b-only-20260915/example/cpp/experiments/_runs/phase2_known_step_5cm_b_only_20260915/B",
+    "schema": {
+      "data_rows": 5012,
+      "header_columns": 635,
+      "mismatch_rows": [],
+      "pass": true,
+      "present": true,
+      "width_counts": {
+        "635": 5012
+      }
+    }
+  }
+}
