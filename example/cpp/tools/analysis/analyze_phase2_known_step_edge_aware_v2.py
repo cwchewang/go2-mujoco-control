@@ -1130,7 +1130,7 @@ def chronology(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
 def raw_hash_records(scope: str, run_dir: Path, expected: dict[str, str] | None = None) -> tuple[list[dict[str, Any]], bool]:
     records = []
     matches = True if expected is not None else True
-    names = sorted(expected) if expected is not None else sorted(path.name for path in run_dir.iterdir() if path.is_file())
+    names = sorted(expected) if expected is not None else sorted(path.name for path in run_dir.iterdir() if path.is_file()) if run_dir.is_dir() else []
     for name in names:
         path = run_dir / name
         actual = sha256(path)
@@ -1245,11 +1245,51 @@ def main() -> int:
     required_runs = [("A", a_dir), ("V1_B", b_dir), ("C", c_dir)]
     missing_runs = [name for name, path in required_runs if not (path / "data.csv").is_file()]
     if missing_runs:
-        analysis = {"schema_version": 1, "classification": "PROTOCOL_FAILURE", "reason": f"missing data.csv: {missing_runs}", "live_process_launched_by_analyzer": False, "launch_budget": {"authorized_C": 1, "observed_C": 0}}
-        (output / "analysis.json").write_text(json.dumps(analysis, indent=2) + "\n", encoding="utf-8")
-        write_csv(output / "protocol_gates.csv", [gate("all", "required_raw_runs", False, missing_runs)])
-        (output / "RESULTS.md").write_text(f"# Phase2 edge-aware V2 closeout\n\nClassification: `PROTOCOL_FAILURE`\n\nMissing raw runs: `{missing_runs}`.\n", encoding="utf-8")
-        return 2
+        c_meta = read_kv(c_dir / "run_metadata.txt")
+        a_meta = read_kv(a_dir / "run_metadata.txt")
+        b_meta = read_kv(b_dir / "run_metadata.txt")
+        provenance_records, provenance_details = source_provenance(root, a_dir, b_dir, c_dir, c_meta, args.expected_c_head)
+        c_protocol = parse_protocol(c_dir, EXPECTED_C_DOMAIN)
+        protocol_records = [
+            gate(name, "required_raw_capture", name not in missing_runs, "data.csv present" if name not in missing_runs else "data.csv missing" )
+            for name, _ in required_runs
+        ]
+        protocol_records.extend([
+            gate("C", "domain_233", c_protocol["domain_matches"], c_protocol["domain_id"]),
+            gate("C", "simulator_ready_capture", False, "simulator aborted before DDS bridge ready; no controller capture"),
+            gate("A", "frozen_raw_hashes", provenance_details["A_raw_hashes_match"], provenance_details["A_raw_hashes_match"]),
+            gate("V1_B", "frozen_raw_hashes", provenance_details["V1_B_raw_hashes_match"], provenance_details["V1_B_raw_hashes_match"]),
+            gate("C", "runtime_metadata", bool(c_meta), c_meta),
+        ])
+        placeholder = [{"status": "FAIL", "reason": f"missing data.csv: {missing_runs}", "live_process_launched_by_analyzer": False}]
+        write_csv(output / "preactivation_exact.csv", placeholder)
+        write_csv(output / "planning_isolation.csv", [gate("C", "planning_not_run", False, "C data.csv missing")])
+        write_csv(output / "front_crossing_summary.csv", placeholder)
+        write_csv(output / "edge_tracking_timeline.csv", placeholder)
+        write_csv(output / "touchdown_summary.csv", placeholder)
+        write_csv(output / "protocol_gates.csv", protocol_records)
+        write_csv(output / "body_contact_chronology.csv", [{"arm": "C", "event": "simulator_abort_before_dds_ready", "state_time_s": None, "detail": c_protocol["metadata"].get("domain_id", "") }])
+        write_csv(output / "provenance.csv", provenance_records)
+        analysis = {
+            "schema_version": 1,
+            "experiment": "phase2_known_step_edge_aware_v2_20260915",
+            "classification": "PROTOCOL_FAILURE",
+            "live_process_launched_by_analyzer": False,
+            "launch_budget": {"authorized_C_launches": 1, "observed_C_launches": 1, "A_launches": 0, "V1_B_launches": 0, "retries": 0, "extra_experiments": 0},
+            "missing_raw_runs": missing_runs,
+            "c": {"run": str(c_dir), "metadata": c_meta, "protocol": c_protocol, "capture_rows": 0, "simulator_abort": "DDS domain 233 port numbers out of range", "controller_capture": False},
+            "protocol": {"pass": False, "gates": protocol_records},
+            "provenance": provenance_details,
+            "pre_live_tests": tests,
+            "source_diff_status": args.source_diff_status,
+        }
+        (output / "analysis.json").write_text(json.dumps(jsonable(analysis), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        (output / "RESULTS.md").write_text(
+            f"# Phase2 known-step edge-aware V2 closeout\n\nDate: 2026-09-15\nPrimary classification: `PROTOCOL_FAILURE`\n\nExactly one C/domain 233 launch was consumed using the prepared runner. The simulator aborted before DDS bridge readiness because CycloneDDS reported domain 233 port numbers out of range; no controller data.csv was produced. A and V1 B were not rerun, and the offline analyzer launched no process. Required machine-readable placeholders and provenance are written in this directory. No retry is authorized.\n",
+            encoding="utf-8",
+        )
+        print("classification=PROTOCOL_FAILURE capture=missing_c_data")
+        return 0
     a_rows = read_rows(a_dir / "data.csv")
     b_rows = read_rows(b_dir / "data.csv")
     c_rows = read_rows(c_dir / "data.csv")

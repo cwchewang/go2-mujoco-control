@@ -1,0 +1,2 @@
+run,gate,status,detail
+C,planning_not_run,FAIL,C data.csv missing
