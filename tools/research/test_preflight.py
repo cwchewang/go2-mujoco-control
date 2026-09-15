@@ -63,6 +63,9 @@ class PreflightRegressionTest(unittest.TestCase):
             [],
         )
 
+    def test_analyzer_changes_require_a_no_live_test(self) -> None:
+        self.assertIn("analyzer", preflight.AUTO_TEST_SURFACES)
+
     def test_changed_surface_inference(self) -> None:
         paths = [
             "example/cpp/gait/cartesian_world_trot.h",

@@ -21,7 +21,7 @@ DEFAULT_PROCESS_NAMES = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
 LINUX_SAFE_DOMAIN_RANGES = ((0, 101), (215, 232))
 SURFACES = {"runtime", "runner", "schema", "scene", "analyzer"}
 AUTO_REVIEW_SURFACES = {"runtime", "schema", "scene"}
-AUTO_TEST_SURFACES = {"runtime", "schema", "scene"}
+AUTO_TEST_SURFACES = {"runtime", "schema", "scene", "analyzer"}
 
 
 def command(argv: list[str], cwd: Path) -> tuple[int, str, str]:
@@ -189,6 +189,15 @@ def diff_paths(repo: Path, base: str, head: str) -> tuple[bool, list[str], str]:
     return rc == 0, [x for x in out.splitlines() if x], err
 
 
+def git_diff_summary(repo: Path, base: str, head: str, relative_path: str) -> tuple[bool, dict[str, Any]]:
+    rc, out, err = command(["git", "diff", f"{base}..{head}", "--", relative_path], repo)
+    if rc != 0:
+        return False, {"error": err}
+    data = out.encode()
+    additions = sum(1 for line in out.splitlines() if line.startswith("+") and not line.startswith("+++"))
+    deletions = sum(1 for line in out.splitlines() if line.startswith("-") and not line.startswith("---"))
+    return True, {"changed": bool(out), "diff_sha256": sha256_bytes(data), "additions": additions, "deletions": deletions}
+
 def diff_summary(repo: Path, left: Path, right: Path) -> tuple[bool, dict[str, Any]]:
     rc, out, err = command(["git", "diff", "--no-index", "--", str(left), str(right)], repo)
     if rc not in (0, 1):
@@ -287,8 +296,10 @@ def main() -> int:
     lock_ok, lock_path = domain_lock_free(args.domain)
     add_check(checks, "dds_domain_lock_free", lock_ok, lock_path)
     add_check(checks, "run_directory_fresh", not run_dir.exists(), str(run_dir))
-    names = tuple(args.process_name) if args.process_name else DEFAULT_PROCESS_NAMES
-    procs = find_processes(names)
+    names = list(args.process_name) if args.process_name else list(DEFAULT_PROCESS_NAMES)
+    if runner_exists and runner.name not in names:
+        names.append(runner.name)
+    procs = find_processes(tuple(names))
     add_check(checks, "no_stale_runtime_process", not procs, procs)
 
     for raw in args.require_file:
@@ -311,6 +322,10 @@ def main() -> int:
         else:
             add_check(checks, "baseline_runner_diff_generated", False,
                       {"baseline": str(baseline_runner), "runner": str(runner)})
+    elif args.diff_base and "runner" in auto_surfaces and runner_exists and inside(runner, repo):
+        relative_runner = runner.relative_to(repo).as_posix()
+        ok, runner_summary = git_diff_summary(repo, args.diff_base, head, relative_runner)
+        add_check(checks, "baseline_runner_diff_generated", ok, runner_summary)
     report["runner_diff"] = runner_summary
 
     tests: list[dict[str, Any]] = []
