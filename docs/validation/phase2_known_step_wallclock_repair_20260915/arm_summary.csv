@@ -1,0 +1,3 @@
+arm,domain,launch_count,status,raw_rows,protocol_status,paired_highstate_status,adapter_active_samples,healthy_active_locomotion_gate_rows,base_x_raw_max_m,base_x_last_m,safety_status,completion_status,solver_health,wall_clock_motion,post_handoff_state_sync
+A,231,1,completed_raw_gate_failed,4879,PASS,PASS,0,0,0.620934266,0.578117952,1,1,FAIL,PRESENT,PASS
+B,232,0,NOT_RUN_A_GATE_FAILED,0,NOT_RUN,NOT_RUN,0,0,,,,,NOT_RUN,NOT_RUN,NOT_RUN

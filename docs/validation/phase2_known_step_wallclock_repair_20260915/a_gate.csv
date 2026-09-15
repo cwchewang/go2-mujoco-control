@@ -1,0 +1,2 @@
+A_gate_pass,reasons,paired_summary,protocol_summary
+False,statuses_zero;no_hard_safety;active_locomotion_to_pre_step;solver_health,"{""cycles"": 4879, ""validation_failures"": 0, ""async_fallbacks"": 0}","{""protocol_status"": ""PASS"", ""trace_rows"": ""4879"", ""intervals"": ""4878"", ""dt_ms"": ""2"", ""violations"": ""0"", ""fail_closed"": ""false""}"

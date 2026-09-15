@@ -1,0 +1,3 @@
+arm,status,detail
+A,NOT_EVALUATED,baseline gate failed before valid traversal window
+B,NOT_RUN,A gate failed

@@ -1,0 +1,3 @@
+arm,status,active_samples,detail
+A,PASS,0,feature disabled by runner
+B,NOT_RUN,0,A gate failed

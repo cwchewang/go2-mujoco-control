@@ -1,0 +1,2 @@
+comparison,status,detail
+A_vs_B,NOT_RUN,A pre-step gate failed; B was not launched

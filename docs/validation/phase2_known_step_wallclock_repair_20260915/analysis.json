@@ -1,0 +1,65 @@
+{
+  "experiment": "phase2_known_step_wallclock_repair_20260915",
+  "classification": "BASELINE_GATE_FAILED",
+  "parent_closeout": "9a3611e5e64150c45241cee92514d38ea6732857",
+  "previous_failed_runtime_head": "89658121e002c9f95f47ee8d09ec83cd41f17845",
+  "runtime_head": "df5d7663adc9e96d153107e071d7b49676bcdad6",
+  "branch": "research/phase2-known-step-wallclock-repair-20260915",
+  "launch_budget": {
+    "authorized": 2,
+    "completed_live_launches": 1,
+    "preflight_nonlaunches": 1,
+    "retries": 0,
+    "extra_experiments": 0
+  },
+  "arms": {
+    "A": {
+      "domain": 231,
+      "launch_count": 1,
+      "status": "completed_raw_gate_failed",
+      "raw_rows": 4879,
+      "base_x_raw_max_m": 0.620934266,
+      "base_x_last_m": 0.578117952,
+      "healthy_active_locomotion_gate_rows": 0,
+      "safety_status": 1,
+      "completion_status": 1,
+      "known_step_adaptation_active_samples": 0,
+      "lockstep_protocol": "PASS",
+      "paired_highstate": {
+        "cycles": 4879,
+        "validation_failures": 0,
+        "async_fallbacks": 0
+      },
+      "solver_health": "FAIL",
+      "hard_safety": "FAIL"
+    },
+    "B": {
+      "domain": 232,
+      "launch_count": 0,
+      "status": "NOT_RUN_A_GATE_FAILED"
+    }
+  },
+  "wall_clock_repair_audit": {
+    "runner_wall_clock_argument_occurrences": 1,
+    "manifest_wall_clock_argument_occurrences": 1,
+    "motion_clock_wall_mode_rows": 4879,
+    "positive_wall_clock_delta_rows": 4878,
+    "handoff_pre_motion_steps": 4000,
+    "handoff_state_tick": 8000,
+    "post_handoff_state_intervals": 4878,
+    "post_handoff_motion_dt_exact_002_s": 4878,
+    "post_handoff_state_tick_delta_violations": 0
+  },
+  "pre_live_tests": {
+    "test_known_step_terrain_adapter": "PASS",
+    "test_lockstep_motion_clock_integration": "PASS",
+    "controller_ctest": "31/31 PASS",
+    "simulator_test_lockstep": "PASS",
+    "simulator_ctest": "2/2 PASS"
+  },
+  "b_authorization": {
+    "authorized": false,
+    "reason": "A pre-step gate failed",
+    "comparability": "NOT_RUN"
+  }
+}
