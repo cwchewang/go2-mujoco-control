@@ -5,9 +5,12 @@ running-trot scheduling, SRBD MPC, and 18-DoF inverse-dynamics WBC. This is a
 research fork of
 [`unitreerobotics/unitree_mujoco`](https://github.com/unitreerobotics/unitree_mujoco).
 
-**Start current Phase 2 work at [`CURRENT.md`](CURRENT.md).** It is the only
-route, status, plan, and handoff authority; all other notes and artifacts are
-subordinate context or history.
+**Bootstrap:** `main` is the stable code line and long-term route. The active
+research frontier may live on a separate `research/*` branch. Read
+[`CURRENT.md`](CURRENT.md) for the single maintained pointer to that branch,
+its task, the canonical execution [SOP](docs/research/SOP.md), and the exact
+`RESULTS.md`. Do not use Atlas directories, dated worktrees, or guessed
+branch names as navigation.
 
 ![stand-walk-lie](docs/media/stand_walk_lie_wbcfull.gif)
 
