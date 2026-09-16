@@ -191,6 +191,218 @@
         "INSUFFICIENT_EVIDENCE": "direct planning-invalid evidence is present"
       }
     },
+    "mechanism_separation_audit": {
+      "scope": "unique C raw evidence; first FL V2 latch at 14.254 s through second FL invalid_edge_ordering at 14.854 s",
+      "timeline": [
+        {
+          "state_tick_s": 14.254,
+          "raw_row": 3127,
+          "event": "first_FL_v2_latch",
+          "FL_planning_valid": true,
+          "FR_crossing_latched": false,
+          "front_pair_established": false
+        },
+        {
+          "state_tick_s": 14.332,
+          "event": "first_FL_command_edge_entry",
+          "command_x_m": 0.778435267,
+          "command_z_m": 0.130230552,
+          "z_corridor_m": 0.130230552
+        },
+        {
+          "state_tick_s": 14.394,
+          "event": "first_FL_actual_edge_entry",
+          "actual_x_m": 0.777368072,
+          "actual_z_m": 0.0420445,
+          "contact": true,
+          "foot_force_n": 100.0
+        },
+        {
+          "state_tick_s": 14.404,
+          "event": "first_FL_touchdown",
+          "command_x_m": 0.85,
+          "command_z_m": 0.075230552,
+          "actual_x_m": 0.78523241,
+          "actual_z_m": 0.046628094,
+          "raised_platform_contact": false
+        },
+        {
+          "state_tick_s": 14.854,
+          "raw_row": 3427,
+          "event": "second_FL_invalid_edge_ordering",
+          "FL_crossing_latched": true,
+          "FL_planning_valid": false,
+          "FR_crossing_latched": false
+        },
+        {
+          "state_tick_s": 15.154,
+          "raw_row": 3577,
+          "event": "first_FR_v2_latch_after_FL_failure",
+          "FR_crossing_latched": true,
+          "FR_planning_valid": false
+        }
+      ],
+      "first_FL": {
+        "frozen_start": {
+          "x_m": 0.509015097,
+          "z_m": 0.025230552
+        },
+        "final_touchdown_command": {
+          "x_m": 0.85,
+          "y_m": 0.078051928,
+          "z_m": 0.075230552
+        },
+        "x_entry_m": 0.777,
+        "x_exit_m": 0.823,
+        "z_corridor_m": 0.130230552,
+        "first_edge_entry": {
+          "command": {
+            "state_tick_s": 14.332,
+            "x_m": 0.778435267,
+            "z_m": 0.130230552
+          },
+          "actual": {
+            "state_tick_s": 14.394,
+            "x_m": 0.777368072,
+            "z_m": 0.0420445,
+            "contact": true,
+            "foot_force_n": 100.0
+          }
+        },
+        "envelope_min_z_m": {
+          "command": 0.130230552,
+          "actual": 0.0420445
+        },
+        "touchdown_actual": {
+          "state_tick_s": 14.404,
+          "x_m": 0.78523241,
+          "z_m": 0.046628094,
+          "command_x_m": 0.85,
+          "command_z_m": 0.075230552
+        },
+        "raised_platform_contact_criterion": false,
+        "tracking_contact_blockage": true,
+        "tracking_contact_subcause_isolated": false
+      },
+      "first_FR": {
+        "latch_state_tick_s": 15.154,
+        "frozen_start": {
+          "x_m": 0.777146087,
+          "z_m": 0.026927914
+        },
+        "ordinary_nominal_touchdown": {
+          "x_m": 0.880977774,
+          "y_m": -0.098339522,
+          "z_m": 0.026927914
+        },
+        "probe_touchdown": {
+          "x_m": 0.915347258,
+          "y_m": -0.094312997,
+          "z_m": 0.026927914
+        },
+        "final_touchdown_command": {
+          "x_m": 0.880977774,
+          "y_m": -0.098339522,
+          "z_m": 0.026927914,
+          "plan_status": "invalid_edge_ordering_fallback"
+        },
+        "first_edge_entry": {
+          "command": {
+            "state_tick_s": 15.154,
+            "x_m": 0.777150774,
+            "z_m": 0.026995857
+          },
+          "actual": {
+            "state_tick_s": 15.154,
+            "x_m": 0.778506104,
+            "z_m": 0.023192198,
+            "contact": true,
+            "foot_force_n": 82.0
+          }
+        },
+        "envelope_min_z_m": {
+          "command": 0.026995857,
+          "actual": 0.023192198
+        },
+        "touchdown_actual": null,
+        "raised_platform_contact_criterion": false,
+        "raw_capture_end_state_tick_s": 18.008
+      },
+      "second_FL_ordering": {
+        "state_tick_s": 14.854,
+        "raw_row": 3427,
+        "p0": {
+          "x_m": 0.78523241,
+          "z_m": 0.046628094
+        },
+        "p_nom": {
+          "x_m": 0.790137099,
+          "y_m": 0.042764916,
+          "z_m": 0.046628094
+        },
+        "p_probe": {
+          "x_m": 0.818490387,
+          "y_m": 0.045511083,
+          "z_m": 0.046628094
+        },
+        "proposed_frozen_p1_before_rejection": {
+          "x_m": 0.85,
+          "y_m": 0.042764916,
+          "z_m": 0.096628094,
+          "effective_lift_m": 0.08
+        },
+        "ordering_checks_in_source_order": [
+          {
+            "inequality": "p0.x < x_entry",
+            "lhs_m": 0.78523241,
+            "rhs_m": 0.777,
+            "pass": false,
+            "first_failed": true
+          },
+          {
+            "inequality": "x_entry < x_exit",
+            "lhs_m": 0.777,
+            "rhs_m": 0.823,
+            "pass": true
+          },
+          {
+            "inequality": "x_exit < p1.x",
+            "lhs_m": 0.823,
+            "rhs_m": 0.85,
+            "pass": true
+          },
+          {
+            "inequality": "0 < s_entry < s_exit < 1",
+            "s_entry": -0.1271069372814392,
+            "s_exit": 0.5831248314164533,
+            "pass": false
+          }
+        ],
+        "latch_condition": {
+          "v2_enabled": true,
+          "h0_m": 0.0,
+          "h_probe_m": 0.05,
+          "raised_height_above_h0": true,
+          "crossing_latched": true
+        },
+        "post_rejection_fallback": {
+          "final_x_m": 0.790137099,
+          "final_y_m": 0.042764916,
+          "final_z_m": 0.046628094,
+          "effective_lift_m": 0.028,
+          "z_corridor_m": 0.0,
+          "s_entry": 0.0,
+          "s_exit": 0.0
+        },
+        "p0_provenance": "ApplyCartesianWorldTrot captures the stance anchor from actual_world_feet; the preceding first-FL actual touchdown is exactly x=0.785232410 m, z=0.046628094 m. The preceding planned touchdown was x=0.850000000 m, z=0.075230552 m.",
+        "p0_cause": "actual_tracking_contact_outcome_not_previous_planned_target"
+      },
+      "causal_judgment": "PRIMARY_TRACKING_CONTACT_DEFECT_WITH_PLANNER_RECOVERY_GAP",
+      "causal_chain": "first FL V2 plan valid and command-clear -> actual FL enters edge envelope below geometric clearance with contact/force -> actual touchdown misses commanded raised-platform placement -> actual touchdown becomes next FL p0 -> V2 crossing latch remains true from probe terrain but strict edge ordering fails -> planner resets to ordinary fallback with no recovery to rebase the edge-envelope start",
+      "next_intervention_target": "tracking/contact/control integration",
+      "primary_classification_unchanged": "PLANNING_GEOMETRY_FAILED",
+      "raw_evidence_changed": false
+    },
     "source_call_graph": [
       "example/cpp/trot/trot_experiment_control.cpp:900-985",
       "example/cpp/trot/trot_experiment_wbc.cpp:1175-1199,1631-1721",

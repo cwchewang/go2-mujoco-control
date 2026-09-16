@@ -56,3 +56,34 @@ The historical `INCONCLUSIVE_PREACTIVATION_DIVERGENCE` remains recorded above, b
 The earliest failure mechanism is the FL second-swing invalid edge ordering at 14.854 s. The runtime records the invalid ordering rather than silently inventing a V2 target; it falls back to the ordinary touchdown (`final_x=0.790137099`, `final_z=start.z`, `effective_lift=0.028`) and produces the zero-length analytic corridor segment. Because a §10 planning/isolation gate fails, the final primary classification under §13 is **`PLANNING_GEOMETRY_FAILED`**.
 
 This is not `INCONCLUSIVE_PREACTIVATION_DIVERGENCE` because the prior source-grounded audit established exact control-relevant A/C state and LowCmd trajectory through the pre-latch row; not `TRACKING_LIMITED`, `FRONT_PAIR_ESTABLISHED_BUT_COORDINATION_FAILED`, or `OTHER_CONTROL_LIMIT_IDENTIFIED` because §13 gives the planning failure precedence and the front-pair raised-contact criterion was not established; not `SUPPORTED_ENABLES_TRAVERSAL_V2` because planning and full traversal criteria failed; and not `PROTOCOL_FAILURE` or `INSUFFICIENT_EVIDENCE` because provenance/lockstep/evidence gates passed and the planning failure is directly observed.
+
+## Offline mechanism-separation audit: first FL crossing to second FL ordering failure (2026-09-16)
+
+This is an offline interpretation of the unique C raw capture. The existing primary classification remains `PLANNING_GEOMETRY_FAILED`; no raw evidence or runtime semantics changed.
+
+Timeline and front-leg state:
+
+- At 14.254 s (raw row 3127), FL latched V2 with a valid plan. At the same instant FR was still non-latched (`crossing_latched=0`); there was no established front pair.
+- At 14.332 s, the FL command entered the edge envelope at x=0.778435267 m and z=0.130230552 m, exactly at the commanded corridor. At 14.394 s, the actual FL entered at x=0.777368072 m and z=0.042044500 m, below the 0.073 m geometric-clear level, with contact=true and 100 N.
+- At 14.404 s, FL touchdown was commanded at x/z=0.850000000/0.075230552 m but actual x/z was 0.785232410/0.046628094 m. It did not satisfy the raised-platform contact criterion (actual x >= 0.850 m and actual z >= start.z+0.035 m for >=0.10 s).
+- At 14.854 s (raw row 3427), the next FL swing latched the crossing condition but failed `planning_valid`; FR remained non-latched and ordinary. The actual first-FL touchdown x/z above became the next FL p0 exactly.
+- The first FR crossing did not latch until 15.154 s, after the FL invalid-ordering event. FR was already invalid at latch: its command/actual first edge entries were x/z=0.777150774/0.026995857 m and 0.778506104/0.023192198 m, respectively, with contact=true and 82 N. Its min command/actual z in the observed envelope was 0.026995857/0.023192198 m; no actual touchdown or qualified raised-platform contact was recorded before the raw capture ended.
+
+First-crossing command versus actual evidence:
+
+| leg | frozen start p0 (x/z m) | valid/final commanded touchdown (x/z m) | first edge command (x/z m) | first edge actual (x/z m) | envelope min command/actual z (m) | touchdown actual (x/z m) | raised contact |
+|---|---:|---:|---:|---:|---:|---:|---|
+| FL | 0.509015097 / 0.025230552 | 0.850000000 / 0.075230552 | 0.778435267 / 0.130230552 | 0.777368072 / 0.042044500 | 0.130230552 / 0.042044500 | 0.785232410 / 0.046628094 | No |
+| FR | 0.777146087 / 0.026927914 | fallback 0.880977774 / 0.026927914 (invalid plan) | 0.777150774 / 0.026995857 | 0.778506104 / 0.023192198 | 0.026995857 / 0.023192198 | Not recorded before capture end | No |
+
+The first FL plan had x_entry=0.777 m, x_exit=0.823 m, and z_corridor=0.130230552 m. Its command was therefore geometrically valid and clear, while the actual foot showed an unambiguous execution blockage signature: actual z entered below the clear level with contact/force and landed 0.064767590 m short in x. This evidence identifies tracking/contact blockage for the crossing, without isolating a lower-level friction or actuator subcause.
+
+Second FL `invalid_edge_ordering` at 14.854 s:
+
+- `p0=(0.785232410, 0.046628094)`. `p_nom=(0.790137099, 0.042764916, 0.046628094)`. `p_probe=(0.818490387, 0.045511083, 0.046628094)`.
+- Before validity rejection, the proposed frozen `p1` was `(0.850000000, 0.042764916, 0.096628094)` with effective lift 0.080 m.
+- In source evaluation order, `p0.x < x_entry` was the first failed inequality: `0.785232410 < 0.777000000` is false. `x_entry < x_exit` passed (`0.777 < 0.823`), and `x_exit < p1.x` passed (`0.823 < 0.850`). The normalized checks also failed because `s_entry=-0.127106937` and `s_exit=0.583124831`, so `0 < s_entry < s_exit < 1` was false.
+- The crossing latch still held because V2 was enabled, h0=0.000 m, and the probe height was h_probe=0.050 m: the latch condition is evaluated before `planning_valid`, and `0 < 0.050` with raised height above h0 is true. Validity rejection then reset the target to ordinary `p_nom`, rise=0, lift=0.028 m, and corridor=0.
+- `p0` came from actual tracking/contact, not from the preceding planned target: the source captures the stance anchor from actual world-foot state, and the preceding FL actual touchdown is the exact same `(x,z)`. The preceding plan had commanded `(0.850000000, 0.075230552)` but actual touchdown was `(0.785232410, 0.046628094)`.
+
+Causal judgment: `PRIMARY_TRACKING_CONTACT_DEFECT_WITH_PLANNER_RECOVERY_GAP`. The first crossing command was valid, but the actual FL foot failed to execute it; that miss placed the next FL start beyond the edge-entry boundary while still on the floor, and the V2 planner had no recovery path for that state and fell back to the ordinary target. This is not `PRIMARY_PLANNING_DEFECT`, because the observed second-swing invalid ordering is conditional on the preceding actual miss rather than inevitable under successful first-crossing tracking. The single next intervention target is **tracking/contact/control integration** for execution of the already-valid first FL crossing; planner geometry/recovery is not changed in that intervention.
