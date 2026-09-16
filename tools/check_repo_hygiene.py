@@ -76,12 +76,11 @@ REQUIRED_FILES = (
 )
 REQUIRED_DOC_MARKERS = {
     "CURRENT.md": (
-        "Stage C",
-        "TerrainBelief",
-        "TerrainExecutionState",
-        "B0, B1, B2, and B3 are acceptance milestones",
+        "stable code line and long-term route",
+        "Active research frontier",
+        "docs/research/SOP.md",
     ),
-    "AGENTS.md": ("CURRENT.md", "Stage C", "TerrainExecutionState"),
+    "AGENTS.md": ("CURRENT.md", "frontier", "_runs"),
     "README.md": ("CURRENT.md",),
     "CONTRIBUTING.md": ("CURRENT.md", "AGENTS.md"),
     "docs/README.md": (

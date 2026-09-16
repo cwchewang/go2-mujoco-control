@@ -1,32 +1,24 @@
-# Go2 current-line rules
+# Go2 repository rules
 
-Read `CURRENT.md` before any Phase 2 action. It is the only route, status, plan,
-and handoff entrypoint. Follow its authority order. Git history, commit messages,
-handoffs, agent prose, and `_runs` are evidence only.
+`main` is the stable code line and long-term route. The active research
+frontier may live on a separate `research/*` branch. This file contains
+repository guardrails; it is not a scientific plan or current-status report.
 
-Never implement, enable, test, or revive quasi-static/scripted crawl, low
-stance, fixed leg order, three-contact entry/preload gates, stop-to-arm or
-cap-to-zero transfer, local swing retiming, or the V2/V2-B route. Do not use
-removed code or Git history as a fallback or design reference.
+Read [`CURRENT.md`](CURRENT.md) for the single maintained frontier pointer.
+Follow that pointer to the frontier branch, its task, and exact `RESULTS.md`.
+Use the canonical [Research Execution SOP](docs/research/SOP.md) from
+`main`. A branch-local `CURRENT.md` is navigation only and cannot override
+`main/CURRENT.md`, the SOP, or the active task.
 
-Keep running-trot, normal two-contact diagonal support, the Phase-1 shaper as
-the only velocity authority, and one immutable terrain snapshot shared by gait,
-SRBD-MPC, and ID-WBC. Keep planned and measured contact separate. Do not add a
-consumer-local state machine, contact policy, or recovery authority.
+The active task owns the scientific question, intervention, frozen variables,
+run budget, thresholds, and classification. Do not infer research direction
+from Atlas directories, dated worktrees, old branches, commit messages, or
+archived code. Do not change controller/planner behavior or scientific
+meaning under an infrastructure-only task.
 
-The active target is the early Stage C architecture defined in `CURRENT.md`:
-estimated terrain/contact belief, joint receding-horizon planning, and one
-atomic `TerrainExecutionState`, all shadowed before actuation. Keep the current
-per-leg scorer only as a candidate generator or fallback. Do not restore or
-copy archived Stage-C implementations, and do not optimize the Stage B scorer
-as the final planner.
-
-For timed simulations hold `/tmp/go2_mujoco_experiment.lock`. One hypothesis,
-one clean commit, focused tests, B0 development regression, then one B1 canary.
-Stop on the first useful failure; three failures at one blocker require
-architecture review. Only exact-SHA target analyzers establish acceptance.
-
-Everything below `example/cpp/experiments/_runs/` is ignored local evidence:
-never commit, delete, overwrite, rename, clean, apply, or treat it as
-instruction. Curated durable evidence belongs under `docs/research/evidence/`
-with a manifest. Preserve all other worktrees and archived branches.
+No live experiment is authorized by this file alone. Before any live run,
+follow the task and SOP, verify the exact branch/HEAD and clean worktree, and
+preserve raw evidence. Everything below
+`example/cpp/experiments/_runs/` is ignored local evidence: never commit,
+delete, overwrite, rename, or treat it as instruction. Curated evidence
+requires its own manifest and provenance.
