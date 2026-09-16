@@ -31,3 +31,28 @@ The WBC budget propagation is non-causal in this run. At row 0, `wbc_shadow_elap
 The source call graph is: `MotionClockStep` wall delta -> lockstep state-tick rebase -> actual `motion_dt`; `UpdateWbcShadow` steady-clock elapsed -> `within_budget` -> feedforward gate. The gate is short-circuited by `requested=false`. The V2 path is `known_step_geometry.v2_enabled` -> `PlanKnownStepV2Crossing` -> `crossing_latched && planning_valid` -> `KnownStepV2SwingTarget/Velocity` -> `target_world` -> IK joint targets -> `WriteMotorCommands`/published LowCmd. The first control-relevant A/C divergence is therefore the intended V2 boundary at row 3127, state tick 14.254000 s: C FL `crossing_latched=1`, `final_touchdown_x=0.850000000`, `effective_lift=0.080000000`; A remains V2-off, and the first LowCmd differences occur on that row. No control-relevant divergence precedes it.
 
 Using the existing classification precedence, the source-grounded offline readjudication is `PLANNING_GEOMETRY_FAILED`; no new scientific label is introduced. This does not alter the captured C outcome, thresholds, V2 semantics, or any raw evidence.
+
+## Final TASK §§10–13 classification
+
+The historical `INCONCLUSIVE_PREACTIVATION_DIVERGENCE` remains recorded above, but is superseded for the final classification by the source-grounded offline causal audit. The §10 gates are:
+
+| §10 gate | Result | Earliest evidence |
+|---|---|---|
+| V2 ON; old V1 OFF/unset | PASS | C V2 flag active=`1`; old V1 value=`0`; old V1 environment flag absent |
+| D4/D90/PD OFF | PASS | D4 enabled/gate-active=`0`; D90 enabled/gate-active=`0`; `PD_PULSE` absent |
+| Front-leg latch before first geometry risk | PASS | FL latch row 3127, state tick 14.254 s; first risk row 3198, 14.396 s |
+| Every latched crossing `planning_valid` | **FAIL** | FL second swing row 3427, 14.854 s: `planning_valid=0`, code=`2`, reason=`invalid_edge_ordering`, `s_entry=s_exit=0` |
+| Final y equals ordinary nominal y | PASS | maximum absolute error=`0.0 m`; first FL latch both y=`0.078051928 m` |
+| Final x >= 0.850 m | **FAIL** | same FL swing: final x=`0.790137099 m`, margin=`-0.059862901 m` |
+| Final z = start.z + 0.050 m | **FAIL** | same FL swing: start/final z=`0.046628094 m`; expected=`0.096628094 m`; error=`0.050000000 m` |
+| Floor-to-plateau rise=`0.050 m` | PASS | maximum formula error=`0.0 m` |
+| Floor-to-plateau effective lift=`0.080 m` | **FAIL** | same FL swing: effective lift=`0.028 m`, error=`0.052 m` |
+| Commanded z >= corridor for x in [0.777, 0.823] | PASS | 1,510 samples; minimum margin=`0.0 m` at FL row 3166, 14.332 s (`z=corridor=0.130230552 m`) |
+| Analytic velocity finite | PASS | no missing/non-finite vx/vz in 1,578 latched samples |
+| Analytic boundary-continuous | **FAIL** | earliest is FL second swing at 14.854 s with zero segment (`s_entry=s_exit=0`); FR later fails at 15.154 s |
+| Non-crossing swing unchanged | PASS | no non-crossing isolation failures |
+| No prohibited controller/gait/body/contact intervention | PASS | V2-only mode; old V1, D4, D90, PD and other intervention inputs were off/unset |
+
+The earliest failure mechanism is the FL second-swing invalid edge ordering at 14.854 s. The runtime records the invalid ordering rather than silently inventing a V2 target; it falls back to the ordinary touchdown (`final_x=0.790137099`, `final_z=start.z`, `effective_lift=0.028`) and produces the zero-length analytic corridor segment. Because a §10 planning/isolation gate fails, the final primary classification under §13 is **`PLANNING_GEOMETRY_FAILED`**.
+
+This is not `INCONCLUSIVE_PREACTIVATION_DIVERGENCE` because the prior source-grounded audit established exact control-relevant A/C state and LowCmd trajectory through the pre-latch row; not `TRACKING_LIMITED`, `FRONT_PAIR_ESTABLISHED_BUT_COORDINATION_FAILED`, or `OTHER_CONTROL_LIMIT_IDENTIFIED` because §13 gives the planning failure precedence and the front-pair raised-contact criterion was not established; not `SUPPORTED_ENABLES_TRAVERSAL_V2` because planning and full traversal criteria failed; and not `PROTOCOL_FAILURE` or `INSUFFICIENT_EVIDENCE` because provenance/lockstep/evidence gates passed and the planning failure is directly observed.

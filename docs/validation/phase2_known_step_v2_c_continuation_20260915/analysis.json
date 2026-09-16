@@ -88,6 +88,109 @@
       "superseding_existing_precedence_classification": "PLANNING_GEOMETRY_FAILED",
       "basis": "629-field-style equality included runtime diagnostics, a non-requested feedforward gate input, a transient solver-status/cache diagnostic, and V2 plan state before its latch gate; actual control-relevant trajectory was exact through the pre-latch row"
     },
+    "task_sections_10_13_final": {
+      "primary_classification": "PLANNING_GEOMETRY_FAILED",
+      "historical_classification_preserved": "INCONCLUSIVE_PREACTIVATION_DIVERGENCE",
+      "gates": [
+        {
+          "gate": "v2_on_old_v1_off",
+          "status": "PASS",
+          "earliest_evidence": "C V2 active=1; old V1 value=0; old V1 environment flag absent"
+        },
+        {
+          "gate": "d4_d90_pd_off",
+          "status": "PASS",
+          "earliest_evidence": "D4 enabled/gate_active=0; D90 enabled/gate_active=0; PD_PULSE absent"
+        },
+        {
+          "gate": "front_latch_before_first_risk",
+          "status": "PASS",
+          "earliest_evidence": "FL latch row 3127 at state tick 14.254 s; first risk row 3198 at 14.396 s"
+        },
+        {
+          "gate": "every_latched_crossing_planning_valid",
+          "status": "FAIL",
+          "earliest_evidence": "FL second swing row 3427 at 14.854 s: planning_valid=0, code=2, reason=invalid_edge_ordering, s_entry=s_exit=0"
+        },
+        {
+          "gate": "final_y_equals_nominal_y",
+          "status": "PASS",
+          "earliest_evidence": "maximum absolute error=0.0 m; first FL latch y=0.078051928 m for both"
+        },
+        {
+          "gate": "final_x_at_least_0.850_m",
+          "status": "FAIL",
+          "earliest_evidence": "same FL swing: final_x=0.790137099 m, margin=-0.059862901 m"
+        },
+        {
+          "gate": "final_z_start_plus_0.050_m",
+          "status": "FAIL",
+          "earliest_evidence": "same FL swing: start_z=final_z=0.046628094 m; expected final_z=0.096628094 m; error=0.050000000 m"
+        },
+        {
+          "gate": "floor_to_plateau_rise_0.050_m",
+          "status": "PASS",
+          "earliest_evidence": "maximum formula error=0.0 m"
+        },
+        {
+          "gate": "floor_to_plateau_effective_lift_0.080_m",
+          "status": "FAIL",
+          "earliest_evidence": "same FL swing: effective_lift=0.028 m, error=0.052 m"
+        },
+        {
+          "gate": "command_z_at_least_corridor_in_edge_envelope",
+          "status": "PASS",
+          "earliest_evidence": "1510 samples; minimum margin=0.0 m at FL row 3166, state tick 14.332 s, x=0.778435267 m, z=corridor=0.130230552 m"
+        },
+        {
+          "gate": "analytic_velocity_finite",
+          "status": "PASS",
+          "earliest_evidence": "no missing or non-finite vx/vz in 1578 latched samples"
+        },
+        {
+          "gate": "analytic_boundary_continuous",
+          "status": "FAIL",
+          "earliest_evidence": "FL second swing at 14.854 s has zero segment s_entry=s_exit=0; FR later fails at 15.154 s"
+        },
+        {
+          "gate": "noncrossing_swing_historical_isolation",
+          "status": "PASS",
+          "earliest_evidence": "no non-crossing isolation failures"
+        },
+        {
+          "gate": "no_prohibited_controller_gait_body_contact_intervention",
+          "status": "PASS",
+          "earliest_evidence": "V2-only mode; old V1, D4, D90, PD and other intervention inputs off/unset"
+        }
+      ],
+      "earliest_failure": {
+        "leg": "fl",
+        "swing": "second FL crossing swing",
+        "raw_row": 3427,
+        "state_tick_s": 14.854,
+        "field": "known_step_v2_fl_planning_valid",
+        "value": 0,
+        "failure_code": 2,
+        "failure_reason": "invalid_edge_ordering",
+        "associated_values": {
+          "s_entry": 0.0,
+          "s_exit": 0.0,
+          "final_touchdown_x_m": 0.790137099,
+          "swing_start_z_m": 0.046628094,
+          "final_touchdown_z_m": 0.046628094,
+          "effective_lift_m": 0.028
+        }
+      },
+      "adjacent_labels_rejected": {
+        "PROTOCOL_FAILURE": "protocol/provenance/lockstep/evidence gates passed",
+        "INCONCLUSIVE_PREACTIVATION_DIVERGENCE": "retained historically but superseded by source-grounded causal audit",
+        "SUPPORTED_ENABLES_TRAVERSAL_V2": "planning and full traversal criteria failed",
+        "TRACKING_LIMITED": "planning failure has precedence",
+        "FRONT_PAIR_ESTABLISHED_BUT_COORDINATION_FAILED": "planning failure has precedence and raised front-pair contact was not established",
+        "OTHER_CONTROL_LIMIT_IDENTIFIED": "planning failure has precedence",
+        "INSUFFICIENT_EVIDENCE": "direct planning-invalid evidence is present"
+      }
+    },
     "source_call_graph": [
       "example/cpp/trot/trot_experiment_control.cpp:900-985",
       "example/cpp/trot/trot_experiment_wbc.cpp:1175-1199,1631-1721",
@@ -10561,7 +10664,8 @@
       }
     }
   },
-  "classification": "INCONCLUSIVE_PREACTIVATION_DIVERGENCE",
+  "historical_classification": "INCONCLUSIVE_PREACTIVATION_DIVERGENCE",
+  "classification": "PLANNING_GEOMETRY_FAILED",
   "classification_factors": {
     "front_pair_established": false,
     "tracking_limited": false
