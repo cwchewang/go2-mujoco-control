@@ -6,6 +6,15 @@ Research fork of [`unitreerobotics/unitree_mujoco`](https://github.com/unitreero
 
 The C++ result is a 500 Hz LowCmd state machine: stand-up, settle, `--wbc-full` trot, blend back to stand, lie-down. On this tree the sequenced / 64-cycle plant is **18-DoF ID-WBC + SRBD MPC**. The earlier `go2sim full` slow-trot result remains a historical **0.130 ± 0.011 m/s** baseline. The exact `66dc3e8` head has now passed three independent strict revalidations of the separate wall-clock **3 m/s-class running-trot** profile in MuJoCo; this is a simulation-only claim and does not imply sim-to-real or natural-animal gait. Watch [`docs/media/stand_walk_lie_wbcfull.mp4`](docs/media/stand_walk_lie_wbcfull.mp4). The independent Isaac Lab velocity-RL track is maintained in [`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl); imitation work is in [`kairoi-k/kine2go-research`](https://github.com/kairoi-k/kine2go-research).
 
+## Current research handoff
+
+This branch-local pointer keeps the active line discoverable without changing
+the controller or scientific analysis. Start at the workspace
+[`START_HERE.md`](../START_HERE.md), then read [`CURRENT.md`](CURRENT.md),
+[`docs/research/SOP.md`](docs/research/SOP.md), the
+[`latest task`](docs/research/TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md),
+and the [`parent RESULTS`](docs/validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md).
+
 ## Contents
 
 `example/cpp/` is the research code:

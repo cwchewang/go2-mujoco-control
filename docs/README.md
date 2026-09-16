@@ -2,8 +2,16 @@
 
 Start here when reading the repository as a research artifact or contributing to the code.
 
+For the active research handoff, read [`../CURRENT.md`](../CURRENT.md), then
+the current [`SOP.md`](research/SOP.md), the latest task, and its exact parent
+results before opening historical task directories.
+
 | Document | Purpose |
 |---|---|
+| [`research/SOP.md`](research/SOP.md) | current research execution and evidence rules |
+| [`research/TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md`](research/TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md) | current task |
+| [`validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md`](validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md) | exact parent results |
+| [`validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md`](validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md) | current closeout |
 | [`RESEARCH_INDEX.md`](RESEARCH_INDEX.md) | claims, evidence, and claim boundary |
 | [`RESEARCH_HISTORY.md`](RESEARCH_HISTORY.md) | milestone history |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | simulator/controller runtime and control architecture |
