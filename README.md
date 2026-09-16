@@ -14,6 +14,7 @@ the controller or scientific analysis. Start at the workspace
 [`docs/research/SOP.md`](docs/research/SOP.md), the
 [`latest task`](docs/research/TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md),
 and the [`parent RESULTS`](docs/validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md).
+The workspace snapshot is [`docs/research/WORKSPACE_INVENTORY_20260916.md`](docs/research/WORKSPACE_INVENTORY_20260916.md).
 
 ## Contents
 

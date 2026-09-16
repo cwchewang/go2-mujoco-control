@@ -10,6 +10,7 @@ The workspace handoff and exact HEAD are authoritative in
 - Execution rules: [`docs/research/SOP.md`](docs/research/SOP.md)
 - Exact parent results: [`docs/validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md`](docs/validation/phase2_known_step_v2_same_binary_ac_20260915/RESULTS.md)
 - Latest closeout: [`docs/validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md`](docs/validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md)
+- Workspace inventory: [`docs/research/WORKSPACE_INVENTORY_20260916.md`](docs/research/WORKSPACE_INVENTORY_20260916.md)
 
 Historical dated worktrees, `tmp/`, `primary/`, `reference/`, `archive/`, and
 `external/` are not alternate daily entries. Do not modify or delete their
