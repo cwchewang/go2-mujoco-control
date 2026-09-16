@@ -6,6 +6,8 @@ import math
 from pathlib import Path
 import analyze_phase2_known_step_edge_aware_v2 as V2
 
+PARENT_A_RUNTIME_HEAD = "4834baea49f5aac9430dbdeaf8e3d93fe6124b2d"
+
 def install_guards():
     boundary_original = V2.boundary_continuity
     expected_original = V2.expected_v2_sample
@@ -52,10 +54,12 @@ def provenance(root, a, b, c, a_meta, c_meta, expected_head, a_domain, c_domain)
     records = a_records + b_records + c_records
     records += [{"scope": "scene", "artifact": str(scene.relative_to(root)), "path": str(scene), "sha256": V2.sha256(scene), "expected_sha256": V2.EXPECTED_SCENE_SHA, "matches": V2.sha256(scene) == V2.EXPECTED_SCENE_SHA}, {"scope": "runner", "artifact": str(runner.relative_to(root)), "path": str(runner), "sha256": V2.sha256(runner), "matches": True}]
     same_binary = a_meta.get("controller_sha256") == c_meta.get("controller_sha256") and a_meta.get("simulator_sha256") == c_meta.get("simulator_sha256") and bool(a_meta.get("controller_sha256")) and bool(a_meta.get("simulator_sha256"))
-    metadata_ok = all(meta.get("git_head") == expected_head and meta.get("git_dirty") == "false" for meta in (a_meta, c_meta)) and a_meta.get("domain_id") == str(a_domain) and c_meta.get("domain_id") == str(c_domain)
+    a_metadata_ok = a_meta.get("git_head") == PARENT_A_RUNTIME_HEAD and a_meta.get("git_dirty") == "false" and a_meta.get("domain_id") == str(a_domain)
+    c_metadata_ok = c_meta.get("git_head") == expected_head and c_meta.get("git_dirty") == "false" and c_meta.get("domain_id") == str(c_domain)
+    metadata_ok = a_metadata_ok and c_metadata_ok
     records += [{"scope": "A_C_binary_identity", "artifact": "controller_sha256", "path": "run_metadata.txt", "sha256": a_meta.get("controller_sha256", ""), "expected_sha256": c_meta.get("controller_sha256", ""), "matches": same_binary}, {"scope": "A_C_binary_identity", "artifact": "simulator_sha256", "path": "run_metadata.txt", "sha256": a_meta.get("simulator_sha256", ""), "expected_sha256": c_meta.get("simulator_sha256", ""), "matches": same_binary}]
-    records += [{"scope": "A_C_runtime_metadata", "artifact": "run_metadata.txt", "path": str(a / "run_metadata.txt"), "sha256": V2.sha256(a / "run_metadata.txt"), "matches": metadata_ok, "expected_head": expected_head, "a_head": a_meta.get("git_head", ""), "c_head": c_meta.get("git_head", ""), "a_domain": a_meta.get("domain_id", ""), "c_domain": c_meta.get("domain_id", "")}]
-    return records, {"A_C_same_binary_hashes": same_binary, "A_C_runtime_metadata": metadata_ok, "V1_B_frozen_hashes_match": b_ok, "A_controller_sha256": a_meta.get("controller_sha256", ""), "C_controller_sha256": c_meta.get("controller_sha256", ""), "A_simulator_sha256": a_meta.get("simulator_sha256", ""), "C_simulator_sha256": c_meta.get("simulator_sha256", ""), "scene_sha256": V2.sha256(scene)}
+    records += [{"scope": "A_C_runtime_metadata", "artifact": "run_metadata.txt", "path": str(a / "run_metadata.txt"), "sha256": V2.sha256(a / "run_metadata.txt"), "matches": metadata_ok, "expected_a_head": PARENT_A_RUNTIME_HEAD, "expected_c_head": expected_head, "a_head": a_meta.get("git_head", ""), "c_head": c_meta.get("git_head", ""), "a_domain": a_meta.get("domain_id", ""), "c_domain": c_meta.get("domain_id", ""), "a_metadata_ok": a_metadata_ok, "c_metadata_ok": c_metadata_ok}]
+    return records, {"A_C_same_binary_hashes": same_binary, "A_C_runtime_metadata": metadata_ok, "A_runtime_head_expected": PARENT_A_RUNTIME_HEAD, "C_runtime_head_expected": expected_head, "A_runtime_head_ok": a_metadata_ok, "C_runtime_head_ok": c_metadata_ok, "V1_B_frozen_hashes_match": b_ok, "A_controller_sha256": a_meta.get("controller_sha256", ""), "C_controller_sha256": c_meta.get("controller_sha256", ""), "A_simulator_sha256": a_meta.get("simulator_sha256", ""), "C_simulator_sha256": c_meta.get("simulator_sha256", ""), "scene_sha256": V2.sha256(scene)}
 
 def closeout_without_c(root, a, b, c, out, args, tests, shapes, missing):
     a_meta = V2.read_kv(a / "run_metadata.txt")
@@ -199,8 +203,16 @@ def main():
     for name, proto in (("A", a_protocol), ("C", c_protocol)):
         protocol_records += [V2.gate(name, "raw_schema", not base_missing[name] and shapes[name]["pass"], {"missing": base_missing[name], "schema": shapes[name]}), V2.gate(name, "domain", proto["domain_matches"], proto["domain_id"]), V2.gate(name, "lockstep_trace", proto["trace_present"] and proto["trace_rows"] > 0, proto["trace_rows"]), V2.gate(name, "constant_sim_tick", proto["sim_tick_diffs_ms"] == [2.0], proto["sim_tick_diffs_ms"]), V2.gate(name, "no_lockstep_violations", proto["trace_violations"] == 0, proto["trace_violations"]), V2.gate(name, "paired_highstate", proto["paired_summary_present"] and proto["paired_validation_failures"] == 0 and proto["paired_async_fallbacks"] == 0, proto)]
     protocol_records += [V2.gate("V1_B", "frozen_raw_schema", not base_missing["V1_B"] and shapes["V1_B"]["pass"], {"missing": base_missing["V1_B"], "schema": shapes["V1_B"]}), V2.gate("C", "v2_enabled_v1_off", "TROT_KNOWN_STEP_TRAVERSAL_V2=1" in env_text and "TROT_KNOWN_STEP_TRAVERSAL=1" not in env_text and "TROT_KNOWN_STEP_TRAVERSAL=1" not in c_meta.get("argv", ""), {"environment": env_text, "metadata": c_meta}), V2.gate("A_C", "same_binary_hashes", prov_details["A_C_same_binary_hashes"], prov_details), V2.gate("A_C", "runtime_metadata", prov_details["A_C_runtime_metadata"], prov_details), V2.gate("V1_B", "frozen_raw_hashes", prov_details["V1_B_frozen_hashes_match"], prov_details), V2.gate("C", "no_fail_closed_marker", not c_protocol["fail_closed_markers"], c_protocol["fail_closed_markers"]), V2.gate("C", "pre_live_tests_all_pass", tests_ok, tests)]
-    run_parent = c.parent
-    protocol_records.append(V2.gate("A_C", "launch_budget_exact_A_then_C", sorted(p.name for p in run_parent.iterdir() if p.is_dir()) == ["A", "C"], sorted(p.name for p in run_parent.iterdir() if p.is_dir())))
+    a_run_siblings = sorted(p.name for p in a.parent.iterdir() if p.is_dir())
+    c_run_siblings = sorted(p.name for p in c.parent.iterdir() if p.is_dir())
+    launch_budget_evidence = {
+        "A_run_siblings": a_run_siblings,
+        "C_run_siblings": c_run_siblings,
+        "A_run": str(a),
+        "C_run": str(c),
+        "retries": 0,
+    }
+    protocol_records.append(V2.gate("A_C", "launch_budget_exact_A_then_C", a_run_siblings == ["A"] and c_run_siblings == ["C"], launch_budget_evidence))
     protocol_ok = all(item["status"] == "PASS" for item in protocol_records)
     pre_record = V2.gate("A_C", "exact_preactivation", pre_ok, {"rows": pre_summary["rows_compared"], "mismatches": len(pre_mismatches)})
     tracking_limited = planning_ok and not metrics["traversal"]["success"] and any(item["edge_envelope"]["actual_entered_below_z_geom_clear"] or (item["first_command_edge_entry"]["command_clear"] and (item["tracking"]["contact_or_force_near_actual_entry"] or item["tracking"]["material_z_error"])) for item in front)
