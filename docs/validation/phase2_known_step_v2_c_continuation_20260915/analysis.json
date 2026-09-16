@@ -1,4 +1,103 @@
 {
+  "offline_causal_audit": {
+    "audit_date": "2026-09-16",
+    "raw_evidence_changed": false,
+    "scope": {
+      "common_handoff_state_tick_s": 8.0,
+      "compared_rows": "0..3126",
+      "rows_compared": 3127,
+      "pre_v2_activation_rows": "0..2150",
+      "first_c_v2_activation_row": 2151,
+      "first_c_v2_activation_state_tick_s": 12.302,
+      "first_c_v2_latch_row": 3127,
+      "first_c_v2_latch_state_tick_s": 14.254
+    },
+    "raw_difference_summary": {
+      "differing_fields": 73,
+      "differing_cells": 21635,
+      "categories": {
+        "external_or_configuration_input": [
+          "known_step_v2_feature_enabled"
+        ],
+        "trajectory_driving_controller_state_or_plan": [
+          "wbc_full_id_ok",
+          "known_step_v2_{fr,fl,rr,rl}_{planning_failure_code,planning_failure_reason,swing_start_x_m,swing_start_z_m,ordinary_nominal_touchdown_{x,y,z}_m,probe_touchdown_{x,y,z}_m,x_entry_m,x_exit_m,final_touchdown_{x,y,z}_m,effective_lift_m}"
+        ],
+        "actual_control_output": [],
+        "wall_clock_or_runtime_diagnostic": [
+          "motion_clock_wall_dt_s",
+          "wbc_shadow_elapsed_us",
+          "wbc_shadow_within_budget"
+        ],
+        "derived_or_logging_only": [
+          "wbc_shadow_min_contact_normal_force_n",
+          "wbc_shadow_max_abs_tau",
+          "wbc_full_id_qdd_x_mps2",
+          "wbc_full_id_contact_force_x_n"
+        ]
+      },
+      "v2_plan_expansion": "four legs x 16 listed plan fields = 64 fields, plus the global feature flag"
+    },
+    "wbc_shadow_budget_propagation": {
+      "row": 0,
+      "state_tick_s": 8.0,
+      "elapsed_us": {
+        "A": "1001.604000000",
+        "C": "993.763000000"
+      },
+      "within_budget": {
+        "A": 0,
+        "C": 1
+      },
+      "feedforward_requested": false,
+      "feedforward_shadow_enabled": true,
+      "gate_code_A_C": 0,
+      "gate_reason_A_C": "disabled",
+      "feedforward_ready_A_C": 0,
+      "feedforward_budget_branch_reached": false,
+      "published_lowcmd_differing_cells_before_latch": 0,
+      "source_path": "UpdateWbcShadow steady_clock elapsed -> within_budget -> EvaluateWbcFeedforwardGate; requested=false short-circuits the gate before within_budget; WriteMotorCommands receives no budget-dependent feedforward"
+    },
+    "state_and_control_comparison": {
+      "paired_lowstate_highstate_inputs_exact_before_latch": true,
+      "gait_motion_controller_public_state_exact_before_latch": true,
+      "joint_q_dq_targets_exact_before_latch": true,
+      "logged_wbc_srbd_id_outputs": "exact except the row-1 shadow min/max diagnostics and ID status/qdd/contact diagnostic fields listed above",
+      "final_lowcmd_q_dq_kp_kd_tau_exact_before_latch": true,
+      "lockstep_handoff_bin_exact": true,
+      "lockstep_sequence_and_ack_exact": true,
+      "runtime_only_internal_exception": "row-1 solved/status changed the last_id_wbc fallback cache branch (A solved=false, C solved=true); row 2 solved successfully in both runs and no command or plant-state field diverged"
+    },
+    "earliest_control_relevant_divergence": {
+      "status": "none_before_intended_v2_boundary",
+      "row": 3127,
+      "state_tick_s": 14.254,
+      "field": "known_step_v2_fl_crossing_latched",
+      "A": 0,
+      "C": 1,
+      "propagation": "known_step_v2_feature_enabled -> PlanKnownStepV2Crossing -> crossing_latched && planning_valid -> KnownStepV2SwingTarget/Velocity -> target_world -> IK joint targets -> LowCmd",
+      "first_lowcmd_difference": {
+        "field": "FR_hip_tau_ff",
+        "A": "-0.519825995",
+        "C": "-0.545532048"
+      },
+      "interpretation": "intentional V2 activation/crossing divergence, not a preactivation runtime divergence"
+    },
+    "classification_readjudication": {
+      "historical_classification_preserved": "INCONCLUSIVE_PREACTIVATION_DIVERGENCE",
+      "superseding_existing_precedence_classification": "PLANNING_GEOMETRY_FAILED",
+      "basis": "629-field-style equality included runtime diagnostics, a non-requested feedforward gate input, a transient solver-status/cache diagnostic, and V2 plan state before its latch gate; actual control-relevant trajectory was exact through the pre-latch row"
+    },
+    "source_call_graph": [
+      "example/cpp/trot/trot_experiment_control.cpp:900-985",
+      "example/cpp/trot/trot_experiment_wbc.cpp:1175-1199,1631-1721",
+      "example/cpp/wbc/wbc_runtime_gate.h:80-114",
+      "example/cpp/gait/cartesian_world_trot.h:268-340,514-575,680-798",
+      "example/cpp/trot/trot_experiment_gait.cpp:1206-1281,1513-1525",
+      "example/cpp/trot/trot_experiment_control.cpp:1387-1619",
+      "simulate/src/unitree_sdk2_bridge.h:668-705"
+    ]
+  },
   "a": {
     "metadata": {
       "analysis_status": "0",
