@@ -2,17 +2,17 @@ name: Atlas task dispatcher
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened, labeled]
 
-# The workflow checks out only trusted main code. Issue bodies are data, never
-# shell. GitHub write credentials are exposed only to the post-agent push/state
-# steps, never to Codex/Luna.
+# One dispatcher workflow may run at a time on the physical Atlas runner. This is
+# a wake-up serialization boundary, not the task queue. The dispatcher scans all
+# open atlas-task issues and runs up to ATLAS_MAX_WORKERS Luna workers itself.
 permissions:
   contents: write
   issues: write
 
 concurrency:
-  group: atlas-task-runner
+  group: atlas-task-dispatcher
   cancel-in-progress: false
 
 jobs:
@@ -20,6 +20,10 @@ jobs:
     if: >-
       github.event.issue.pull_request == null &&
       contains(github.event.issue.labels.*.name, 'atlas-task') &&
+      (
+        github.event.action != 'labeled' ||
+        github.event.label.name == 'atlas-task'
+      ) &&
       (
         github.event.issue.author_association == 'OWNER' ||
         github.event.issue.author_association == 'MEMBER' ||
@@ -29,6 +33,9 @@ jobs:
     timeout-minutes: 360
     env:
       PYTHONDONTWRITEBYTECODE: "1"
+      ATLAS_MAX_WORKERS: "2"
+      ATLAS_IDLE_GRACE_SECONDS: "30"
+      ATLAS_POLL_SECONDS: "5"
     steps:
       - name: Checkout trusted default branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -40,60 +47,20 @@ jobs:
       - name: Add user-local binaries to PATH
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Mark Atlas task running
+      - name: Run queue-aware Atlas dispatcher
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 tools/atlas_issue_state.py --event "$GITHUB_EVENT_PATH" --state running
-
-      - name: Run fixed Atlas dispatcher
         run: |
-          mkdir -p "$RUNNER_TEMP/atlas-result"
+          mkdir -p "$RUNNER_TEMP/atlas-dispatch"
           python3 tools/atlas_dispatch_v2.py \
             --event "$GITHUB_EVENT_PATH" \
-            --output-dir "$RUNNER_TEMP/atlas-result"
+            --output-dir "$RUNNER_TEMP/atlas-dispatch"
 
-      - name: Push validated research result
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          request="$RUNNER_TEMP/atlas-result/research-push.json"
-          if [[ -f "$request" ]]; then
-            result_commit="$(
-              python3 tools/atlas_push_research_result.py --request "$request"
-            )"
-            {
-              printf '\n## Trusted push\n\n'
-              printf -- '- Result commit: `%s`\n' "$result_commit"
-            } >> "$RUNNER_TEMP/atlas-result/summary.md"
-          fi
-
-      - name: Upload Atlas result
+      - name: Upload Atlas dispatcher evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: atlas-issue-${{ github.event.issue.number }}
-          path: ${{ runner.temp }}/atlas-result
-          if-no-files-found: error
+          name: atlas-dispatch-${{ github.run_id }}
+          path: ${{ runner.temp }}/atlas-dispatch
+          if-no-files-found: warn
           retention-days: 14
-
-      - name: Mark Atlas task complete
-        if: success()
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/atlas_issue_state.py \
-            --event "$GITHUB_EVENT_PATH" \
-            --state complete \
-            --summary-file "$RUNNER_TEMP/atlas-result/summary.md"
-
-      - name: Mark Atlas task failed
-        if: failure()
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/atlas_issue_state.py \
-            --event "$GITHUB_EVENT_PATH" \
-            --state failed \
-            --summary-file "$RUNNER_TEMP/atlas-result/summary.md"
