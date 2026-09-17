@@ -4,6 +4,24 @@
 frontier may live on a separate `research/*` branch. This file contains
 repository guardrails; it is not a scientific plan or current-status report.
 
+## Task discovery bootstrap
+
+Before accepting, declining, or executing any task from a local worktree, first
+refresh the remote source of truth:
+
+1. run `git fetch origin --prune`;
+2. read `origin/main:CURRENT.md` (for example with
+   `git show origin/main:CURRENT.md`) to discover the active research branch;
+3. compare the local active branch/worktree with `origin/<active-branch>` and
+   fast-forward only when safe; never reset, discard, or delete local commits,
+   untracked files, or raw evidence to make it match;
+4. only after that, read the active branch `CURRENT.md`, current task, and exact
+   parent/closeout evidence.
+
+A stale local `CURRENT.md`, local branch tip, or cached task is never sufficient
+to conclude that no new task exists. If the local branch is ahead or diverged,
+preserve it and report the divergence instead of guessing which side wins.
+
 Read [`CURRENT.md`](CURRENT.md) for the single maintained frontier pointer.
 Follow that pointer to the frontier branch, its task, and exact `RESULTS.md`.
 Use the canonical [Research Execution SOP](docs/research/SOP.md) from
