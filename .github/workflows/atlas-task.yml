@@ -21,6 +21,10 @@ jobs:
       github.event.issue.pull_request == null &&
       contains(github.event.issue.labels.*.name, 'atlas-task') &&
       (
+        github.event.action != 'labeled' ||
+        github.event.label.name == 'atlas-task'
+      ) &&
+      (
         github.event.issue.author_association == 'OWNER' ||
         github.event.issue.author_association == 'MEMBER' ||
         github.event.issue.author_association == 'COLLABORATOR'
