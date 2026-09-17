@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import re
@@ -154,10 +155,11 @@ def main() -> int:
             f"remote branch moved during task execution: expected {task_commit}, found {remote_tip}"
         )
 
+    auth = base64.b64encode(f"x-access-token:{token}".encode("utf-8")).decode("ascii")
     env = os.environ.copy()
     env["GIT_CONFIG_COUNT"] = "1"
     env["GIT_CONFIG_KEY_0"] = "http.extraHeader"
-    env["GIT_CONFIG_VALUE_0"] = f"AUTHORIZATION: bearer {token}"
+    env["GIT_CONFIG_VALUE_0"] = f"AUTHORIZATION: basic {auth}"
     remote_url = f"https://github.com/{repository}.git"
     lease = f"refs/heads/{branch}:{task_commit}"
     refspec = f"{result_commit}:refs/heads/{branch}"
