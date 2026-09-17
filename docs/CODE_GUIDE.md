@@ -12,6 +12,7 @@ only maps code and cannot define the route.
 | Understand the runtime/control data flow | `docs/ARCHITECTURE.md` |
 | Build or run the C++ stack | `example/cpp/README.md` |
 | Change command-line configuration | `example/cpp/trot/trot_cli.*` |
+| Change the canonical clean baseline | `example/cpp/wbc/clean_baseline.h`, `example/cpp/kinematics/go2_inverse_kinematics.h`, `example/cpp/wbc/inverse_dynamics_wbc.h`, `example/cpp/trot/trot_experiment_gait.cpp`, `trot_experiment_wbc.cpp`, `trot_experiment_control.cpp` |
 | Change stand / walk / stop sequencing | `example/cpp/trot/trot_task.*`, `example/cpp/trot/trot_experiment_control.cpp` |
 | Change gait phase or foot targets | `example/cpp/trot/trot_experiment_gait.cpp`, `example/cpp/gait/raibert_trot_kernel.h` |
 | Change Raibert landing adjustment | `example/cpp/gait/raibert_footstep_planner.h` |
@@ -22,6 +23,7 @@ only maps code and cannot define the route.
 | Change safety gates / diagnostics | `example/cpp/trot/trot_experiment_diagnostics.cpp` |
 | Change sensor-only terrain interfaces | `example/cpp/terrain/*`, `example/cpp/trot/trot_experiment_gait.cpp` |
 | Change timing/lockstep diagnostics | `example/cpp/trot/lockstep_*`, `example/cpp/tests/test_lockstep_*` |
+| Change canonical DDS/build plumbing | `example/cpp/scripts/dds_runtime.sh`, `run_trot.sh`, `run_trot_exact_source.sh`, `simulate/CMakeLists.txt`, `example/cpp/CMakeLists.txt` |
 | Run Phase 2 B0 development checks | `example/cpp/scripts/run_phase2_b0_pair.sh`, `run_phase2_b0_fixed_pair.sh`; domains come from the holdout manifest |
 | Inspect historical leg-lift / multi-step code | `example/cpp/leg_lift/*`; never use it as a Phase 2 route or design source |
 | Inspect retained experiment evidence | `example/cpp/experiments/`, `example/cpp/experiments/CATALOG.md` |

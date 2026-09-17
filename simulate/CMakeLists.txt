@@ -13,22 +13,29 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/unitree_robotics/lib/cmake")
 find_package(unitree_sdk2 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
+set(MUJOCO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/mujoco" CACHE PATH
+  "MuJoCo SDK/runtime root used for the exact-source simulator build")
+if(NOT IS_DIRECTORY "${MUJOCO_ROOT}/include" OR
+   NOT IS_DIRECTORY "${MUJOCO_ROOT}/lib")
+  message(FATAL_ERROR
+    "MUJOCO_ROOT must contain include/ and lib/: ${MUJOCO_ROOT}")
+endif()
 
 include_directories(
   /usr/local/include/iceoryx/v2.0.2
-  mujoco/include
-  mujoco/simulate
+  "${MUJOCO_ROOT}/include"
+  "${MUJOCO_ROOT}/simulate"
   src/lodepng
 )
-link_directories(mujoco/lib)
+link_directories("${MUJOCO_ROOT}/lib")
 
 file(GLOB SIM_SRC
   src/joystick/joystick.cc
 
   # exclude mujoco/simulate/main.cc
-  mujoco/simulate/glfw_*.cc
-  mujoco/simulate/platform_*.cc
-  mujoco/simulate/simulate.cc
+  "${MUJOCO_ROOT}/simulate/glfw_*.cc"
+  "${MUJOCO_ROOT}/simulate/platform_*.cc"
+  "${MUJOCO_ROOT}/simulate/simulate.cc"
   src/lodepng/lodepng.cpp
 )
 

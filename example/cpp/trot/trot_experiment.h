@@ -34,6 +34,7 @@
 #include "srbd_mpc.h"
 #include "inverse_dynamics_wbc.h"
 #include "cartesian_world_trot.h"
+#include "clean_baseline.h"
 #include "terrain_model.h"
 #include "terrain_motion_plan.h"
 #include "terrain_planner.h"

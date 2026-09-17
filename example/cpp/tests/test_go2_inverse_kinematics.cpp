@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "clean_baseline.h"
 #include "go2_inverse_kinematics.h"
 
 namespace
@@ -100,6 +101,82 @@ bool CheckBodyShiftTargets()
     return true;
 }
 
+bool CheckCleanTargetBoundary()
+{
+    const std::array<double, go2::kJointCount> stand_pose = {
+        0.00571868, 0.608813, -1.21763,
+        -0.00571868, 0.608813, -1.21763,
+        0.00571868, 0.608813, -1.21763,
+        -0.00571868, 0.608813, -1.21763};
+    const auto feasible_target = go2::AllFootPositions(stand_pose);
+    std::array<double, go2::kJointCount> solved{};
+    if (!go2_control::clean_baseline::ResolveFootTargetsToJointPositions(
+            feasible_target, solved))
+    {
+        std::cerr << "Clean path rejected a feasible target\n";
+        return false;
+    }
+    const auto solved_feet = go2::AllFootPositions(solved);
+    for (std::size_t leg = 0; leg < go2::kLegCount; ++leg)
+        if (!Near(solved_feet[leg].x, feasible_target[leg].x) ||
+            !Near(solved_feet[leg].y, feasible_target[leg].y) ||
+            !Near(solved_feet[leg].z, feasible_target[leg].z))
+            return false;
+
+    auto unreachable_target = feasible_target;
+    unreachable_target[static_cast<std::size_t>(go2::Leg::FR)].x += 1.0;
+    solved.fill(-99.0);
+    if (go2_control::clean_baseline::ResolveFootTargetsToJointPositions(
+            unreachable_target, solved))
+    {
+        std::cerr << "Clean path accepted an unreachable target\n";
+        return false;
+    }
+    if (!Near(unreachable_target[0].x, feasible_target[0].x + 1.0))
+        return false;
+
+    // This target is analytically IK-solvable, but its calf angle is below
+    // the authoritative MuJoCo lower limit (-2.7227 rad).
+    auto joint_range_invalid_target = feasible_target;
+    joint_range_invalid_target[static_cast<std::size_t>(go2::Leg::FR)] =
+        go2::FootPosition(go2::Leg::FR, 0.0, 0.6, -2.75);
+    std::array<double, go2::kJointCount> direct_solution{};
+    if (!go2::AllLegInverseKinematics(
+            joint_range_invalid_target, direct_solution) ||
+        go2::JointPositionsWithinMuJoCoLimits(direct_solution))
+    {
+        std::cerr << "Joint-range-invalid fixture is not valid\n";
+        return false;
+    }
+    if (go2_control::clean_baseline::ResolveFootTargetsToJointPositions(
+            joint_range_invalid_target, solved))
+    {
+        std::cerr << "Clean path moved/accepted a joint-range-invalid target\n";
+        return false;
+    }
+
+    // Rear thighs use the separate back_hip range in go2.xml.  This target is
+    // analytically solvable but below the rear-thigh lower limit (-0.5236).
+    auto rear_joint_range_invalid_target = feasible_target;
+    rear_joint_range_invalid_target[static_cast<std::size_t>(go2::Leg::RL)] =
+        go2::FootPosition(go2::Leg::RL, 0.0, -0.60, -1.20);
+    std::array<double, go2::kJointCount> rear_direct_solution{};
+    if (!go2::AllLegInverseKinematics(
+            rear_joint_range_invalid_target, rear_direct_solution) ||
+        go2::JointPositionsWithinMuJoCoLimits(rear_direct_solution))
+    {
+        std::cerr << "Rear joint-range-invalid fixture is not valid\n";
+        return false;
+    }
+    if (go2_control::clean_baseline::ResolveFootTargetsToJointPositions(
+            rear_joint_range_invalid_target, solved))
+    {
+        std::cerr << "Clean path accepted an invalid rear thigh target\n";
+        return false;
+    }
+    return true;
+}
+
 } // namespace
 
 int main()
@@ -111,7 +188,7 @@ int main()
         -0.00571868, 0.608813, -1.21763};
 
     if (!CheckRoundTrip(stand_pose) || !CheckBodyShiftTargets() ||
-        !CheckClampedSwingDoesNotMoveStance())
+        !CheckClampedSwingDoesNotMoveStance() || !CheckCleanTargetBoundary())
     {
         return 1;
     }

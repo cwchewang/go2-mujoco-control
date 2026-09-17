@@ -113,6 +113,8 @@ void TrotExperiment::UpdateWbcFull(
     const unitree_go::msg::dds_::SportModeState_ &high_state_snapshot)
 {
     wbc_shadow_diagnostics_.enabled = true;
+    if (params_.clean_baseline)
+        wbc_shadow_candidate_torques_ = {};
     if (!rigid_body_ || !rigid_body_->loaded())
         return;
     const double pitch_abs = std::abs(
@@ -803,6 +805,7 @@ void TrotExperiment::UpdateWbcFull(
     if (high_speed_curriculum && force_track_ov > 0.0)
         id_params.w_force_track = std::clamp(force_track_ov, 0.0, 1.0);
     id_params.tau_limit_nm = 35.0;
+    id_params.require_qp_acceptance = params_.clean_baseline;
     const double tau_ov = Full2EnvDouble("FULL2_TAU", -1.0);
     if (tau_ov > 0.0)
         id_params.tau_limit_nm = tau_ov;
@@ -823,7 +826,7 @@ void TrotExperiment::UpdateWbcFull(
     bool solved =
         go2_control::SolveInverseDynamicsWbc(id_params, wbc_in, wbc_out) &&
         wbc_out.ok;
-    if (!solved && id_params.hard_stance_no_slip)
+    if (!params_.clean_baseline && !solved && id_params.hard_stance_no_slip)
     {
         id_params.hard_stance_no_slip = false;
         solved =
@@ -835,6 +838,14 @@ void TrotExperiment::UpdateWbcFull(
         last_id_wbc_ = wbc_out;
         have_last_id_wbc_ = true;
     }
+    else if (params_.clean_baseline)
+    {
+        // A failed constrained solve is an explicit safe-hold condition.  Do
+        // not promote a stale or equality-only candidate to the plant.
+        wbc_shadow_diagnostics_.solver_ok = false;
+        wbc_shadow_diagnostics_.mapping_ok = false;
+        return;
+    }
     else if (have_last_id_wbc_)
     {
         wbc_out = last_id_wbc_;
@@ -844,6 +855,8 @@ void TrotExperiment::UpdateWbcFull(
         return;
     }
 
+    if (!params_.clean_baseline)
+    {
     // Sprint-only pitch moment trim.  The ID-WBC task can lose the small
     // front/rear normal-force split needed to hold the torso while the
     // diagonal pair is accelerating.  Redistribute a bounded amount of
@@ -1008,8 +1021,9 @@ void TrotExperiment::UpdateWbcFull(
         for (int i = 0; i < 12; ++i)
             wbc_out.tau[i] = std::clamp(wbc_out.tau[i], -35.0, 35.0);
     }
+    }
 
-    wbc_shadow_diagnostics_.solver_ok = true;
+    wbc_shadow_diagnostics_.solver_ok = params_.clean_baseline ? solved : true;
     wbc_shadow_diagnostics_.full_requested_acc_x_mps2 =
         wbc_in.desired_linear_acc_world.x();
     wbc_shadow_diagnostics_.full_id_qdd_x_mps2 = wbc_out.qdd[0];
@@ -1017,10 +1031,11 @@ void TrotExperiment::UpdateWbcFull(
     for (std::size_t leg = 0; leg < go2::kLegCount; ++leg)
         wbc_shadow_diagnostics_.full_id_contact_force_x_n +=
             wbc_out.force[3 * static_cast<int>(leg)];
-    wbc_shadow_diagnostics_.mapping_ok = true;
+    wbc_shadow_diagnostics_.mapping_ok = params_.clean_baseline ? solved : true;
     wbc_shadow_diagnostics_.id_wbc_ok = solved;
     wbc_shadow_diagnostics_.wrench_satisfied = wbc_out.eq_residual < 1.0;
-    wbc_shadow_diagnostics_.constraint_feasible = true;
+    wbc_shadow_diagnostics_.constraint_feasible =
+        params_.clean_baseline ? solved : true;
     wbc_shadow_diagnostics_.task_satisfied = wbc_out.eq_residual < 1.0;
     wbc_shadow_diagnostics_.residual_norm = wbc_out.eq_residual;
     wbc_shadow_diagnostics_.id_eq_residual = wbc_out.eq_residual;

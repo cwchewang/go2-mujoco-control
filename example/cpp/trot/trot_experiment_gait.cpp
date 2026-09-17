@@ -1508,7 +1508,17 @@ bool TrotExperiment::BuildGaitTargets(
     }
     commanded_body_feet_ = feet;
     have_commanded_body_feet_ = true;
-    if (params_.wbc_full)
+    if (params_.clean_baseline)
+    {
+        if (!go2_control::clean_baseline::ResolveFootTargetsToJointPositions(
+                feet, joint_targets))
+        {
+            std::cerr << "Clean-baseline target infeasible at gait_time="
+                      << gait_time_s << " (target rejected; holding safely)\n";
+            return false;
+        }
+    }
+    else if (params_.wbc_full)
     {
         if (!go2::AllLegInverseKinematicsClamped(feet, joint_targets))
         {

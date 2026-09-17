@@ -29,6 +29,12 @@ target_link_libraries(hold_pose_go2 unitree_sdk2)
 add_executable(track_lowcmd_lowstate_go2 apps/track_lowcmd_lowstate_go2.cpp)
 target_link_libraries(track_lowcmd_lowstate_go2 unitree_sdk2)
 
+# Boot-only DDS transport probe.  It subscribes to rt/lowstate and never
+# constructs a LowCmd publisher; the trusted host smoke uses it after the
+# simulator's DDS-ready marker.
+add_executable(dds_lowstate_probe apps/dds_lowstate_probe.cpp)
+target_link_libraries(dds_lowstate_probe unitree_sdk2)
+
 add_executable(single_leg_lift_go2 apps/single_leg_lift_go2.cpp)
 target_link_libraries(single_leg_lift_go2 unitree_sdk2)
 
@@ -54,10 +60,11 @@ add_executable(real_trot_go2
 )
 target_link_libraries(real_trot_go2 unitree_sdk2 Eigen3::Eigen)
 
-set(_go2_mujoco_lib
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib/libmujoco.so")
-set(_go2_mujoco_inc
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/include")
+set(GO2_MUJOCO_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco" CACHE PATH
+    "MuJoCo SDK/runtime root used for the controller build")
+set(_go2_mujoco_lib "${GO2_MUJOCO_ROOT}/lib/libmujoco.so")
+set(_go2_mujoco_inc "${GO2_MUJOCO_ROOT}/include")
 set(_go2_model_path
     "${CMAKE_CURRENT_SOURCE_DIR}/../../unitree_robots/go2/go2.xml")
 if(EXISTS "${_go2_mujoco_lib}")
@@ -67,18 +74,23 @@ if(EXISTS "${_go2_mujoco_lib}")
         real_trot_go2 PRIVATE GO2_MODEL_PATH="${_go2_model_path}")
     set_target_properties(
         real_trot_go2 PROPERTIES
-        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+        BUILD_RPATH "${GO2_MUJOCO_ROOT}/lib")
 endif()
 
 function(go2_add_ctest name)
     add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
+add_test(
+    NAME test_dds_runtime
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dds_runtime.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+
 if(EXISTS "${_go2_mujoco_lib}")
     add_executable(test_go2_forward_kinematics tests/test_go2_forward_kinematics.cpp)
     target_include_directories(
         test_go2_forward_kinematics
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/include")
+        PRIVATE "${_go2_mujoco_inc}")
     target_link_libraries(
         test_go2_forward_kinematics
         "${_go2_mujoco_lib}")
@@ -176,7 +188,7 @@ if(EXISTS "${_go2_mujoco_lib}")
     target_compile_definitions(test_lockstep_motion_clock_integration
         PRIVATE GO2_MODEL_PATH="${_go2_model_path}")
     set_target_properties(test_lockstep_motion_clock_integration PROPERTIES
-        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+        BUILD_RPATH "${GO2_MUJOCO_ROOT}/lib")
 endif()
 go2_add_ctest(test_lockstep_motion_clock_integration)
 
@@ -187,6 +199,8 @@ target_link_libraries(test_preview_footstep_horizon Eigen3::Eigen)
 
 add_executable(test_dense_qp tests/test_dense_qp.cpp)
 target_link_libraries(test_dense_qp Eigen3::Eigen)
+
+add_executable(test_clean_baseline tests/test_clean_baseline.cpp)
 
 add_executable(test_contact_wrench_qp tests/test_contact_wrench_qp.cpp)
 target_link_libraries(test_contact_wrench_qp Eigen3::Eigen)
@@ -199,7 +213,7 @@ if(EXISTS "${_go2_mujoco_lib}")
         test_go2_rigid_body PRIVATE GO2_MODEL_PATH="${_go2_model_path}")
     set_target_properties(
         test_go2_rigid_body PROPERTIES
-        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+        BUILD_RPATH "${GO2_MUJOCO_ROOT}/lib")
     go2_add_ctest(test_go2_rigid_body)
 
     add_executable(test_inverse_dynamics_wbc tests/test_inverse_dynamics_wbc.cpp)
@@ -211,7 +225,7 @@ if(EXISTS "${_go2_mujoco_lib}")
         test_inverse_dynamics_wbc PRIVATE GO2_MODEL_PATH="${_go2_model_path}")
     set_target_properties(
         test_inverse_dynamics_wbc PROPERTIES
-        BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco/lib")
+        BUILD_RPATH "${GO2_MUJOCO_ROOT}/lib")
     go2_add_ctest(test_inverse_dynamics_wbc)
 endif()
 
@@ -246,4 +260,5 @@ go2_add_ctest(test_wbc_runtime_gate)
 go2_add_ctest(test_centroidal_wbc)
 go2_add_ctest(test_preview_footstep_horizon)
 go2_add_ctest(test_dense_qp)
+go2_add_ctest(test_clean_baseline)
 go2_add_ctest(test_contact_wrench_qp)

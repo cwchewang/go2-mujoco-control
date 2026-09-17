@@ -17,6 +17,55 @@ struct LegJointPositions
     double calf = 0.0;
 };
 
+// These are the authoritative ranges in unitree_robots/go2/go2.xml.  Keep
+// them beside the analytical IK so a clean target can be rejected without
+// projecting it to a different point.  The rear thigh range is intentionally
+// distinct from the front thigh range.
+struct JointRange
+{
+    double lower;
+    double upper;
+};
+
+inline JointRange JointRangeFor(Leg leg, std::size_t joint_in_leg)
+{
+    static constexpr JointRange kCommonRanges[kJointsPerLeg] = {
+        {-1.0472, 1.0472},
+        {0.0, 0.0},
+        {-2.7227, -0.83776},
+    };
+    static constexpr JointRange kFrontThigh{-1.5708, 3.4907};
+    static constexpr JointRange kRearThigh{-0.5236, 4.5379};
+    if (joint_in_leg == 1)
+        return leg == Leg::FR || leg == Leg::FL
+            ? kFrontThigh : kRearThigh;
+    return joint_in_leg < kJointsPerLeg
+        ? kCommonRanges[joint_in_leg]
+        : JointRange{1.0, 0.0};
+}
+
+inline bool JointPositionsWithinMuJoCoLimits(
+    const std::array<double, kJointCount> &joint_positions,
+    double tolerance = 1.0e-9)
+{
+    if (!std::isfinite(tolerance) || tolerance < 0.0)
+        return false;
+    for (std::size_t leg = 0; leg < kLegCount; ++leg)
+    {
+        for (std::size_t joint = 0; joint < kJointsPerLeg; ++joint)
+        {
+            const double value = joint_positions[leg * kJointsPerLeg + joint];
+            const JointRange range = JointRangeFor(
+                static_cast<Leg>(leg), joint);
+            if (!std::isfinite(value) ||
+                value < range.lower - tolerance ||
+                value > range.upper + tolerance)
+                return false;
+        }
+    }
+    return true;
+}
+
 inline bool LegInverseKinematics(
     Leg leg,
     const Vec3 &foot_position,
@@ -86,6 +135,25 @@ inline bool AllLegInverseKinematics(
     return true;
 }
 
+// Clean-baseline target boundary: solve direct IK first, then reject any
+// solution outside the MuJoCo joint ranges.  This deliberately does not
+// modify foot_positions or project an infeasible target.
+inline bool AllLegInverseKinematicsWithinMuJoCoLimits(
+    const std::array<Vec3, kLegCount> &foot_positions,
+    std::array<double, kJointCount> &joint_positions,
+    double tolerance = 1.0e-9)
+{
+    std::array<double, kJointCount> candidate{};
+    if (!AllLegInverseKinematics(foot_positions, candidate) ||
+        !JointPositionsWithinMuJoCoLimits(candidate, tolerance))
+        return false;
+    joint_positions = candidate;
+    return true;
+}
+
+// LEGACY compatibility boundary.  This function may project a requested foot
+// target and is never part of the clean-baseline or future terrain-actuation
+// contract.
 inline bool AllLegInverseKinematicsClamped(
     std::array<Vec3, kLegCount> &foot_positions,
     std::array<double, kJointCount> &joint_positions)

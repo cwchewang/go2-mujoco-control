@@ -32,12 +32,9 @@ export TROT_DYNAMICS_TOLERANCE_N="${TROT_DYNAMICS_TOLERANCE_N:-20}"
 export TROT_CPU_AUTOPIN="${TROT_CPU_AUTOPIN:-1}"
 export TROT_TERRAIN_SHADOW_DIAGNOSTICS="${TROT_TERRAIN_SHADOW_DIAGNOSTICS:-1}"
 export GO2_PROFILE_PATH=""
-# Optional DDS transport preload is host configuration, never a repository
-# path. An unset or missing preload keeps the portable default.
-dds_preload="${GO2_DDS_PRELOAD:-}"
-if [[ -n "$dds_preload" && -f "$dds_preload" ]]; then
-  export LD_PRELOAD="$dds_preload"
-fi
+# DDS preparation, the tracked support artifact, and its hash are owned by
+# run_trot.sh through the canonical runtime layer.  No shell-provided DDS
+# preload is accepted here.
 
 stamp="$(date +%Y%m%d_%H%M%S)"
 base_name="phase2_b0_lockstep_${set_name}_fixed_3mps_r${repeat}_${stamp}"

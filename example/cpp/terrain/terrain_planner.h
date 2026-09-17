@@ -34,6 +34,9 @@ struct TerrainPlannerConfig
     double swing_clearance_m = 0.030;
     bool sensor_only = true;
     bool allow_actuation = false;
+    // Any future actuation-capable planner must explicitly enter through the
+    // clean baseline contract.  Sensor-only observation remains available.
+    bool clean_baseline_contract = false;
 };
 
 struct TerrainPlannerInput
@@ -232,6 +235,15 @@ public:
                 : TerrainPlanFailure::kInvalidInput;
             result.plan.status = TerrainPlanStatus::kRejected;
             result.plan.solver.failure = result.plan.failure;
+            return Finish(input, std::move(result), start);
+        }
+
+        if (config_.allow_actuation && !config_.clean_baseline_contract)
+        {
+            result.plan.status = TerrainPlanStatus::kRejected;
+            result.plan.failure = TerrainPlanFailure::kInvalidInput;
+            result.plan.solver.failure = result.plan.failure;
+            result.safe_stop_required = true;
             return Finish(input, std::move(result), start);
         }
 

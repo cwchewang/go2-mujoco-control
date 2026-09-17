@@ -44,6 +44,9 @@ struct IdWbcParams
     double w_force_track = 0.0;
     double w_tau = 1.0e-4;
     bool hard_stance_no_slip = false;
+    // Historical callers retain their old fallback behavior.  The opt-in
+    // clean baseline requires the constrained solver's own acceptance bit.
+    bool require_qp_acceptance = false;
 };
 
 struct IdWbcInput
@@ -125,6 +128,23 @@ inline Eigen::Matrix<double, 12, kGo2Nv> StackFootJacobian(
         J.block<3, kGo2Nv>(static_cast<int>(3 * leg), 0) = dyn.foot_jac_world[leg];
     return J;
 }
+
+inline void AddSwingFootAccelerationTask(
+    Eigen::MatrixXd &H,
+    Eigen::VectorXd &g,
+    const Eigen::Matrix<double, 3, kGo2Nv> &J,
+    const Eigen::Matrix<double, 3, kGo2Nv> &Jdot,
+    const Eigen::Matrix<double, kGo2Nv, 1> &qvel,
+    const Eigen::Vector3d &a_des,
+    const Eigen::Matrix3d &weight)
+{
+    const Eigen::Vector3d jdot_qvel = Jdot * qvel;
+    H.topLeftCorner(kGo2Nv, kGo2Nv) +=
+        2.0 * J.transpose() * weight * J;
+    g.head(kGo2Nv) +=
+        2.0 * J.transpose() * weight * (jdot_qvel - a_des);
+}
+
 inline bool ValidateIdWbcTerrainReference(const IdWbcInput &input)
 {
     if (!input.has_terrain_plan)
@@ -217,10 +237,9 @@ inline bool SolveInverseDynamicsWbc(
             Eigen::Matrix3d Wswing = Eigen::Matrix3d::Identity() * params.w_swing;
             if (params.w_swing_x >= 0.0)
                 Wswing(0, 0) = params.w_swing_x;
-            H.topLeftCorner(nqdd, nqdd) +=
-                2.0 * Jl.transpose() * Wswing * Jl;
-            g.head(nqdd) +=
-                -2.0 * Jl.transpose() * Wswing * input.swing_acc_world[leg];
+            AddSwingFootAccelerationTask(
+                H, g, Jl, input.dynamics.foot_jac_dot_world[leg],
+                input.dynamics.qvel, input.swing_acc_world[leg], Wswing);
         }
         H(col_f, col_f) += 2.0 * params.w_force;
         H(col_f + 1, col_f + 1) += 2.0 * params.w_force;
@@ -363,6 +382,8 @@ inline bool SolveInverseDynamicsWbc(
     settings.feasibility_tol = 1e-4;
     const bool qp_ok =
         SolveDenseQpEq(H, g, Aineq, bineq, Aeq, beq, x, iters, settings);
+    if (params.require_qp_acceptance && !qp_ok)
+        return false;
     if (x.size() != n || !x.allFinite())
         return false;
 
