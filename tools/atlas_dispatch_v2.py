@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Atlas dispatcher shim using the trusted-commit research worker v2 semantics."""
+"""Atlas dispatcher shim using the current trusted research worker semantics."""
 
 from __future__ import annotations
 
@@ -10,14 +10,14 @@ from typing import Any
 import atlas_dispatch as legacy
 
 
-def _research_task_v2(
+def _research_task_current(
     repo_root: Path,
     parameters: dict[str, str],
     output_dir: Path,
 ) -> dict[str, Any]:
     argv = [
         "python3",
-        "tools/atlas_research_task_v3.py",
+        "tools/atlas_research_task_v4.py",
         "--branch",
         parameters["branch"],
         "--task-path",
@@ -44,13 +44,14 @@ def _research_task_v2(
         "result_commit": result_commit,
         "codex_log": "codex.ndjson",
         "codex_stderr": "codex.stderr.log",
-        "worker_version": 2,
-        "worker_impl": 3,
+        "host_experiment": "host-experiment.json",
+        "worker_version": 4,
+        "worker_impl": 4,
     }
 
 
 def main() -> int:
-    legacy._research_task = _research_task_v2
+    legacy._research_task = _research_task_current
     return legacy.main()
 
 
