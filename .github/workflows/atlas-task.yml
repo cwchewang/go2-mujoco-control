@@ -4,63 +4,20 @@ on:
   issues:
     types: [opened, reopened, labeled]
 
-# One dispatcher workflow may run at a time on the physical Atlas runner. This is
-# a wake-up serialization boundary, not the task queue. The dispatcher scans all
-# open atlas-task issues and runs up to ATLAS_MAX_WORKERS Luna workers itself.
 permissions:
   contents: write
   issues: write
-
-concurrency:
-  group: atlas-task-dispatcher
-  cancel-in-progress: false
 
 jobs:
   dispatch:
     if: >-
       github.event.issue.pull_request == null &&
       contains(github.event.issue.labels.*.name, 'atlas-task') &&
-      (
-        github.event.action != 'labeled' ||
-        github.event.label.name == 'atlas-task'
-      ) &&
-      (
-        github.event.issue.author_association == 'OWNER' ||
-        github.event.issue.author_association == 'MEMBER' ||
-        github.event.issue.author_association == 'COLLABORATOR'
-      )
-    runs-on: [self-hosted, linux, x64, atlas]
-    timeout-minutes: 360
-    env:
-      PYTHONDONTWRITEBYTECODE: "1"
-      ATLAS_MAX_WORKERS: "2"
-      ATLAS_IDLE_GRACE_SECONDS: "30"
-      ATLAS_POLL_SECONDS: "5"
-    steps:
-      - name: Checkout trusted default branch
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: main
-          fetch-depth: 1
-          persist-credentials: false
-
-      - name: Add user-local binaries to PATH
-        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Run queue-aware Atlas dispatcher
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p "$RUNNER_TEMP/atlas-dispatch"
-          python3 tools/atlas_dispatch_v2.py \
-            --event "$GITHUB_EVENT_PATH" \
-            --output-dir "$RUNNER_TEMP/atlas-dispatch"
-
-      - name: Upload Atlas dispatcher evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: atlas-dispatch-${{ github.run_id }}
-          path: ${{ runner.temp }}/atlas-dispatch
-          if-no-files-found: warn
-          retention-days: 14
+      (github.event.action != 'labeled' || github.event.label.name == 'atlas-task') &&
+      (github.event.issue.author_association == 'OWNER' ||
+       github.event.issue.author_association == 'MEMBER' ||
+       github.event.issue.author_association == 'COLLABORATOR')
+    uses: kairoi-k/go2-research-orchestrator/.github/workflows/atlas-dispatch-reusable.yml@2d0e2f1e4245a6ccf4aae47a81171d40a16ef0d0
+    with:
+      project-config: .atlas/project.json
+      core-ref: 2d0e2f1e4245a6ccf4aae47a81171d40a16ef0d0
