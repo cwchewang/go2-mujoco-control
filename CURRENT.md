@@ -13,7 +13,8 @@ canonical execution rules live in [`docs/research/SOP.md`](docs/research/SOP.md)
 Update only this block when the frontier changes. The dated branch/task below
 are a pointer value, not a permanent architecture decision.
 
-- Branch: [`research/phase2-known-step-v2-c-continuation-20260915`](https://github.com/kairoi-k/go2-mujoco-control/tree/research/phase2-known-step-v2-c-continuation-20260915)
-- Branch navigation: [`CURRENT.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-c-continuation-20260915/CURRENT.md)
-- Task: [`TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-c-continuation-20260915/docs/research/TASK_PHASE2_KNOWN_STEP_V2_C_CONTINUATION_20260915.md)
-- Exact closeout: [`RESULTS.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-c-continuation-20260915/docs/validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md)
+- Branch: [`research/phase2-known-step-v2-ik-map-canary-20260917`](https://github.com/kairoi-k/go2-mujoco-control/tree/research/phase2-known-step-v2-ik-map-canary-20260917)
+- Branch navigation: [`CURRENT.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-ik-map-canary-20260917/CURRENT.md)
+- Task: [`TASK_PHASE2_KNOWN_STEP_V2_IK_MAP_CANARY_20260917.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-ik-map-canary-20260917/docs/research/TASK_PHASE2_KNOWN_STEP_V2_IK_MAP_CANARY_20260917.md)
+- Exact parent audit: [`0f8a0109`](https://github.com/kairoi-k/go2-mujoco-control/commit/0f8a0109dc56a2dabad600aacee71c7d99bd6a46)
+- Parent closeout: [`RESULTS.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-known-step-v2-c-continuation-20260915/docs/validation/phase2_known_step_v2_c_continuation_20260915/RESULTS.md)
