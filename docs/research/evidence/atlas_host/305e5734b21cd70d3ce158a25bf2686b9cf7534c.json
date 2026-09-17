@@ -1,0 +1,32 @@
+{
+  "candidate_commit": "5cc56557a3d6a7affd6400f0b3bc8434d91bc6cd",
+  "command": [
+    "bash",
+    "example/cpp/scripts/dds_runtime_root_smoke.sh",
+    "--domain-id",
+    "220",
+    "--run-dir",
+    "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke"
+  ],
+  "domain_id": 220,
+  "environment": {
+    "LD_LIBRARY_PATH": "/home/che/dev/go2-workspace/current/simulate/mujoco/lib"
+  },
+  "error": null,
+  "evidence": [],
+  "finished_at": "2026-09-17T11:26:40.376098+00:00",
+  "launched": true,
+  "manifest_sha256": "37bb5a6c47b091a71d0fa23d61bba6788a4b8a4fc974c431b236576f56830cdc",
+  "returncode": 2,
+  "run_dir": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke",
+  "schema_version": 1,
+  "started_at": "2026-09-17T11:26:40.368276+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+  "stderr_sha256": "5bbc4211da098eb420b6019285a3d1fea339a5492088f02bdc939aba280dcd73",
+  "stdout": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "task_commit": "305e5734b21cd70d3ce158a25bf2686b9cf7534c",
+  "task_path": "docs/research/TASK_DDS_RUNTIME_ROOT_FIX_20260917.md",
+  "timed_out": false,
+  "timeout_s": 240
+}

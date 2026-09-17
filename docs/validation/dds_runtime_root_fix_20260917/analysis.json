@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "experiment": "dds_runtime_root_fix_20260917",
+  "classification": "PROTOCOL_FAILURE",
+  "earliest_causal_boundary": "execution",
+  "reason_code": "HOST_PREFLIGHT_MISSING_SIMULATOR_BINARY",
+  "task": {
+    "branch": "research/dds-runtime-root-fix-20260917",
+    "task_commit": "305e5734b21cd70d3ce158a25bf2686b9cf7534c",
+    "candidate_commit_presented_to_host": "5cc56557a3d6a7affd6400f0b3bc8434d91bc6cd",
+    "exact_parent": "2f26b7ce9e74ec799cf600cf7db2ec2bd978fc3e",
+    "scientific_baseline": "cdb0888d02c195935a88d9c404fb4d45c5b0ac1a",
+    "task_path": "docs/research/TASK_DDS_RUNTIME_ROOT_FIX_20260917.md"
+  },
+  "facts": {
+    "host": {
+      "record_path": "docs/research/evidence/atlas_host/305e5734b21cd70d3ce158a25bf2686b9cf7534c.json",
+      "record_sha256": "330acd106feb73c9b9d0387ec838413a9593ee77295cbf0960d87bd5af9627b3",
+      "candidate_commit": "5cc56557a3d6a7affd6400f0b3bc8434d91bc6cd",
+      "task_commit": "305e5734b21cd70d3ce158a25bf2686b9cf7534c",
+      "candidate_commit_matches_current_head": true,
+      "command": [
+        "bash",
+        "example/cpp/scripts/dds_runtime_root_smoke.sh",
+        "--domain-id",
+        "220",
+        "--run-dir",
+        "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke"
+      ],
+      "domain_id": 220,
+      "environment": {
+        "LD_LIBRARY_PATH": "/home/che/dev/go2-workspace/current/simulate/mujoco/lib"
+      },
+      "manifest_sha256_recorded_by_host": "37bb5a6c47b091a71d0fa23d61bba6788a4b8a4fc974c431b236576f56830cdc",
+      "launched": true,
+      "returncode": 2,
+      "error": null,
+      "timed_out": false,
+      "started_at": "2026-09-17T11:26:40.368276+00:00",
+      "finished_at": "2026-09-17T11:26:40.376098+00:00",
+      "evidence": []
+    },
+    "host_logs": {
+      "stdout": {
+        "path": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "content_status": "empty"
+      },
+      "stderr": {
+        "path": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+        "sha256": "5bbc4211da098eb420b6019285a3d1fea339a5492088f02bdc939aba280dcd73",
+        "bytes": 96,
+        "content": "missing simulator: /home/che/dev/go2-agent/tasks/305e5734b21cd70d/simulate/build/unitree_mujoco\n"
+      }
+    },
+    "smoke_control_flow": {
+      "script": "example/cpp/scripts/dds_runtime_root_smoke.sh",
+      "simulator_path": "/home/che/dev/go2-agent/tasks/305e5734b21cd70d/simulate/build/unitree_mujoco",
+      "simulator_executable_guard_line": 47,
+      "runtime_source_line": 51,
+      "run_directory_creation_line": 52,
+      "dds_prepare_line": 53,
+      "first_simulator_launch_line": 89,
+      "observed_boundary": "simulator executable guard"
+    },
+    "raw": {
+      "run_directory": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke",
+      "run_directory_exists": false,
+      "host_indexed_evidence_count": 0,
+      "cycle_A_path": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke/cycle_A",
+      "cycle_A_exists": false,
+      "cycle_B_path": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke/cycle_B",
+      "cycle_B_exists": false,
+      "expected_support_artifact": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke/dds_runtime/dds_base4000_preload.so",
+      "support_artifact_status": "NOT_CREATED",
+      "raw_files": []
+    },
+    "effective_configuration": {
+      "tracked_source": "example/cpp/scripts/dds_base4000_preload.c",
+      "tracked_source_sha256": "65100130add060af08f6404b03668f5018c9b039849bf62620cd99f362d38a3c",
+      "generated_artifact_path": "example/cpp/experiments/_runs/dds_runtime_root_fix_20260917/smoke/dds_runtime/dds_base4000_preload.so",
+      "generated_artifact_sha256": null,
+      "generated_artifact_status": "NOT_CREATED",
+      "effective_host_config_status": "NOT_REACHED"
+    },
+    "historical_parent_context": {
+      "results_path_at_exact_parent": "docs/validation/phase2_clean_baseline_flat_host_v4_20260917/RESULTS.md",
+      "results_sha256_at_exact_parent": "9eadb2d54adedb5c4e23d6fd10fd8373a2bec3d24aca5e1e230184fcbb15c249",
+      "prior_proposed_classification": "PROTOCOL_FAILURE",
+      "prior_reason_code": "SIMULATOR_DDS_PARTICIPANT_INDEX_EXHAUSTION",
+      "prior_boundary": "execution",
+      "use_in_this_closeout": "historical context only; not current host evidence"
+    }
+  },
+  "derived_metrics": {
+    "host_elapsed_s": {
+      "value": 0.007822,
+      "formula": "finished_at - started_at",
+      "inputs": [
+        "2026-09-17T11:26:40.368276+00:00",
+        "2026-09-17T11:26:40.376098+00:00"
+      ]
+    },
+    "host_stdout_bytes": 0,
+    "host_stderr_bytes": 96,
+    "host_wrapper_invocation_count": 1,
+    "mujoco_simulator_launch_attempts": {
+      "value": 0,
+      "status": "OBSERVED_FROM_CONTROL_FLOW",
+      "basis": "the missing executable guard exits before the first background simulator launch"
+    },
+    "dds_prepare_calls": {
+      "value": 0,
+      "status": "OBSERVED_FROM_CONTROL_FLOW",
+      "basis": "the guard exits before source and dds_runtime_prepare"
+    },
+    "dds_ready_markers": 0,
+    "lowstate_probe_launches": 0,
+    "successful_lowstate_cycles": {
+      "value": 0,
+      "denominator": 2,
+      "status": "NOT_REACHED"
+    },
+    "lowcmd_publication": {
+      "value": null,
+      "status": "NOT_REACHED",
+      "reason": "no simulator or probe process was launched by this attempt"
+    },
+    "raw_evidence_file_count": 0,
+    "domain_switches": 0,
+    "scientific_capture_started": false,
+    "root_fix_criteria_evaluable": false
+  },
+  "calculation_method": {
+    "record_hash": "SHA-256 of the exact trusted host record bytes",
+    "host_elapsed": "Parse the two ISO-8601 timestamps from the host record and subtract finished_at minus started_at",
+    "host_log_hashes": "SHA-256 and byte count of the exact host stdout and stderr paths recorded in the host record",
+    "preflight_boundary": "Compare the exact stderr message with the candidate smoke script guard at line 47 and verify that runtime preparation is later at lines 51-53",
+    "raw_inventory": "Check whether the requested run directory exists and enumerate its files; the directory is absent and host evidence is an empty array",
+    "cycle_metrics": "A cycle counts only after the script reaches its cycle function and creates cycle_A or cycle_B; neither path exists",
+    "support_artifact": "The generated artifact hash is null because the runtime build step was not reached; the tracked source hash is independently recorded",
+    "historical_separation": "Use the exact-parent results only as prior context and do not transfer its DDS failure into the current host attempt"
+  },
+  "implementation": {
+    "candidate_commit": "5cc56557a3d6a7affd6400f0b3bc8434d91bc6cd",
+    "runtime_script_sha256": "e5776221f2d0ab5ac2bd92931b5baa4b673f249146a62cbc7c1fb79da28d37ef",
+    "smoke_script_sha256": "3cca6843c18da602c5b929cf2a01f44494f106789d6c8a17fe49eb1427f3f12d",
+    "probe_source_sha256": "e333a8635ff941adbe6b83c013787c6d504f71394caf5260286527ab349c1b47",
+    "runtime_source_changed_after_host": false,
+    "tests_changed_after_host": false,
+    "launch_scripts_changed_after_host": false
+  },
+  "luna_interpretation": {
+    "primary_classification": "PROTOCOL_FAILURE",
+    "earliest_causal_boundary": "execution",
+    "reason_code": "HOST_PREFLIGHT_MISSING_SIMULATOR_BINARY",
+    "proposal_not_final_scientific_verdict": true,
+    "rationale": "The trusted host invoked the frozen command but the required simulator executable was absent. The smoke exited before runtime preparation, DDS, the read-only probe, and both boot cycles.",
+    "scientific_claim": "NONE",
+    "root_fix_status": "NOT_TESTED",
+    "retry_authorized_or_performed": false,
+    "sol_can_overturn": true
+  },
+  "scope": {
+    "host_record_modified": false,
+    "raw_run_modified": false,
+    "runtime_source_modified_after_host": false,
+    "controller_source_modified_after_host": false,
+    "tests_modified_after_host": false,
+    "launch_scripts_modified_after_host": false,
+    "live_rerun": false,
+    "git_metadata_written": false,
+    "closeout_files_written": [
+      "docs/validation/dds_runtime_root_fix_20260917/RESULTS.md",
+      "docs/validation/dds_runtime_root_fix_20260917/analysis.json",
+      "docs/validation/dds_runtime_root_fix_20260917/provenance.csv"
+    ]
+  }
+}
