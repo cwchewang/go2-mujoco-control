@@ -4,14 +4,15 @@ on:
   issues:
     types: [opened]
 
-# This workflow intentionally has no pull_request trigger. It checks out only
-# the trusted default branch before running the fixed dispatcher.
+# The workflow checks out only trusted main code. Issue bodies are data, never
+# shell. GitHub write credentials are exposed only to the post-agent push/state
+# steps, never to Codex/Luna.
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 concurrency:
-  group: atlas-issue-${{ github.event.issue.number }}
+  group: atlas-task-runner
   cancel-in-progress: false
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
         github.event.issue.author_association == 'COLLABORATOR'
       )
     runs-on: [self-hosted, linux, x64, atlas]
-    timeout-minutes: 30
+    timeout-minutes: 360
     env:
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
@@ -47,6 +48,21 @@ jobs:
           python3 tools/atlas_dispatch.py \
             --event "$GITHUB_EVENT_PATH" \
             --output-dir "$RUNNER_TEMP/atlas-result"
+
+      - name: Push validated research result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          request="$RUNNER_TEMP/atlas-result/research-push.json"
+          if [[ -f "$request" ]]; then
+            result_commit="$(
+              python3 tools/atlas_push_research_result.py --request "$request"
+            )"
+            {
+              printf '\n## Trusted push\n\n'
+              printf -- '- Result commit: `%s`\n' "$result_commit"
+            } >> "$RUNNER_TEMP/atlas-result/summary.md"
+          fi
 
       - name: Upload Atlas result
         if: always()
