@@ -1,0 +1,969 @@
+{
+  "classification": "CLEAN_BASELINE_FLAT_REPRODUCED",
+  "classification_gate": {
+    "all_64_requested_gait_cycles_complete": true,
+    "measured_forward_speed_in_0_11_to_0_19_mps": true,
+    "no_clean_target_feasibility_rejection": true,
+    "no_gross_tracking_or_stability_failure": true,
+    "no_strict_wbc_qp_rejection": true,
+    "normal_return_to_stand_without_hard_stop": true,
+    "valid_controller_handoff": true
+  },
+  "derived_metrics": {
+    "controller_cycle_start_speeds": {
+      "commanded_mps": {
+        "count": 64,
+        "max": 0.151667,
+        "mean": 0.151667,
+        "median": 0.151667,
+        "min": 0.151667,
+        "p05": 0.151667,
+        "p95": 0.151667
+      },
+      "measured_mps": {
+        "count": 64,
+        "max": 0.174169,
+        "mean": 0.1577155625,
+        "median": 0.1577765,
+        "min": 0.12788,
+        "p05": 0.15064365000000002,
+        "p95": 0.16864575
+      }
+    },
+    "controller_flag_counts_requested_cycles_1_64": {
+      "has_state": {
+        "1": 19215
+      },
+      "kernel_footstep_plan_valid": {
+        "1": 19215
+      },
+      "terrain_actuation": {
+        "0": 19215
+      },
+      "terrain_enabled": {
+        "0": 19215
+      },
+      "terrain_plan_contact_rejections": {
+        "0": 19215
+      },
+      "terrain_plan_failure": {
+        "0.000000000": 19215
+      },
+      "terrain_sensor_only": {
+        "0": 19215
+      },
+      "wbc_full_id_ok": {
+        "1": 19215
+      },
+      "wbc_full_srbd_ok": {
+        "1": 19215
+      },
+      "wbc_shadow_constraint_feasible": {
+        "1": 19215
+      },
+      "wbc_shadow_mapping_ok": {
+        "1": 19215
+      },
+      "wbc_shadow_solver_ok": {
+        "1": 19215
+      },
+      "wbc_shadow_task_satisfied": {
+        "1": 19215
+      },
+      "wbc_shadow_wrench_satisfied": {
+        "1": 19215
+      }
+    },
+    "controller_health": {
+      "max_abs_pitch_deg": 0.980239,
+      "max_abs_roll_deg": 0.907105,
+      "max_foot_error_m": 0.0272088,
+      "max_joint_error_rad": 0.0616535,
+      "max_low_support_samples": 0.0,
+      "max_support_drift_mm": 5.03174,
+      "max_tau_est_nm": 16.44,
+      "max_tau_over_limit_consecutive": 0.0,
+      "max_tau_over_limit_samples": 0.0,
+      "max_touchdown_abs_x_error_m": 0.00500592,
+      "max_touchdown_abs_y_error_m": 0.00680105,
+      "min_support_contact_fraction": 1.0,
+      "min_support_contacts": 2.0
+    },
+    "csv_selected_requested_cycle_metrics": {
+      "body_velocity_x_mps": {
+        "count": 19215,
+        "max": 0.183093798,
+        "mean": 0.1539435460627114,
+        "median": 0.152981706,
+        "min": 0.12536092,
+        "p05": 0.14282497090000001,
+        "p95": 0.16689532789999997
+      },
+      "contact_count": {
+        "count": 19215,
+        "max": 4.0,
+        "mean": 3.136039552432995,
+        "median": 3.0,
+        "min": 2.0,
+        "p05": 2.0,
+        "p95": 4.0
+      },
+      "imu_abs_pitch_deg": {
+        "count": 19215,
+        "max": 0.9802385412638226,
+        "mean": 0.20996128657958152,
+        "median": 0.17088557913024024,
+        "min": 5.213915935690491e-06,
+        "p05": 0.02451004585588587,
+        "p95": 0.5038557446941003
+      },
+      "imu_abs_roll_deg": {
+        "count": 19215,
+        "max": 0.9071053488566316,
+        "mean": 0.1615640210040422,
+        "median": 0.11252507214646632,
+        "min": 2.9220847551671984e-05,
+        "p05": 0.011657680049051346,
+        "p95": 0.44027834239410113
+      },
+      "tau_est_abs_nm": {
+        "count": 230580,
+        "max": 16.440034866,
+        "mean": 3.5152122283026324,
+        "median": 2.614623308,
+        "min": 7.3992e-05,
+        "p05": 0.33886208275,
+        "p95": 9.13768954235
+      },
+      "velocity_command_measured_mps": {
+        "count": 19215,
+        "max": 0.183093798,
+        "mean": 0.1539435460627114,
+        "median": 0.152981706,
+        "min": 0.12536092,
+        "p05": 0.14282497090000001,
+        "p95": 0.16689532789999997
+      },
+      "wbc_full_eq_residual": {
+        "count": 19215,
+        "max": 7.26e-07,
+        "mean": 6.275227686703097e-08,
+        "median": 1.7e-08,
+        "min": 0.0,
+        "p05": 6e-09,
+        "p95": 3.36e-07
+      },
+      "world_velocity_x_mps": {
+        "count": 19215,
+        "max": 0.193076566,
+        "mean": 0.15399855627322406,
+        "median": 0.153485909,
+        "min": 0.112330921,
+        "p05": 0.133827257,
+        "p95": 0.173337042
+      }
+    },
+    "formulas": {
+      "contact_truth_window": "contact_ground_truth.time_s within the CSV stage-2 state_tick interval",
+      "csv_progress_window": "motion_stage == 2 and cycle_index >= 0",
+      "csv_requested_cycle_window": "motion_stage == 2 and 1 <= cycle_index <= 64",
+      "flag_counts": "Counter of raw CSV string values in each selected window",
+      "gross_tracking_gate": "max abs roll/pitch < 16 deg, max joint error < 0.80 rad, min support fraction >= 0.35, quality_status == 0",
+      "health_metrics": "max/min of controller.log Trot cycle N health fields for N in 1..64; roll/pitch use max absolute value",
+      "nominal_speed": "0.091 / 0.60",
+      "progress_speed": "ordinary least-squares slope of world_base_x_m versus state_tick_s",
+      "speed_ratio": "progress_speed / nominal_speed"
+    },
+    "handoff": {
+      "all_data_rows_has_state_1": true,
+      "controller_lowstate_settled_marker": true,
+      "first_locomotion_sample": {
+        "cmd_time_s": 4.3,
+        "csv_row": 2155,
+        "cycle_index": 0,
+        "motion_stage": 2,
+        "state_tick_s": 6.022
+      },
+      "first_valid_controller_state_control_sample": {
+        "cmd_time_s": 0.0,
+        "csv_row": 2,
+        "cycle_index": -1,
+        "has_state": "1",
+        "motion_stage": 0,
+        "state_tick_s": 1.688
+      },
+      "scientific_attempt_consumed": true,
+      "simulator_dds_ready_marker": true
+    },
+    "lifecycle": {
+      "completed_requested_gait_cycles": 64,
+      "csv_columns": 278,
+      "csv_rows": 25073,
+      "pre_motion_health_cycle": 0,
+      "requested_gait_cycles": 64,
+      "return_transition_cycle": 65,
+      "stage_counts": {
+        "0": 1503,
+        "1": 650,
+        "2": 19618,
+        "3": 1401,
+        "4": 1499,
+        "5": 402
+      },
+      "task_completed": true
+    },
+    "rejection_and_safety": {
+      "clean_target_infeasible": 0,
+      "cycle_quality_guard": 0,
+      "emergency_stop": 0,
+      "hard_safety": 0,
+      "strict_wbc_or_qp": 0
+    },
+    "speed": {
+      "csv_measured_velocity_stats_requested_cycles_1_64": {
+        "count": 19215,
+        "max": 0.183093798,
+        "mean": 0.1539435460627114,
+        "median": 0.152981706,
+        "min": 0.12536092,
+        "p05": 0.14282497090000001,
+        "p95": 0.16689532789999997
+      },
+      "csv_progress_metric": {
+        "distance_m": 6.0140395820000006,
+        "duration_s": 39.286,
+        "end_time_s": 45.308,
+        "endpoint_speed_mps": 0.15308353057068677,
+        "nominal_speed_mps": 0.15166666666666667,
+        "regression_speed_mps": 0.15387870609711238,
+        "samples": 19618,
+        "speed_ratio": 1.0145848753655762,
+        "start_time_s": 6.022
+      },
+      "csv_requested_cycles_1_64_progress_metric": {
+        "distance_m": 5.925643792000001,
+        "duration_s": 38.482,
+        "end_time_s": 45.106,
+        "endpoint_speed_mps": 0.1539848186684684,
+        "nominal_speed_mps": 0.15166666666666667,
+        "regression_speed_mps": 0.1539100800512008,
+        "samples": 19215,
+        "speed_ratio": 1.014791736601324,
+        "start_time_s": 6.624
+      },
+      "ground_truth_interval": {
+        "abs_pitch_deg": {
+          "count": 19644,
+          "max": 4.489489669236041,
+          "mean": 0.2442088138758419,
+          "median": 0.17415129402107957,
+          "min": 5.185832070215739e-06,
+          "p05": 0.02499046525990998,
+          "p95": 0.5511738561625423
+        },
+        "abs_roll_deg": {
+          "count": 19644,
+          "max": 1.636612154947464,
+          "mean": 0.16584691232875753,
+          "median": 0.11316498674582767,
+          "min": 1.013788590175195e-05,
+          "p05": 0.010940796082461261,
+          "p95": 0.4471465496006083
+        },
+        "base_height_m": {
+          "count": 19644,
+          "max": 0.380855355019,
+          "mean": 0.37402769078130693,
+          "median": 0.3740261403665,
+          "min": 0.349354015434,
+          "p05": 0.37270759346055,
+          "p95": 0.3755551271039
+        },
+        "rows_in_controller_stage2_interval": 19644,
+        "speed_world_x_mps": {
+          "count": 19644,
+          "max": 0.228016048618,
+          "mean": 0.15307862413845386,
+          "median": 0.154750643774,
+          "min": -0.0579300767748,
+          "p05": 0.12934951202775,
+          "p95": 0.17090115388604998
+        }
+      },
+      "nominal_commanded_speed_mps": 0.15166666666666667
+    }
+  },
+  "earliest_causal_boundary": "scientific",
+  "experiment": "canonical_clean_baseline_repeatability_20260917",
+  "facts": {
+    "contact_dynamics_validation": {
+      "balance_samples": 25974,
+      "force_balance_tolerance_N": 10,
+      "force_balance_validation": "PASS",
+      "gravity_drift_mps2": 0,
+      "gravity_world_mps2": "0,0,-9.81",
+      "max_force_balance_component_residual_N": 5.8481883,
+      "max_force_balance_residual_norm_N": 5.87906345,
+      "max_residual_components_N": "5.8481883,0.00143606866,-0.601729602",
+      "max_residual_time_s": 0.278,
+      "median_dt_s": 0.002,
+      "p95_force_balance_residual_N": 0.532305526,
+      "rms_force_balance_residual_N": 0.235020503,
+      "rows": 25975,
+      "time_span_s": 51.948,
+      "total_mass_max_kg": 15.206408,
+      "total_mass_min_kg": 15.206408,
+      "validation": "PASS"
+    },
+    "contact_ground_truth_validation": {
+      "contact_samples": 84955,
+      "max_contact_grf_norm_N": 526.466334,
+      "max_contact_grf_z_N": 429.144246,
+      "median_dt_s": 0.002,
+      "min_contact_grf_z_N": 5.00504636,
+      "negative_contact_grf_z_samples": 0,
+      "rows": 25975,
+      "time_span_s": 51.948,
+      "validation": "PASS"
+    },
+    "controller_log": {
+      "cycle_start_speed_stats_requested_1_64": {
+        "commanded_mps": {
+          "count": 64,
+          "max": 0.151667,
+          "mean": 0.151667,
+          "median": 0.151667,
+          "min": 0.151667,
+          "p05": 0.151667,
+          "p95": 0.151667
+        },
+        "measured_mps": {
+          "count": 64,
+          "max": 0.174169,
+          "mean": 0.1577155625,
+          "median": 0.1577765,
+          "min": 0.12788,
+          "p05": 0.15064365000000002,
+          "p95": 0.16864575
+        }
+      },
+      "health_cycle_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64
+      ],
+      "health_metrics_requested_cycles_1_64": {
+        "max_abs_pitch_deg": 0.980239,
+        "max_abs_roll_deg": 0.907105,
+        "max_foot_error_m": 0.0272088,
+        "max_joint_error_rad": 0.0616535,
+        "max_low_support_samples": 0.0,
+        "max_support_drift_mm": 5.03174,
+        "max_tau_est_nm": 16.44,
+        "max_tau_over_limit_consecutive": 0.0,
+        "max_tau_over_limit_samples": 0.0,
+        "max_touchdown_abs_x_error_m": 0.00500592,
+        "max_touchdown_abs_y_error_m": 0.00680105,
+        "min_support_contact_fraction": 1.0,
+        "min_support_contacts": 2.0
+      },
+      "health_records_total": 65,
+      "lifecycle_markers": {
+        "natural_lowstate_settled": true,
+        "pre_stop_brake": true,
+        "return_to_lie_down": true,
+        "return_to_stand": true,
+        "starting_diagonal_trot": true,
+        "task_completed": true
+      },
+      "rejection_log_counts": {
+        "clean_target_infeasible": 0,
+        "cycle_quality_guard": 0,
+        "emergency_stop": 0,
+        "hard_safety": 0,
+        "strict_wbc_or_qp": 0
+      },
+      "requested_cycle_range": [
+        1,
+        64
+      ],
+      "requested_health_records": 64,
+      "requested_started_records": 64,
+      "started_cycle_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "started_records_total": 65,
+      "stop_transition_cycle": 65
+    },
+    "dds_post_state": {
+      "active_go2_processes_empty": true,
+      "domain_id": "220",
+      "interface": "lo",
+      "known_shm_empty": true
+    },
+    "dds_pre_state": {
+      "active_go2_processes_empty": true,
+      "domain_id": "220",
+      "expected_port_range": [
+        59000,
+        59073
+      ],
+      "interface": "lo",
+      "known_shm_empty": true
+    },
+    "dds_runtime": {
+      "config_source": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/scripts/dds_base4000_preload.c",
+      "config_source_sha256": "65100130add060af08f6404b03668f5018c9b039849bf62620cd99f362d38a3c",
+      "cyclonedds_version": "0.10.2",
+      "dds_include": "/opt/unitree_robotics/include",
+      "domain_gain": "250",
+      "domain_id": "220",
+      "effective_ld_preload": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/dds_runtime/dds_base4000_preload.so",
+      "interface": "lo",
+      "max_auto_participant_index": "31",
+      "original_ld_preload": "",
+      "participant_gain": "2",
+      "port_base": "4000",
+      "runtime_version": "2",
+      "support_artifact": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/dds_runtime/dds_base4000_preload.so",
+      "support_artifact_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "topic_lowstate": "rt/lowstate"
+    },
+    "host_raw_integrity": {
+      "all_hashes_and_sizes_match": true,
+      "files": [
+        {
+          "actual_sha256": "975051f98041047784585a31a021f2c005916994a4b6c8e023f544bd6c7555b9",
+          "actual_size": 4126,
+          "expected_sha256": "975051f98041047784585a31a021f2c005916994a4b6c8e023f544bd6c7555b9",
+          "expected_size": 4126,
+          "matches": true,
+          "path": "build_provenance.txt"
+        },
+        {
+          "actual_sha256": "9e17228a6e2e05d10bc5b07f6eec4677122dc3df9cf7d99e1d2933d2b96084be",
+          "actual_size": 89376702,
+          "expected_sha256": "9e17228a6e2e05d10bc5b07f6eec4677122dc3df9cf7d99e1d2933d2b96084be",
+          "expected_size": 89376702,
+          "matches": true,
+          "path": "contact_ground_truth.csv"
+        },
+        {
+          "actual_sha256": "85dcd28cbc3fb804db237f5dcb7f29146852a6acc77d91eb7f596042eb110725",
+          "actual_size": 215,
+          "expected_sha256": "85dcd28cbc3fb804db237f5dcb7f29146852a6acc77d91eb7f596042eb110725",
+          "expected_size": 215,
+          "matches": true,
+          "path": "contact_ground_truth_analysis.txt"
+        },
+        {
+          "actual_sha256": "12c6a8b7b3b1385855a22f8a9d7f2dfe564b5689e1e47d034f532659de20547d",
+          "actual_size": 516,
+          "expected_sha256": "12c6a8b7b3b1385855a22f8a9d7f2dfe564b5689e1e47d034f532659de20547d",
+          "expected_size": 516,
+          "matches": true,
+          "path": "contact_ground_truth_dynamics_analysis.txt"
+        },
+        {
+          "actual_sha256": "ef12be1a11e4e888ea8c873f231512bfa970616377895e75c1a06c703c8bbe00",
+          "actual_size": 32453,
+          "expected_sha256": "ef12be1a11e4e888ea8c873f231512bfa970616377895e75c1a06c703c8bbe00",
+          "expected_size": 32453,
+          "matches": true,
+          "path": "controller.log"
+        },
+        {
+          "actual_sha256": "b9bf9e7492b215b8d25fd71cda2597ed4e2b55eedff3419594db18a6383aadb3",
+          "actual_size": 907,
+          "expected_sha256": "b9bf9e7492b215b8d25fd71cda2597ed4e2b55eedff3419594db18a6383aadb3",
+          "expected_size": 907,
+          "matches": true,
+          "path": "controller_build.log"
+        },
+        {
+          "actual_sha256": "9111969c2899ceee43ececc7779750969bddd25a01e07c59f93a914cf99abcdc",
+          "actual_size": 68949468,
+          "expected_sha256": "9111969c2899ceee43ececc7779750969bddd25a01e07c59f93a914cf99abcdc",
+          "expected_size": 68949468,
+          "matches": true,
+          "path": "data.csv"
+        },
+        {
+          "actual_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+          "actual_size": 15560,
+          "expected_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+          "expected_size": 15560,
+          "matches": true,
+          "path": "dds_runtime/dds_base4000_preload.so"
+        },
+        {
+          "actual_sha256": "94810cf1f47ef07179c4d0478b8fb0ff24c39da0fd0952d20a5934ce8930bacd",
+          "actual_size": 3219,
+          "expected_sha256": "94810cf1f47ef07179c4d0478b8fb0ff24c39da0fd0952d20a5934ce8930bacd",
+          "expected_size": 3219,
+          "matches": true,
+          "path": "dds_runtime/post_clean_state.txt"
+        },
+        {
+          "actual_sha256": "5f2098a21d9e647608b1729465441782b511173c1acb61a940b4669ca8021058",
+          "actual_size": 3213,
+          "expected_sha256": "5f2098a21d9e647608b1729465441782b511173c1acb61a940b4669ca8021058",
+          "expected_size": 3213,
+          "matches": true,
+          "path": "dds_runtime/post_state.txt"
+        },
+        {
+          "actual_sha256": "a5e4f4452df9f6944b378c82120893f33e6e92cd9ee81bb8b84cf90c0f31c4f3",
+          "actual_size": 3212,
+          "expected_sha256": "a5e4f4452df9f6944b378c82120893f33e6e92cd9ee81bb8b84cf90c0f31c4f3",
+          "expected_size": 3212,
+          "matches": true,
+          "path": "dds_runtime/pre_state.txt"
+        },
+        {
+          "actual_sha256": "cb71b8509c4ef4bd9a686357153298b346b8d34ab2278fd6ea412556073a6ebf",
+          "actual_size": 200,
+          "expected_sha256": "cb71b8509c4ef4bd9a686357153298b346b8d34ab2278fd6ea412556073a6ebf",
+          "expected_size": 200,
+          "matches": true,
+          "path": "dds_runtime/preparation_cleanup.txt"
+        },
+        {
+          "actual_sha256": "c4fc7b71dcd06d7988ea21c57414074112f2a1b002540d215515824774c56040",
+          "actual_size": 886,
+          "expected_sha256": "c4fc7b71dcd06d7988ea21c57414074112f2a1b002540d215515824774c56040",
+          "expected_size": 886,
+          "matches": true,
+          "path": "dds_runtime/runtime_metadata.txt"
+        },
+        {
+          "actual_sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+          "actual_size": 100,
+          "expected_sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+          "expected_size": 100,
+          "matches": true,
+          "path": "environment.txt"
+        },
+        {
+          "actual_sha256": "ae0614df705b7a53fa0d3a0805929d0cb88587ef79f6416dc269d8fda13239ec",
+          "actual_size": 3086,
+          "expected_sha256": "ae0614df705b7a53fa0d3a0805929d0cb88587ef79f6416dc269d8fda13239ec",
+          "expected_size": 3086,
+          "matches": true,
+          "path": "run_manifest.json"
+        },
+        {
+          "actual_sha256": "655b5f7afb01ad303c4a98bbac77dc388ef83cfd32c455c2678cbe697b93d845",
+          "actual_size": 3615,
+          "expected_sha256": "655b5f7afb01ad303c4a98bbac77dc388ef83cfd32c455c2678cbe697b93d845",
+          "expected_size": 3615,
+          "matches": true,
+          "path": "run_metadata.txt"
+        },
+        {
+          "actual_sha256": "ef7a7030cc7d5dbfc540b8f3ff5e1c986c003c6e37512e75ec5645a158b22c02",
+          "actual_size": 4078,
+          "expected_sha256": "ef7a7030cc7d5dbfc540b8f3ff5e1c986c003c6e37512e75ec5645a158b22c02",
+          "expected_size": 4078,
+          "matches": true,
+          "path": "simulator.log"
+        },
+        {
+          "actual_sha256": "c51dd8f2d129a79b47ab3203bae5d54996ff48b55044dbb7311c34f1f312cd57",
+          "actual_size": 1370,
+          "expected_sha256": "c51dd8f2d129a79b47ab3203bae5d54996ff48b55044dbb7311c34f1f312cd57",
+          "expected_size": 1370,
+          "matches": true,
+          "path": "simulator_build.log"
+        }
+      ],
+      "indexed_files": 18
+    },
+    "run_manifest": {
+      "analyzers": {
+        "analyze_contact_dynamics.py": "ba17187dd7d979e2dbdfd288c96f7193e496b7cf51c2b96cbcc1461a2f7bcd37",
+        "analyze_contact_ground_truth.py": "a5426a8f6af8dbb15202c48eb6411afd936456a2a34d5d5ba678ebe7b771886f"
+      },
+      "artifacts": {
+        "controller_sha256": "f1d2f26d1f9a5fcaad94d3874252697a1caf77638cf325ef67aa7d2167684140",
+        "event_script_sha256": "",
+        "phase2_acceptance_contract_sha256": "6d5895644fd0f471b6b09a4a920b0663855bf7a0a2b90c226220d3ef77b1c514",
+        "phase2_analyzer_sha256": "",
+        "phase2_b0_analyzer_sha256": "63c4467c6ffbc9e09e98f86af2842fc5a59584eb8d7b8dbc1845b46746e848bb",
+        "phase2_b123_analyzer_sha256": "178009daf9600b8711cac03a51b50f05031ba98f45dfbbdc23f6f1706f4fd873",
+        "phase2_contract_sha256": "",
+        "phase2_fixed_3mps_analyzer_sha256": "39bc8b24774766c3800c053effe4804287ab2cb59e94ec9ff250edd0ab540f53",
+        "phase2_holdout_manifest_sha256": "2550526025594aa379441e1d7eb071c8809abeaf9234f6cf8a335f22288a5a40",
+        "scenario_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+        "simulator_sha256": "47c3ddfb996ded32fbb70e86bac0863df0888f6046339c5b446c2a0f159a4bf3"
+      },
+      "effective_argv": [
+        "--task",
+        "stand-walk-lie",
+        "--kernel",
+        "raibert-trot",
+        "--period",
+        "0.60",
+        "--duty",
+        "0.75",
+        "--step-length",
+        "0.091",
+        "--foot-lift",
+        "0.020",
+        "--kp",
+        "63",
+        "--kd",
+        "2.8",
+        "--raibert-velocity-gain",
+        "0.05",
+        "--raibert-max-adjustment",
+        "0.010",
+        "--world-feedback-max",
+        "0.060",
+        "--world-feedback-slew",
+        "0.004",
+        "--clean-baseline",
+        "--tau-limit",
+        "35",
+        "--max-cycles",
+        "64",
+        "--domain-id",
+        "220"
+      ],
+      "profile": {
+        "path": "",
+        "sha256": ""
+      },
+      "repository": {
+        "git_branch": "detached",
+        "git_commit": "ba4d7ff8a865bd31f826e972b48105876ffa0640",
+        "git_dirty": "false"
+      },
+      "run": {
+        "controller_duration_s": "70",
+        "domain_id": "220",
+        "headless": "true",
+        "initial_x_m": "0.0",
+        "initial_y_m": "0.0",
+        "phase2_milestone": "",
+        "run_mode": "bounded",
+        "scene_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/unitree_robots/go2/scene_leg_lift_demo.xml",
+        "wall_timeout_s": "90"
+      },
+      "run_id": "R3",
+      "schema_version": 1,
+      "seed": "",
+      "semantic_env_snapshot": {
+        "TROT_SIM_BRIDGE_CPU": "",
+        "TROT_SIM_LIDAR_CPU": "",
+        "TROT_SIM_PHYSICS_CPU": "",
+        "TROT_TERRAIN_CPU": "4",
+        "TROT_WRITER_CPU": "3"
+      },
+      "statuses": {
+        "analysis_status": "0",
+        "completion_status": "0",
+        "controller_status": "0",
+        "dynamics_status": "0",
+        "ground_truth_status": "0",
+        "phase1_quantitative_status": "0",
+        "quality_status": "0",
+        "safety_status": "0",
+        "terrain_analysis_status": "0"
+      },
+      "terrain_timing": {
+        "duty_factor": null,
+        "has_stage_c_timing": false,
+        "period_s": null,
+        "timing_provenance": "none",
+        "window_end_s": null,
+        "window_start_s": null
+      },
+      "timestamps": {
+        "finished_at": "2026-09-17T22:30:38+08:00",
+        "started_at": "2026-09-17T22:29:42+08:00"
+      }
+    },
+    "run_metadata": {
+      "analysis_status": "0",
+      "argv": "--controller-duration 70 --task stand-walk-lie --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.020 --kp 63 --kd 2.8 --raibert-velocity-gain 0.05 --raibert-max-adjustment 0.010 --world-feedback-max 0.060 --world-feedback-slew 0.004 --clean-baseline --tau-limit 35 --max-cycles 64 --headless --domain-id 220",
+      "camera_follow": "false",
+      "completion_status": "0",
+      "contact_ground_truth_analysis_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/contact_ground_truth_analysis.txt",
+      "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/contact_ground_truth_dynamics_analysis.txt",
+      "contact_ground_truth_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/contact_ground_truth.csv",
+      "controller_argv_shell": "--task stand-walk-lie --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.020 --kp 63 --kd 2.8 --raibert-velocity-gain 0.05 --raibert-max-adjustment 0.010 --world-feedback-max 0.060 --world-feedback-slew 0.004 --clean-baseline --tau-limit 35 --max-cycles 64 --domain-id 220 ",
+      "controller_cpu_affinity": "3,4",
+      "controller_duration_s": "70",
+      "controller_sha256": "f1d2f26d1f9a5fcaad94d3874252697a1caf77638cf325ef67aa7d2167684140",
+      "controller_status": "0",
+      "controller_writer_cpu_affinity": "3",
+      "dds_runtime_config_source": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/scripts/dds_base4000_preload.c",
+      "dds_runtime_config_source_sha256": "65100130add060af08f6404b03668f5018c9b039849bf62620cd99f362d38a3c",
+      "dds_runtime_max_auto_participant_index": "31",
+      "dds_runtime_port_base": "4000",
+      "dds_runtime_support_artifact": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/dds_runtime/dds_base4000_preload.so",
+      "dds_runtime_support_artifact_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "dds_runtime_version": "2",
+      "display": ":0",
+      "domain_id": "220",
+      "dynamics_status": "0",
+      "dynamics_tolerance_n": "10",
+      "environment_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/environment.txt",
+      "event_script_hash": "",
+      "finished_at": "2026-09-17T22:30:38+08:00",
+      "git_branch": "detached",
+      "git_dirty": "false",
+      "git_head": "ba4d7ff8a865bd31f826e972b48105876ffa0640",
+      "ground_truth_status": "0",
+      "headless": "true",
+      "lockstep": "false",
+      "lockstep_trace": "",
+      "max_cycles_requested": "64",
+      "phase1_quantitative_status": "0",
+      "phase2_milestone": "",
+      "profile_path": "",
+      "profile_sha256": "",
+      "quality_status": "0",
+      "run_mode": "bounded",
+      "runtime_dir": "/run/user/1000",
+      "safety_status": "0",
+      "scene_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/unitree_robots/go2/scene_leg_lift_demo.xml",
+      "scene_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+      "seed": "",
+      "sim_bridge_cpu_affinity": "auto",
+      "sim_cpu_affinity": "2",
+      "sim_lidar_cpu_affinity": "auto",
+      "sim_physics_cpu_affinity": "auto",
+      "simulator_sha256": "47c3ddfb996ded32fbb70e86bac0863df0888f6046339c5b446c2a0f159a4bf3",
+      "started_at": "2026-09-17T22:29:42+08:00",
+      "stop_file": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R3/stop.request",
+      "task": "stand-walk-lie",
+      "terrain_analysis_status": "0",
+      "terrain_lidar": "false",
+      "terrain_worker_cpu_affinity": "4",
+      "wall_timeout_s": "90"
+    },
+    "simulator_log_facts": {
+      "dds_ready_marker": true,
+      "mujoco_version_marker": true,
+      "shutdown_marker": true
+    },
+    "source_and_build": {
+      "candidate_sha": "ba4d7ff8a865bd31f826e972b48105876ffa0640",
+      "candidate_tree": "8e5b649885c4af38062a8d9e9dd5a04fdb886847",
+      "controller_sha256": "f1d2f26d1f9a5fcaad94d3874252697a1caf77638cf325ef67aa7d2167684140",
+      "exact_source_wrapper_sha256": "3fd45db781707e3a8fa2e44101c95dfd431ec717363978904b51b3fec9d86bc7",
+      "mujoco_header_sha256": "3190fd17711cf25b6b7605802df353571e4329ca3849485e56643e49925208cd",
+      "mujoco_library_sha256": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495",
+      "mujoco_root": "/home/che/.mujoco/mujoco-3.3.6",
+      "mujoco_root_realpath": "/home/che/.mujoco/mujoco-3.3.6",
+      "simulator_sha256": "47c3ddfb996ded32fbb70e86bac0863df0888f6046339c5b446c2a0f159a4bf3",
+      "task_scene": "/home/che/dev/go2-agent/tasks/ba4d7ff8a865bd31/unitree_robots/go2/scene_leg_lift_demo.xml",
+      "task_scene_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+      "tracked_worktree_status": "clean",
+      "unitree_sdk2_archive_sha256": "08402aea74150dfbfc3fbfded4ca746916a8d892b54d2bade0cbf392a3be4029",
+      "unitree_sdk2_config_sha256": "39f73d1cb56f9d1fd383e1b2c47d30a2bd730e83cc2a49a401c8de5e81b54709"
+    }
+  },
+  "host": {
+    "elapsed_s": 114.872562,
+    "environment": {
+      "LD_LIBRARY_PATH": "/home/che/.mujoco/mujoco-3.3.6/lib",
+      "MUJOCO_ROOT": "/home/che/.mujoco/mujoco-3.3.6"
+    },
+    "error": null,
+    "finished_at": "2026-09-17T14:30:38.283778+00:00",
+    "launched": true,
+    "manifest_sha256": "94b6c3d9b21179ea7791f31bdeb043f6f541a5c1b147824378e4e1355199eef2",
+    "returncode": 0,
+    "started_at": "2026-09-17T14:28:43.411216+00:00",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "45ae9283fdebdd1ad9b54e94be306d586df01726c8fd2dc69eff0fc0bdc6f3bf",
+    "timed_out": false,
+    "timeout_s": 600
+  },
+  "luna_interpretation": {
+    "basis": "Proposed solely from the immutable trusted record, indexed raw artifacts, and deterministic calculations in the analysis helper.",
+    "interpretation_is_authoritative": false,
+    "proposed_classification": "CLEAN_BASELINE_FLAT_REPRODUCED",
+    "review_instruction": "Sol must independently recompute from the indexed raw files and may overturn this interpretation without rerunning the canary."
+  },
+  "reason_code": "CLEAN_BASELINE_FLAT_REPRODUCED",
+  "replicate": "R3 / 3",
+  "schema_version": 1,
+  "task": {
+    "accepted_predecessor": "8b189c1bd7dab761c014f1db98e1223f3d73120d",
+    "candidate_commit": "ba4d7ff8a865bd31f826e972b48105876ffa0640",
+    "canonical_main": "e30782ad916ef1614a877d7a3c122f62682c8f19",
+    "frozen_command": [
+      "bash",
+      "example/cpp/scripts/run_trot_exact_source.sh",
+      "90",
+      "_runs/canonical_clean_baseline_repeatability_20260917/R3",
+      "--controller-duration",
+      "70",
+      "--task",
+      "stand-walk-lie",
+      "--kernel",
+      "raibert-trot",
+      "--period",
+      "0.60",
+      "--duty",
+      "0.75",
+      "--step-length",
+      "0.091",
+      "--foot-lift",
+      "0.020",
+      "--kp",
+      "63",
+      "--kd",
+      "2.8",
+      "--raibert-velocity-gain",
+      "0.05",
+      "--raibert-max-adjustment",
+      "0.010",
+      "--world-feedback-max",
+      "0.060",
+      "--world-feedback-slew",
+      "0.004",
+      "--clean-baseline",
+      "--tau-limit",
+      "35",
+      "--max-cycles",
+      "64",
+      "--headless",
+      "--domain-id",
+      "220"
+    ],
+    "primary_domain": 220,
+    "task_commit": "ba4d7ff8a865bd31f826e972b48105876ffa0640",
+    "task_path": "docs/research/TASK_CANONICAL_CLEAN_BASELINE_REPEAT_R3_20260917.md"
+  }
+}
