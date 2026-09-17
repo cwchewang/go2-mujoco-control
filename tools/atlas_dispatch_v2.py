@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Atlas dispatcher shim using the trusted-commit research worker v2."""
+"""Atlas dispatcher shim using the trusted-commit research worker v2 semantics."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def _research_task_v2(
 ) -> dict[str, Any]:
     argv = [
         "python3",
-        "tools/atlas_research_task_v2.py",
+        "tools/atlas_research_task_v3.py",
         "--branch",
         parameters["branch"],
         "--task-path",
@@ -45,6 +45,7 @@ def _research_task_v2(
         "codex_log": "codex.ndjson",
         "codex_stderr": "codex.stderr.log",
         "worker_version": 2,
+        "worker_impl": 3,
     }
 
 
