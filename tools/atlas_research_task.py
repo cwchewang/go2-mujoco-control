@@ -241,7 +241,6 @@ def _codex_command(codex_bin: str, thread_id: str | None) -> list[str]:
         "--sandbox",
         "workspace-write",
         "--json",
-        "--full-auto",
         "-c",
         'model_reasoning_effort="xhigh"',
     ]
