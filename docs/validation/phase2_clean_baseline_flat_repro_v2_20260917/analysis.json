@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_clean_baseline_flat_repro_v2_20260917",
+  "classification": "PROTOCOL_FAILURE",
+  "earliest_causal_boundary": "execution",
+  "reason_code": "SIMULATOR_DDS_DOMAIN_CREATE_INTERFACE_ENUMERATION_FAILURE",
+  "task": {
+    "branch": "research/phase2-clean-baseline-flat-repro-v2-20260917",
+    "task_commit": "c04d68a9e463e7697b8ae8b9b0a4c2334041ee7a",
+    "exact_parent": "3ab920f916af5cb74fb0b2f9240a04a84005f09d",
+    "scientific_baseline": "cdb0888d02c195935a88d9c404fb4d45c5b0ac1a",
+    "parent_classification": "PROTOCOL_FAILURE",
+    "scientific_parent_classification": "CLEAN_BASELINE_P0_READY"
+  },
+  "live": {
+    "authorized": true,
+    "launched": true,
+    "launches": 2,
+    "automatic_boot_recovery_launches": 1,
+    "scientific_attempts_consumed": 0,
+    "scientific_capture_started": false,
+    "controller_started": false,
+    "controller_data_csv_created": false,
+    "simulator_boot_artifacts_created": true,
+    "simulator_contact_ground_truth_created": true,
+    "primary_run_directory": "example/cpp/experiments/_runs/phase2_clean_baseline_flat_repro_v2_20260917/C",
+    "recovery_run_directory": "example/cpp/experiments/_runs/phase2_clean_baseline_flat_repro_v2_20260917/C/recovery-1",
+    "domain": 220,
+    "reason": "both simulator launches failed before DDS readiness and controller startup"
+  },
+  "validation": {
+    "exact_head": "PASS",
+    "detached_declared_branch_identity": "PASS",
+    "exact_parent_ancestry": "PASS",
+    "scientific_runtime_diff_from_baseline": "NONE",
+    "cmake_configure": "PASS",
+    "exact_source_controller_build": "PASS",
+    "focused_tests": {
+      "status": "PASS",
+      "passed": 6,
+      "total": 6,
+      "tests": [
+        "test_clean_baseline",
+        "test_go2_inverse_kinematics",
+        "test_dense_qp",
+        "test_srbd_mpc",
+        "test_inverse_dynamics_wbc",
+        "test_lean_route_guard"
+      ]
+    },
+    "portable_ctest": {
+      "status": "PASS",
+      "passed": 32,
+      "total": 32,
+      "excluded": ["test_lockstep_motion_clock_integration"]
+    },
+    "clean_cli_cartesian_world_guard": "PASS",
+    "runner_and_preflight_checks": "PASS",
+    "preflight_hard_failures": 0
+  },
+  "launches_detail": [
+    {
+      "directory": "C",
+      "status": "BOOT_FAILURE",
+      "controller_started": false,
+      "failure": "simulator dynamic loader could not find libmujoco.so.3.3.6"
+    },
+    {
+      "directory": "C/recovery-1",
+      "status": "BOOT_FAILURE",
+      "controller_started": false,
+      "failure": "CycloneDDS failed to enumerate UDP interfaces and create domain 220",
+      "log_evidence": "failed to enumerate interfaces for udp: -1; Failed to create domain explicitly"
+    }
+  ],
+  "scope": {
+    "terrain_intervention": false,
+    "scientific_runtime_change": false,
+    "scientific_interpretation": false,
+    "domain_change": false,
+    "scientific_retry": false,
+    "legacy_comparison_run": false,
+    "further_launch": false
+  }
+}
