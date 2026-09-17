@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_known_step_v2_ik_map_canary_20260917",
+  "classification": "DIRECT_V2_TARGET_INFEASIBLE",
+  "task": {
+    "branch": "research/phase2-known-step-v2-ik-map-canary-20260917",
+    "task_commit": "ba5e4de38a3801a2c2446a03758a50d6ffde000e",
+    "exact_parent": "0f8a0109dc56a2dabad600aacee71c7d99bd6a46",
+    "raw_parent_run": "phase2_known_step_v2_c_continuation_20260915/C"
+  },
+  "live": {
+    "runtime_changed": false,
+    "canary_launched": false,
+    "reason": "No-live feasibility gate failed; task-defined stop rule applied."
+  },
+  "feasibility_gate": {
+    "status": "FAIL",
+    "leg": "FL",
+    "source_interval": {
+      "first_latch_state_time_s": 14.254,
+      "first_latch_raw_row": 3127,
+      "last_v2_swing_state_time_s": 14.402,
+      "last_v2_swing_raw_row": 3201,
+      "touchdown_stance_reset_state_time_s": 14.404,
+      "planning_valid_v2_samples": 75
+    },
+    "reconstruction": {
+      "world_target": "known_step_v2_fl_command_world_x/z plus frozen KnownStepV2SwingTarget y interpolation",
+      "body_target": "frozen WorldToBody(base, quaternion, target_world)",
+      "pose_validation_max_actual_world_x_error_m": 1.1621641426984297e-9,
+      "pose_validation_max_actual_world_z_error_m": 1.478879858851645e-9,
+      "start_anchor_world_y_m": 0.13691783301569627
+    },
+    "checks": {
+      "direct_ik": {
+        "status": "FAIL",
+        "first_failure_state_time_s": 14.316,
+        "first_failure_raw_row": 3158,
+        "failure": "leg_z_squared < 0"
+      },
+      "joint_ranges": {
+        "status": "FAIL",
+        "first_failure_state_time_s": 14.310,
+        "first_failure_raw_row": 3155,
+        "checked_before_first_failure": 28,
+        "limits_rad": {
+          "abduction": [-1.0472, 1.0472],
+          "front_thigh": [-1.5708, 3.4907],
+          "knee": [-2.7227, -0.83776]
+        },
+        "requested_world_xyz_m": [0.668859661, 0.10932307788254658, 0.096256739],
+        "requested_body_xyz_m": [0.14653154642402766, 0.08202567199794064, -0.10676998912504629],
+        "ik_result_rad": [-0.6923128810361473, 2.059127541825868, -2.784049885467628],
+        "violated_joint": "FL_calf",
+        "violated_joint_index": 2,
+        "violated_joint_value_rad": -2.784049885467628,
+        "violated_lower_bound_rad": -2.7227,
+        "violation_below_lower_bound_rad": 0.06134988546762789
+      },
+      "fk_roundtrip": {
+        "status_before_first_failure": "PASS",
+        "tolerance_m": 1e-6,
+        "samples": 28,
+        "max_error_m": 8.326672684688674e-17
+      }
+    },
+    "first_sample": {
+      "state_time_s": 14.254,
+      "raw_row": 3127,
+      "requested_world_xyz_m": [0.509030491, 0.13691517539668252, 0.025230552],
+      "requested_body_xyz_m": [0.0037435984424188645, 0.1151485125087083, -0.17705399520276044],
+      "ik_result_rad": [-0.1570754749722134, 1.7986607351414212, -1.8825043339546368],
+      "fk_roundtrip_max_m": 2.949029909160572e-17
+    },
+    "last_v2_swing_sample": {
+      "state_time_s": 14.402,
+      "raw_row": 3201,
+      "requested_world_xyz_m": [0.85, 0.078051928, 0.075230552],
+      "requested_body_xyz_m": [0.3122488283111583, 0.025418169411145226, -0.14743203762128787],
+      "ik_result_rad": [-0.8381354877663527, 0.36839010553487384, -2.346748862846184]
+    }
+  },
+  "stop_rule": "DIRECT_V2_TARGET_INFEASIBLE: no runtime change and no live run",
+  "downstream_localization": null
+}
