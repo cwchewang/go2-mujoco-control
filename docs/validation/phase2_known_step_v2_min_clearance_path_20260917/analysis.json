@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_known_step_v2_min_clearance_path_20260917",
+  "classification": "MIN_CLEARANCE_PATH_INFEASIBLE",
+  "task": {
+    "branch": "research/phase2-known-step-v2-min-clearance-path-20260917",
+    "task_commit": "b314176328f26e1bf18f93dc387267d2e2656ba4",
+    "exact_parent": "12238b768d8ac6f3d51032fc8ce19d443ca71966",
+    "parent_classification": "DIRECT_V2_TARGET_INFEASIBLE",
+    "raw_parent_run": "phase2_known_step_v2_c_continuation_20260915/C"
+  },
+  "live": {
+    "runtime_changed": false,
+    "canary_launched": false,
+    "reason": "Mandatory minimum-clearance feasibility gate failed; task-defined stop rule applied."
+  },
+  "feasibility_gate": {
+    "status": "FAIL",
+    "leg": "FL",
+    "source_interval": {
+      "first_latch_state_time_s": 14.254,
+      "first_latch_raw_row": 3127,
+      "last_v2_swing_state_time_s": 14.402,
+      "last_v2_swing_raw_row": 3201,
+      "planning_valid_v2_samples": 75
+    },
+    "candidate": {
+      "corridor_formula": "max(geometry.height_m + foot_radius + margin, swing_start_world.z, final_touchdown_world.z)",
+      "geometry_height_m": 0.05,
+      "foot_radius_m": 0.022,
+      "geometry_margin_m": 0.001,
+      "z_corridor_min_m": 0.075230552,
+      "horizontal_mapping": "parent command x unchanged; parent y interpolation reconstructed from frozen swing-start/final y and parent s",
+      "swing_start_world_xyz_m": [0.509015097, 0.13691783301569627, 0.025230552],
+      "final_touchdown_world_xyz_m": [0.85, 0.078051928, 0.075230552]
+    },
+    "reconstruction": {
+      "body_target": "frozen WorldToBody(base, quaternion, candidate_world_target)",
+      "pose_source": "read-only parent C contact_ground_truth.csv joined to state_tick_s",
+      "maximum_pose_time_join_error_s": 0.0,
+      "direct_ik_source": "go2::LegInverseKinematics(FL, p_body_candidate)",
+      "fk_source": "go2::FootPosition(FL, q_ik)"
+    },
+    "checks": {
+      "direct_ik": {
+        "status": "PASS",
+        "samples": 75,
+        "failures": 0
+      },
+      "joint_ranges": {
+        "status": "FAIL",
+        "samples": 75,
+        "failures": 5,
+        "first_failure_state_time_s": 14.32,
+        "first_failure_raw_row": 3160,
+        "candidate_world_xyz_m": [0.721628193, 0.100213386001199, 0.0720739130308704],
+        "candidate_body_xyz_m": [0.196208893109765, 0.0698152420632898, -0.12781266791828],
+        "ik_result_rad": [-0.645318027636051, 1.33053112156358, -2.72481562160116],
+        "limits_rad": {
+          "abduction": [-1.0472, 1.0472],
+          "front_thigh": [-1.5708, 3.4907],
+          "knee": [-2.7227, -0.83776]
+        },
+        "violated_joint": "FL_calf",
+        "violated_joint_index": 2,
+        "violated_lower_bound_rad": -2.7227,
+        "violation_below_lower_bound_rad": 0.00211562160116,
+        "minimum_calf_rad": -2.74175280221285
+      },
+      "fk_roundtrip": {
+        "status": "PASS",
+        "samples": 75,
+        "tolerance_m": 1e-6,
+        "maximum_error_m": 8.67361737988404e-17
+      },
+      "edge_clearance": {
+        "status": "PASS",
+        "envelope_x_m": [0.777, 0.823],
+        "required_z_m": 0.073,
+        "samples_in_envelope": 7,
+        "minimum_margin_m": 0.002230552
+      }
+    },
+    "earliest_failure": {
+      "category": "joint_range",
+      "state_time_s": 14.32,
+      "raw_row": 3160,
+      "joint": "FL_calf",
+      "reason": "direct IK result is below frozen simulator knee lower bound"
+    }
+  },
+  "stop_rule": "MIN_CLEARANCE_PATH_INFEASIBLE: no runtime change and no live run",
+  "downstream_localization": null
+}
