@@ -17,7 +17,7 @@ def _research_task_current(
 ) -> dict[str, Any]:
     argv = [
         "python3",
-        "tools/atlas_research_task_v4.py",
+        "tools/atlas_research_task_v5.py",
         "--branch",
         parameters["branch"],
         "--task-path",
@@ -45,8 +45,8 @@ def _research_task_current(
         "codex_log": "codex.ndjson",
         "codex_stderr": "codex.stderr.log",
         "host_experiment": "host-experiment.json",
-        "worker_version": 4,
-        "worker_impl": 4,
+        "worker_version": 5,
+        "worker_impl": 5,
     }
 
 
