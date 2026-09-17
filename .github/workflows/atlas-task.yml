@@ -48,7 +48,7 @@ jobs:
       - name: Run fixed Atlas dispatcher
         run: |
           mkdir -p "$RUNNER_TEMP/atlas-result"
-          python3 tools/atlas_dispatch.py \
+          python3 tools/atlas_dispatch_v2.py \
             --event "$GITHUB_EVENT_PATH" \
             --output-dir "$RUNNER_TEMP/atlas-result"
 
