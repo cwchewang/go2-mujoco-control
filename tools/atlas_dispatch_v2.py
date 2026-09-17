@@ -122,11 +122,17 @@ class QueueEngine:
                     finished.add(number)
                     del active[number]
 
-                queue = [
-                    task
-                    for task in self.queue_source()
-                    if task.number not in active and task.number not in finished
-                ]
+                queue: list[QueueTask] = []
+                queued_numbers: set[int] = set()
+                for task in self.queue_source():
+                    if (
+                        task.number in active
+                        or task.number in finished
+                        or task.number in queued_numbers
+                    ):
+                        continue
+                    queued_numbers.add(task.number)
+                    queue.append(task)
                 queue.sort(
                     key=lambda task: (
                         0 if task.resumable else 1,
@@ -167,8 +173,9 @@ class ProductionDispatcher:
         self.output_root = output_root
         self.config = config
         self.started_at: dict[int, float] = {}
-        self.fetch_lock = threading.Lock()
-        self.push_lock = threading.Lock()
+        self.repo_lock = threading.Lock()
+        self.progress_state: dict[int, dict[str, Any]] = {}
+        self.issue_locks: dict[int, threading.Lock] = {}
 
     def _elapsed(self, number: int) -> float:
         started = self.started_at.setdefault(number, time.monotonic())
@@ -180,27 +187,37 @@ class ProductionDispatcher:
         return path
 
     def publish(self, number: int, progress: dict[str, Any]) -> None:
-        progress = dict(progress)
-        progress["issue_number"] = number
-        progress["elapsed_s"] = self._elapsed(number)
-        safe = issue_state.sanitize_progress(progress)
-        self._progress_path(number).write_text(
-            json.dumps(safe, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        status = safe.get("status", "unknown")
-        print(
-            f"[atlas-progress] issue=#{number} status={status} "
-            f"event={safe.get('last_event', '')}",
-            flush=True,
-        )
-        issue_state.publish_progress(
-            full_name=self.full_name,
-            number=number,
-            token=self.token,
-            progress=safe,
-            best_effort=True,
-        )
+        issue_lock = self.issue_locks.setdefault(number, threading.Lock())
+        with issue_lock:
+            merged = dict(self.progress_state.get(number, {}))
+            merged.update(progress)
+            merged["issue_number"] = number
+            merged["elapsed_s"] = self._elapsed(number)
+            safe = issue_state.sanitize_progress(merged)
+            self.progress_state[number] = safe
+            try:
+                self._progress_path(number).write_text(
+                    json.dumps(safe, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+            except OSError as exc:
+                print(
+                    f"[atlas-progress-warning] local state write failed: {exc}",
+                    flush=True,
+                )
+            status = safe.get("status", "unknown")
+            print(
+                f"[atlas-progress] issue=#{number} status={status} "
+                f"event={safe.get('last_event', '')}",
+                flush=True,
+            )
+            issue_state.publish_progress(
+                full_name=self.full_name,
+                number=number,
+                token=self.token,
+                progress=safe,
+                best_effort=True,
+            )
 
     def _is_resumable(self, command: dict[str, Any]) -> bool:
         if command.get("task") != "research-task":
@@ -241,9 +258,13 @@ class ProductionDispatcher:
                 if command["task"] == "research-task":
                     parameters = command["parameters"]
                     if not parameters["branch"].startswith(self.config.branch_prefix):
-                        raise legacy.TaskError("research branch is outside configured prefix")
+                        raise legacy.TaskError(
+                            "research branch is outside configured prefix"
+                        )
                     if not parameters["task_path"].startswith(self.config.task_root):
-                        raise legacy.TaskError("task path is outside configured task root")
+                        raise legacy.TaskError(
+                            "task path is outside configured task root"
+                        )
             except legacy.TaskError as exc:
                 self.publish(
                     number,
@@ -265,9 +286,13 @@ class ProductionDispatcher:
         return tasks
 
     def _prefetch_anchor(self) -> None:
-        with self.fetch_lock:
+        with self.repo_lock:
             repo, _, _, _ = research_base._paths()
-            legacy._run(["git", "fetch", "origin", "--prune"], repo, timeout=180)
+            legacy._run(
+                ["git", "fetch", "origin", "--prune"],
+                repo,
+                timeout=180,
+            )
 
     def _write_result(
         self,
@@ -292,7 +317,7 @@ class ProductionDispatcher:
         )
 
     def _push_result(self, request: Path) -> str:
-        with self.push_lock:
+        with self.repo_lock:
             completed = subprocess.run(
                 [
                     "python3",
@@ -321,6 +346,28 @@ class ProductionDispatcher:
             raise legacy.TaskError("trusted push did not return a commit SHA")
         return result
 
+    def _heartbeat(self, number: int, stop: threading.Event) -> None:
+        interval = max(
+            5.0,
+            float(os.environ.get("ATLAS_PROGRESS_HEARTBEAT_SECONDS", "45")),
+        )
+        while not stop.wait(interval):
+            current = dict(self.progress_state.get(number, {}))
+            status = current.get("status")
+            if status in {"complete", "failed"}:
+                return
+            self.publish(
+                number,
+                {
+                    "status": (
+                        status
+                        if status in issue_state.PROGRESS_STATES
+                        else "claimed"
+                    ),
+                    "last_event": current.get("last_event", "worker active"),
+                },
+            )
+
     def _run_research(self, task: QueueTask) -> dict[str, Any]:
         parameters = task.command["parameters"]
         issue_dir = self.output_root / f"issue-{task.number}"
@@ -329,7 +376,9 @@ class ProductionDispatcher:
 
         env = os.environ.copy()
         env["ATLAS_DISPATCH_PREFETCHED"] = "1"
-        env["ATLAS_PROTECTED_PREFIXES"] = ",".join(self.config.protected_prefixes)
+        env["ATLAS_PROTECTED_PREFIXES"] = ",".join(
+            self.config.protected_prefixes
+        )
         env["ATLAS_EVIDENCE_ROOTS"] = ",".join(self.config.evidence_roots)
         env["ATLAS_HOST_POLICY"] = self.config.host_policy
         command = [
@@ -347,34 +396,45 @@ class ProductionDispatcher:
         stdout_path = issue_dir / "worker.stdout.log"
         stderr_path = issue_dir / "worker.stderr.log"
         last_sha = ""
-        with stdout_path.open("a", encoding="utf-8") as stdout_log, stderr_path.open(
-            "a", encoding="utf-8"
-        ) as stderr_log:
-            process = subprocess.Popen(
-                command,
-                cwd=self.repo_root,
-                stdout=subprocess.PIPE,
-                stderr=stderr_log,
-                text=True,
-                bufsize=1,
-                env=env,
-            )
-            assert process.stdout is not None
-            for line in process.stdout:
-                stdout_log.write(line)
-                stdout_log.flush()
-                stripped = line.strip()
-                if stripped.startswith(PROGRESS_PREFIX):
-                    try:
-                        progress = json.loads(stripped[len(PROGRESS_PREFIX) :])
-                    except json.JSONDecodeError:
+        heartbeat_stop = threading.Event()
+        heartbeat = threading.Thread(
+            target=self._heartbeat,
+            args=(task.number, heartbeat_stop),
+            daemon=True,
+        )
+        heartbeat.start()
+        try:
+            with stdout_path.open("a", encoding="utf-8") as stdout_log, stderr_path.open(
+                "a", encoding="utf-8"
+            ) as stderr_log:
+                process = subprocess.Popen(
+                    command,
+                    cwd=self.repo_root,
+                    stdout=subprocess.PIPE,
+                    stderr=stderr_log,
+                    text=True,
+                    bufsize=1,
+                    env=env,
+                )
+                assert process.stdout is not None
+                for line in process.stdout:
+                    stdout_log.write(line)
+                    stdout_log.flush()
+                    stripped = line.strip()
+                    if stripped.startswith(PROGRESS_PREFIX):
+                        try:
+                            progress = json.loads(stripped[len(PROGRESS_PREFIX) :])
+                        except json.JSONDecodeError:
+                            continue
+                        if isinstance(progress, dict):
+                            self.publish(task.number, progress)
                         continue
-                    if isinstance(progress, dict):
-                        self.publish(task.number, progress)
-                    continue
-                if SHA_RE.fullmatch(stripped):
-                    last_sha = stripped
-            return_code = process.wait()
+                    if SHA_RE.fullmatch(stripped):
+                        last_sha = stripped
+                return_code = process.wait()
+        finally:
+            heartbeat_stop.set()
+            heartbeat.join(timeout=2)
         if return_code:
             raise legacy.TaskError(
                 f"research worker exited {return_code}; see issue-{task.number} logs"
