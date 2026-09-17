@@ -19,10 +19,38 @@ bool Check(bool ok, const char *msg)
     return ok;
 }
 
+bool CheckSwingJdotQdotTerm()
+{
+    Eigen::MatrixXd H = Eigen::MatrixXd::Zero(
+        go2_control::kGo2Nv, go2_control::kGo2Nv);
+    Eigen::VectorXd g = Eigen::VectorXd::Zero(go2_control::kGo2Nv);
+    Eigen::Matrix<double, 3, go2_control::kGo2Nv> J =
+        Eigen::Matrix<double, 3, go2_control::kGo2Nv>::Zero();
+    Eigen::Matrix<double, 3, go2_control::kGo2Nv> Jdot =
+        Eigen::Matrix<double, 3, go2_control::kGo2Nv>::Zero();
+    Eigen::Matrix<double, go2_control::kGo2Nv, 1> qvel =
+        Eigen::Matrix<double, go2_control::kGo2Nv, 1>::Zero();
+    J(0, 6) = 1.0;
+    J(1, 7) = 1.0;
+    J(2, 8) = 1.0;
+    Jdot(0, 0) = 1.0;
+    Jdot(1, 1) = 1.0;
+    Jdot(2, 2) = 1.0;
+    qvel.head<3>() << 1.0, -2.0, 0.5;
+    go2_control::AddSwingFootAccelerationTask(
+        H, g, J, Jdot, qvel, Eigen::Vector3d::Zero(),
+        Eigen::Matrix3d::Identity());
+    return Check(std::abs(g[6] - 2.0) < 1.0e-12, "swing Jdot qdot x") &&
+           Check(std::abs(g[7] + 4.0) < 1.0e-12, "swing Jdot qdot y") &&
+           Check(std::abs(g[8] - 1.0) < 1.0e-12, "swing Jdot qdot z") &&
+           Check(std::abs(H(6, 6) - 2.0) < 1.0e-12, "swing J Hessian");
+}
+
 }  // namespace
 
 int main()
 {
+    bool passed = CheckSwingJdotQdotTerm();
     go2_control::Go2RigidBody model;
     if (!model.Load(GO2_MODEL_PATH))
         return 1;
@@ -43,7 +71,7 @@ int main()
     input.contact.fill(true);
 
     go2_control::IdWbcOutput out;
-    bool passed = go2_control::SolveInverseDynamicsWbc({}, input, out);
+    passed &= go2_control::SolveInverseDynamicsWbc({}, input, out);
     passed &= Check(out.ok, "stand ID-WBC failed");
     passed &= Check(out.eq_residual < 1.0e-3, "floating-base residual");
     passed &= Check(out.rne_residual < 1.0e-3, "RNEA residual");
@@ -59,6 +87,14 @@ int main()
                     "ID-WBC objective terms are not finite");
     passed &= Check(out.cost_terms.force_regularization >= 0.0,
                     "ID-WBC force cost is negative");
+
+    go2_control::IdWbcParams strict_params = {};
+    strict_params.require_qp_acceptance = true;
+    go2_control::IdWbcOutput strict_out;
+    passed &= Check(
+        go2_control::SolveInverseDynamicsWbc(
+            strict_params, input, strict_out) && strict_out.ok,
+        "strict clean-baseline ID-WBC rejected an accepted solve");
 
     // A terrain hold must keep every selected contact physically loadable,
     // rather than allowing the solver to satisfy the base equations with a

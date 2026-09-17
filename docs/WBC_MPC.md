@@ -2,6 +2,17 @@
 
 `--wbc-full` is a controller-side 18-DoF inverse-dynamics WBC plus receding-horizon SRBD MPC. `go2sim task` and `go2sim full` both turn it on (`--tau-limit 35`). `go2sim walk` / `real_trot_go2` without the flag is the older `--wbc-primary` position-control path; that path is not the current homepage plant and was not reproduced on 2026-08-15.
 
+## Opt-in clean baseline
+
+`real_trot_go2 ... --clean-baseline` enables the Phase 2 clean path without
+changing the default or historical modes. It uses direct IK followed by the
+authoritative Go2/MuJoCo joint-range check, requires the constrained ID-WBC
+solver to report acceptance, and sends the accepted QP torque through only the
+explicit final ramp/absolute motor envelope. Unreachable or joint-limit-invalid
+targets cause a target-feasibility failure and safe hold; they are never
+projected. This mode is no-live validation infrastructure in the P0 task, not
+a performance claim.
+
 ## Stack
 
 1. **Model.** The controller loads the same Go2 MJCF the simulator uses (`go2_rigid_body.h`). Every tick it evaluates `M(q)`, `h(q,qd)`, foot Jacobians, and CoM inertia from `LowState` / `SportModeState`. Packed LowState spare-slot `M` is not used on this path.

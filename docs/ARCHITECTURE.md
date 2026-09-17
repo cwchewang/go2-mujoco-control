@@ -11,13 +11,15 @@ SDK2 DDS interface.
 ```text
 MuJoCo -> LowState / lidar -> state snapshot and filtering
                                   |
-requested velocity -> Phase 1 shaper -> running-trot gait and footholds
+requested velocity -> Phase 1 shaper -> gait/foothold targets
+                                           |
+                         clean target contract + direct IK feasibility
                                            |
                                         SRBD MPC
                                            |
-                                      18-DoF ID-WBC
+                              strict 18-DoF ID-WBC acceptance
                                            |
-                               limits, safety, diagnostics
+                              final finite/ramp/torque envelope
                                            |
                                       LowCmd -> MuJoCo
 ```
@@ -40,6 +42,8 @@ production terrain-actuation path.
 | Contact | `example/cpp/contact/*` | measured-contact filtering, wrench allocation, torque mapping |
 | Timing | `example/cpp/trot/lockstep_*` | lockstep clock/writer diagnostics; not a realtime acceptance claim |
 | Diagnostics | `example/cpp/trot/trot_experiment_diagnostics.cpp`, `trot_types.h` | limits, status, structured logs |
+| Clean baseline contract | `example/cpp/wbc/clean_baseline.h`, `go2_inverse_kinematics.h`, `inverse_dynamics_wbc.h` | exact targets, authoritative limits, strict solver result, final command envelope |
+| Canonical DDS runtime | `example/cpp/scripts/dds_runtime.sh`, `run_trot.sh`, `run_trot_exact_source.sh` | tracked support artifact, fail-closed cleanup, exact-source launch plumbing |
 | Tests and analysis | `example/cpp/tests/`, `example/cpp/tools/` | unit/integration checks and protocol analyzers |
 
 ## Target Phase 2 planner
@@ -62,6 +66,11 @@ The Phase 1 shaper remains the only velocity authority. Planned contact and
 force-supported measured contact remain separate. A future terrain execution
 path must publish one immutable, time-indexed snapshot shared by gait, SRBD-MPC,
 and ID-WBC; no consumer may invent its own timing, contact, or recovery state.
+Any actuation-capable terrain planner must explicitly enable the clean baseline
+contract and enter through `exact foot targets -> direct IK feasibility ->
+strict WBC -> final safety envelope`. Sensor-only terrain remains observer-only.
+The Cartesian-world and legacy clamp/overlay path is incompatible with
+`--clean-baseline`.
 
 The retained `example/cpp/leg_lift/` executable and multi-step configurations
 are historical experiments. They are not a Phase 2 route or design source.

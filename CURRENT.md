@@ -13,7 +13,7 @@ canonical execution rules live in [`docs/research/SOP.md`](docs/research/SOP.md)
 Update only this block when the frontier changes. The dated branch/task below
 are a pointer value, not a permanent architecture decision.
 
-- Branch: [`research/phase2-clean-baseline-flat-repro-20260917`](https://github.com/kairoi-k/go2-mujoco-control/tree/research/phase2-clean-baseline-flat-repro-20260917)
-- Branch navigation: [`CURRENT.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-clean-baseline-flat-repro-20260917/CURRENT.md)
-- Task: [`TASK_PHASE2_CLEAN_BASELINE_FLAT_REPRO_20260917.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-clean-baseline-flat-repro-20260917/docs/research/TASK_PHASE2_CLEAN_BASELINE_FLAT_REPRO_20260917.md)
-- Expected closeout: [`RESULTS.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/phase2-clean-baseline-flat-repro-20260917/docs/validation/phase2_clean_baseline_flat_repro_20260917/RESULTS.md)
+- Branch: [`research/canonical-clean-baseline-integration-20260917`](https://github.com/kairoi-k/go2-mujoco-control/tree/research/canonical-clean-baseline-integration-20260917)
+- Branch navigation: [`CURRENT.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/CURRENT.md)
+- Task: [`TASK_CANONICAL_CLEAN_BASELINE_INTEGRATION_20260917.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/docs/research/TASK_CANONICAL_CLEAN_BASELINE_INTEGRATION_20260917.md)
+- Expected closeout: [`RESULTS.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/docs/validation/canonical_clean_baseline_integration_20260917/RESULTS.md)

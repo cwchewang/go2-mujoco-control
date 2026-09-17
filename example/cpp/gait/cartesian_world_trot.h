@@ -125,6 +125,8 @@ inline go2::Vec3 BodyToWorld(
     return {base.x + rotated.x, base.y + rotated.y, base.z + rotated.z};
 }
 
+// LEGACY Cartesian-world compatibility helper.  It projects targets and is
+// unreachable from --clean-baseline, which rejects targets through direct IK.
 inline void ClampFootToHipWorkspace(go2::Leg leg, go2::Vec3 &p_body)
 {
     const go2::LegGeometry g = go2::Geometry(leg);
