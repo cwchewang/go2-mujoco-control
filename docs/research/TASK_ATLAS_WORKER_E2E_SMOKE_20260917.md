@@ -6,7 +6,7 @@ Branch: `research/atlas-worker-e2e-smoke-20260917`
 
 ## Question
 
-Can the unattended Atlas research worker receive this repository-defined task, launch Luna, make a bounded task-local change, commit it, and return control to the trusted push wrapper without touching research/runtime state?
+Can the unattended Atlas research worker receive this repository-defined task, launch Luna, make a bounded task-local change, hand the uncommitted change back to the trusted wrapper, and have that wrapper commit/push it without touching research/runtime state?
 
 ## Authorized work
 
@@ -21,15 +21,11 @@ Its content must state:
 - this was an infrastructure-only unattended worker smoke test;
 - the exact task commit you started from;
 - the exact model requested by the worker if visible from the execution environment/log context, otherwise state `worker-selected model not independently inspected by task`;
-- `git status --porcelain` was checked before the closeout commit;
+- `git status --porcelain` was checked before handoff to the trusted closeout wrapper;
 - no live simulation or scientific experiment was run.
 
 Do not create any other tracked file and do not modify an existing tracked file.
 
 ## Closeout
 
-Run `git diff --check`, add only the required RESULTS file, commit it with message:
-
-`infra: close Atlas worker e2e smoke`
-
-Do not push. Leave the worktree clean and report only the resulting commit SHA.
+Run `git diff --check` and `git status --porcelain`. Do not run `git add`, `git commit`, or `git push`; the trusted Atlas wrapper owns those mechanical closeout steps. Leave exactly the required RESULTS file as the intended working-tree change, then stop.
