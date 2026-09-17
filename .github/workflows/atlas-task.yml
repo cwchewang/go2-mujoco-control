@@ -5,13 +5,14 @@ on:
     types: [opened]
 
 # This workflow intentionally has no pull_request trigger. It checks out only
-# the trusted default branch before running the fixed dispatcher.
+# the trusted default branch before running the fixed dispatcher. Research
+# branch code never receives the credential used by the final push step.
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 concurrency:
-  group: atlas-issue-${{ github.event.issue.number }}
+  group: atlas-dispatch
   cancel-in-progress: false
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
         github.event.issue.author_association == 'COLLABORATOR'
       )
     runs-on: [self-hosted, linux, x64, atlas]
-    timeout-minutes: 30
+    timeout-minutes: 240
     env:
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
@@ -47,6 +48,14 @@ jobs:
           python3 tools/atlas_dispatch.py \
             --event "$GITHUB_EVENT_PATH" \
             --output-dir "$RUNNER_TEMP/atlas-result"
+
+      - name: Push validated research result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/atlas_research_push.py \
+            --result "$RUNNER_TEMP/atlas-result/result.json" \
+            --summary "$RUNNER_TEMP/atlas-result/summary.md"
 
       - name: Upload Atlas result
         if: always()
