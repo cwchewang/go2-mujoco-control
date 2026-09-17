@@ -37,6 +37,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Add user-local binaries to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Mark Atlas task running
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
