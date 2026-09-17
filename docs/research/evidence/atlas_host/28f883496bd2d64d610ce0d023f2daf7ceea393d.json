@@ -1,0 +1,174 @@
+{
+  "candidate_commit": "28f883496bd2d64d610ce0d023f2daf7ceea393d",
+  "command": [
+    "bash",
+    "example/cpp/scripts/run_trot_exact_source.sh",
+    "90",
+    "_runs/canonical_clean_baseline_repeatability_20260917/R1",
+    "--controller-duration",
+    "70",
+    "--task",
+    "stand-walk-lie",
+    "--kernel",
+    "raibert-trot",
+    "--period",
+    "0.60",
+    "--duty",
+    "0.75",
+    "--step-length",
+    "0.091",
+    "--foot-lift",
+    "0.020",
+    "--kp",
+    "63",
+    "--kd",
+    "2.8",
+    "--raibert-velocity-gain",
+    "0.05",
+    "--raibert-max-adjustment",
+    "0.010",
+    "--world-feedback-max",
+    "0.060",
+    "--world-feedback-slew",
+    "0.004",
+    "--clean-baseline",
+    "--tau-limit",
+    "35",
+    "--max-cycles",
+    "64",
+    "--headless",
+    "--domain-id",
+    "220"
+  ],
+  "domain_id": 220,
+  "environment": {
+    "LD_LIBRARY_PATH": "/home/che/.mujoco/mujoco-3.3.6/lib",
+    "MUJOCO_ROOT": "/home/che/.mujoco/mujoco-3.3.6"
+  },
+  "error": null,
+  "evidence": [
+    {
+      "path": "build_provenance.txt",
+      "sha256": "5d60ae4f2716b3b0b76787b1ec5a1eb9d82cddfeecc46fd76e5ec99f5a110034",
+      "size": 4126,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth.csv",
+      "sha256": "c0e172eac32578316de4525bf2b9249b482e67f8421fffb8d28aa05ae274f4b8",
+      "size": 89170436,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_analysis.txt",
+      "sha256": "f5dd356baf5a5a1c744b874c508755ee597cb22d2adbc55cd555c699bb617fe7",
+      "size": 215,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_dynamics_analysis.txt",
+      "sha256": "67442c6da2d2c0a0e99939e62ddc79122bd50ddacfeca37684230c2174403f15",
+      "size": 516,
+      "type": "file"
+    },
+    {
+      "path": "controller.log",
+      "sha256": "5716200c259d3621b42917531752a51265eda63e8fed260aebf5abd16215db51",
+      "size": 32447,
+      "type": "file"
+    },
+    {
+      "path": "controller_build.log",
+      "sha256": "92e5f64b6981571ee022359cdce23c5badc71bf495c0dc5f37926679625c152c",
+      "size": 907,
+      "type": "file"
+    },
+    {
+      "path": "data.csv",
+      "sha256": "f0ddbee7ad89af384d3b2c63971446b275db145f4b84cfbd9e28aee0f39fdb01",
+      "size": 68932314,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/dds_base4000_preload.so",
+      "sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "size": 15560,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_clean_state.txt",
+      "sha256": "b8e77afd41f0cf54480d3fc829c082609d6e9ec196aa86dd67c8688eaff40e3e",
+      "size": 3219,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_state.txt",
+      "sha256": "1f037b8fce72181e3108791334c72bc414f225f33deb041101deb166e700bfb1",
+      "size": 3213,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/pre_state.txt",
+      "sha256": "50275f82cf64d7b0f67584dfbc585e460f952e21282d08532c64e3e2adcb4775",
+      "size": 3212,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/preparation_cleanup.txt",
+      "sha256": "c955302b2482b23c47b0724b718fea6ea5738953ede4a8d1d2b359df0225dd3a",
+      "size": 200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/runtime_metadata.txt",
+      "sha256": "cdb2fa24780cd090d649ca65beb475d5276669d3c391abec6902b6ba743efb5c",
+      "size": 886,
+      "type": "file"
+    },
+    {
+      "path": "environment.txt",
+      "sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+      "size": 100,
+      "type": "file"
+    },
+    {
+      "path": "run_manifest.json",
+      "sha256": "7128fca1c179db483d932556ea163dd672a97cd519787e2ae764887c73ae6b2b",
+      "size": 3086,
+      "type": "file"
+    },
+    {
+      "path": "run_metadata.txt",
+      "sha256": "1e93ab3894daf6f5631bc2cbf6341b55b654c8d89bb76f9f1acdf6d20605e3e7",
+      "size": 3615,
+      "type": "file"
+    },
+    {
+      "path": "simulator.log",
+      "sha256": "5d3b7d03e9afc78f411ab78b082114e8e64b5ec8430e4269ae26bbf2f1c3033c",
+      "size": 4078,
+      "type": "file"
+    },
+    {
+      "path": "simulator_build.log",
+      "sha256": "cf05f9cb591e2503f76c85c844698346f8637a3b6b3b3e251df109307dccc580",
+      "size": 1370,
+      "type": "file"
+    }
+  ],
+  "finished_at": "2026-09-17T14:10:48.982280+00:00",
+  "launched": true,
+  "manifest_sha256": "06dddb76b0dad0b183a402c18406e181471263b429ed5a13ca0cc13f8f3ebee1",
+  "returncode": 0,
+  "run_dir": "example/cpp/experiments/_runs/canonical_clean_baseline_repeatability_20260917/R1",
+  "schema_version": 1,
+  "started_at": "2026-09-17T14:08:55.057582+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+  "stdout_sha256": "7daa9a511266e2e1013756d5072949c7dc63d35f0d7f8ffc4267f423acf75555",
+  "task_commit": "28f883496bd2d64d610ce0d023f2daf7ceea393d",
+  "task_path": "docs/research/TASK_CANONICAL_CLEAN_BASELINE_REPEAT_R1_20260917.md",
+  "timed_out": false,
+  "timeout_s": 600
+}
