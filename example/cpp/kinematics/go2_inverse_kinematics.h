@@ -17,6 +17,49 @@ struct LegJointPositions
     double calf = 0.0;
 };
 
+// These are the authoritative ranges in unitree_robots/go2/go2.xml.  Keep
+// them beside the analytical IK so a clean target can be rejected without
+// projecting it to a different point.
+struct JointRange
+{
+    double lower;
+    double upper;
+};
+
+inline JointRange JointRangeFor(Leg, std::size_t joint_in_leg)
+{
+    static constexpr JointRange kRanges[kJointsPerLeg] = {
+        {-1.0472, 1.0472},
+        {-1.5708, 3.4907},
+        {-2.7227, -0.83776},
+    };
+    return joint_in_leg < kJointsPerLeg
+        ? kRanges[joint_in_leg]
+        : JointRange{1.0, 0.0};
+}
+
+inline bool JointPositionsWithinMuJoCoLimits(
+    const std::array<double, kJointCount> &joint_positions,
+    double tolerance = 1.0e-9)
+{
+    if (!std::isfinite(tolerance) || tolerance < 0.0)
+        return false;
+    for (std::size_t leg = 0; leg < kLegCount; ++leg)
+    {
+        for (std::size_t joint = 0; joint < kJointsPerLeg; ++joint)
+        {
+            const double value = joint_positions[leg * kJointsPerLeg + joint];
+            const JointRange range = JointRangeFor(
+                static_cast<Leg>(leg), joint);
+            if (!std::isfinite(value) ||
+                value < range.lower - tolerance ||
+                value > range.upper + tolerance)
+                return false;
+        }
+    }
+    return true;
+}
+
 inline bool LegInverseKinematics(
     Leg leg,
     const Vec3 &foot_position,
@@ -83,6 +126,22 @@ inline bool AllLegInverseKinematics(
         joint_positions[joint_index + 1] = leg_joints.thigh;
         joint_positions[joint_index + 2] = leg_joints.calf;
     }
+    return true;
+}
+
+// Clean-baseline target boundary: solve direct IK first, then reject any
+// solution outside the MuJoCo joint ranges.  This deliberately does not
+// modify foot_positions or project an infeasible target.
+inline bool AllLegInverseKinematicsWithinMuJoCoLimits(
+    const std::array<Vec3, kLegCount> &foot_positions,
+    std::array<double, kJointCount> &joint_positions,
+    double tolerance = 1.0e-9)
+{
+    std::array<double, kJointCount> candidate{};
+    if (!AllLegInverseKinematics(foot_positions, candidate) ||
+        !JointPositionsWithinMuJoCoLimits(candidate, tolerance))
+        return false;
+    joint_positions = candidate;
     return true;
 }
 

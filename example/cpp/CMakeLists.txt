@@ -188,6 +188,8 @@ target_link_libraries(test_preview_footstep_horizon Eigen3::Eigen)
 add_executable(test_dense_qp tests/test_dense_qp.cpp)
 target_link_libraries(test_dense_qp Eigen3::Eigen)
 
+add_executable(test_clean_baseline tests/test_clean_baseline.cpp)
+
 add_executable(test_contact_wrench_qp tests/test_contact_wrench_qp.cpp)
 target_link_libraries(test_contact_wrench_qp Eigen3::Eigen)
 
@@ -246,4 +248,5 @@ go2_add_ctest(test_wbc_runtime_gate)
 go2_add_ctest(test_centroidal_wbc)
 go2_add_ctest(test_preview_footstep_horizon)
 go2_add_ctest(test_dense_qp)
+go2_add_ctest(test_clean_baseline)
 go2_add_ctest(test_contact_wrench_qp)

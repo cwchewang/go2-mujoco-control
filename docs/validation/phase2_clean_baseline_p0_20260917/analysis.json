@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_clean_baseline_p0_20260917",
+  "classification": "CLEAN_BASELINE_P0_READY",
+  "task": {
+    "branch": "research/phase2-clean-baseline-p0-20260917",
+    "task_commit": "38e340a703ba0397c083d94fcbdc16a2a488728a",
+    "exact_base": "21633a76b8cc9c9e820c2399fb0bdbc4b864260a",
+    "parent_reference": "e64dbf2f34ed2589fab0c61d24d6d0fc8144952f",
+    "parent_classification": "MIN_CLEARANCE_PATH_INFEASIBLE"
+  },
+  "live": {
+    "authorized": false,
+    "launched": false,
+    "raw_capture": false,
+    "reason": "The task is engineering-correctness/no-live."
+  },
+  "invariants": {
+    "swing_full_acceleration": {
+      "status": "PASS",
+      "formula": "J*qdd + Jdot*qdot = a_des",
+      "test": "test_inverse_dynamics_wbc::CheckSwingJdotQdotTerm"
+    },
+    "strict_constrained_solver_acceptance": {
+      "status": "PASS",
+      "test": "test_dense_qp::CheckStrictConstrainedAcceptance",
+      "clean_gate": "IdWbcParams.require_qp_acceptance"
+    },
+    "no_post_qp_torque_mutation": {
+      "status": "PASS",
+      "path": "--clean-baseline",
+      "test": "test_clean_baseline"
+    },
+    "target_fidelity_and_joint_limits": {
+      "status": "PASS",
+      "test": "test_go2_inverse_kinematics::CheckCleanTargetBoundary"
+    }
+  },
+  "validation": {
+    "portable_ctest": {
+      "status": "PASS",
+      "passed": 29,
+      "total": 29,
+      "excluded": ["test_lockstep_motion_clock_integration"],
+      "command": "ctest --test-dir example/cpp/build --output-on-failure -E ^test_lockstep_motion_clock_integration$"
+    },
+    "rigid_body_model": {
+      "status": "PASS",
+      "test": "test_go2_rigid_body",
+      "execution": "manual reference-backed compile and run",
+      "reported_mass_kg": 15.2064,
+      "reported_rne_residual": 0.0630302
+    },
+    "inverse_dynamics_wbc": {
+      "status": "PASS",
+      "test": "test_inverse_dynamics_wbc",
+      "execution": "manual reference-backed compile and run",
+      "reported_eq_residual": 7.16662e-10,
+      "reported_rne_residual": 7.16663e-10
+    },
+    "controller_syntax": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "scope": {
+    "runtime_semantics": "clean path only",
+    "historical_default_path": "preserved",
+    "performance_claim": false,
+    "live_experiment": false
+  }
+}

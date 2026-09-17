@@ -25,6 +25,7 @@ void PrintTrotCliUsage()
            " [--wbc-velocity-wrench] [--wbc-velocity-gain s] [--wbc-max-forward-force n]"
            " [--wbc-torque-feedforward] [--wbc-torque-scale s] [--domain-id n]"
            " [--wbc-primary] [--wbc-full] [--cartesian-world] [--preview-horizon n]"
+           " [--clean-baseline]"
            " [--wbc-reduced-contact-task]"
            " [--wbc-task-torque-feedforward]"
            " [--direction +/-1] [--support-anchor-feedback]"
@@ -268,6 +269,13 @@ bool ParseTrotCli(int argc, const char **argv, TrotCliConfig *out, std::string *
                 if (cfg.params.preview_horizon_steps <= 0)
                     cfg.params.preview_horizon_steps = 4;
             }
+            else if (option == "--clean-baseline")
+            {
+                cfg.params.clean_baseline = true;
+                cfg.params.wbc_full = true;
+                cfg.params.wbc_primary = true;
+                cfg.params.wbc_shadow = true;
+            }
             else if (option == "--cartesian-world")
             {
                 cfg.params.cartesian_world = true;
@@ -447,6 +455,12 @@ bool ParseTrotCli(int argc, const char **argv, TrotCliConfig *out, std::string *
         if (error_out) *error_out = "Invalid trot parameters";
         return false;
     }
+    if (cfg.params.clean_baseline && cfg.params.cartesian_world)
+    {
+        if (error_out)
+            *error_out = "--clean-baseline is incompatible with --cartesian-world";
+        return false;
+    }
 
     *out = std::move(cfg);
     return true;
@@ -470,6 +484,8 @@ void PrintTrotCliSummary(const TrotCliConfig &cfg)
               << go2_control::GaitPatternName(params.gait_pattern) << "\n"
               << "  wbc_primary=" << (params.wbc_primary ? "on" : "off") << "\n"
               << "  wbc_full=" << (params.wbc_full ? "on" : "off") << "\n"
+              << "  clean_baseline="
+              << (params.clean_baseline ? "on" : "off") << "\n"
               << "  cartesian_world="
               << (params.cartesian_world ? "on" : "off") << "\n"
               << "  auto_environment=" << (params.auto_environment ? "on" : "off") << "\n"

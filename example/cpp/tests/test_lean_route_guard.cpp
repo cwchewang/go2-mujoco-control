@@ -48,6 +48,25 @@ int main()
         return 1;
     }
 
+    go2_trot::TrotCliConfig clean;
+    error.clear();
+    if (!Parse({"real_trot_go2", "lo", "1", "out.csv",
+                "--clean-baseline"}, &clean, &error) ||
+        !clean.params.clean_baseline || !clean.params.wbc_full ||
+        !clean.params.wbc_primary || !clean.params.wbc_shadow)
+    {
+        std::cerr << "clean baseline route was not enabled: " << error
+                  << "\n";
+        return 1;
+    }
+    error.clear();
+    if (Parse({"real_trot_go2", "lo", "1", "out.csv",
+               "--clean-baseline", "--cartesian-world"}, &clean, &error))
+    {
+        std::cerr << "clean baseline accepted the Cartesian overlay path\n";
+        return 1;
+    }
+
     if (!ExpectRetired({"real_trot_go2", "lo", "1", "out.csv",
                         "--stage-c-execution"}) ||
         !ExpectRetired({"real_trot_go2", "lo", "1", "out.csv",

@@ -1560,6 +1560,25 @@ void TrotExperiment::WriteMotorCommands(
             (gait_elapsed_s - kWbcPrimaryEnterDelayS) /
                 kWbcPrimaryRampS,
             0.0, 1.0);
+    if (params_.clean_baseline)
+    {
+        // Clean mode has one post-QP operation only: the documented final
+        // ramp/absolute motor safety envelope.  No force or Cartesian torque
+        // overlay is allowed between the accepted ID-WBC torque and LowCmd.
+        for (int i = 0; i < kMotorCount; ++i)
+        {
+            low_cmd_.motor_cmd()[i].q() = joint_targets[i];
+            low_cmd_.motor_cmd()[i].dq() = joint_velocities[i];
+            low_cmd_.motor_cmd()[i].kp() = params_.kp;
+            low_cmd_.motor_cmd()[i].kd() = params_.kd;
+            low_cmd_.motor_cmd()[i].tau() =
+                go2_control::clean_baseline::ApplyFinalTorqueSafetyEnvelope(
+                    wbc_shadow_candidate_torques_[i / 3][i % 3],
+                    primary_ramp, params_.tau_limit_nm);
+        }
+        wbc_shadow_diagnostics_.feedforward_applied = true;
+        return;
+    }
     // 混合控制:支撑腿 = WBC 扭矩(力控制)+ 弱位置;摆动腿 = 位置控制。
     // 接触状态经一阶平滑(swing<->stance 渐变),避免命令跳变冲击。
     for (std::size_t leg = 0; leg < go2::kLegCount; ++leg)
