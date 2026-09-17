@@ -4,6 +4,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 cpp_dir="$(cd "$script_dir/.." && pwd)"
 repo_dir="$(cd "$cpp_dir/../.." && pwd)"
+source "$script_dir/dds_runtime.sh"
 simulator="$repo_dir/simulate/build/unitree_mujoco"
 controller="$cpp_dir/build/real_trot_go2"
 scene_arg="scene_leg_lift_demo.xml"
@@ -256,19 +257,9 @@ if [[ "$task_torque_option" == true ]]; then
   fi
 fi
 
-lock_file="/tmp/unitree_mujoco_run_trot_domain_${domain_id}.lock"
-exec 9>"$lock_file"
-if ! flock -n 9; then
-  echo "Another trot experiment is already running in DDS domain $domain_id; use a different --domain-id for parallel runs." >&2
-  exit 2
-fi
 dynamics_tolerance_n="${TROT_DYNAMICS_TOLERANCE_N:-10}"
 
-existing_sim_pids="$(pgrep -f -x "$simulator -i $domain_id -r go2 -s $scene_arg" || true)"
-if [[ -n "$existing_sim_pids" ]]; then
-  echo "Existing MuJoCo simulator detected in DDS domain $domain_id; use a different --domain-id for parallel runs." >&2
-  exit 2
-fi
+dds_runtime_prepare "$domain_id" "$experiment_dir" "$repo_dir" lo
 
 metadata_file="$experiment_dir/run_metadata.txt"
 environment_file="$experiment_dir/environment.txt"
@@ -322,6 +313,13 @@ env | LC_ALL=C sort | grep -E "^(TROT_|FULL2_|SUSTAINED_SPRINT_|SIM_LOCKSTEP)" >
   printf "controller_duration_s=%s\n" "$controller_duration_s"
   printf "max_cycles_requested=%s\n" "$max_cycles_requested"
   printf "domain_id=%s\n" "$domain_id"
+  printf "dds_runtime_version=%s\n" "$DDS_RUNTIME_VERSION"
+  printf "dds_runtime_config_source=%s\n" "$DDS_RUNTIME_SUPPORT_SOURCE"
+  printf "dds_runtime_config_source_sha256=%s\n" "$DDS_RUNTIME_SUPPORT_SOURCE_SHA256"
+  printf "dds_runtime_support_artifact=%s\n" "$DDS_RUNTIME_PRELOAD"
+  printf "dds_runtime_support_artifact_sha256=%s\n" "$DDS_RUNTIME_SUPPORT_ARTIFACT_SHA256"
+  printf "dds_runtime_port_base=%s\n" "$DDS_RUNTIME_PORT_BASE"
+  printf "dds_runtime_max_auto_participant_index=%s\n" "$DDS_RUNTIME_MAX_AUTO_PARTICIPANT_INDEX"
   printf "run_mode=%s\n" "$([[ "$continuous_mode" == true ]] && echo continuous || echo bounded)"
   printf "task=%s\n" "$task_name"
   printf "wall_timeout_s=%s\n" "$timeout_s"
@@ -339,7 +337,7 @@ stop_simulator() {
   fi
   sim_pid=""
 }
-trap stop_simulator EXIT
+trap 'stop_simulator; dds_runtime_finalize || true' EXIT
 
 activate_simulator_window() {
   local xdotool_path

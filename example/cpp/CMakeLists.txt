@@ -29,6 +29,12 @@ target_link_libraries(hold_pose_go2 unitree_sdk2)
 add_executable(track_lowcmd_lowstate_go2 apps/track_lowcmd_lowstate_go2.cpp)
 target_link_libraries(track_lowcmd_lowstate_go2 unitree_sdk2)
 
+# Boot-only DDS transport probe.  It subscribes to rt/lowstate and never
+# constructs a LowCmd publisher; the trusted host smoke uses it after the
+# simulator's DDS-ready marker.
+add_executable(dds_lowstate_probe apps/dds_lowstate_probe.cpp)
+target_link_libraries(dds_lowstate_probe unitree_sdk2)
+
 add_executable(single_leg_lift_go2 apps/single_leg_lift_go2.cpp)
 target_link_libraries(single_leg_lift_go2 unitree_sdk2)
 
@@ -73,6 +79,11 @@ endif()
 function(go2_add_ctest name)
     add_test(NAME ${name} COMMAND ${name})
 endfunction()
+
+add_test(
+    NAME test_dds_runtime
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dds_runtime.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 if(EXISTS "${_go2_mujoco_lib}")
     add_executable(test_go2_forward_kinematics tests/test_go2_forward_kinematics.cpp)
