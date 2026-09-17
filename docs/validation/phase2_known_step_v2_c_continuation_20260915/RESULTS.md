@@ -87,3 +87,41 @@ Second FL `invalid_edge_ordering` at 14.854 s:
 - `p0` came from actual tracking/contact, not from the preceding planned target: the source captures the stance anchor from actual world-foot state, and the preceding FL actual touchdown is the exact same `(x,z)`. The preceding plan had commanded `(0.850000000, 0.075230552)` but actual touchdown was `(0.785232410, 0.046628094)`.
 
 Causal judgment: `PRIMARY_TRACKING_CONTACT_DEFECT_WITH_PLANNER_RECOVERY_GAP`. The first crossing command was valid, but the actual FL foot failed to execute it; that miss placed the next FL start beyond the edge-entry boundary while still on the floor, and the V2 planner had no recovery path for that state and fell back to the ordinary target. This is not `PRIMARY_PLANNING_DEFECT`, because the observed second-swing invalid ordering is conditional on the preceding actual miss rather than inevitable under successful first-crossing tracking. The single next intervention target is **tracking/contact/control integration** for execution of the already-valid first FL crossing; planner geometry/recovery is not changed in that intervention.
+
+## Offline FL execution-chain localization audit (2026-09-17)
+
+This append-only audit uses the unique C raw capture and frozen runtime source from the first planning-valid FL latch at 14.254 s through the first edge-contact boundary and touchdown. Raw `_runs` are unchanged. The checkpoint primary classification remains `PLANNING_GEOMETRY_FAILED`; this audit supersedes only the earlier execution-layer mechanism interpretation.
+
+The earliest material execution-layer divergence is at the first latch itself. The recorded V2 world command at row 3127 / 14.254 s was `(x,z)=(0.509030491, 0.025230552) m`, `(vx,vz)=(0.022896768, 0.000000001) m/s`; the recorded actual foot was `(0.529398894, 0.021975385) m`, contact=true, foot force=89 N. Reconstructing the frozen source FK from the recorded FL target joints gives world `(x,y,z)=(0.540098022, 0.104700286, 0.025147682) m`, while the target body position is `(0.033400026, 0.082000000, -0.176483857) m`: the exact FL lower x/y workspace bounds. Thus the logged world V2 command is not the target that reaches IK/LowCmd, before any edge contact occurs. FK from the actual q state gives world x/z=`0.529857439/0.022396240` in the same reconstruction convention and agrees with the logged actual x/z to sub-millimetre scale; the relevant conclusion is that actual motion follows the mapped/clamped joint target path, not the pre-clamp world command.
+
+| state time | command x/z; vx/vz | actual x/z | contact / foot force | decisive FK evidence |
+|---|---|---|---|---|
+| 14.254 s | 0.509030491 / 0.025230552; 0.022896768 / 0.000000001 | 0.529398894 / 0.021975385 | true / 89 N | FK(target) x/z=0.540098022 / 0.025147682; body x/y at 0.033400026 / 0.082000000 clamp bounds |
+| 14.292 s | 0.580579830 / 0.038072693; 4.209690162 / 1.895742369 | 0.546404230 / 0.027121680 | false / 0 N | first Δz magnitude ≥1 cm; FK(target) x/z=0.580762801 / 0.038375160 |
+| 14.304 s | 0.637386904 / 0.073606189; 5.140136930 / 3.762922068 | 0.582274517 / 0.035596635 | false / 0 N | target body z=-0.159999988 clamp; FK(target) z=0.044335833 vs command z=0.073606189 |
+| 14.332 s | 0.778435267 / 0.130230552; 4.209690162 / 0 | 0.684394481 / 0.027686202 | false / 0 N | FK(target) x/z=0.773877264 / 0.037368685 vs command; target body z=-0.159999991 |
+| 14.354 s | 0.840925752 / 0.086998749; 1.385783958 / -4.216350356 | 0.722560213 / 0.017885303 | true / 309 N | 40 ms before actual edge-envelope entry, Δz=-0.069113446 m already exists |
+| 14.394 s | 0.850000000 / 0.075230552; 0 / 0 | 0.777368072 / 0.042044500 | true / 100 N | first actual x∈[0.777,0.823] entry; actual is below geometric-clear z=0.073 m |
+
+At 14.404 s the first crossing touchdown actual was `(x,z)=(0.785232410, 0.046628094) m` against the commanded `(0.850000000, 0.075230552) m`; no raised-platform contact criterion was met. The raw ground-truth reactive-obstacle contact fields remained zero through this interval, so the observed foot-force/contact events are not a distinct obstacle-contact onset. At +40 ms from the actual edge-envelope entry (14.434 s), actual `(x,z)=(0.778658763, 0.054414818) m`, contact=true, force=39 N; it remained below the command and there was no new divergence onset after edge contact. The miss therefore pre-existed the edge boundary.
+
+The FL joint execution samples below use `tau_eff = tau_ff + kp*(q_target-q_state) + kd*(dq_target-dq_state)`, the simulator bridge actuator equation. Values in each bracket are `[hip, thigh, calf]`.
+
+| time | q target / q actual / q error (rad) | dq target / dq actual (rad/s) | kp / kd | tau_ff / tau_est / tau_eff (N m) |
+|---|---|---|---|---|
+| 14.254 s | `[-0.360688,1.834159,-2.050182]` / `[-0.388566,1.833811,-2.000371]` / `[0.027879,0.000348,-0.049811]` | `[0.493697,-1.273477,0.932488]` / `[0.369439,-1.169785,1.803635]` | `[37.444,35.705,35.705]` / `[2.662,2.566,2.566]` | `[-0.244,-4.266,1.673]` / `[1.494,-17.336,-1.916]` / `[1.131,-4.519,-2.340]` |
+| 14.292 s | `[-0.382853,1.840321,-2.207250]` / `[-0.397591,1.826940,-2.032077]` / `[0.014737,0.013381,-0.175173]` | `[-4.570519,3.897423,-10.000000]` / `[-2.501387,1.609426,-12.513988]` | `[49.078,46.652,46.652]` / `[3.165,3.094,3.094]` | `[-1.915,-1.234,-3.624]` / `[-5.990,2.118,-10.441]` / `[-7.740,6.471,-4.017]` |
+| 14.354 s | `[-0.403715,0.458600,-2.304203]` / `[-0.444637,1.210603,-2.378952]` / `[0.040922,-0.752003,0.074749]` | `[0.000000,-9.811098,5.214975]` / `[-1.537661,-4.364072,1.076507]` | `[61.635,59.855,59.855]` / `[3.707,3.665,3.665]` | `[-1.862,-9.323,2.789]` / `[6.365,-40.000,26.263]` / `[6.360,-74.299,22.431]` |
+| 14.394 s | `[-0.403715,0.407689,-2.275563]` / `[-0.447537,0.866179,-2.344015]` / `[0.043823,-0.458490,0.068453]` | `[0.000000,0.442645,-0.259279]` / `[0.660608,-9.014451,1.144379]` | `[66.878,63.806,63.806]` / `[3.933,3.904,3.904]` | `[-0.119,-4.855,0.304]` / `[0.143,2.895,-0.923]` / `[0.213,2.806,-0.808]` |
+
+The source velocity command clamp is visible downstream: FL calf `dq_target=-10` first at 14.286 s, thigh first at 14.298 s, and hip reaches `+10` at 14.404 s. The capture has no per-row torque-saturation flag; the launch input includes `--tau-limit 35`. These rate/position errors are real later tracking symptoms, but the target FK already disagrees with the logged world command at 14.254 s, so they are not the earliest boundary.
+
+WBC was present in the LowCmd path but the separate shadow feedforward gate did not interfere. Over rows 3127..3202, `wbc_full_srbd_ok=1`, `wbc_full_id_ok=1`, equality residual was `1.86e-7..1.2919e-5`, and the recorded FL `tau_ff` values were nonzero. Separately, feedforward was not requested: `ready=0`, `gate_code=0`, `gate_reason=disabled`, and `wbc_shadow_feedforward_max_abs_tau=0`. `--wbc-full` enables the WBC primary path that contributes the published LowCmd torque; the decisive target-FK mismatch occurs before that path, and no budget/feedforward branch explains it.
+
+The source-grounded causal chain is:
+
+`V2 world target -> WorldToBody -> ClampFootToHipWorkspace (FL x/y bounds at latch; z upper bound by 14.304 s) -> IK -> q/dq targets -> LowCmd -> actual q -> FK(actual) -> floor/contact`.
+
+The execution-layer classification is exactly `IK_OR_TARGET_MAPPING`. It is not `JOINT_TRACKING_LIMIT` or `TORQUE_OR_RATE_LIMIT` because the mapped FK target is already materially below the recorded V2 world command at latch; joint rate saturation and large q errors follow and amplify the miss. It is not `CONTACT_BLOCKAGE` because actual z was already substantially below command 40 ms before the edge-envelope boundary. It is not `WBC_OR_FEEDFORWARD_INTERFERENCE` because the separate feedforward gate was disabled and the mismatch precedes WBC command application. `MULTI_FACTOR` is not used because the earliest localizable blocker is the target/IK mapping layer; later tracking/contact are downstream consequences or symptoms.
+
+The single next intervention layer is **target/IK**: make the V2 world target and the FK of the q target reaching LowCmd use one consistent, valid workspace-mapped target. No parameter sweep, planner recovery change, or combined intervention is proposed.

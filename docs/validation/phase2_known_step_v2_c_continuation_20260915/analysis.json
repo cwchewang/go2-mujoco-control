@@ -403,6 +403,246 @@
       "primary_classification_unchanged": "PLANNING_GEOMETRY_FAILED",
       "raw_evidence_changed": false
     },
+    "fl_execution_chain_audit": {
+      "audit_date": "2026-09-17",
+      "raw_evidence_changed": false,
+      "scope": {
+        "raw_run": "C",
+        "first_planning_valid_fl_latch_row": 3127,
+        "first_planning_valid_fl_latch_state_tick_s": 14.254,
+        "through_state_tick_s": 14.454,
+        "next_fl_invalid_edge_ordering_state_tick_s": 14.854,
+        "reconstruction": "V2 world target/velocity -> IK -> joint q/dq targets -> motor kp/kd/tau_ff -> actual q/dq/tau_est -> FK(actual) -> contact"
+      },
+      "earliest_material_divergence": {
+        "raw_row": 3127,
+        "state_tick_s": 14.254,
+        "command": {
+          "x_m": 0.509030491,
+          "z_m": 0.025230552,
+          "vx_mps": 0.022896768,
+          "vz_mps": 0.000000001
+        },
+        "actual": {
+          "x_m": 0.529398894,
+          "z_m": 0.021975385,
+          "contact": true,
+          "foot_force_n": 89.0
+        },
+        "first_command_actual_vertical_error_at_least_0.01m": {
+          "state_tick_s": 14.292,
+          "command_z_m": 0.038072693,
+          "actual_z_m": 0.027121680,
+          "error_m": -0.010951013,
+          "contact": false,
+          "foot_force_n": 0.0
+        },
+        "interpretation": "The first target/IK mapping mismatch is present at the latch; the first unambiguous command-versus-actual vertical miss above 1 cm occurs later, before edge-envelope contact, with downstream joint tracking/rate-limit symptoms."
+      },
+      "fk_target_vs_v2_command": [
+        {
+          "state_tick_s": 14.254,
+          "target_body_xyz_m": [0.033400026, 0.082000000, -0.176483857],
+          "fk_target_world_xyz_m": [0.540098022, 0.104700286, 0.025147682],
+          "v2_command_world_xz_m": [0.509030491, 0.025230552],
+          "fk_minus_command_xz_m": [0.031067531, -0.000082870],
+          "source_semantics": "FL target body x=0.0334 and y=0.082 are the lower workspace clamp bounds."
+        },
+        {
+          "state_tick_s": 14.292,
+          "fk_target_world_xz_m": [0.580762801, 0.038375160],
+          "v2_command_world_xz_m": [0.580579830, 0.038072693],
+          "fk_minus_command_xz_m": [0.000182971, 0.000302467]
+        },
+        {
+          "state_tick_s": 14.304,
+          "target_body_xyz_m": [0.116796253, 0.082000006, -0.159999988],
+          "fk_target_world_xz_m": [0.636374327, 0.044335833],
+          "v2_command_world_xz_m": [0.637386904, 0.073606189],
+          "fk_minus_command_xz_m": [-0.001012577, -0.029270356],
+          "source_semantics": "The FL upper z workspace clamp is active at body z=-0.16."
+        },
+        {
+          "state_tick_s": 14.332,
+          "target_body_xyz_m": [0.246270832, 0.082000005, -0.159999991],
+          "fk_target_world_xyz_m": [0.773877264, 0.116518034, 0.037368685],
+          "v2_command_world_xz_m": [0.778435267, 0.130230552],
+          "fk_minus_command_xz_m": [-0.004558003, -0.092861867]
+        },
+        {
+          "state_tick_s": 14.394,
+          "fk_target_world_xz_m": [0.846194397, 0.068168402],
+          "v2_command_world_xz_m": [0.850000000, 0.075230552],
+          "fk_minus_command_xz_m": [-0.003805603, -0.007062150]
+        }
+      ],
+      "fk_actual_validation": [
+        {
+          "state_tick_s": 14.254,
+          "fk_actual_world_xz_m": [0.529857439, 0.022396240],
+          "logged_actual_world_xz_m": [0.529398894, 0.021975385],
+          "interpretation": "Recorded q-state FK agrees with logged actual x/z within the reconstruction/data alignment tolerance."
+        },
+        {
+          "state_tick_s": 14.332,
+          "fk_actual_world_xz_m": [0.685106790, 0.027592049],
+          "logged_actual_world_xz_m": [0.684394481, 0.027686202]
+        }
+      ],
+      "edge_contact_window": {
+        "edge_envelope": {
+          "x_entry_m": 0.777,
+          "x_exit_m": 0.823,
+          "geometric_clear_z_m": 0.073
+        },
+        "first_command_entry": {
+          "state_tick_s": 14.332,
+          "x_m": 0.778435267,
+          "z_m": 0.130230552
+        },
+        "first_actual_entry": {
+          "state_tick_s": 14.394,
+          "x_m": 0.777368072,
+          "z_m": 0.042044500,
+          "contact": true,
+          "foot_force_n": 100.0
+        },
+        "minus_0.040s": {
+          "state_tick_s": 14.354,
+          "actual_x_m": 0.722560213,
+          "actual_z_m": 0.017885303,
+          "command_z_m": 0.086998749,
+          "actual_minus_command_z_m": -0.069113446,
+          "contact": true,
+          "foot_force_n": 309.0
+        },
+        "plus_0.040s": {
+          "state_tick_s": 14.434,
+          "actual_x_m": 0.778658763,
+          "actual_z_m": 0.054414818,
+          "contact": true,
+          "foot_force_n": 39.0
+        },
+        "reactive_obstacle_contact": "ground-truth reactive_obstacle_contact_count/force/normal_force remained zero through this interval; foot force/contact is the available contact signal",
+        "conclusion": "Actual was already substantially below command before edge-envelope entry; no new blockage onset after the edge boundary is required to explain the miss."
+      },
+      "joint_samples": {
+        "joint_order": ["FL_hip", "FL_thigh", "FL_calf"],
+        "effective_torque_formula": "tau_eff = tau_ff + kp*(q_target-q_state) + kd*(dq_target-dq_state)",
+        "samples": [
+          {
+            "state_tick_s": 14.254,
+            "q_target_rad": [-0.360687584, 1.834159255, -2.050181866],
+            "q_state_rad": [-0.388566256, 1.833811283, -2.000370502],
+            "q_error_rad": [0.027878672, 0.000347972, -0.049811363],
+            "dq_target_rad_s": [0.493697464, -1.273476601, 0.932487786],
+            "dq_state_rad_s": [0.369439483, -1.169784784, 1.803634763],
+            "kp": [37.444309235, 35.704761505, 35.704761505],
+            "kd": [2.662368059, 2.565650463, 2.565650463],
+            "tau_ff_nm": [-0.243786946, -4.265707970, 1.673187733],
+            "tau_est_nm": [1.493930578, -17.335729599, -1.916226745],
+            "tau_eff_nm": [1.130931149, -4.519320672, -2.340373784],
+            "contact": true,
+            "foot_force_n": 89.0
+          },
+          {
+            "state_tick_s": 14.292,
+            "q_target_rad": [-0.382853448, 1.840321302, -2.207249880],
+            "q_state_rad": [-0.397590846, 1.826939940, -2.032076836],
+            "q_error_rad": [0.014737397, 0.013381362, -0.175173044],
+            "dq_target_rad_s": [-4.570519447, 3.897422791, -10.000000000],
+            "dq_state_rad_s": [-2.501386881, 1.609426498, -12.513988495],
+            "kp": [49.077678680, 46.651973724, 46.651973724],
+            "kd": [3.164717913, 3.094439983, 3.094439983],
+            "tau_ff_nm": [-1.915028453, -1.233790398, -3.623790026],
+            "tau_est_nm": [-5.990444183, 2.118076801, -10.441286087],
+            "tau_eff_nm": [-7.739972065, 6.470543760, -4.016571756],
+            "contact": false,
+            "foot_force_n": 0.0
+          },
+          {
+            "state_tick_s": 14.354,
+            "q_target_rad": [-0.403714508, 0.458599955, -2.304202557],
+            "q_state_rad": [-0.444637001, 1.210602999, -2.378952026],
+            "q_error_rad": [0.040922493, -0.752003044, 0.074749470],
+            "dq_target_rad_s": [0.000000000, -9.811098099, 5.214975357],
+            "dq_state_rad_s": [-1.537660718, -4.364071846, 1.076506853],
+            "kp": [61.634799957, 59.855419159, 59.855419159],
+            "kd": [3.706957102, 3.665218115, 3.665218115],
+            "tau_ff_nm": [-1.861923933, -9.322677612, 2.788518429],
+            "tau_est_nm": [6.364748955, -40.000000000, 26.263328552],
+            "tau_eff_nm": [6.360368056, -74.298674315, 22.431068957],
+            "contact": true,
+            "foot_force_n": 309.0
+          },
+          {
+            "state_tick_s": 14.394,
+            "q_target_rad": [-0.403714508, 0.407688797, -2.275562763],
+            "q_state_rad": [-0.447537482, 0.866178989, -2.344015360],
+            "q_error_rad": [0.043822974, -0.458490193, 0.068452597],
+            "dq_target_rad_s": [0.000000000, 0.442644775, -0.259279072],
+            "dq_state_rad_s": [0.660607934, -9.014451027, 1.144378662],
+            "kp": [66.877670288, 63.806022644, 63.806022644],
+            "kd": [3.933353901, 3.903530598, 3.903530598],
+            "tau_ff_nm": [-0.119056851, -4.855465412, 0.303918630],
+            "tau_est_nm": [0.142993852, 2.895022631, -0.923434019],
+            "tau_eff_nm": [0.213316761, 2.806161847, -0.807614330],
+            "contact": true,
+            "foot_force_n": 100.0
+          }
+        ]
+      },
+      "rate_and_torque_limit_state": {
+        "dq_target_clamp": {
+          "source_limit_rad_s": 10.0,
+          "FL_calf_first_at_s": 14.286,
+          "FL_thigh_first_at_s": 14.298,
+          "FL_hip_first_positive_at_s": 14.404
+        },
+        "position_error_abs_max_rad_rows_3127_3202": {
+          "FL_hip": 0.096743852,
+          "FL_thigh": 0.765426874,
+          "FL_calf": 0.210093021
+        },
+        "tau_est_abs_max_nm_rows_3127_3202": {
+          "FL_hip": 17.320009232,
+          "FL_thigh": 40.0,
+          "FL_calf": 31.935966492
+        },
+        "available_torque_limit_state": "argv contains --tau-limit 35; no per-row torque-saturation flag is recorded",
+        "interpretation": "Rate/position tracking symptoms occur after the target mapping mismatch; no earlier torque/rate boundary supersedes the latch-time FK mismatch."
+      },
+      "wbc_and_feedforward": {
+        "rows": "3127..3202",
+        "full_srbd_ok": 1,
+        "full_id_ok": 1,
+        "equality_residual_min": 1.86e-7,
+        "equality_residual_max": 1.2919e-5,
+        "shadow_enabled": ["1"],
+        "shadow_feedforward_ready": ["0"],
+        "shadow_feedforward_applied": ["1"],
+        "shadow_feedforward_gate_code": ["0"],
+        "shadow_feedforward_gate_reason": ["disabled"],
+        "shadow_feedforward_max_abs_tau_nm": ["0.000000000"],
+        "semantics": "--wbc-full activates the WBC primary command path and its candidate torque reaches LowCmd; feedforward_applied=1 records that primary path. The separate requested feedforward gate is disabled, so within_budget does not select a feedforward branch or torque."
+      },
+      "source_call_graph": [
+        "example/cpp/gait/cartesian_world_trot.h:105-136,767-817 WorldToBody, workspace clamp, V2 target logging, and IK target construction",
+        "example/cpp/kinematics/go2_forward_kinematics.h:23-84 frozen FootPosition",
+        "example/cpp/trot/trot_experiment_gait.cpp:1200-1217,1513-1525 actual world feet, ApplyCartesianWorldTrot, and AllLegInverseKinematicsClamped",
+        "example/cpp/trot/trot_experiment_control.cpp:1770-1798 velocity target finite difference and +/-10 rad/s clamp",
+        "example/cpp/trot/trot_experiment_control.cpp:1485-1618 LowCmd q/dq/kp/kd/tau primary WBC path",
+        "example/cpp/trot/trot_experiment_wbc.cpp:1632-1721 separate feedforward gate",
+        "example/cpp/trot/trot_cli.cpp:243-263 --wbc-full implies wbc_primary",
+        "simulate/src/unitree_sdk2_bridge.h:668-705 effective actuator control"
+      ],
+      "classification": "IK_OR_TARGET_MAPPING",
+      "causal_chain": "V2 world target -> WorldToBody -> ClampFootToHipWorkspace (FL x/y at lower bounds at latch; z at upper bound by 14.304 s) -> IK -> q/dq targets -> LowCmd -> actual q -> FK(actual) -> floor/contact; later q error and dq saturation amplify the miss",
+      "next_intervention_layer": "target/IK",
+      "prior_mechanism_interpretation_superseded": "PRIMARY_TRACKING_CONTACT_DEFECT_WITH_PLANNER_RECOVERY_GAP",
+      "primary_checkpoint_classification_unchanged": "PLANNING_GEOMETRY_FAILED",
+      "scientific_claim_or_runtime_change": false
+    },
     "source_call_graph": [
       "example/cpp/trot/trot_experiment_control.cpp:900-985",
       "example/cpp/trot/trot_experiment_wbc.cpp:1175-1199,1631-1721",
