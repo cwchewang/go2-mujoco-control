@@ -144,9 +144,11 @@ class HostLockTest(unittest.TestCase):
 class ProgressTest(unittest.TestCase):
     def setUp(self) -> None:
         self.original_api = issue_state._api
+        self.original_time = issue_state.time.time
 
     def tearDown(self) -> None:
         issue_state._api = self.original_api
+        issue_state.time.time = self.original_time
 
     def test_single_progress_comment_is_updated_in_place(self) -> None:
         comments: list[dict[str, object]] = []
@@ -206,6 +208,13 @@ class ProgressTest(unittest.TestCase):
         self.assertEqual(safe["status"], "preparing")
         self.assertNotIn("chain_of_thought", safe)
         self.assertNotIn("raw_model_output", safe)
+
+    def test_progress_timestamp_refreshes_on_every_publish(self) -> None:
+        issue_state.time.time = lambda: 1234.0
+        safe = issue_state.sanitize_progress(
+            {"status": "preparing", "timestamp": 7}
+        )
+        self.assertEqual(safe["timestamp"], 1234)
 
     def test_progress_api_failure_is_best_effort(self) -> None:
         def fail_api(*args, **kwargs):
