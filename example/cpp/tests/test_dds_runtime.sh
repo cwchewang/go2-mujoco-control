@@ -38,8 +38,58 @@ grep -q '^port_base=4000$' "$run_dir/dds_runtime/runtime_metadata.txt"
 grep -q '^max_auto_participant_index=31$' "$run_dir/dds_runtime/runtime_metadata.txt"
 grep -q '^p0_unicast_meta=59010$' "$run_dir/dds_runtime/pre_state.txt"
 grep -q '^p31_unicast_data=59073$' "$run_dir/dds_runtime/pre_state.txt"
+grep -q '^candidate_path=.* decision=DELETE reason=no_proc_reference$' \
+  "$run_dir/dds_runtime/preparation_cleanup.txt"
+
+referenced="$DDS_RUNTIME_SHM_ROOT/cdds_referenced_test"
+dds_runtime_reference_matches_candidate "$referenced" "$referenced (deleted)"
+if dds_runtime_reference_matches_candidate "$referenced" "${referenced}_sibling"; then
+  echo "reference matcher confused a prefix-only sibling" >&2
+  exit 1
+fi
+mkdir -p "$referenced"
+fake_proc="$test_root/proc"
+mkdir -p "$fake_proc/900/fd"
+printf 'fake_dds_owner\n' >"$fake_proc/900/comm"
+printf 'fake_dds_owner\0' >"$fake_proc/900/cmdline"
+printf '7f000000-7f001000 rw-s 00000000 00:00 0 %s\n' "$referenced" \
+  >"$fake_proc/900/maps"
+ln -s / "$fake_proc/900/cwd"
+ln -s / "$fake_proc/900/root"
+ln -s "$referenced" "$fake_proc/900/fd/7"
+export DDS_RUNTIME_PROC_ROOT="$fake_proc"
+dds_runtime_cleanup_report="$run_dir/dds_runtime/referenced_cleanup.txt"
+export DDS_RUNTIME_CLEANUP_REPORT="$dds_runtime_cleanup_report"
+if dds_runtime_cleanup_stale; then
+  echo "cleanup unexpectedly deleted an object referenced by /proc" >&2
+  exit 1
+fi
+[[ -e "$referenced" ]]
+grep -q 'decision=KEEP reason=process_reference_found' \
+  "$dds_runtime_cleanup_report"
+grep -q 'surface=fd path=' "$dds_runtime_cleanup_report"
+grep -q 'surface=maps path=' "$dds_runtime_cleanup_report"
+
+rm -rf -- "$fake_proc/900" "$referenced"
+incomplete="$DDS_RUNTIME_SHM_ROOT/cdds_incomplete_test"
+mkdir -p "$incomplete" "$fake_proc/901/fd"
+printf 'fake_incomplete_owner\n' >"$fake_proc/901/comm"
+printf 'fake_incomplete_owner\0' >"$fake_proc/901/cmdline"
+: >"$fake_proc/901/maps"
+ln -s / "$fake_proc/901/cwd"
+ln -s / "$fake_proc/901/root"
+rm -rf -- "$fake_proc/901/fd"  # Required fd surface is now unavailable.
+if dds_runtime_cleanup_stale; then
+  echo "cleanup unexpectedly proceeded with incomplete /proc evidence" >&2
+  exit 1
+fi
+[[ -e "$incomplete" ]]
+grep -q 'decision=KEEP reason=process_inspection_incomplete' \
+  "$dds_runtime_cleanup_report"
+unset DDS_RUNTIME_PROC_ROOT
 
 mkdir -p "$DDS_RUNTIME_SHM_ROOT/cdds_fail_safe_test"
+export DDS_RUNTIME_CLEANUP_REPORT="$run_dir/dds_runtime/active_cleanup.txt"
 bash -c 'exec -a dds_lowstate_probe sleep 30' &
 fake_pid=$!
 sleep 0.05
@@ -48,6 +98,8 @@ if dds_runtime_cleanup_stale; then
   exit 1
 fi
 [[ -e "$DDS_RUNTIME_SHM_ROOT/cdds_fail_safe_test" ]]
+grep -q 'decision=KEEP reason=known_go2_process_active' \
+  "$DDS_RUNTIME_CLEANUP_REPORT"
 kill "$fake_pid" 2>/dev/null || true
 wait "$fake_pid" 2>/dev/null || true
 unset fake_pid
