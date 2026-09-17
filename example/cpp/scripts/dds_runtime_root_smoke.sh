@@ -7,9 +7,9 @@ repo_dir="$(cd "$cpp_dir/../.." && pwd)"
 simulator="$repo_dir/simulate/build/unitree_mujoco"
 probe="$cpp_dir/build/dds_lowstate_probe"
 scene_file="$repo_dir/unitree_robots/go2/scene_leg_lift_demo.xml"
-# This is the only external dependency permitted by the task. The simulator
-# itself is always built from the candidate source tree below repo_dir.
-mujoco_root="/home/che/dev/go2-workspace/current/simulate/mujoco"
+# External MuJoCo is a dependency only. The simulator itself is always built
+# from the candidate source tree. Host jobs may set MUJOCO_ROOT explicitly.
+mujoco_root="${MUJOCO_ROOT:-$HOME/.mujoco/mujoco-3.3.6}"
 
 domain_id=""
 run_dir=""
