@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -23,6 +24,7 @@ FORBIDDEN_CHANGED_PREFIXES = (
     "tools/atlas_",
 )
 MAX_LOG_TAIL_CHARS = 8000
+BUNDLE_REF = "refs/atlas/result"
 
 
 class ResearchTaskError(RuntimeError):
@@ -53,8 +55,13 @@ def _run(
     return completed
 
 
-def _git(repo: Path, *args: str, check: bool = True) -> str:
-    return _run(["git", *args], cwd=repo, check=check).stdout.strip()
+def _git(
+    repo: Path,
+    *args: str,
+    check: bool = True,
+    env: dict[str, str] | None = None,
+) -> str:
+    return _run(["git", *args], cwd=repo, check=check, env=env).stdout.strip()
 
 
 def _validate_request(branch: str, task_path: str, task_commit: str) -> None:
@@ -74,7 +81,7 @@ def _paths() -> tuple[Path, Path, Path, Path]:
             home / "dev" / "go2-workspace" / "current",
         )
     ).expanduser()
-    worktree_root = Path(
+    task_root = Path(
         os.environ.get(
             "GO2_AGENT_WORKTREE_ROOT",
             home / "dev" / "go2-agent" / "tasks",
@@ -89,7 +96,7 @@ def _paths() -> tuple[Path, Path, Path, Path]:
     lock_path = Path(
         os.environ.get("GO2_RESEARCH_WORKER_LOCK", "/tmp/go2_research_worker.lock")
     )
-    return repo, worktree_root, state_root, lock_path
+    return repo, task_root, state_root, lock_path
 
 
 def _state_path(state_root: Path, task_commit: str) -> Path:
@@ -115,22 +122,26 @@ def _write_state(path: Path, data: dict[str, Any]) -> None:
     tmp.replace(path)
 
 
-def _verify_remote_task(
-    repo: Path,
-    *,
-    branch: str,
-    task_path: str,
-    task_commit: str,
-) -> None:
+def _fetch_remote_state(repo: Path, branch: str) -> tuple[str, str]:
     if not repo.is_dir():
         raise ResearchTaskError(f"Atlas repository anchor is missing: {repo}")
     _git(repo, "fetch", "origin", "--prune")
-    remote_ref = f"refs/remotes/origin/{branch}"
-    remote_tip = _git(repo, "rev-parse", "--verify", remote_ref)
-    if remote_tip != task_commit:
-        raise ResearchTaskError(
-            f"remote branch moved: expected {task_commit}, found {remote_tip}"
-        )
+    main_tip = _git(repo, "rev-parse", "--verify", "refs/remotes/origin/main")
+    branch_tip = _git(
+        repo,
+        "rev-parse",
+        "--verify",
+        f"refs/remotes/origin/{branch}",
+    )
+    return main_tip, branch_tip
+
+
+def _verify_task_source(
+    repo: Path,
+    *,
+    task_path: str,
+    task_commit: str,
+) -> None:
     _git(repo, "cat-file", "-e", f"{task_commit}^{{commit}}")
     shown = _run(
         ["git", "show", f"{task_commit}:{task_path}"],
@@ -141,48 +152,131 @@ def _verify_remote_task(
         raise ResearchTaskError(
             f"task file does not exist at task_commit: {task_path}"
         )
-    task_text = shown.stdout
-    if not task_text.lstrip().startswith("#"):
+    if not shown.stdout.lstrip().startswith("#"):
         raise ResearchTaskError("task file is not a Markdown task document")
-    _git(repo, "show", "origin/main:AGENTS.md")
-    _git(repo, "show", "origin/main:docs/research/SOP.md")
+    _git(repo, "show", "refs/remotes/origin/main:AGENTS.md")
+    _git(repo, "show", "refs/remotes/origin/main:docs/research/SOP.md")
 
 
-def _prepare_worktree(
-    repo: Path,
-    worktree_root: Path,
+def _copy_git_identity(anchor: Path, task_repo: Path) -> None:
+    for key in ("user.name", "user.email"):
+        value = _run(
+            ["git", "config", "--get", key],
+            cwd=anchor,
+            check=False,
+        ).stdout.strip()
+        if value:
+            _git(task_repo, "config", key, value)
+
+
+def _prepare_task_repo(
+    anchor: Path,
+    task_root: Path,
+    *,
+    branch: str,
     task_commit: str,
+    main_tip: str,
 ) -> Path:
-    worktree_root.mkdir(parents=True, exist_ok=True)
-    worktree = worktree_root / task_commit[:16]
-    if worktree.exists():
-        inside = _run(
-            ["git", "rev-parse", "--is-inside-work-tree"],
-            cwd=worktree,
-            check=False,
-        )
-        if inside.returncode or inside.stdout.strip() != "true":
+    task_root.mkdir(parents=True, exist_ok=True)
+    task_repo = task_root / f"{task_commit[:16]}.repo"
+    remote_url = _git(anchor, "remote", "get-url", "origin")
+
+    if task_repo.exists():
+        if not (task_repo / ".git").is_dir():
             raise ResearchTaskError(
-                f"existing task path is not a Git worktree: {worktree}"
+                f"existing task path is not an isolated Git repository: {task_repo}"
             )
-        head = _git(worktree, "rev-parse", "HEAD")
-        if head == task_commit:
-            return worktree
-        base_ok = _run(
+        head = _git(task_repo, "rev-parse", "HEAD")
+        ancestor = _run(
             ["git", "merge-base", "--is-ancestor", task_commit, head],
-            cwd=worktree,
+            cwd=task_repo,
             check=False,
         )
-        if base_ok.returncode == 0:
-            return worktree
-        raise ResearchTaskError(
-            f"existing task worktree is unrelated to task_commit: {worktree}"
+        if ancestor.returncode:
+            raise ResearchTaskError(
+                f"existing task repository is unrelated to task_commit: {task_repo}"
+            )
+        current_branch = _git(task_repo, "branch", "--show-current")
+        if current_branch != branch:
+            if _git(task_repo, "status", "--porcelain"):
+                raise ResearchTaskError(
+                    "existing task repository is dirty on an unexpected branch"
+                )
+            _git(task_repo, "checkout", "-B", branch, head)
+        _git(task_repo, "remote", "set-url", "origin", remote_url)
+        _git(task_repo, "update-ref", "refs/remotes/origin/main", main_tip)
+        _git(
+            task_repo,
+            "update-ref",
+            f"refs/remotes/origin/{branch}",
+            task_commit,
         )
-    _run(
-        ["git", "worktree", "add", "--detach", str(worktree), task_commit],
-        cwd=repo,
-    )
-    return worktree
+        return task_repo
+
+    tmp = task_root / f".{task_commit[:16]}.prepare-{os.getpid()}"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    try:
+        _run(
+            ["git", "clone", "--shared", "--no-checkout", str(anchor), str(tmp)],
+            cwd=task_root,
+        )
+        _git(tmp, "remote", "set-url", "origin", remote_url)
+        _git(tmp, "update-ref", "refs/remotes/origin/main", main_tip)
+        _git(tmp, "update-ref", f"refs/remotes/origin/{branch}", task_commit)
+        _git(tmp, "checkout", "-B", branch, task_commit)
+        _git(tmp, "branch", "--set-upstream-to", f"origin/{branch}", branch)
+        _copy_git_identity(anchor, tmp)
+        if _git(tmp, "status", "--porcelain"):
+            raise ResearchTaskError("new isolated task repository is unexpectedly dirty")
+        tmp.rename(task_repo)
+    except Exception:
+        if tmp.exists():
+            shutil.rmtree(tmp, ignore_errors=True)
+        raise
+    return task_repo
+
+
+def _file_fingerprint(path: Path) -> str:
+    if path.is_symlink():
+        return "symlink:" + os.readlink(path)
+    if not path.exists():
+        return "missing"
+    if not path.is_file():
+        return "non-file"
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _security_fingerprint(task_repo: Path) -> str:
+    git_dir = task_repo / ".git"
+    if not git_dir.is_dir() or git_dir.is_symlink():
+        raise ResearchTaskError("isolated task repository .git must be a real directory")
+
+    items: dict[str, str] = {}
+    for relative in (
+        "config",
+        "config.worktree",
+        "objects/info/alternates",
+    ):
+        items[relative] = _file_fingerprint(git_dir / relative)
+
+    for dirname in ("hooks", "info"):
+        root = git_dir / dirname
+        if not root.exists():
+            items[dirname + "/"] = "missing"
+            continue
+        for path in sorted(root.rglob("*")):
+            relative = str(path.relative_to(git_dir))
+            if path.is_dir() and not path.is_symlink():
+                continue
+            items[relative] = _file_fingerprint(path)
+
+    payload = json.dumps(items, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _bootstrap_prompt(
@@ -199,16 +293,23 @@ Task identity:
 - exact task commit: {task_commit}
 - task document: {task_path}
 
+Trusted setup already completed before this sandbox started:
+- `git fetch origin --prune` was run on the trusted Atlas repository anchor;
+- `origin/{branch}` was verified to equal the exact task commit above;
+- `origin/main`, the task document, AGENTS.md, and the canonical SOP were verified;
+- this is an isolated per-task Git repository with writable local Git metadata.
+
+Do not repeat remote fetches. Do not change Git remotes, Git config, Git hooks, or
+Git credentials. Network publication is owned by the trusted wrapper.
+
 Repository protocol:
-1. Read the current trusted rules with:
-   git show origin/main:AGENTS.md
-2. Read the canonical research SOP with:
-   git show origin/main:docs/research/SOP.md
-3. Read {task_path} from this exact task worktree.
+1. Read `git show origin/main:AGENTS.md`.
+2. Read `git show origin/main:docs/research/SOP.md`.
+3. Read `{task_path}` from this exact task repository.
 4. Read the exact parent evidence referenced by the task before acting.
 
-Execute the task end-to-end, including every conditional step the task already
-authorizes. Do not stop for routine implementation choices. Stop only at a
+Execute the task end-to-end, including every conditional step already authorized
+by the task. Do not stop for routine implementation choices. Stop only at a
 task-defined or SOP-defined veto/decision boundary.
 
 Historical ignored raw evidence may exist under this read-only reference
@@ -218,22 +319,47 @@ You may read from it when the task needs prior raw evidence. Never modify,
 delete, rename, or overwrite anything there.
 
 Infrastructure guardrails:
-- Do not modify .github/** or tools/atlas_*.
-- Do not alter the scientific scope beyond the task.
-- Do not push to GitHub.
-- Preserve raw _runs evidence exactly after capture begins.
+- Do not modify `.github/**` or `tools/atlas_*`.
+- Do not alter scientific scope beyond the task.
+- Do not push, fetch, or publish anything to GitHub.
+- Preserve raw `_runs` evidence exactly after capture begins.
 - If a live run is authorized, follow the task and SOP preflight/run budget
   exactly.
+- You may create local Git commits as required by the task/SOP. The trusted
+  wrapper, not you, performs the final remote push.
+- Do not leave background processes running after closeout.
 
 At closeout, write the task-required tracked artifacts, commit all intended
-tracked changes in this worktree, leave the worktree clean, and then stop.
+tracked changes in this task repository, leave the repository clean, and stop.
+Any task wording that says to push is satisfied later by the trusted wrapper;
+do not treat the lack of push credentials as a veto.
+
 Your final response should contain only the resulting commit SHA or a concise
-veto/failure reason if the task correctly stops without a commit.
+scientific/SOP veto reason if the task correctly stops without a closeout commit.
 """
 
 
 def _codex_command(codex_bin: str, thread_id: str | None) -> list[str]:
-    base = [
+    if thread_id:
+        return [
+            codex_bin,
+            "exec",
+            "resume",
+            thread_id,
+            "--json",
+            "-c",
+            f'model="{MODEL}"',
+            "-c",
+            'sandbox_mode="workspace-write"',
+            "-c",
+            'model_reasoning_effort="xhigh"',
+            (
+                "Resume this same repository research task. Re-read the task and "
+                "current repository state, continue from the last safe point, "
+                "and finish every already-authorized step. Do not fetch or push."
+            ),
+        ]
+    return [
         codex_bin,
         "exec",
         "--model",
@@ -244,27 +370,34 @@ def _codex_command(codex_bin: str, thread_id: str | None) -> list[str]:
         "-c",
         'model_reasoning_effort="xhigh"',
     ]
-    if thread_id:
-        return [
-            *base,
-            "resume",
-            thread_id,
-            (
-                "Resume the same repository research task. Re-read the task and "
-                "current worktree state, continue from the last safe point, and "
-                "finish the authorized task. Do not push."
-            ),
-        ]
-    return base
+
+
+def _codex_env(reference_worktree: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    for key in list(env):
+        if key == "GIT_CONFIG_COUNT" or key.startswith("GIT_CONFIG_KEY_") or \
+                key.startswith("GIT_CONFIG_VALUE_"):
+            env.pop(key, None)
+    for key in ("GITHUB_TOKEN", "GH_TOKEN", "SSH_AUTH_SOCK"):
+        env.pop(key, None)
+    env["GIT_CONFIG_GLOBAL"] = "/dev/null"
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    env["GIT_ASKPASS"] = "/bin/false"
+    env["SSH_ASKPASS"] = "/bin/false"
+    env["GIT_SSH_COMMAND"] = "/bin/false"
+    env["GO2_REFERENCE_WORKTREE"] = str(reference_worktree)
+    return env
 
 
 def _run_codex(
     *,
-    worktree: Path,
+    task_repo: Path,
     prompt: str,
     output_dir: Path,
     state_path: Path,
     state: dict[str, Any],
+    reference_worktree: Path,
 ) -> tuple[int, str | None]:
     codex_bin = os.environ.get("CODEX_BIN") or shutil.which("codex")
     if not codex_bin:
@@ -281,31 +414,19 @@ def _run_codex(
     if not thread_id:
         command.append(prompt)
 
-    child_env = os.environ.copy()
-    child_env.pop("GITHUB_TOKEN", None)
-    child_env.pop("GH_TOKEN", None)
-    child_env["GO2_REFERENCE_WORKTREE"] = str(
-        Path(
-            os.environ.get(
-                "GO2_ATLAS_REPO",
-                Path.home() / "dev" / "go2-workspace" / "current",
-            )
-        )
-    )
-
+    discovered_thread = thread_id
     with stdout_path.open("a", encoding="utf-8") as stdout_file, \
             stderr_path.open("a", encoding="utf-8") as stderr_file:
         process = subprocess.Popen(
             command,
-            cwd=worktree,
+            cwd=task_repo,
             stdout=subprocess.PIPE,
             stderr=stderr_file,
             text=True,
             bufsize=1,
-            env=child_env,
+            env=_codex_env(reference_worktree),
         )
         assert process.stdout is not None
-        discovered_thread = thread_id
         for line in process.stdout:
             stdout_file.write(line)
             stdout_file.flush()
@@ -318,17 +439,24 @@ def _run_codex(
                 and event.get("type") == "thread.started"
                 and isinstance(event.get("thread_id"), str)
             ):
-                discovered_thread = event["thread_id"]
-                state["thread_id"] = discovered_thread
+                started = event["thread_id"]
+                if thread_id and started != thread_id:
+                    process.terminate()
+                    process.wait(timeout=10)
+                    raise ResearchTaskError(
+                        "Codex resume started a different thread instead of the stored task thread"
+                    )
+                discovered_thread = started
+                state["thread_id"] = started
                 state["status"] = "running"
                 _write_state(state_path, state)
         return_code = process.wait()
     return return_code, discovered_thread
 
 
-def _changed_paths(worktree: Path, task_commit: str) -> list[str]:
+def _changed_paths(task_repo: Path, task_commit: str) -> list[str]:
     text = _git(
-        worktree,
+        task_repo,
         "diff",
         "--name-only",
         f"{task_commit}..HEAD",
@@ -337,24 +465,34 @@ def _changed_paths(worktree: Path, task_commit: str) -> list[str]:
     return [line for line in text.splitlines() if line]
 
 
-def _validate_closeout(worktree: Path, task_commit: str) -> tuple[str, list[str]]:
-    head = _git(worktree, "rev-parse", "HEAD")
+def _validate_closeout(
+    task_repo: Path,
+    *,
+    branch: str,
+    task_commit: str,
+) -> tuple[str, list[str]]:
+    current_branch = _git(task_repo, "branch", "--show-current")
+    if current_branch != branch:
+        raise ResearchTaskError(
+            f"Luna left task repository on unexpected branch: {current_branch or 'DETACHED'}"
+        )
+    head = _git(task_repo, "rev-parse", "HEAD")
     if head == task_commit:
         raise ResearchTaskError("Luna completed without creating a closeout commit")
     ancestor = _run(
         ["git", "merge-base", "--is-ancestor", task_commit, head],
-        cwd=worktree,
+        cwd=task_repo,
         check=False,
     )
     if ancestor.returncode:
         raise ResearchTaskError("result HEAD is not descended from task_commit")
-    status = _git(worktree, "status", "--porcelain")
+    status = _git(task_repo, "status", "--porcelain")
     if status:
         raise ResearchTaskError(
-            "Luna left tracked or untracked worktree changes after closeout"
+            "Luna left tracked or untracked task-repository changes after closeout"
         )
-    _git(worktree, "diff", "--check", task_commit, head)
-    changed = _changed_paths(worktree, task_commit)
+    _git(task_repo, "diff", "--check", task_commit, head)
+    changed = _changed_paths(task_repo, task_commit)
     if not changed:
         raise ResearchTaskError("closeout commit contains no changed paths")
     for path in changed:
@@ -367,25 +505,62 @@ def _validate_closeout(worktree: Path, task_commit: str) -> tuple[str, list[str]
     return head, changed
 
 
+def _create_bundle(
+    *,
+    task_repo: Path,
+    output_dir: Path,
+    task_commit: str,
+    result_commit: str,
+) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    bundle_path = output_dir / "research-result.bundle"
+    if bundle_path.exists():
+        bundle_path.unlink()
+    _git(task_repo, "update-ref", BUNDLE_REF, result_commit)
+    try:
+        _git(
+            task_repo,
+            "bundle",
+            "create",
+            str(bundle_path),
+            BUNDLE_REF,
+            f"^{task_commit}",
+        )
+        _git(task_repo, "bundle", "verify", str(bundle_path))
+    finally:
+        _git(task_repo, "update-ref", "-d", BUNDLE_REF, check=False)
+    if not bundle_path.is_file() or bundle_path.stat().st_size == 0:
+        raise ResearchTaskError("result bundle was not created")
+    return bundle_path
+
+
 def _write_push_request(
     *,
     output_dir: Path,
     repo: Path,
-    worktree: Path,
+    task_repo: Path,
     branch: str,
     task_path: str,
     task_commit: str,
     result_commit: str,
     state_path: Path,
 ) -> None:
+    bundle_path = _create_bundle(
+        task_repo=task_repo,
+        output_dir=output_dir,
+        task_commit=task_commit,
+        result_commit=result_commit,
+    )
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "repo": str(repo),
-        "worktree": str(worktree),
+        "worktree": str(task_repo),
         "branch": branch,
         "task_path": task_path,
         "task_commit": task_commit,
         "result_commit": result_commit,
+        "bundle_path": str(bundle_path),
+        "bundle_ref": BUNDLE_REF,
         "state_path": str(state_path),
     }
     (output_dir / "research-push.json").write_text(
@@ -403,8 +578,9 @@ def main() -> int:
     args = parser.parse_args()
 
     _validate_request(args.branch, args.task_path, args.task_commit)
-    repo, worktree_root, state_root, lock_path = _paths()
+    repo, task_root, state_root, lock_path = _paths()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    state_path = _state_path(state_root, args.task_commit)
 
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open("w", encoding="utf-8") as lock_file:
@@ -415,31 +591,56 @@ def main() -> int:
                 "another Atlas research worker is already running"
             ) from exc
 
-        _verify_remote_task(
-            repo,
-            branch=args.branch,
-            task_path=args.task_path,
-            task_commit=args.task_commit,
-        )
-        worktree = _prepare_worktree(repo, worktree_root, args.task_commit)
-        state_path = _state_path(state_root, args.task_commit)
         state = _load_state(state_path)
+        main_tip, remote_tip = _fetch_remote_state(repo, args.branch)
 
         if state.get("status") == "pushed":
-            remote_tip = _git(repo, "rev-parse", f"refs/remotes/origin/{args.branch}")
             result_commit = state.get("result_commit")
             if isinstance(result_commit, str) and remote_tip == result_commit:
                 print(result_commit)
                 return 0
 
+        if remote_tip != args.task_commit:
+            raise ResearchTaskError(
+                f"remote branch moved: expected {args.task_commit}, found {remote_tip}"
+            )
+        _verify_task_source(
+            repo,
+            task_path=args.task_path,
+            task_commit=args.task_commit,
+        )
+        task_repo = _prepare_task_repo(
+            repo,
+            task_root,
+            branch=args.branch,
+            task_commit=args.task_commit,
+            main_tip=main_tip,
+        )
+
+        baseline_security = state.get("security_fingerprint")
+        current_security = _security_fingerprint(task_repo)
+        if baseline_security is not None and baseline_security != current_security:
+            raise ResearchTaskError(
+                "isolated task repository Git security metadata changed between runs"
+            )
+        if baseline_security is None:
+            baseline_security = current_security
+            state["security_fingerprint"] = baseline_security
+
         if state.get("status") == "complete_local":
-            result_commit = state.get("result_commit")
-            if not isinstance(result_commit, str) or not COMMIT_RE.fullmatch(result_commit):
-                raise ResearchTaskError("stored local result commit is invalid")
+            result_commit, changed = _validate_closeout(
+                task_repo,
+                branch=args.branch,
+                task_commit=args.task_commit,
+            )
+            if result_commit != state.get("result_commit"):
+                raise ResearchTaskError("stored local result commit no longer matches task repository")
+            state["changed_paths"] = changed
+            _write_state(state_path, state)
             _write_push_request(
                 output_dir=args.output_dir,
                 repo=repo,
-                worktree=worktree,
+                task_repo=task_repo,
                 branch=args.branch,
                 task_path=args.task_path,
                 task_commit=args.task_commit,
@@ -451,12 +652,13 @@ def main() -> int:
 
         state.update(
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "branch": args.branch,
                 "task_path": args.task_path,
                 "task_commit": args.task_commit,
-                "worktree": str(worktree),
+                "task_repo": str(task_repo),
                 "status": "starting",
+                "security_fingerprint": baseline_security,
             }
         )
         _write_state(state_path, state)
@@ -467,13 +669,17 @@ def main() -> int:
             task_commit=args.task_commit,
             reference_worktree=repo,
         )
+        stored_thread = state.get("thread_id")
         return_code, thread_id = _run_codex(
-            worktree=worktree,
+            task_repo=task_repo,
             prompt=prompt,
             output_dir=args.output_dir,
             state_path=state_path,
             state=state,
+            reference_worktree=repo,
         )
+        if stored_thread and thread_id != stored_thread:
+            raise ResearchTaskError("Codex resume did not preserve task thread identity")
         state["thread_id"] = thread_id
         if return_code:
             state["status"] = "failed"
@@ -482,7 +688,18 @@ def main() -> int:
                 f"codex exec failed with exit code {return_code}; see worker logs"
             )
 
-        result_commit, changed = _validate_closeout(worktree, args.task_commit)
+        if _security_fingerprint(task_repo) != baseline_security:
+            state["status"] = "failed"
+            _write_state(state_path, state)
+            raise ResearchTaskError(
+                "Luna modified protected Git config/hooks/info metadata"
+            )
+
+        result_commit, changed = _validate_closeout(
+            task_repo,
+            branch=args.branch,
+            task_commit=args.task_commit,
+        )
         state.update(
             {
                 "status": "complete_local",
@@ -494,7 +711,7 @@ def main() -> int:
         _write_push_request(
             output_dir=args.output_dir,
             repo=repo,
-            worktree=worktree,
+            task_repo=task_repo,
             branch=args.branch,
             task_path=args.task_path,
             task_commit=args.task_commit,
