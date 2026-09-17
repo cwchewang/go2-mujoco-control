@@ -11,11 +11,17 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from atlas_research_worker import (
+    ResearchTaskError,
+    run_research_task,
+    validate_research_parameters,
+)
+
 
 MAX_BODY_BYTES = 16_384
 MAX_TEXT_CHARS = 4_000
-SCHEMA_VERSION = 1
-ALLOWED_TASKS = ("repo-smoke", "workspace-status")
+SCHEMA_VERSION = 2
+ALLOWED_TASKS = ("repo-smoke", "workspace-status", "research-task")
 
 
 class TaskError(ValueError):
@@ -67,8 +73,15 @@ def _extract_command(event: dict[str, Any]) -> tuple[dict[str, Any], int | None]
         allowed = ", ".join(ALLOWED_TASKS)
         raise TaskError(f"task must be one of: {allowed}")
     parameters = command.get("parameters", {})
-    if not isinstance(parameters, dict) or parameters:
-        raise TaskError("parameters must be an empty object for the current task set")
+    if not isinstance(parameters, dict):
+        raise TaskError("parameters must be an object")
+    if task == "research-task":
+        try:
+            parameters = validate_research_parameters(parameters)
+        except ResearchTaskError as exc:
+            raise TaskError(str(exc)) from exc
+    elif parameters:
+        raise TaskError("parameters must be an empty object for this task")
     return {"task": task, "parameters": parameters}, issue_number
 
 
@@ -90,7 +103,12 @@ def _run(argv: list[str], repo_root: Path, timeout: int = 120) -> str:
 
 def _repo_smoke(repo_root: Path) -> dict[str, Any]:
     checked = []
-    for relative in ("tools/atlas_dispatch.py", "tools/atlas_issue_state.py"):
+    for relative in (
+        "tools/atlas_dispatch.py",
+        "tools/atlas_issue_state.py",
+        "tools/atlas_research_worker.py",
+        "tools/atlas_research_push.py",
+    ):
         path = repo_root / relative
         if not path.is_file():
             raise TaskError(f"required file is missing: {relative}")
@@ -106,11 +124,18 @@ def _workspace_status(repo_root: Path) -> dict[str, Any]:
     return {"source_sha": sha, "git_status": status}
 
 
-def _run_task(task: str, repo_root: Path) -> dict[str, Any]:
+def _run_task(
+    task: str,
+    parameters: dict[str, Any],
+    repo_root: Path,
+    output_dir: Path,
+) -> dict[str, Any]:
     if task == "repo-smoke":
         return _repo_smoke(repo_root)
     if task == "workspace-status":
         return _workspace_status(repo_root)
+    if task == "research-task":
+        return run_research_task(parameters, output_dir=output_dir)
     raise TaskError(f"unhandled task: {task}")
 
 
@@ -147,7 +172,11 @@ def _write_outputs(
         f"- Source SHA: {source_sha}" if source_sha else "- Source SHA: unknown",
     ]
     if details:
-        lines.extend(["", "## Details", "", "~~~json", json.dumps(details, indent=2, sort_keys=True), "~~~"])
+        public_details = dict(details)
+        public_details.pop("codex_tail", None)
+        lines.extend(
+            ["", "## Details", "", "~~~json", json.dumps(public_details, indent=2, sort_keys=True), "~~~"]
+        )
     if error:
         lines.extend(["", "## Error", "", error[:MAX_TEXT_CHARS]])
     (output_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -172,9 +201,14 @@ def main() -> int:
         command, issue_number = _extract_command(event)
         task = command["task"]
         source_sha = _run(["git", "rev-parse", "HEAD"], repo_root)
-        details = _run_task(task, repo_root)
+        details = _run_task(
+            task,
+            command["parameters"],
+            repo_root,
+            args.output_dir,
+        )
         status = "success"
-    except (OSError, subprocess.SubprocessError, TaskError) as exc:
+    except (OSError, subprocess.SubprocessError, TaskError, ResearchTaskError) as exc:
         error = str(exc)
     except Exception as exc:  # Keep a result artifact even for unexpected failures.
         error = f"unexpected dispatcher error: {type(exc).__name__}: {exc}"
