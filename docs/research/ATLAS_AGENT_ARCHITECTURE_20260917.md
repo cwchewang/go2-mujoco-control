@@ -56,6 +56,45 @@ For a task with a host manifest:
 
 A wrapper restart after host completion must not repeat the host experiment.
 
+## Dispatch vNext
+
+GitHub Issues carrying `atlas-task` are the authoritative task queue. GitHub
+Actions issue workflows are wake-up signals only; correctness does not depend on
+the survival or order of pending workflow runs.
+
+The dispatcher scans the open queue repeatedly and keeps a small local worker
+pool. `ATLAS_MAX_WORKERS` defaults to `2`. Different tasks may therefore execute
+Luna preparation or analysis concurrently. A resumable task with persisted local
+state is scheduled ahead of new FIFO work.
+
+Locking is split by purpose:
+
+- each task commit has its own non-blocking ownership lock, preventing duplicate
+  execution of the same frozen task;
+- shared repository worktree metadata setup is serialized briefly;
+- the global host-live lock is blocking and held only while a trusted host
+  capability is executing;
+- preparation, analysis, builds, tests, and ordinary closeout do not hold the
+  host-live lock.
+
+A dispatcher stays alive for a short idle grace and rescans Issues while active.
+This means a task created while another task is already running can be discovered
+by the existing dispatcher even if its own GitHub Actions wake-up is later
+cancelled by workflow concurrency.
+
+Progress is deliberately allow-listed. Safe states are `queued`, `claimed`,
+`preparing`, `candidate_committed`, `waiting_for_host`, `host_running`,
+`host_completed`, `analyzing`, `complete`, and `failed`. The dispatcher stores
+the safe state locally, emits it to Actions stdout, and maintains one Issue
+progress comment in place. Heartbeats update elapsed time during long phases.
+Chain-of-thought and raw model output are never published. Comment/API failures
+are observability failures only and do not fail the research worker.
+
+Repository-specific policy is exposed through a small configuration seam:
+task root, allowed branch prefix, protected prefixes, evidence roots, worker
+count, polling/idle timing, and host policy. Go2 remains the first concrete
+configuration; the host policy is currently fixed to serialized execution.
+
 ## What remains protected
 
 The safety boundary is deliberately narrow:
