@@ -1,0 +1,165 @@
+{
+  "candidate_commit": "bb76042be8ab5c6b008e60c116ddff0128237826",
+  "command": [
+    "bash",
+    "example/cpp/scripts/dds_runtime_root_smoke.sh",
+    "--domain-id",
+    "220",
+    "--run-dir",
+    "example/cpp/experiments/_runs/dds_runtime_root_fix_repair_20260917/smoke"
+  ],
+  "domain_id": 220,
+  "environment": {
+    "LD_LIBRARY_PATH": "/home/che/dev/go2-workspace/current/simulate/mujoco/lib"
+  },
+  "error": null,
+  "evidence": [
+    {
+      "path": "build_provenance.txt",
+      "sha256": "140231b3d4cbf212296232e13be009c405abec0466c8465fe9d449ad06123921",
+      "size": 2873,
+      "type": "file"
+    },
+    {
+      "path": "cycle_A/lowstate_probe.log",
+      "sha256": "8a180cab58c7b0de24905b1734898ae3bb62e9cff5cda4ddd0744e64389a7ef3",
+      "size": 255,
+      "type": "file"
+    },
+    {
+      "path": "cycle_A/lowstate_probe.txt",
+      "sha256": "440db7c8369f38710771ef23a6ac82ac3d233b7d9dc467d1c462a8132e25183e",
+      "size": 173,
+      "type": "file"
+    },
+    {
+      "path": "cycle_A/post_state.txt",
+      "sha256": "81241b9e4228c125a0e0320d76a53ce2c1d5c88a19481ad2db553e6c64fde15b",
+      "size": 3205,
+      "type": "file"
+    },
+    {
+      "path": "cycle_A/pre_state.txt",
+      "sha256": "666f20c4d08f62e664370e720bcde812ce928b9279e57cf3ba7862796b338e85",
+      "size": 3204,
+      "type": "file"
+    },
+    {
+      "path": "cycle_A/simulator.log",
+      "sha256": "6f3d62963f44c0f4309751365ae307227635ecab29827ea98e6c29eff4342a2d",
+      "size": 4147,
+      "type": "file"
+    },
+    {
+      "path": "cycle_B/lowstate_probe.log",
+      "sha256": "0ce2da672fe54411b10a3f1b3bf22513f04758562e89dbf64d7a612e4d2dc86b",
+      "size": 255,
+      "type": "file"
+    },
+    {
+      "path": "cycle_B/lowstate_probe.txt",
+      "sha256": "85f68380cd49ca496c6373ba8bd0c4fc2d28a1e6883a039c0ca1b59506cbc5b1",
+      "size": 173,
+      "type": "file"
+    },
+    {
+      "path": "cycle_B/post_state.txt",
+      "sha256": "c01023f573194367dad7532d4dfb3e9d801a1154a2feae400e2b79bee69fe76b",
+      "size": 3208,
+      "type": "file"
+    },
+    {
+      "path": "cycle_B/pre_state.txt",
+      "sha256": "3f969e25224a006987c495e2b459e4d747ea9446c4c793c29c68d0769a7257e1",
+      "size": 3207,
+      "type": "file"
+    },
+    {
+      "path": "cycle_B/simulator.log",
+      "sha256": "e5d84fe94638da9545c3f995842c26342a33c734769bd953a554c692c9835818",
+      "size": 4078,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/between_cycles_cleanup.txt",
+      "sha256": "3ae32b92f2c0cc1e01cf1930543a90f32f75b7a2f534285c79d3f8d808c10181",
+      "size": 200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/between_cycles_post_clean_state.txt",
+      "sha256": "5275f9f48036ecfc69010854bbe71c55c873dad54e3c0780285588624c20347f",
+      "size": 3221,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/between_cycles_pre_state.txt",
+      "sha256": "4bd7f44311bbfd2b3df7317e235c53d74a363ae125f34a3440aba07cf71bc780",
+      "size": 3214,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/dds_base4000_preload.so",
+      "sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "size": 15560,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_clean_state.txt",
+      "sha256": "0dbaf6e62108554c347a22000e4846396b19d50470196ca42ce08168e24f0afa",
+      "size": 3203,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_state.txt",
+      "sha256": "2ef7c4e202c03233080d6bd585d8399d06bc4f78bf4b348ebc5b3836ab2e19ae",
+      "size": 3200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/pre_state.txt",
+      "sha256": "f2d1a559cbb795c6e173b982a9dec01145ea7ed635d0499d9f1abc21532758de",
+      "size": 3196,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/preparation_cleanup.txt",
+      "sha256": "5e73e7fe5fb70c869e23c6b2c89477fe4d18b50fe5b842ca7bbefcb8faa47338",
+      "size": 200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/runtime_metadata.txt",
+      "sha256": "2d5ea0f1225abf5da575f9e4971c372f11b879471f897b7783324b858dd6feea",
+      "size": 870,
+      "type": "file"
+    },
+    {
+      "path": "probe_build.log",
+      "sha256": "83d4fee545ebc7c06de6fec9a0e7e66e9f9e69f49ba97272c14a46bc65fe8993",
+      "size": 320,
+      "type": "file"
+    },
+    {
+      "path": "simulator_build.log",
+      "sha256": "119ee42849215aec98a97f2815ef466316c922588f9158fe43acf00bd0878d54",
+      "size": 1454,
+      "type": "file"
+    }
+  ],
+  "finished_at": "2026-09-17T11:53:58.006612+00:00",
+  "launched": true,
+  "manifest_sha256": "3e60a844fb3aaae2dd9463cebb766251098695a59decc867c40bbdc1ae07bfdc",
+  "returncode": 0,
+  "run_dir": "example/cpp/experiments/_runs/dds_runtime_root_fix_repair_20260917/smoke",
+  "schema_version": 1,
+  "started_at": "2026-09-17T11:53:29.375566+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+  "stderr_sha256": "13fb34399560b92a4e4b40696ff8c50d53559e8884f30a4d03a476b0f2d19d36",
+  "stdout": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+  "stdout_sha256": "5b49382b1530300ce09d67fa6d40fd927791394a48d56650c79d08a14bcaf98f",
+  "task_commit": "73eb0bee3988e5aaf0b082c50140a959932ce51f",
+  "task_path": "docs/research/TASK_DDS_RUNTIME_ROOT_FIX_REPAIR_20260917.md",
+  "timed_out": false,
+  "timeout_s": 480
+}
