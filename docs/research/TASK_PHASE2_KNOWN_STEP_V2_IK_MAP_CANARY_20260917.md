@@ -1,9 +1,21 @@
-# Phase2 known-step V2 IK-map canary
+# Phase2 known-step V2 IK-map autonomous cycle
 
 Mode: `confirmatory`  
 SOP: `main/docs/research/SOP.md` v0.2  
 Exact parent/base: `0f8a0109dc56a2dabad600aacee71c7d99bd6a46`  
 Branch: `research/phase2-known-step-v2-ik-map-canary-20260917`
+
+## Autonomous execution contract
+
+This task is one complete research cycle, not a request for an intermediate audit.
+
+After accepting the task, execute the full authorized decision tree without returning to the user or Sol for routine implementation choices:
+
+`offline feasibility -> minimal target-map change if feasible -> focused tests/build/provenance/preflight -> exactly one live canary if authorized -> primary analysis -> bounded offline downstream localization when needed -> closeout`
+
+Return early only at a task-defined/SOP-defined veto or when a genuinely new scientific decision outside this task is required. Do not request approval between the authorized stages above.
+
+The Atlas trusted wrapper, not Luna, owns `git add`, `git commit`, and `git push`. Luna must leave only the intended tracked closeout/source changes in the task workspace and must not push.
 
 ## Question
 
@@ -87,9 +99,35 @@ Analyze only the first planning-valid FL crossing through its first touchdown be
 4. Retain the established first-FL raised-platform contact condition: actual x >= `0.850 m` and actual z >= first-swing start z + `0.035 m` for >= `0.10 s`.
 5. Report the first downstream joint target/actual q,dq and rate/torque-limit evidence only if mapping passes but actual clearance/contact fails.
 
+## Bounded offline downstream localization
+
+Run this section **only** if the primary classification is `MAPPING_FIXED_TRACKING_LIMITED`. It uses the single authorized canary already captured and authorizes no additional live run.
+
+The purpose is to avoid another handoff whose only question would be “where downstream did the corrected command first stop being realized?” Localize the earliest post-mapping boundary using the captured canary plus frozen source.
+
+Evaluate in causal order:
+
+`IK joint target -> target shaping/rate limiting -> LowCmd q/dq/tau_ff -> actual joint q/dq -> FK(actual foot) -> contact`
+
+Requirements:
+
+1. Identify the earliest timestamp in the first FL crossing where the corrected mapped target still passes the 2 mm criterion but the next downstream representation materially fails to realize it.
+2. Report target vs realized values at that boundary, including q/dq and any active configured rate/torque cap evidence available from source or logs.
+3. Distinguish an explicit limiter/saturation from ordinary closed-loop tracking error; do not infer saturation merely from a large error.
+4. Check whether contact occurs before or after the identified downstream divergence; do not relabel an already-existing tracking deficit as a contact-originated failure.
+5. Name exactly one next intervention layer from:
+   - `JOINT_TARGET_SHAPING_OR_RATE_LIMIT`
+   - `LOWCMD_OR_TORQUE_APPLICATION`
+   - `JOINT_CLOSED_LOOP_TRACKING`
+   - `CONTACT_AFTER_TRACKING_DIVERGENCE`
+   - `DOWNSTREAM_NOT_LOCALIZED`
+6. Do not modify source, tune gains/limits, alter contact/planner logic, or run another experiment in this section.
+
+The closeout must include this downstream localization when applicable so Sol can decide the next scientific task directly from GitHub without requesting a separate audit.
+
 ## Classification
 
-Use exactly one:
+Use exactly one primary classification:
 
 - `DIRECT_V2_TARGET_INFEASIBLE` — no-live feasibility gate fails;
 - `PROTOCOL_FAILURE` — provenance/preflight/evidence failure prevents interpretation;
@@ -98,14 +136,27 @@ Use exactly one:
 - `MAPPING_FIXED_TRACKING_LIMITED` — mapping passes, but actual FL misses geometric clearance or the raised-platform contact condition;
 - `MAPPING_FIXED_FIRST_FL_ESTABLISHED` — mapping passes and the first FL clears the edge envelope and establishes the retained raised-platform contact condition.
 
+If and only if the primary classification is `MAPPING_FIXED_TRACKING_LIMITED`, also report exactly one `downstream_localization` value from the bounded list above.
+
 Do not claim full-step traversal success from this canary; it isolates the first-FL execution chain only.
+
+## Stop / continuation rules
+
+- `DIRECT_V2_TARGET_INFEASIBLE`: close out with no runtime change/live run.
+- `PROTOCOL_FAILURE`: close out; do not manufacture replacement evidence.
+- `DIRECT_MAP_GUARD_HIT`: close out; no second run.
+- `TARGET_MAPPING_NOT_FIXED`: close out with the earliest residual mapping mismatch; no second run.
+- `MAPPING_FIXED_TRACKING_LIMITED`: complete the bounded offline downstream localization above, then close out; no second run.
+- `MAPPING_FIXED_FIRST_FL_ESTABLISHED`: close out. Full-step/multi-leg continuation is a new scientific question and is intentionally outside this task.
 
 ## Closeout
 
-Write only:
+Write the required tracked closeout artifacts:
 
 - `docs/validation/phase2_known_step_v2_ik_map_canary_20260917/RESULTS.md`
 - `docs/validation/phase2_known_step_v2_ik_map_canary_20260917/analysis.json`
 - `docs/validation/phase2_known_step_v2_ik_map_canary_20260917/provenance.csv`
 
-Preserve raw `_runs` byte-for-byte after capture begins. Commit and push the branch. Report only the resulting commit SHA to Sol.
+`RESULTS.md` must state the primary classification and, when applicable, `downstream_localization`, plus enough exact timestamps/numeric evidence to support them.
+
+Preserve raw `_runs` byte-for-byte after capture begins. Do not stage, commit, or push; the trusted Atlas wrapper will validate and commit the intended tracked changes, then push them only if the remote branch is still at the exact task commit.
