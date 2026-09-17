@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_clean_baseline_flat_repro_20260917",
+  "classification": "PROTOCOL_FAILURE",
+  "task": {
+    "branch": "research/phase2-clean-baseline-flat-repro-20260917",
+    "task_commit": "74acc1926cd4b59e9dd83b1ee35695cb45dc0bb2",
+    "exact_parent": "cdb0888d02c195935a88d9c404fb4d45c5b0ac1a",
+    "parent_classification": "CLEAN_BASELINE_P0_READY"
+  },
+  "live": {
+    "authorized": true,
+    "launched": false,
+    "scientific_attempts_consumed": 0,
+    "raw_capture": false,
+    "run_directory_created": false,
+    "reason": "SOP preflight veto before launch"
+  },
+  "validation": {
+    "exact_parent_ancestry": "PASS",
+    "exact_head": "PASS",
+    "cmake_configure": "PASS",
+    "focused_tests": {
+      "status": "PASS",
+      "passed": 5,
+      "total": 5,
+      "tests": [
+        "test_clean_baseline",
+        "test_go2_inverse_kinematics",
+        "test_dense_qp",
+        "test_srbd_mpc",
+        "test_lean_route_guard"
+      ]
+    },
+    "portable_ctest": {
+      "status": "PASS",
+      "passed": 29,
+      "total": 29,
+      "excluded": ["test_lockstep_motion_clock_integration"]
+    },
+    "reference_backed_rigid_body": "PASS",
+    "reference_backed_inverse_dynamics_wbc": "PASS",
+    "clean_cli_cartesian_world_guard": "PASS",
+    "runner_and_analyzer_syntax": "PASS",
+    "aggregate_exact_checkout_build": {
+      "status": "FAIL",
+      "reason": "missing local MuJoCo headers; real_trot_go2 was not produced"
+    }
+  },
+  "preflight": {
+    "status": "FAIL",
+    "report": "/tmp/phase2_clean_baseline_flat_repro_20260917_preflight.json",
+    "hard_failures": [
+      "expected_branch: checkout is detached",
+      "runner_domain_matches: no inferable runner domain",
+      "required_file: example/cpp/build/real_trot_go2 is missing"
+    ],
+    "domain_checked": 1,
+    "domain_lock": "PASS",
+    "run_directory_fresh": "PASS",
+    "stale_runtime_processes": "PASS"
+  },
+  "scope": {
+    "runtime_source_diff_from_exact_parent": "none",
+    "terrain_intervention": false,
+    "retry": false,
+    "legacy_comparison_run": false,
+    "scientific_interpretation": false
+  }
+}
