@@ -20,6 +20,8 @@ jobs:
         run: |
           find . -type f -name '*.py' -not -path './.git/*' -print0 |
             xargs -0 -r -n1 python3 -m py_compile
+      - name: Run Atlas dispatcher contract tests
+        run: python3 -m unittest discover -s tools/tests -p 'test_atlas_*.py'
       - name: Run repository hygiene checker
         run: python3 tools/check_repo_hygiene.py
       - name: Check internal references
