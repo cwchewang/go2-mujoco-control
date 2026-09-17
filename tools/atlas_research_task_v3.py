@@ -17,6 +17,20 @@ _ORIGINAL_RUN_CODEX = v2._run_codex
 
 def _codex_command(codex_bin: str, thread_id: str | None, prompt: str) -> list[str]:
     command = _ORIGINAL_CODEX_COMMAND(codex_bin, thread_id, prompt)
+    if thread_id:
+        # v2 builds resume as: codex exec resume <id> <exec-options> <prompt>.
+        # Codex CLI 0.154.0 expects exec-level options before the resume
+        # subcommand: codex exec <exec-options> resume <id> <prompt>.
+        if len(command) < 6 or command[2] != "resume" or command[3] != thread_id:
+            raise base.ResearchTaskError("unexpected Codex resume command shape")
+        command = [
+            command[0],
+            command[1],
+            *command[4:-1],
+            "resume",
+            thread_id,
+            command[-1],
+        ]
     if thread_id and _RESUME_VALIDATION_CONTEXT:
         command[-1] += (
             "\n\nThe trusted wrapper rejected the previous closeout after your turn. "
