@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "classification": "ATLAS_DISPATCH_VNEXT_VETOED_PROTECTED_SURFACES",
+  "mode": "infrastructure / no-live / veto",
+  "task_commit": "442b875bfb23f3e0c7f5cb9e90130a2423ce54e2",
+  "exact_main_parent": "e30782ad916ef1614a877d7a3c122f62682c8f19",
+  "facts": {
+    "live_experiment_launched": false,
+    "raw_evidence_modified": false,
+    "head_matches_task_commit": true,
+    "remote_refresh": "attempted_but_FETCH_HEAD_metadata_is_read_only",
+    "existing_atlas_contract_tests": "13/13",
+    "repository_hygiene": "passed",
+    "python_compilation": "passed",
+    "git_diff_check": "passed"
+  },
+  "diagnosis": {
+    "boundary": "execution",
+    "reason_code": "PROTECTED_SURFACE_CONFLICT",
+    "required_surfaces": [
+      ".github/workflows/atlas-task.yml",
+      "tools/atlas_dispatch_v2.py",
+      "tools/atlas_issue_state.py",
+      "tools/atlas_research_task_v4.py"
+    ],
+    "protected_prefixes": [
+      ".github/",
+      "tools/atlas_"
+    ],
+    "acceptance_ready": false
+  },
+  "deferred_tests": [
+    "offline_worker_overlap",
+    "host_phase_serialization",
+    "issue_queue_discovery_during_active_dispatch",
+    "duplicate_wakeup_idempotence",
+    "resumable_task_recovery",
+    "single_issue_comment_progress_updates",
+    "allow_listed_progress_fields",
+    "best_effort_github_api_failure"
+  ]
+}

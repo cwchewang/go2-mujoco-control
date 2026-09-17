@@ -2,6 +2,46 @@
 
 This document defines the intended execution boundary for unattended Go2 research.
 
+## Dispatch vNext status — 2026-09-17
+
+The queue-aware dispatch vNext task is **vetoed before implementation** in this
+worker. The requested integration requires changing the workflow under
+`.github/**` and the trusted dispatcher/worker modules under `tools/atlas_*`.
+Those surfaces are explicitly protected by the execution contract and were not
+changed. The design below records the required future seam; it is not evidence
+that dispatch vNext is installed.
+
+The intended design is:
+
+- GitHub Issues carrying `atlas-task` are the authoritative queue. A workflow
+  invocation is only a wake-up; each dispatcher pass scans open issues,
+  orders new work by issue creation time, and gives resumable local state
+  precedence.
+- A configuration-driven worker pool uses `ATLAS_MAX_WORKERS` (default `2`),
+  with isolated issue/task worktree, state, and artifact paths. An ownership
+  record keyed by issue, branch, and task commit makes claims idempotent across
+  duplicate wake-ups and cancelled intermediate runs.
+- Preparation and post-host analysis run concurrently. A separate blocking
+  host-live lock is acquired only around the trusted host capability, so host
+  intervals cannot overlap while preparation and analysis do not hold that
+  lock. The existing whole-task lock must be removed only by the trusted
+  wrapper in the protected implementation surfaces.
+- Progress is an allow-listed event stream (`queued`, `claimed`, `preparing`,
+  `candidate_committed`, `waiting_for_host`, `host_running`,
+  `host_completed`, `analyzing`, `complete`, and `failed`) with elapsed time,
+  task identity, safe commit/test facts, and host facts when emitted. The same
+  state is persisted locally, printed to Actions stdout, and best-effort
+  updated in one issue comment in place; API failure cannot alter worker
+  execution.
+- A small repository configuration seam supplies task root, branch prefix,
+  protected paths/evidence roots, worker limit, and host-capability policy.
+  Go2 remains the first configuration; locomotion, control, and evidence
+  integrity semantics remain unchanged.
+
+Acceptance therefore remains pending until the protected trusted wrapper can
+install and test this design. No queue, worker-pool, lock-boundary, or
+observability claim in this section should be read as an active runtime claim.
+
 ## Principle
 
 Luna is a research executor, not a privileged shell on the Atlas host.
