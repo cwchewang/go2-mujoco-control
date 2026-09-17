@@ -12,10 +12,10 @@ simulator="$repo_dir/simulate/build/unitree_mujoco"
 controller="$cpp_dir/build/real_trot_go2"
 scene_file="$repo_dir/unitree_robots/go2/scene_leg_lift_demo.xml"
 
-# This is the only external dependency permitted by the task.  The simulator
-# and controller are always built from the candidate source tree below
-# repo_dir.
-mujoco_root="/home/che/dev/go2-workspace/current/simulate/mujoco"
+# External MuJoCo is a dependency only; simulator/controller are always built
+# from the candidate source tree.  Host jobs may set MUJOCO_ROOT explicitly;
+# otherwise use the standard per-user MuJoCo installation.
+mujoco_root="${MUJOCO_ROOT:-$HOME/.mujoco/mujoco-3.3.6}"
 candidate_mujoco_link="$repo_dir/simulate/mujoco"
 
 if (( $# < 2 )); then
