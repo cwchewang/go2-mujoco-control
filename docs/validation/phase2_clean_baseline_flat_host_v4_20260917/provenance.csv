@@ -1,0 +1,15 @@
+scope,artifact,path,sha256,status,note
+task_exact,TASK_PHASE2_CLEAN_BASELINE_FLAT_HOST_V4_20260917.md,docs/research/TASK_PHASE2_CLEAN_BASELINE_FLAT_HOST_V4_20260917.md,328009acf247f0f0ac0cc57fa125f9a63367e1be814dea5e5d93c10429df322c,VERIFIED,frozen task read during post-host analysis
+host_record,atlas_host_record,docs/research/evidence/atlas_host/73c21d184412b98b112aee1d0794b3f52b58730d.json,55601dc85f88da6a14c593348e120b2d2d5827fa21df7dd457179146d13bb37e,VERIFIED,immutable trusted host record
+host_record,host_stdout,/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,RECORDED_BY_HOST,path is outside indexed workspace evidence
+host_record,host_stderr,/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log,246c92362b99de50e89747e9fe95960a67dabcf6a3ea736da881abde775682cf,RECORDED_BY_HOST,path is outside indexed workspace evidence
+raw_boot,contact_ground_truth.csv,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/contact_ground_truth.csv,15416a7e1a203001abd9afe91829c5b01525a9d45a94bcfbdf560c258ebf0003,VERIFIED,host-indexed simulator-only boot artifact; structurally truncated final row preserved
+raw_boot,environment.txt,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/environment.txt,fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981,VERIFIED,host-indexed runner environment
+raw_boot,run_metadata.txt,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/run_metadata.txt,0de06ad3e96f7194901d5749aea0f9026f4fee43aec97c70dc89a99cf1e03db5,VERIFIED,host-indexed runner metadata and binary/scene hashes
+raw_boot,simulator.log,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/simulator.log,33a7cc798c6cb9ade3483dad334f29923133666b1222612da9a1398789938671,VERIFIED,host-indexed simulator DDS failure log
+raw_boot,controller_data.csv,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/data.csv,,MISSING,not created because controller never started
+raw_boot,controller.log,example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C/controller.log,,MISSING,not created because simulator never reached DDS readiness
+binary,real_trot_go2,recorded in run_metadata.txt,3b3f945592adf624f4437d27b27c4d1e7016343a97ce0b742e7fc041ebc7b587,RECORDED_BY_RUNNER,controller binary hash recorded by the runner
+binary,unitree_mujoco,recorded in run_metadata.txt,63ad3cc5842bcea71d89d4561c04e790ca7c94887587cfc37499ee280e72400f,RECORDED_BY_RUNNER,simulator binary hash recorded by the runner
+scene,scene_leg_lift_demo.xml,recorded in run_metadata.txt,12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8,RECORDED_BY_RUNNER,flat scene hash recorded by the runner
+environment,MuJoCo library directory,/home/che/dev/go2-workspace/current/simulate/mujoco/lib,,RECORDED_BY_HOST,LD_LIBRARY_PATH recorded by host; no separate SDK hash was added to the host record

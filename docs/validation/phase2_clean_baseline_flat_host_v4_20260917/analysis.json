@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "experiment": "phase2_clean_baseline_flat_host_v4_20260917",
+  "classification": "PROTOCOL_FAILURE",
+  "earliest_causal_boundary": "execution",
+  "reason_code": "SIMULATOR_DDS_PARTICIPANT_INDEX_EXHAUSTION",
+  "task": {
+    "branch": "research/phase2-clean-baseline-flat-host-v4-20260917",
+    "task_commit": "73c21d184412b98b112aee1d0794b3f52b58730d",
+    "exact_parent": "b986a24c423e71bfdf5017e3eebdedad6d7e9d6e",
+    "scientific_baseline": "cdb0888d02c195935a88d9c404fb4d45c5b0ac1a",
+    "task_path": "docs/research/TASK_PHASE2_CLEAN_BASELINE_FLAT_HOST_V4_20260917.md"
+  },
+  "facts": {
+    "host": {
+      "record_path": "docs/research/evidence/atlas_host/73c21d184412b98b112aee1d0794b3f52b58730d.json",
+      "record_sha256": "55601dc85f88da6a14c593348e120b2d2d5827fa21df7dd457179146d13bb37e",
+      "candidate_commit": "73c21d184412b98b112aee1d0794b3f52b58730d",
+      "task_commit_matches_candidate": true,
+      "command_matches_frozen_manifest": true,
+      "domain_id": 220,
+      "manifest_sha256_recorded_by_host": "35c420f2abb2d67eb05a2467d10ecd581cb1de9b65a24311eb10c97fdfc4c2ff",
+      "launched": true,
+      "returncode": 1,
+      "error": null,
+      "timed_out": false,
+      "started_at": "2026-09-17T10:12:36.708032+00:00",
+      "finished_at": "2026-09-17T10:12:38.275778+00:00",
+      "stdout_path_recorded_by_host": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+      "stdout_sha256_recorded_by_host": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path_recorded_by_host": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+      "stderr_sha256_recorded_by_host": "246c92362b99de50e89747e9fe95960a67dabcf6a3ea736da881abde775682cf"
+    },
+    "host_runtime": {
+      "simulator_initialization_observed": true,
+      "mujoco_version": "3.3.6",
+      "mujoco_data_prepared_observed": true,
+      "dds_ready_marker": "Unitree DDS bridge ready",
+      "dds_ready_observed": false,
+      "controller_started": false,
+      "lowstate_lowcmd_handoff": "NOT_REACHED",
+      "normal_stand_gait_return_lifecycle": "NOT_REACHED",
+      "logged_failure": "Failed to find a free participant index for domain 220; Failed to create domain explicitly",
+      "selected_interface": "lo",
+      "selected_interface_multicast": false
+    },
+    "runner_metadata": {
+      "git_head": "73c21d184412b98b112aee1d0794b3f52b58730d",
+      "git_branch": "detached",
+      "git_dirty": false,
+      "headless": true,
+      "domain_id": 220,
+      "simulator_sha256": "63ad3cc5842bcea71d89d4561c04e790ca7c94887587cfc37499ee280e72400f",
+      "controller_sha256": "3b3f945592adf624f4437d27b27c4d1e7016343a97ce0b742e7fc041ebc7b587",
+      "scene_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+      "scene_file": "/home/che/dev/go2-agent/tasks/73c21d184412b98b/unitree_robots/go2/scene_leg_lift_demo.xml"
+    },
+    "raw": {
+      "run_directory": "example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C",
+      "actual_files_equal_host_index": true,
+      "controller_data_csv_present": false,
+      "controller_log_present": false,
+      "indexed_files": [
+        {
+          "path": "contact_ground_truth.csv",
+          "sha256": "15416a7e1a203001abd9afe91829c5b01525a9d45a94bcfbdf560c258ebf0003",
+          "size_bytes": 278756,
+          "hash_verified": true
+        },
+        {
+          "path": "environment.txt",
+          "sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+          "size_bytes": 100,
+          "hash_verified": true
+        },
+        {
+          "path": "run_metadata.txt",
+          "sha256": "0de06ad3e96f7194901d5749aea0f9026f4fee43aec97c70dc89a99cf1e03db5",
+          "size_bytes": 2336,
+          "hash_verified": true
+        },
+        {
+          "path": "simulator.log",
+          "sha256": "33a7cc798c6cb9ade3483dad334f29923133666b1222612da9a1398789938671",
+          "size_bytes": 774,
+          "hash_verified": true
+        }
+      ],
+      "contact_csv_schema": {
+        "header_fields": 264,
+        "physical_data_rows": 92,
+        "complete_rows": 91,
+        "incomplete_rows": 1,
+        "row_field_lengths": {
+          "264": 91,
+          "70": 1
+        },
+        "first_time_s": 0.002,
+        "last_time_s": 0.184,
+        "complete_last_time_s": 0.182,
+        "complete_dt_s": [0.002],
+        "complete_step_range": [0, 90],
+        "partial_row": {
+          "step_index": 91,
+          "time_s": 0.184,
+          "present_through_column": "FL_sensor_force_world_x_N",
+          "trailing_newline": false
+        }
+      },
+      "simulator_log_events": [
+        "MuJoCo version 3.3.6",
+        "Mujoco data is prepared",
+        "selected interface lo is not multicast-capable: disabling multicast",
+        "Failed to find a free participant index for domain 220",
+        "Failed to create domain explicitly"
+      ]
+    }
+  },
+  "derived_metrics": {
+    "host_elapsed_s": 1.567746,
+    "nominal_command_speed_mps": {
+      "value": 0.1516666667,
+      "formula": "step_length_m / period_s = 0.091 / 0.60"
+    },
+    "completed_gait_cycles": {
+      "observed_before_abort": 0,
+      "scientific_metric_status": "NOT_EVALUABLE",
+      "reason": "controller did not start"
+    },
+    "measured_forward_speed_mps": {
+      "value": null,
+      "status": "NOT_EVALUABLE",
+      "required_source": "controller data.csv filtered to motion_stage==2"
+    },
+    "tracking_ratio": {
+      "value": null,
+      "status": "NOT_EVALUABLE",
+      "formula": "measured_forward_speed_mps / nominal_command_speed_mps"
+    },
+    "orientation_boot_transient": {
+      "status": "SIMULATOR_ONLY_NOT_LOCOMOTION",
+      "source_columns": ["base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z", "time_s"],
+      "max_abs_roll_rad": 2.792037745240355e-05,
+      "max_abs_pitch_rad": 0.07829484897420447,
+      "max_abs_roll_time_s": 0.184,
+      "max_abs_pitch_time_s": 0.184
+    },
+    "controller_quality_metrics": {
+      "clean_target_feasibility_rejection": null,
+      "strict_id_wbc_rejection": null,
+      "torque_safety_envelope_saturation": null,
+      "maximum_joint_or_foot_tracking_error": null,
+      "emergency_or_hard_safety_stop": null,
+      "status": "NOT_EVALUABLE_CONTROLLER_DID_NOT_START"
+    },
+    "passing_criteria": {
+      "64_cycles_and_normal_return": "NOT_REACHED",
+      "no_clean_target_feasibility_rejection": "NOT_EVALUABLE",
+      "no_strict_wbc_rejection_promoted_to_motion": "NOT_EVALUABLE",
+      "no_emergency_or_hard_safety_stop": "NOT_EVALUABLE_BEFORE_CONTROLLER_START",
+      "speed_inclusive_range_0.11_to_0.19_mps": "NOT_EVALUABLE"
+    },
+    "scientific_attempts_consumed": 0,
+    "scientific_capture_started": false
+  },
+  "calculation_method": {
+    "hash_validation": "For each host-record evidence item, SHA-256 the exact bytes at run_dir/path and compare both sha256 and size fields; enumerate the run directory and compare its file set to the host evidence paths.",
+    "csv_parsing": "Python csv.reader(newline=''); header length is the expected schema width; a complete row is a data row whose field count equals the header field count; incomplete rows are excluded from complete-row aggregates.",
+    "time_sampling": "Sort/order is preserved from the raw file; dt is successive time_s difference; contiguous steps are checked against the integer range.",
+    "nominal_speed": "0.091 / 0.60 m/s from frozen task parameters.",
+    "rpy": {
+      "roll_rad": "atan2(2*(w*x+y*z), 1-2*(x*x+y*y))",
+      "pitch_rad": "asin(clamp(2*(w*y-z*x), -1, 1))",
+      "yaw_rad": "atan2(2*(w*z+x*y), 1-2*(y*y+z*z))",
+      "quaternion_order": "w,x,y,z"
+    },
+    "primary_speed": "Not run because the required controller data.csv and motion_stage column are absent; no substitute simulator-only speed was used."
+  },
+  "luna_interpretation": {
+    "primary_classification": "PROTOCOL_FAILURE",
+    "earliest_causal_boundary": "execution",
+    "reason_code": "SIMULATOR_DDS_PARTICIPANT_INDEX_EXHAUSTION",
+    "proposal_not_final_scientific_verdict": true,
+    "rationale": "The simulator reached MuJoCo data preparation but failed during DDS domain 220 creation before its ready marker. The controller therefore did not start and no post-handoff scientific sample exists.",
+    "scientific_claim": "NONE",
+    "retry_authorized_or_performed": false
+  },
+  "scope": {
+    "host_record_modified": false,
+    "raw_run_modified": false,
+    "runtime_source_modified_after_host": false,
+    "tests_modified_after_host": false,
+    "launch_scripts_modified_after_host": false,
+    "live_rerun": false,
+    "git_metadata_written": false
+  }
+}

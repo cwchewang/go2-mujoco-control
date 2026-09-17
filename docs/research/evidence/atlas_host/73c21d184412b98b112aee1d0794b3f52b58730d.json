@@ -1,0 +1,89 @@
+{
+  "candidate_commit": "73c21d184412b98b112aee1d0794b3f52b58730d",
+  "command": [
+    "bash",
+    "example/cpp/scripts/run_trot.sh",
+    "90",
+    "_runs/phase2_clean_baseline_flat_host_v4_20260917/C",
+    "--controller-duration",
+    "70",
+    "--task",
+    "stand-walk-lie",
+    "--kernel",
+    "raibert-trot",
+    "--period",
+    "0.60",
+    "--duty",
+    "0.75",
+    "--step-length",
+    "0.091",
+    "--foot-lift",
+    "0.020",
+    "--kp",
+    "63",
+    "--kd",
+    "2.8",
+    "--raibert-velocity-gain",
+    "0.05",
+    "--raibert-max-adjustment",
+    "0.010",
+    "--world-feedback-max",
+    "0.060",
+    "--world-feedback-slew",
+    "0.004",
+    "--clean-baseline",
+    "--tau-limit",
+    "35",
+    "--max-cycles",
+    "64",
+    "--headless",
+    "--domain-id",
+    "220"
+  ],
+  "domain_id": 220,
+  "environment": {
+    "LD_LIBRARY_PATH": "/home/che/dev/go2-workspace/current/simulate/mujoco/lib"
+  },
+  "error": null,
+  "evidence": [
+    {
+      "path": "contact_ground_truth.csv",
+      "sha256": "15416a7e1a203001abd9afe91829c5b01525a9d45a94bcfbdf560c258ebf0003",
+      "size": 278756,
+      "type": "file"
+    },
+    {
+      "path": "environment.txt",
+      "sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+      "size": 100,
+      "type": "file"
+    },
+    {
+      "path": "run_metadata.txt",
+      "sha256": "0de06ad3e96f7194901d5749aea0f9026f4fee43aec97c70dc89a99cf1e03db5",
+      "size": 2336,
+      "type": "file"
+    },
+    {
+      "path": "simulator.log",
+      "sha256": "33a7cc798c6cb9ade3483dad334f29923133666b1222612da9a1398789938671",
+      "size": 774,
+      "type": "file"
+    }
+  ],
+  "finished_at": "2026-09-17T10:12:38.275778+00:00",
+  "launched": true,
+  "manifest_sha256": "35c420f2abb2d67eb05a2467d10ecd581cb1de9b65a24311eb10c97fdfc4c2ff",
+  "returncode": 1,
+  "run_dir": "example/cpp/experiments/_runs/phase2_clean_baseline_flat_host_v4_20260917/C",
+  "schema_version": 1,
+  "started_at": "2026-09-17T10:12:36.708032+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stderr.log",
+  "stderr_sha256": "246c92362b99de50e89747e9fe95960a67dabcf6a3ea736da881abde775682cf",
+  "stdout": "/home/che/actions-runner/_work/_temp/atlas-result/host-experiment.stdout.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "task_commit": "73c21d184412b98b112aee1d0794b3f52b58730d",
+  "task_path": "docs/research/TASK_PHASE2_CLEAN_BASELINE_FLAT_HOST_V4_20260917.md",
+  "timed_out": false,
+  "timeout_s": 120
+}
