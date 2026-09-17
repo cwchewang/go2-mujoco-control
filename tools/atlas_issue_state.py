@@ -76,6 +76,16 @@ def _label_path(full_name: str, number: int, label: str) -> str:
     return _issue_path(full_name, number, f"/labels/{quote(label, safe='')}")
 
 
+def _notify_mention(full_name: str) -> str:
+    login = os.environ.get("ATLAS_NOTIFY_LOGIN")
+    if not login:
+        login = full_name.split("/", 1)[0]
+    login = login.strip().lstrip("@")
+    if not login:
+        raise GitHubError("Atlas notification login is empty")
+    return f"@{login}"
+
+
 def _set_state(
     *,
     full_name: str,
@@ -104,9 +114,21 @@ def _set_state(
     if state == "running":
         body = "Atlas accepted this allow-listed task and started it.\n\n" + workflow_url
     elif state == "complete":
-        body = "Atlas completed the allow-listed task.\n\n" + summary + "\nWorkflow: " + workflow_url
+        body = (
+            _notify_mention(full_name)
+            + " Atlas completed the allow-listed task.\n\n"
+            + summary
+            + "\nWorkflow: "
+            + workflow_url
+        )
     else:
-        body = "Atlas could not complete the allow-listed task.\n\n" + summary + "\nWorkflow: " + workflow_url
+        body = (
+            _notify_mention(full_name)
+            + " Atlas could not complete the allow-listed task.\n\n"
+            + summary
+            + "\nWorkflow: "
+            + workflow_url
+        )
     _api("POST", _issue_path(full_name, number, "/comments"), token, {"body": body[:MAX_COMMENT_CHARS]})
 
     if state == "complete":
