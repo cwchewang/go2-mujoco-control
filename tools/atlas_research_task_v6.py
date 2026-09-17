@@ -145,7 +145,8 @@ def _run_offline_task(
         task_path=args.task_path,
         task_commit=args.task_commit,
     )
-    worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
+    with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
+        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
 
@@ -266,7 +267,8 @@ def _run_host_task(
         task_path=args.task_path,
         task_commit=args.task_commit,
     )
-    worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
+    with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
+        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
 
