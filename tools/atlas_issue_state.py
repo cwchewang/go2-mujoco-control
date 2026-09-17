@@ -173,8 +173,9 @@ def sanitize_progress(progress: dict[str, Any]) -> dict[str, Any]:
             safe[key] = value
         elif isinstance(value, str):
             safe[key] = value[:500]
-    if "timestamp" not in safe:
-        safe["timestamp"] = int(time.time())
+    # `timestamp` is the publish/update time, not a caller-provided event timestamp.
+    # Refresh it on every publication so heartbeat comments show when they changed.
+    safe["timestamp"] = int(time.time())
     return safe
 
 
