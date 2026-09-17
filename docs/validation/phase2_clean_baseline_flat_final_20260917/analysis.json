@@ -1,0 +1,686 @@
+{
+  "classification": "CLEAN_BASELINE_FLAT_REPRODUCED",
+  "classification_gate": {
+    "all_64_requested_gait_cycles_complete": true,
+    "measured_forward_speed_in_0_11_to_0_19_mps": true,
+    "no_clean_target_feasibility_rejection": true,
+    "no_gross_tracking_or_stability_failure": true,
+    "no_strict_wbc_qp_rejection": true,
+    "normal_return_to_stand_without_hard_stop": true,
+    "valid_controller_handoff": true
+  },
+  "derived_metrics": {
+    "controller_cycle_start_speeds": {
+      "commanded_mps": {
+        "count": 64,
+        "max": 0.151667,
+        "mean": 0.151667,
+        "median": 0.151667,
+        "min": 0.151667,
+        "p05": 0.151667,
+        "p95": 0.151667
+      },
+      "measured_mps": {
+        "count": 64,
+        "max": 0.177558,
+        "mean": 0.1564868125,
+        "median": 0.153847,
+        "min": 0.138069,
+        "p05": 0.14944815,
+        "p95": 0.16958995
+      }
+    },
+    "controller_flag_counts_requested_cycles_1_64": {
+      "has_state": {
+        "1": 19204
+      },
+      "kernel_footstep_plan_valid": {
+        "1": 19204
+      },
+      "terrain_actuation": {
+        "0": 19204
+      },
+      "terrain_enabled": {
+        "0": 19204
+      },
+      "terrain_plan_contact_rejections": {
+        "0": 19204
+      },
+      "terrain_plan_failure": {
+        "0.000000000": 19204
+      },
+      "terrain_sensor_only": {
+        "0": 19204
+      },
+      "wbc_full_id_ok": {
+        "1": 19204
+      },
+      "wbc_full_srbd_ok": {
+        "1": 19204
+      },
+      "wbc_shadow_constraint_feasible": {
+        "1": 19204
+      },
+      "wbc_shadow_mapping_ok": {
+        "1": 19204
+      },
+      "wbc_shadow_solver_ok": {
+        "1": 19204
+      },
+      "wbc_shadow_task_satisfied": {
+        "1": 19204
+      },
+      "wbc_shadow_wrench_satisfied": {
+        "1": 19204
+      }
+    },
+    "controller_health": {
+      "max_abs_pitch_deg": 1.20646,
+      "max_abs_roll_deg": 0.966123,
+      "max_foot_error_m": 0.0351327,
+      "max_joint_error_rad": 0.075396,
+      "max_low_support_samples": 0.0,
+      "max_support_drift_mm": 5.24979,
+      "max_tau_est_nm": 15.2658,
+      "max_tau_over_limit_consecutive": 0.0,
+      "max_tau_over_limit_samples": 0.0,
+      "max_touchdown_abs_x_error_m": 0.00421055,
+      "max_touchdown_abs_y_error_m": 0.00460084,
+      "min_support_contact_fraction": 1.0,
+      "min_support_contacts": 2.0
+    },
+    "formulas": {
+      "csv_progress_window": "motion_stage == 2 and cycle_index >= 0",
+      "csv_requested_cycle_window": "motion_stage == 2 and 1 <= cycle_index <= 64",
+      "flag_rejections": "count rows with a zero/non-success flag in requested cycle window",
+      "health_metrics": "max/min of controller.log Trot cycle N health fields for N in 1..64",
+      "nominal_speed": "0.091 / 0.60",
+      "progress_speed": "ordinary least-squares slope of world_base_x_m versus state_tick_s",
+      "speed_ratio": "progress_speed / nominal_speed"
+    },
+    "handoff": {
+      "all_data_rows_has_state_1": true,
+      "controller_lowstate_settled_marker": true,
+      "first_locomotion_sample": {
+        "cmd_time_s": 4.3,
+        "csv_row": 2152,
+        "cycle_index": 0,
+        "motion_stage": 2,
+        "state_tick_s": 6.09
+      },
+      "first_valid_controller_state_control_sample": {
+        "cmd_time_s": 0.0,
+        "csv_row": 2,
+        "cycle_index": -1,
+        "has_state": "1",
+        "motion_stage": 0,
+        "state_tick_s": 1.746
+      },
+      "scientific_attempt_consumed": true,
+      "simulator_dds_ready_marker": true
+    },
+    "lifecycle": {
+      "completed_requested_gait_cycles": 64,
+      "pre_motion_health_cycle": 0,
+      "requested_gait_cycles": 64,
+      "return_transition_cycle": 65,
+      "stage_counts": {
+        "0": 1500,
+        "1": 650,
+        "2": 19606,
+        "3": 1402,
+        "4": 1499,
+        "5": 402
+      },
+      "task_completed": true
+    },
+    "rejection_and_safety": {
+      "clean_target_infeasible": 0,
+      "cycle_quality_guard": 0,
+      "emergency_stop": 0,
+      "hard_safety": 0,
+      "strict_wbc_or_qp": 0
+    },
+    "speed": {
+      "csv_measured_velocity_stats_requested_cycles_1_64": {
+        "count": 19204,
+        "max": 0.181423873,
+        "mean": 0.15376908687294313,
+        "median": 0.152893408,
+        "min": 0.12452754,
+        "p05": 0.143945393,
+        "p95": 0.16575295424999997
+      },
+      "csv_progress_metric": {
+        "distance_m": 6.002663668,
+        "duration_s": 39.260000000000005,
+        "end_time_s": 45.35,
+        "endpoint_speed_mps": 0.15289515201222617,
+        "nominal_speed_mps": 0.15166666666666667,
+        "regression_speed_mps": 0.15380595762132146,
+        "samples": 19606,
+        "speed_ratio": 1.014105215085636,
+        "start_time_s": 6.09
+      },
+      "csv_requested_cycles_1_64_progress_metric": {
+        "distance_m": 5.9136864430000005,
+        "duration_s": 38.442,
+        "end_time_s": 45.148,
+        "endpoint_speed_mps": 0.15383399518755528,
+        "nominal_speed_mps": 0.15166666666666667,
+        "regression_speed_mps": 0.15381904325269138,
+        "samples": 19204,
+        "speed_ratio": 1.0141914939737893,
+        "start_time_s": 6.706
+      },
+      "ground_truth_interval": {
+        "abs_pitch_deg": {
+          "count": 19631,
+          "max": 4.1306915661043355,
+          "mean": 0.522061433518534,
+          "median": 0.47603546068965796,
+          "min": 0.0002873781664849241,
+          "p05": 0.11348853134778894,
+          "p95": 1.0406760164174407
+        },
+        "abs_roll_deg": {
+          "count": 19631,
+          "max": 1.1752978354568515,
+          "mean": 0.3130265913291065,
+          "median": 0.22861287803665956,
+          "min": 1.949671524332247e-05,
+          "p05": 0.01522485999639504,
+          "p95": 0.8281970411914457
+        },
+        "base_height_m": {
+          "count": 19631,
+          "max": 0.381574321286,
+          "mean": 0.3743446871474269,
+          "median": 0.374146354636,
+          "min": 0.351076896654,
+          "p05": 0.3733438942735,
+          "p95": 0.37573882767050004
+        },
+        "rows_in_controller_stage2_interval": 19631,
+        "speed_world_x_mps": {
+          "count": 19631,
+          "max": 0.224467739263,
+          "mean": 0.15289089317209495,
+          "median": 0.153515967849,
+          "min": -0.0547438512455,
+          "p05": 0.127449622366,
+          "p95": 0.17165288519400002
+        }
+      },
+      "nominal_commanded_speed_mps": 0.15166666666666667
+    }
+  },
+  "earliest_causal_boundary": "scientific",
+  "experiment": "phase2_clean_baseline_flat_final_20260917",
+  "facts": {
+    "build": {
+      "candidate_tree": "fc89cdb3f110f3846466090e60249f69f731afca",
+      "controller_sha256": "ad4aed86d2562a77c7a1aaf46690f3aedccb22938e7659015ff7ce7e75cb83c5",
+      "mujoco_header_sha256": "3190fd17711cf25b6b7605802df353571e4329ca3849485e56643e49925208cd",
+      "mujoco_library_sha256": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495",
+      "mujoco_root": "/home/che/dev/go2-workspace/current/simulate/mujoco",
+      "mujoco_root_realpath": "/home/che/.mujoco/mujoco-3.3.6",
+      "scene_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+      "simulator_sha256": "8c4ef43acc65938c231a73da6a9dbe7c6b1170d72733f757927316a15d130c1a",
+      "tracked_worktree_status": "clean",
+      "unitree_sdk2_archive_sha256": "08402aea74150dfbfc3fbfded4ca746916a8d892b54d2bade0cbf392a3be4029",
+      "unitree_sdk2_config_sha256": "39f73d1cb56f9d1fd383e1b2c47d30a2bd730e83cc2a49a401c8de5e81b54709"
+    },
+    "contact_dynamics_validation": {
+      "balance_samples": 26003,
+      "force_balance_tolerance_N": 10,
+      "force_balance_validation": "PASS",
+      "gravity_drift_mps2": 0,
+      "gravity_world_mps2": "0,0,-9.81",
+      "max_force_balance_component_residual_N": 5.8481883,
+      "max_force_balance_residual_norm_N": 5.87906345,
+      "max_residual_components_N": "5.8481883,0.00143606866,-0.601729602",
+      "max_residual_time_s": 0.278,
+      "median_dt_s": 0.002,
+      "p95_force_balance_residual_N": 0.505693963,
+      "rms_force_balance_residual_N": 0.212626571,
+      "rows": 26004,
+      "time_span_s": 52.006,
+      "total_mass_max_kg": 15.206408,
+      "total_mass_min_kg": 15.206408,
+      "validation": "PASS"
+    },
+    "contact_ground_truth_validation": {
+      "contact_samples": 84624,
+      "max_contact_grf_norm_N": 526.466334,
+      "max_contact_grf_z_N": 429.144246,
+      "median_dt_s": 0.002,
+      "min_contact_grf_z_N": 5.00511695,
+      "negative_contact_grf_z_samples": 0,
+      "rows": 26004,
+      "time_span_s": 52.006,
+      "validation": "PASS"
+    },
+    "controller_metadata": {
+      "analysis_status": "0",
+      "argv": "--controller-duration 70 --task stand-walk-lie --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.020 --kp 63 --kd 2.8 --raibert-velocity-gain 0.05 --raibert-max-adjustment 0.010 --world-feedback-max 0.060 --world-feedback-slew 0.004 --clean-baseline --tau-limit 35 --max-cycles 64 --headless --domain-id 220",
+      "camera_follow": "false",
+      "completion_status": "0",
+      "contact_ground_truth_analysis_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/contact_ground_truth_analysis.txt",
+      "contact_ground_truth_dynamics_analysis_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/contact_ground_truth_dynamics_analysis.txt",
+      "contact_ground_truth_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/contact_ground_truth.csv",
+      "controller_argv_shell": "--task stand-walk-lie --kernel raibert-trot --period 0.60 --duty 0.75 --step-length 0.091 --foot-lift 0.020 --kp 63 --kd 2.8 --raibert-velocity-gain 0.05 --raibert-max-adjustment 0.010 --world-feedback-max 0.060 --world-feedback-slew 0.004 --clean-baseline --tau-limit 35 --max-cycles 64 --domain-id 220 ",
+      "controller_cpu_affinity": "3,4",
+      "controller_duration_s": "70",
+      "controller_sha256": "ad4aed86d2562a77c7a1aaf46690f3aedccb22938e7659015ff7ce7e75cb83c5",
+      "controller_status": "0",
+      "controller_writer_cpu_affinity": "3",
+      "dds_runtime_config_source": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/scripts/dds_base4000_preload.c",
+      "dds_runtime_config_source_sha256": "65100130add060af08f6404b03668f5018c9b039849bf62620cd99f362d38a3c",
+      "dds_runtime_max_auto_participant_index": "31",
+      "dds_runtime_port_base": "4000",
+      "dds_runtime_support_artifact": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/dds_runtime/dds_base4000_preload.so",
+      "dds_runtime_support_artifact_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "dds_runtime_version": "2",
+      "display": ":0",
+      "domain_id": "220",
+      "dynamics_status": "0",
+      "dynamics_tolerance_n": "10",
+      "environment_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/environment.txt",
+      "event_script_hash": "",
+      "finished_at": "2026-09-17T20:26:57+08:00",
+      "git_branch": "detached",
+      "git_dirty": "false",
+      "git_head": "0009b5fbd1e962e38135922da61245a99b522aab",
+      "ground_truth_status": "0",
+      "headless": "true",
+      "lockstep": "false",
+      "lockstep_trace": "",
+      "max_cycles_requested": "64",
+      "phase1_quantitative_status": "0",
+      "phase2_milestone": "",
+      "profile_path": "",
+      "profile_sha256": "",
+      "quality_status": "0",
+      "run_mode": "bounded",
+      "runtime_dir": "/run/user/1000",
+      "safety_status": "0",
+      "scene_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/unitree_robots/go2/scene_leg_lift_demo.xml",
+      "scene_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+      "seed": "",
+      "sim_bridge_cpu_affinity": "auto",
+      "sim_cpu_affinity": "2",
+      "sim_lidar_cpu_affinity": "auto",
+      "sim_physics_cpu_affinity": "auto",
+      "simulator_sha256": "8c4ef43acc65938c231a73da6a9dbe7c6b1170d72733f757927316a15d130c1a",
+      "started_at": "2026-09-17T20:26:02+08:00",
+      "stop_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/stop.request",
+      "task": "stand-walk-lie",
+      "terrain_analysis_status": "0",
+      "terrain_lidar": "false",
+      "terrain_worker_cpu_affinity": "4",
+      "wall_timeout_s": "90"
+    },
+    "dds_post_state": {
+      "active_go2_processes_empty": true,
+      "domain_id": "220",
+      "interface": "lo",
+      "known_shm_empty": true
+    },
+    "dds_pre_state": {
+      "active_go2_processes_empty": true,
+      "domain_id": "220",
+      "expected_port_range": [
+        59000,
+        59073
+      ],
+      "interface": "lo",
+      "known_shm_empty": true
+    },
+    "host_raw_integrity": {
+      "all_hashes_and_sizes_match": true,
+      "files": [
+        {
+          "actual_sha256": "1aa6218b602c0f5089e43d2e68dd02d06fd7f0b69ae6ed340f7a438dbfdf6f2e",
+          "actual_size": 4203,
+          "expected_sha256": "1aa6218b602c0f5089e43d2e68dd02d06fd7f0b69ae6ed340f7a438dbfdf6f2e",
+          "expected_size": 4203,
+          "matches": true,
+          "path": "build_provenance.txt"
+        },
+        {
+          "actual_sha256": "4d9ee3d2e8a2119afef0ae3358125e9f96c751e1c1913f73ede653b80cccebb7",
+          "actual_size": 89177629,
+          "expected_sha256": "4d9ee3d2e8a2119afef0ae3358125e9f96c751e1c1913f73ede653b80cccebb7",
+          "expected_size": 89177629,
+          "matches": true,
+          "path": "contact_ground_truth.csv"
+        },
+        {
+          "actual_sha256": "a855696398d5b97504078fcd782b195d1709a02705af42c3b3d44d8744a6669a",
+          "actual_size": 215,
+          "expected_sha256": "a855696398d5b97504078fcd782b195d1709a02705af42c3b3d44d8744a6669a",
+          "expected_size": 215,
+          "matches": true,
+          "path": "contact_ground_truth_analysis.txt"
+        },
+        {
+          "actual_sha256": "8a79c9d6883bb29c3bb0e1d7e21dfad9819fbdfe938a71c1189f741caab3943b",
+          "actual_size": 516,
+          "expected_sha256": "8a79c9d6883bb29c3bb0e1d7e21dfad9819fbdfe938a71c1189f741caab3943b",
+          "expected_size": 516,
+          "matches": true,
+          "path": "contact_ground_truth_dynamics_analysis.txt"
+        },
+        {
+          "actual_sha256": "6d28e2e3698c68c890c4b52a9826517fc2e4f29f8c0e36cf17a4d85dbac78ce2",
+          "actual_size": 32365,
+          "expected_sha256": "6d28e2e3698c68c890c4b52a9826517fc2e4f29f8c0e36cf17a4d85dbac78ce2",
+          "expected_size": 32365,
+          "matches": true,
+          "path": "controller.log"
+        },
+        {
+          "actual_sha256": "01f4342cdae3c640ea21b3ef9b3283b25199f16bc2799a66689ab808137e1e17",
+          "actual_size": 907,
+          "expected_sha256": "01f4342cdae3c640ea21b3ef9b3283b25199f16bc2799a66689ab808137e1e17",
+          "expected_size": 907,
+          "matches": true,
+          "path": "controller_build.log"
+        },
+        {
+          "actual_sha256": "cfd4a5cf838cf491575156eb7b209bf726571a02c11748dde72382e914c97de9",
+          "actual_size": 68926310,
+          "expected_sha256": "cfd4a5cf838cf491575156eb7b209bf726571a02c11748dde72382e914c97de9",
+          "expected_size": 68926310,
+          "matches": true,
+          "path": "data.csv"
+        },
+        {
+          "actual_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+          "actual_size": 15560,
+          "expected_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+          "expected_size": 15560,
+          "matches": true,
+          "path": "dds_runtime/dds_base4000_preload.so"
+        },
+        {
+          "actual_sha256": "2e09a1b487e54cb1c208cc768a88202d41a85b944fffa48954c098332ee920ea",
+          "actual_size": 3205,
+          "expected_sha256": "2e09a1b487e54cb1c208cc768a88202d41a85b944fffa48954c098332ee920ea",
+          "expected_size": 3205,
+          "matches": true,
+          "path": "dds_runtime/post_clean_state.txt"
+        },
+        {
+          "actual_sha256": "920d180c71faea79f70407a58fb89357cdc9ecc7b8334eddb61a56c6d7428340",
+          "actual_size": 3199,
+          "expected_sha256": "920d180c71faea79f70407a58fb89357cdc9ecc7b8334eddb61a56c6d7428340",
+          "expected_size": 3199,
+          "matches": true,
+          "path": "dds_runtime/post_state.txt"
+        },
+        {
+          "actual_sha256": "c5320d65590db871a86e1ce7af6ebe5782bd36714fd0f5ebedc7772df7f34b1a",
+          "actual_size": 3198,
+          "expected_sha256": "c5320d65590db871a86e1ce7af6ebe5782bd36714fd0f5ebedc7772df7f34b1a",
+          "expected_size": 3198,
+          "matches": true,
+          "path": "dds_runtime/pre_state.txt"
+        },
+        {
+          "actual_sha256": "633a86080623548a9d9153a5e8c044ce1fb1d3ee2e63458333957fcd3ff8a8df",
+          "actual_size": 200,
+          "expected_sha256": "633a86080623548a9d9153a5e8c044ce1fb1d3ee2e63458333957fcd3ff8a8df",
+          "expected_size": 200,
+          "matches": true,
+          "path": "dds_runtime/preparation_cleanup.txt"
+        },
+        {
+          "actual_sha256": "e43003d65b0c57a3244d6a16d4f9d8118cb485f381d15e85db78a78e99000e35",
+          "actual_size": 872,
+          "expected_sha256": "e43003d65b0c57a3244d6a16d4f9d8118cb485f381d15e85db78a78e99000e35",
+          "expected_size": 872,
+          "matches": true,
+          "path": "dds_runtime/runtime_metadata.txt"
+        },
+        {
+          "actual_sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+          "actual_size": 100,
+          "expected_sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+          "expected_size": 100,
+          "matches": true,
+          "path": "environment.txt"
+        },
+        {
+          "actual_sha256": "61141434be7e5398d1d3c8aec6dfd118f1a9c37c3e3e254a153e35312e0a8d0d",
+          "actual_size": 3085,
+          "expected_sha256": "61141434be7e5398d1d3c8aec6dfd118f1a9c37c3e3e254a153e35312e0a8d0d",
+          "expected_size": 3085,
+          "matches": true,
+          "path": "run_manifest.json"
+        },
+        {
+          "actual_sha256": "169300e8c14cfe67ca8caa3b97153a632e9004e09fe20e3390f2460606fcd4ac",
+          "actual_size": 3566,
+          "expected_sha256": "169300e8c14cfe67ca8caa3b97153a632e9004e09fe20e3390f2460606fcd4ac",
+          "expected_size": 3566,
+          "matches": true,
+          "path": "run_metadata.txt"
+        },
+        {
+          "actual_sha256": "67038352310a338b1f6cceeb2583fa20877a613b15cdd39537692f772892ddec",
+          "actual_size": 4078,
+          "expected_sha256": "67038352310a338b1f6cceeb2583fa20877a613b15cdd39537692f772892ddec",
+          "expected_size": 4078,
+          "matches": true,
+          "path": "simulator.log"
+        },
+        {
+          "actual_sha256": "636d31b21716caf40689697a3297e93a2ff0b8a2fc3ed4e2ff798c7a9235a7b1",
+          "actual_size": 1454,
+          "expected_sha256": "636d31b21716caf40689697a3297e93a2ff0b8a2fc3ed4e2ff798c7a9235a7b1",
+          "expected_size": 1454,
+          "matches": true,
+          "path": "simulator_build.log"
+        }
+      ],
+      "indexed_files": 18
+    },
+    "run_manifest": {
+      "analyzers": {
+        "analyze_contact_dynamics.py": "ba17187dd7d979e2dbdfd288c96f7193e496b7cf51c2b96cbcc1461a2f7bcd37",
+        "analyze_contact_ground_truth.py": "a5426a8f6af8dbb15202c48eb6411afd936456a2a34d5d5ba678ebe7b771886f"
+      },
+      "artifacts": {
+        "controller_sha256": "ad4aed86d2562a77c7a1aaf46690f3aedccb22938e7659015ff7ce7e75cb83c5",
+        "event_script_sha256": "",
+        "phase2_acceptance_contract_sha256": "6d5895644fd0f471b6b09a4a920b0663855bf7a0a2b90c226220d3ef77b1c514",
+        "phase2_analyzer_sha256": "",
+        "phase2_b0_analyzer_sha256": "63c4467c6ffbc9e09e98f86af2842fc5a59584eb8d7b8dbc1845b46746e848bb",
+        "phase2_b123_analyzer_sha256": "178009daf9600b8711cac03a51b50f05031ba98f45dfbbdc23f6f1706f4fd873",
+        "phase2_contract_sha256": "",
+        "phase2_fixed_3mps_analyzer_sha256": "39bc8b24774766c3800c053effe4804287ab2cb59e94ec9ff250edd0ab540f53",
+        "phase2_holdout_manifest_sha256": "2550526025594aa379441e1d7eb071c8809abeaf9234f6cf8a335f22288a5a40",
+        "scenario_sha256": "12286418247d0e240ae131b5ae5c60f3a7a481d4754aefe4517476e937aa05b8",
+        "simulator_sha256": "8c4ef43acc65938c231a73da6a9dbe7c6b1170d72733f757927316a15d130c1a"
+      },
+      "effective_argv": [
+        "--task",
+        "stand-walk-lie",
+        "--kernel",
+        "raibert-trot",
+        "--period",
+        "0.60",
+        "--duty",
+        "0.75",
+        "--step-length",
+        "0.091",
+        "--foot-lift",
+        "0.020",
+        "--kp",
+        "63",
+        "--kd",
+        "2.8",
+        "--raibert-velocity-gain",
+        "0.05",
+        "--raibert-max-adjustment",
+        "0.010",
+        "--world-feedback-max",
+        "0.060",
+        "--world-feedback-slew",
+        "0.004",
+        "--clean-baseline",
+        "--tau-limit",
+        "35",
+        "--max-cycles",
+        "64",
+        "--domain-id",
+        "220"
+      ],
+      "profile": {
+        "path": "",
+        "sha256": ""
+      },
+      "repository": {
+        "git_branch": "detached",
+        "git_commit": "0009b5fbd1e962e38135922da61245a99b522aab",
+        "git_dirty": "false"
+      },
+      "run": {
+        "controller_duration_s": "70",
+        "domain_id": "220",
+        "headless": "true",
+        "initial_x_m": "0.0",
+        "initial_y_m": "0.0",
+        "phase2_milestone": "",
+        "run_mode": "bounded",
+        "scene_file": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/unitree_robots/go2/scene_leg_lift_demo.xml",
+        "wall_timeout_s": "90"
+      },
+      "run_id": "C",
+      "schema_version": 1,
+      "seed": "",
+      "semantic_env_snapshot": {
+        "TROT_SIM_BRIDGE_CPU": "",
+        "TROT_SIM_LIDAR_CPU": "",
+        "TROT_SIM_PHYSICS_CPU": "",
+        "TROT_TERRAIN_CPU": "4",
+        "TROT_WRITER_CPU": "3"
+      },
+      "statuses": {
+        "analysis_status": "0",
+        "completion_status": "0",
+        "controller_status": "0",
+        "dynamics_status": "0",
+        "ground_truth_status": "0",
+        "phase1_quantitative_status": "0",
+        "quality_status": "0",
+        "safety_status": "0",
+        "terrain_analysis_status": "0"
+      },
+      "terrain_timing": {
+        "duty_factor": null,
+        "has_stage_c_timing": false,
+        "period_s": null,
+        "timing_provenance": "none",
+        "window_end_s": null,
+        "window_start_s": null
+      },
+      "timestamps": {
+        "finished_at": "2026-09-17T20:26:57+08:00",
+        "started_at": "2026-09-17T20:26:02+08:00"
+      }
+    },
+    "runtime_metadata": {
+      "config_source": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/scripts/dds_base4000_preload.c",
+      "config_source_sha256": "65100130add060af08f6404b03668f5018c9b039849bf62620cd99f362d38a3c",
+      "cyclonedds_version": "0.10.2",
+      "dds_include": "/opt/unitree_robotics/include",
+      "domain_gain": "250",
+      "domain_id": "220",
+      "effective_ld_preload": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/dds_runtime/dds_base4000_preload.so",
+      "interface": "lo",
+      "max_auto_participant_index": "31",
+      "original_ld_preload": "",
+      "participant_gain": "2",
+      "port_base": "4000",
+      "runtime_version": "2",
+      "support_artifact": "/home/che/dev/go2-agent/tasks/42832a74b4115d8d/example/cpp/experiments/_runs/phase2_clean_baseline_flat_final_20260917/C/dds_runtime/dds_base4000_preload.so",
+      "support_artifact_sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "topic_lowstate": "rt/lowstate"
+    }
+  },
+  "host": {
+    "elapsed_s": 115.275903,
+    "environment": {
+      "LD_LIBRARY_PATH": "/home/che/dev/go2-workspace/current/simulate/mujoco/lib"
+    },
+    "error": null,
+    "finished_at": "2026-09-17T12:26:58.038404+00:00",
+    "launched": true,
+    "manifest_sha256": "917e2b409a8d62239b6d88d61f103609c287136b98f86bb4214c2f54db053797",
+    "returncode": 0,
+    "started_at": "2026-09-17T12:25:02.762501+00:00",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "34859ccbff8aaa314154352eaf3cd8a91a139c79e372b303b8dc823c4b1e6f0f",
+    "timed_out": false,
+    "timeout_s": 600
+  },
+  "luna_interpretation": {
+    "basis": "All frozen pass criteria are supported by the immutable host record, raw logs, CSV, and deterministic formulas above.",
+    "interpretation_is_authoritative": false,
+    "proposed_classification": "CLEAN_BASELINE_FLAT_REPRODUCED",
+    "review_instruction": "Sol may recompute from the indexed raw files and overturn this proposed classification without rerunning the canary."
+  },
+  "reason_code": "CLEAN_BASELINE_FLAT_REPRODUCED",
+  "schema_version": 1,
+  "task": {
+    "candidate_commit": "0009b5fbd1e962e38135922da61245a99b522aab",
+    "exact_parent": "2eb92bc62be6fba2dee26ac9229520d8835c6246",
+    "frozen_command": [
+      "bash",
+      "example/cpp/scripts/run_trot_exact_source.sh",
+      "90",
+      "_runs/phase2_clean_baseline_flat_final_20260917/C",
+      "--controller-duration",
+      "70",
+      "--task",
+      "stand-walk-lie",
+      "--kernel",
+      "raibert-trot",
+      "--period",
+      "0.60",
+      "--duty",
+      "0.75",
+      "--step-length",
+      "0.091",
+      "--foot-lift",
+      "0.020",
+      "--kp",
+      "63",
+      "--kd",
+      "2.8",
+      "--raibert-velocity-gain",
+      "0.05",
+      "--raibert-max-adjustment",
+      "0.010",
+      "--world-feedback-max",
+      "0.060",
+      "--world-feedback-slew",
+      "0.004",
+      "--clean-baseline",
+      "--tau-limit",
+      "35",
+      "--max-cycles",
+      "64",
+      "--headless",
+      "--domain-id",
+      "220"
+    ],
+    "primary_domain": 220,
+    "scientific_clean_baseline_parent": "cdb0888d02c195935a88d9c404fb4d45c5b0ac1a",
+    "task_commit": "42832a74b4115d8debc05fd42cec762989d5337b",
+    "task_path": "docs/research/TASK_PHASE2_CLEAN_BASELINE_FLAT_FINAL_20260917.md"
+  }
+}
