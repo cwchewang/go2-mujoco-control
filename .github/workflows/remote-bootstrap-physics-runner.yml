@@ -93,13 +93,36 @@ jobs:
               '[Install]' \
               'WantedBy=default.target' >"$unit"
             systemctl --user daemon-reload
-            systemctl --user enable --now actions-runner-physics.service
+            for proxy_var in HTTP_PROXY HTTPS_PROXY ALL_PROXY NO_PROXY http_proxy https_proxy all_proxy no_proxy; do
+              if [ -n "${!proxy_var:-}" ]; then
+                systemctl --user set-environment "$proxy_var=${!proxy_var}"
+              fi
+            done
+            systemctl --user enable actions-runner-physics.service >/dev/null
+            systemctl --user restart actions-runner-physics.service
             persistence="user-systemd"
           else
             ( export RUNNER_TRACKING_ID=""; nohup ./run.sh >"$target_dir/runner.log" 2>&1 </dev/null & )
             persistence="nohup-current-session"
           fi
 
-          sleep 5
-          echo "ATLAS_BOOTSTRAP_RESULT=REGISTERED"
+          sleep 8
+          if [ "$persistence" = "user-systemd" ]; then
+            systemctl --user is-active --quiet actions-runner-physics.service || {
+              echo "ATLAS_BOOTSTRAP_RESULT=SERVICE_NOT_ACTIVE"
+              systemctl --user --no-pager status actions-runner-physics.service || true
+              exit 24
+            }
+          fi
+          runner_status="$(gh api "repos/$TARGET_REPO/actions/runners" --jq '.runners[] | select(.name=="'"$TARGET_NAME"'") | .status' | head -n1)"
+          if [ "$runner_status" != "online" ]; then
+            echo "ATLAS_BOOTSTRAP_RESULT=RUNNER_NOT_ONLINE"
+            echo "ATLAS_BOOTSTRAP_RUNNER_STATUS=${runner_status:-missing}"
+            if [ "$persistence" = "user-systemd" ]; then
+              journalctl --user -u actions-runner-physics.service -n 30 --no-pager || true
+            fi
+            exit 25
+          fi
+          echo "ATLAS_BOOTSTRAP_RESULT=REGISTERED_AND_ONLINE"
           echo "ATLAS_BOOTSTRAP_PERSISTENCE=$persistence"
+          echo "ATLAS_BOOTSTRAP_RUNNER_STATUS=$runner_status"
