@@ -1,4 +1,4 @@
-name: Atlas task dispatcher
+name: Praxis task dispatcher
 
 on:
   issues:
@@ -17,7 +17,7 @@ jobs:
       (github.event.issue.author_association == 'OWNER' ||
        github.event.issue.author_association == 'MEMBER' ||
        github.event.issue.author_association == 'COLLABORATOR')
-    uses: kairoi-k/go2-research-orchestrator/.github/workflows/atlas-dispatch-reusable.yml@2d0e2f1e4245a6ccf4aae47a81171d40a16ef0d0
+    uses: cwchewang/praxis-research-runtime/.github/workflows/atlas-dispatch-reusable.yml@55ff70d26d8b919c5f4190a91e00979832497e75
     with:
       project-config: .atlas/project.json
-      core-ref: 2d0e2f1e4245a6ccf4aae47a81171d40a16ef0d0
+      core-ref: 55ff70d26d8b919c5f4190a91e00979832497e75
