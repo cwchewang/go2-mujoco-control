@@ -26,7 +26,9 @@ fi
 timeout_arg="$1"
 experiment_name="$2"
 
-if [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
+if [[ "$experiment_name" == example/cpp/experiments/_runs/* ]]; then
+  run_dir="$repo_dir/$experiment_name"
+elif [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
   run_dir="$cpp_dir/experiments/$experiment_name"
 else
   run_dir="$cpp_dir/experiments/_runs/$experiment_name"
