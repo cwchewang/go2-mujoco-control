@@ -1,0 +1,169 @@
+{
+  "candidate_commit": "4b7a2bd2593a298d08bd244e21ffea143a217b1a",
+  "command": [
+    "bash",
+    "example/cpp/scripts/run_trot_exact_source.sh",
+    "45",
+    "_runs/praxis_go2_live_canary_r1_20260919",
+    "--controller-duration",
+    "15",
+    "--kernel",
+    "raibert-trot",
+    "--period",
+    "0.60",
+    "--duty",
+    "0.75",
+    "--step-length",
+    "0.091",
+    "--foot-lift",
+    "0.020",
+    "--kp",
+    "63",
+    "--kd",
+    "2.8",
+    "--raibert-velocity-gain",
+    "0.05",
+    "--raibert-max-adjustment",
+    "0.010",
+    "--world-feedback-max",
+    "0.060",
+    "--world-feedback-slew",
+    "0.004",
+    "--clean-baseline",
+    "--tau-limit",
+    "35",
+    "--max-cycles",
+    "6",
+    "--headless",
+    "--domain-id",
+    "218"
+  ],
+  "domain_id": 218,
+  "environment": {},
+  "error": null,
+  "evidence": [
+    {
+      "path": "build_provenance.txt",
+      "sha256": "d1994a5d9d5e654123a22d9fd4bd819387a175cbf63c92577b96e79e844ce2cb",
+      "size": 4058,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth.csv",
+      "sha256": "90ba01833a1847a2f2d2de3924058b6f58e87377902f665e69e9bc8dbeff23ce",
+      "size": 23414764,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_analysis.txt",
+      "sha256": "2dbb202d3981ee9507f7e58c9e467b19f99158356457ca50728db485c9239eba",
+      "size": 214,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_dynamics_analysis.txt",
+      "sha256": "b64d2098453f5a51533544d9c74fc82ae9e66c386a4c7d046af2f9b9e843fdcc",
+      "size": 514,
+      "type": "file"
+    },
+    {
+      "path": "controller.log",
+      "sha256": "391b5232044134a35ff1b84e719135f0ba479e84395ca1e2297fc67917f06e51",
+      "size": 4479,
+      "type": "file"
+    },
+    {
+      "path": "controller_build.log",
+      "sha256": "c8071d1f44a7829c2d89efe903316b9299aa3e1ae9868db1751edde7a786cde4",
+      "size": 1592,
+      "type": "file"
+    },
+    {
+      "path": "data.csv",
+      "sha256": "56831788d1645ce59bf1929163613da359dc79322055c0285db1d3b9903dd8d2",
+      "size": 15847457,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/dds_base4000_preload.so",
+      "sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "size": 15560,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_clean_state.txt",
+      "sha256": "69a0c19bf72e3b00f67e7e92cdafdfa4f439a8a2849097b7cd2c85bdeda19a7e",
+      "size": 3190,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_state.txt",
+      "sha256": "a7481020e286bba9ae63157124d33cc2145f96ced6b7a76d89e085abece98126",
+      "size": 3184,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/pre_state.txt",
+      "sha256": "86014e955e03d7b61cbfdc17de21e440a602b7640163d80286d1cfc6515f9355",
+      "size": 3183,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/preparation_cleanup.txt",
+      "sha256": "50ca2bb03af798a6c3c97c224398d9077f0f365d35a483168a264858db5ceb75",
+      "size": 200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/runtime_metadata.txt",
+      "sha256": "05cc2e3e30098c3d0ac623633fd67c1d942910f70a241ca79980eb480828c131",
+      "size": 857,
+      "type": "file"
+    },
+    {
+      "path": "environment.txt",
+      "sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+      "size": 100,
+      "type": "file"
+    },
+    {
+      "path": "run_manifest.json",
+      "sha256": "24e89c9c1e5781a88f905eefe37dcd3d8809a819d920235af1206d793f6908ce",
+      "size": 3082,
+      "type": "file"
+    },
+    {
+      "path": "run_metadata.txt",
+      "sha256": "6436b92d8d99075554a0f726a5bf6b54bbe51dc5e8873d1d363cf2d4f08b5f48",
+      "size": 3451,
+      "type": "file"
+    },
+    {
+      "path": "simulator.log",
+      "sha256": "fd35da635d731ae90fcd3f2282c80a45e947468eb4c95192e0b90b85ad404200",
+      "size": 4078,
+      "type": "file"
+    },
+    {
+      "path": "simulator_build.log",
+      "sha256": "f2cb6b9c1be3e75a7fb0e63443650dd2fac883e76272b741638b764906c93291",
+      "size": 2196,
+      "type": "file"
+    }
+  ],
+  "finished_at": "2026-09-19T11:17:54.272627+00:00",
+  "launched": true,
+  "manifest_sha256": "9243032a07c2c52ade97be948c53c6ad82e6c40e07d745afbd4633ad68d004e7",
+  "returncode": 0,
+  "run_dir": "example/cpp/experiments/_runs/praxis_go2_live_canary_r1_20260919",
+  "schema_version": 1,
+  "started_at": "2026-09-19T11:16:38.617580+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/praxis-dispatch/issue-118/host-experiment.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "/home/che/actions-runner/_work/_temp/praxis-dispatch/issue-118/host-experiment.stdout.log",
+  "stdout_sha256": "29ef44a803cc5d859931431e6f79cf9643530bfcc0843a82c58343d5a4799689",
+  "task_commit": "4b7a2bd2593a298d08bd244e21ffea143a217b1a",
+  "task_path": "docs/research/TASK_PRAXIS_GO2_LIVE_CANARY_R1_20260919.md",
+  "timed_out": false,
+  "timeout_s": 300
+}
