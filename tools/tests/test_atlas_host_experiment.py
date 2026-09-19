@@ -23,6 +23,8 @@ def _manifest() -> dict[str, object]:
         "command": [
             "bash",
             "example/cpp/scripts/run_trot.sh",
+            "45",
+            "example/cpp/experiments/_runs/example/C",
             "--domain-id",
             "220",
         ],
