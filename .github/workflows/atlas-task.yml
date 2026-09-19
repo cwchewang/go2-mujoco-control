@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: praxis-dispatch-${{ github.repository }}
+  group: praxis-dispatch-v2-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           core="$RUNNER_TEMP/praxis-core"
           mkdir -p "$RUNNER_TEMP/praxis-dispatch"
-          PYTHONPATH="$core"             python3 -m research_orchestrator.atlas_core.cli dispatch               --repository "$GITHUB_REPOSITORY"               --repo-root "$GITHUB_WORKSPACE/target"               --core-root "$core"               --config "$GITHUB_WORKSPACE/target/.atlas/project.json"               --output-root "$RUNNER_TEMP/praxis-dispatch"
+          PYTHONPATH="$core"             python3 -m research_orchestrator.atlas_core.cli dispatch               --repository "$GITHUB_REPOSITORY"               --repo-root "$HOME/dev/go2-workspace/current"               --core-root "$core"               --config "$HOME/dev/go2-workspace/current/.atlas/project.json"               --output-root "$RUNNER_TEMP/praxis-dispatch"
 
       - name: Upload Praxis dispatcher evidence
         if: always()
