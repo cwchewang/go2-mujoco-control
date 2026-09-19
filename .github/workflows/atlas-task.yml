@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: praxis-dispatch-v2-${{ github.repository }}
+  group: praxis-dispatch-v3-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
@@ -28,6 +28,12 @@ jobs:
       ATLAS_MACHINE_MAX_WORKERS: "4"
       PRAXIS_CORE_REF: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
     steps:
+      - name: Checkout Go2 repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Materialize pinned private Praxis core
         shell: bash
         run: |
@@ -50,15 +56,9 @@ jobs:
           set -euo pipefail
           export PATH="$HOME/.local/bin:$PATH"
           core="$RUNNER_TEMP/praxis-core"
-          anchor="$HOME/dev/go2-workspace/current"
-          config="$RUNNER_TEMP/go2-project.json"
-          test -d "$anchor/.git" || {
-            echo "Go2 persistent repository anchor is missing: $anchor" >&2
-            exit 2
-          }
-          git -C "$anchor" fetch --depth=1 origin main
-          git -C "$anchor" show FETCH_HEAD:.atlas/project.json > "$config"
-          test -s "$config"
+          anchor="$GITHUB_WORKSPACE"
+          test -d "$anchor/.git"
+          test -s "$anchor/.atlas/project.json"
           test -f "$anchor/tools/atlas_research_task_v6.py"
           mkdir -p "$RUNNER_TEMP/praxis-dispatch"
           PYTHONPATH="$core" \
@@ -66,7 +66,7 @@ jobs:
               --repository "$GITHUB_REPOSITORY" \
               --repo-root "$anchor" \
               --core-root "$core" \
-              --config "$config" \
+              --config "$anchor/.atlas/project.json" \
               --output-root "$RUNNER_TEMP/praxis-dispatch"
 
       - name: Upload Praxis dispatcher evidence
