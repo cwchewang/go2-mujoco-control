@@ -2,6 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
+source "$script_dir/experiment_path.sh"
 cpp_dir="$(cd "$script_dir/.." && pwd)"
 repo_dir="$(cd "$cpp_dir/../.." && pwd)"
 source "$script_dir/dds_runtime.sh"
@@ -203,11 +204,7 @@ for ((i=0; i < ${#controller_args[@]}; ++i)); do
   fi
 done
 # Named go2_* directories stay under experiments/; other output goes to experiments/_runs/.
-if [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
-  experiment_dir="$cpp_dir/experiments/$experiment_name"
-else
-  experiment_dir="$cpp_dir/experiments/_runs/$experiment_name"
-fi
+experiment_dir="$(resolve_go2_experiment_dir "$repo_dir" "$cpp_dir" "$experiment_name")"
 ground_truth_file="$experiment_dir/contact_ground_truth.csv"
 ground_truth_analysis_file="$experiment_dir/contact_ground_truth_analysis.txt"
 ground_truth_dynamics_analysis_file="$experiment_dir/contact_ground_truth_dynamics_analysis.txt"
