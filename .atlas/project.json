@@ -3,17 +3,30 @@
   "project_id": "go2-mujoco-control",
   "default_branch": "main",
   "queue_label": "atlas-task",
-  "accepted_task_types": ["research-task"],
+  "accepted_task_types": [
+    "research-task"
+  ],
   "task_root": "docs/research/",
   "branch_prefix": "research/",
-  "protected_prefixes": [".github/", "tools/atlas_"],
-  "evidence_roots": ["example/cpp/experiments/_runs/"],
-  "instructions": ["AGENTS.md", "docs/research/SOP.md"],
+  "protected_prefixes": [
+    ".github/",
+    "tools/atlas_"
+  ],
+  "evidence_roots": [
+    "example/cpp/experiments/_runs/"
+  ],
+  "instructions": [
+    "AGENTS.md",
+    "docs/research/SOP.md"
+  ],
   "project_max_workers": 4,
   "worker": {
     "kind": "adapter",
     "model": "gpt-5.6-luna",
-    "adapter_command": ["python3", "tools/atlas_research_task_v6.py"],
+    "adapter_command": [
+      "python3",
+      "tools/atlas_research_task_v6.py"
+    ],
     "push_request": "research-push.json",
     "push_command": [
       "python3",
@@ -23,6 +36,12 @@
     ],
     "environment": {
       "GO2_RESEARCH_WORKER_LOCK": "/tmp/atlas-host-live.lock"
+    }
+  },
+  "capability_transports": {
+    "go2-mujoco-live": {
+      "kind": "legacy-json-comment",
+      "marker": "ATLAS_HOST_EXPERIMENT"
     }
   }
 }
