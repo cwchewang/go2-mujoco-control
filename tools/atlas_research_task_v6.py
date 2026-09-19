@@ -22,6 +22,7 @@ import atlas_research_task as base
 import atlas_research_task_v2 as v2
 import atlas_research_task_v3 as v3
 import atlas_research_task_v4 as v4
+from research_orchestrator.atlas_core import control_signals
 
 WORKER_VERSION = 6
 PROGRESS_PREFIX = "ATLAS_PROGRESS "
@@ -190,6 +191,7 @@ def _run_offline_task(
         last_event="Luna offline preparation/analysis started",
     )
 
+    control_signals.check_cancelled()
     v2._codex_command = v3._codex_command
     return_code, thread_id = v3._run_codex(
         worktree=worktree,
@@ -218,6 +220,7 @@ def _run_offline_task(
             f"codex exec failed with exit code {return_code}; see worker logs"
         )
 
+    control_signals.check_cancelled()
     result_commit, staged_paths = v2._trusted_commit(worktree, args.task_path)
     validated_commit, changed = base._validate_closeout(worktree, args.task_commit)
     if validated_commit != result_commit:
@@ -310,6 +313,7 @@ def _run_host_task(
     candidate_commit = state.get("candidate_commit")
 
     if host_record is None:
+        control_signals.check_cancelled()
         state["status"] = "preparing"
         base._write_state(state_path, state)
         _emit_progress(
@@ -343,6 +347,7 @@ def _run_host_task(
             raise base.ResearchTaskError(
                 f"Luna preparation failed with exit code {return_code}; see worker logs"
             )
+        control_signals.check_cancelled()
         candidate_commit = v4._trusted_commit_if_dirty(
             worktree, args.task_path, phase="candidate"
         )
@@ -357,15 +362,25 @@ def _run_host_task(
             last_event="candidate frozen for trusted host",
         )
 
-        state["status"] = "waiting_for_host"
+        task_text = control_signals.read_task_text(worktree, args.task_path)
+        requires_approval = control_signals.approval_required(task_text)
+        state["status"] = (
+            "waiting_for_approval" if requires_approval else "waiting_for_host"
+        )
         base._write_state(state_path, state)
         _emit_progress(
-            "waiting_for_host",
+            state["status"],
             branch=args.branch,
             task_commit=args.task_commit,
             candidate_commit=candidate_commit,
-            last_event="waiting for exclusive host-live capability",
+            last_event=(
+                "waiting for explicit host approval"
+                if requires_approval
+                else "waiting for exclusive host-live capability"
+            ),
         )
+        control_signals.wait_for_host_permission(task_text)
+        control_signals.check_cancelled()
         with _exclusive_lock(host_lock_path, blocking=True):
             state["status"] = "host_running"
             base._write_state(state_path, state)
@@ -540,7 +555,11 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except base.ResearchTaskError as exc:
+    except control_signals.TaskCancelled as exc:
+        _emit_progress("cancelled", last_event=str(exc)[:300])
+        print(f"research task cancelled: {exc}", file=sys.stderr)
+        raise SystemExit(3)
+    except (base.ResearchTaskError, control_signals.ControlSignalError) as exc:
         _emit_progress("failed", last_event=str(exc)[:300])
         print(f"research task failed: {exc}", file=sys.stderr)
         raise SystemExit(2)
