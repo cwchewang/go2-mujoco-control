@@ -28,9 +28,9 @@ jobs:
       ATLAS_MACHINE_MAX_WORKERS: "4"
       PRAXIS_CORE_REF: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
       GO2_CANONICAL_REPO: https://github.com/cwchewang/go2-mujoco-control.git
-      GO2_PRAXIS_ANCHOR: /home/che/dev/go2-workspace/praxis-anchor
-      GO2_PRAXIS_TASKS: /home/che/dev/go2-praxis/tasks
-      GO2_PRAXIS_STATE: /home/che/.local/state/praxis-go2-worker
+      GO2_PRAXIS_ANCHOR_REL: dev/go2-workspace/praxis-anchor
+      GO2_PRAXIS_TASKS_REL: dev/go2-praxis/tasks
+      GO2_PRAXIS_STATE_REL: .local/state/praxis-go2-worker
     steps:
       - name: Materialize pinned private Praxis core
         shell: bash
@@ -50,8 +50,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          anchor="$GO2_PRAXIS_ANCHOR"
-          mkdir -p "$(dirname "$anchor")" "$GO2_PRAXIS_TASKS" "$GO2_PRAXIS_STATE"
+          anchor="$HOME/$GO2_PRAXIS_ANCHOR_REL"
+          tasks="$HOME/$GO2_PRAXIS_TASKS_REL"
+          state="$HOME/$GO2_PRAXIS_STATE_REL"
+          mkdir -p "$(dirname "$anchor")" "$tasks" "$state"
+          {
+            echo "GO2_PRAXIS_ANCHOR=$anchor"
+            echo "GO2_PRAXIS_TASKS=$tasks"
+            echo "GO2_PRAXIS_STATE=$state"
+          } >> "$GITHUB_ENV"
 
           if [[ ! -e "$anchor" ]]; then
             git clone --filter=blob:none --no-checkout "$GO2_CANONICAL_REPO" "$anchor"
