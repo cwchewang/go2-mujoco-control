@@ -40,14 +40,34 @@ jobs:
             exit 0
           fi
 
-          if [[ -f "$target_dir/.runner" ]]; then
-            remove_token="$(gh api --method POST "repos/$TARGET_REPO/actions/runners/remove-token" --jq .token)"
-            (cd "$target_dir" && ./config.sh remove --token "$remove_token" >/dev/null)
-            unset remove_token
-          fi
+          backup_dir="$(mktemp -d)"
+          restore_local_identity() {
+            for name in .runner .credentials .credentials_rsaparams .env .path; do
+              if [[ -f "$backup_dir/$name" ]]; then
+                cp -p "$backup_dir/$name" "$target_dir/$name"
+              fi
+            done
+          }
+          cleanup() {
+            rm -rf "$backup_dir"
+          }
+          trap cleanup EXIT
+
+          systemctl --user stop "$SERVICE_NAME" >/dev/null 2>&1 || true
+          for name in .runner .credentials .credentials_rsaparams .env .path; do
+            if [[ -f "$target_dir/$name" ]]; then
+              cp -p "$target_dir/$name" "$backup_dir/$name"
+              rm -f "$target_dir/$name"
+            fi
+          done
 
           reg_token="$(gh api --method POST "repos/$TARGET_REPO/actions/runners/registration-token" --jq .token)"
-          (cd "$target_dir" && ./config.sh --unattended --replace --url "https://github.com/$TARGET_REPO" --token "$reg_token" --name "$TARGET_NAME" --labels atlas --work _work >/dev/null)
+          if ! (cd "$target_dir" && ./config.sh --unattended --replace --url "https://github.com/$TARGET_REPO" --token "$reg_token" --name "$TARGET_NAME" --labels atlas --work _work >/dev/null); then
+            unset reg_token
+            restore_local_identity
+            echo "ATLAS_PHYSICS_REPAIR=RECONFIGURE_FAILED_RESTORED_LOCAL_IDENTITY" >&2
+            exit 23
+          fi
           unset reg_token
 
           unit_dir="$HOME/.config/systemd/user"
