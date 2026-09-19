@@ -22,7 +22,39 @@ import atlas_research_task as base
 import atlas_research_task_v2 as v2
 import atlas_research_task_v3 as v3
 import atlas_research_task_v4 as v4
-from research_orchestrator.atlas_core import control_signals
+try:
+    from research_orchestrator.atlas_core import control_signals
+except ModuleNotFoundError:
+    class _MissingControlSignals:
+        class TaskCancelled(RuntimeError):
+            pass
+
+        class ControlSignalError(RuntimeError):
+            pass
+
+        @staticmethod
+        def check_cancelled() -> None:
+            return None
+
+        @staticmethod
+        def read_task_text(worktree: Path, task_path: str) -> str:
+            return (worktree / task_path).read_text(encoding="utf-8")
+
+        @staticmethod
+        def approval_required(task_text: str) -> bool:
+            return (
+                '"required_before":"before_host"' in task_text
+                or '"required_before": "before_host"' in task_text
+            )
+
+        @classmethod
+        def wait_for_host_permission(cls, task_text: str) -> None:
+            if cls.approval_required(task_text):
+                raise cls.ControlSignalError(
+                    "host approval requested but this Praxis core lacks control signals"
+                )
+
+    control_signals = _MissingControlSignals()
 
 WORKER_VERSION = 6
 PROGRESS_PREFIX = "ATLAS_PROGRESS "
