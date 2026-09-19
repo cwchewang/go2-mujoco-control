@@ -60,8 +60,22 @@ jobs:
             echo "GO2_PRAXIS_STATE=$state"
           } >> "$GITHUB_ENV"
 
+          if [[ -e "$anchor" ]]; then
+            if [[ "$(git -C "$anchor" rev-parse --is-inside-work-tree 2>/dev/null || true)" == "true" ]]; then
+              actual_origin="$(git -C "$anchor" remote get-url origin 2>/dev/null || true)"
+              worktree_count="$(git -C "$anchor" worktree list --porcelain | grep -c '^worktree ' || true)"
+              if [[ "$actual_origin" == "$GO2_CANONICAL_REPO" &&
+                    "$worktree_count" == "1" &&
+                    ! -e "$anchor/.atlas/project.json" &&
+                    ! -e "$anchor/AGENTS.md" ]]; then
+                echo "Recovering incomplete first-time Praxis anchor checkout"
+                rm -rf "$anchor"
+              fi
+            fi
+          fi
+
           if [[ ! -e "$anchor" ]]; then
-            git clone --filter=blob:none --no-checkout "$GO2_CANONICAL_REPO" "$anchor"
+            git clone --filter=blob:none "$GO2_CANONICAL_REPO" "$anchor"
           fi
 
           test "$(git -C "$anchor" rev-parse --is-inside-work-tree)" = "true"
