@@ -5,6 +5,7 @@ set -euo pipefail
 # owns build/provenance plumbing only; run_trot.sh remains the single launch
 # implementation and receives the original argv unchanged.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/experiment_path.sh"
 cpp_dir="$(cd "$script_dir/.." && pwd)"
 repo_dir="$(cd "$cpp_dir/../.." && pwd)"
 canonical_runner="$script_dir/run_trot.sh"
@@ -26,13 +27,7 @@ fi
 timeout_arg="$1"
 experiment_name="$2"
 
-if [[ "$experiment_name" == example/cpp/experiments/_runs/* ]]; then
-  run_dir="$repo_dir/$experiment_name"
-elif [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
-  run_dir="$cpp_dir/experiments/$experiment_name"
-else
-  run_dir="$cpp_dir/experiments/_runs/$experiment_name"
-fi
+run_dir="$(resolve_go2_experiment_dir "$repo_dir" "$cpp_dir" "$experiment_name")"
 
 if [[ -e "$run_dir" ]]; then
   [[ -d "$run_dir" ]] || {
