@@ -136,6 +136,28 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     if not _under(run_dir, RUN_PREFIX):
         raise HostExperimentError("run_dir must live under example/cpp/experiments/_runs")
 
+    if executable in {"bash", "python3"} and runner.name in {
+        "run_trot.sh",
+        "run_trot_exact_source.sh",
+    }:
+        if len(command) < 4:
+            raise HostExperimentError(
+                "Go2 trot runner command must include timeout and experiment path"
+            )
+        experiment_arg = _normalized_relative(
+            command[3], field="command experiment path"
+        )
+        if _under(experiment_arg, RUN_PREFIX):
+            expected_run_dir = experiment_arg
+        elif _under(experiment_arg, Path("_runs")):
+            expected_run_dir = Path("example/cpp/experiments") / experiment_arg
+        else:
+            expected_run_dir = RUN_PREFIX / experiment_arg
+        if expected_run_dir != run_dir:
+            raise HostExperimentError(
+                "command experiment path does not resolve to manifest run_dir"
+            )
+
     timeout_s = manifest.get("timeout_s", 1800)
     if not isinstance(timeout_s, int) or isinstance(timeout_s, bool) or not (1 <= timeout_s <= 7200):
         raise HostExperimentError("timeout_s must be an integer in [1, 7200]")
