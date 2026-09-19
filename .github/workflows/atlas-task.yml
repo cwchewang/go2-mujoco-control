@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: praxis-dispatch-v2-${{ github.repository }}
+  group: praxis-dispatch-go2-canonical-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
@@ -27,6 +27,10 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       ATLAS_MACHINE_MAX_WORKERS: "4"
       PRAXIS_CORE_REF: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
+      GO2_CANONICAL_REPO: https://github.com/cwchewang/go2-mujoco-control.git
+      GO2_PRAXIS_ANCHOR_REL: dev/go2-workspace/praxis-anchor
+      GO2_PRAXIS_TASKS_REL: dev/go2-praxis/tasks
+      GO2_PRAXIS_STATE_REL: .local/state/praxis-go2-worker
     steps:
       - name: Materialize pinned private Praxis core
         shell: bash
@@ -42,6 +46,74 @@ jobs:
           git -C "$core" checkout --detach "$PRAXIS_CORE_REF"
           test "$(git -C "$core" rev-parse HEAD)" = "$PRAXIS_CORE_REF"
 
+      - name: Prepare canonical Go2 Praxis anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          anchor="$HOME/$GO2_PRAXIS_ANCHOR_REL"
+          tasks="$HOME/$GO2_PRAXIS_TASKS_REL"
+          state="$HOME/$GO2_PRAXIS_STATE_REL"
+          mkdir -p "$(dirname "$anchor")" "$tasks" "$state"
+          {
+            echo "GO2_PRAXIS_ANCHOR=$anchor"
+            echo "GO2_PRAXIS_TASKS=$tasks"
+            echo "GO2_PRAXIS_STATE=$state"
+          } >> "$GITHUB_ENV"
+
+          if [[ ! -e "$anchor" ]]; then
+            git clone --filter=blob:none --no-checkout "$GO2_CANONICAL_REPO" "$anchor"
+          fi
+
+          test "$(git -C "$anchor" rev-parse --is-inside-work-tree)" = "true"
+          actual_origin="$(git -C "$anchor" remote get-url origin)"
+          test "$actual_origin" = "$GO2_CANONICAL_REPO" || {
+            echo "Praxis anchor origin mismatch: $actual_origin" >&2
+            exit 2
+          }
+
+          if [[ -n "$(git -C "$anchor" status --porcelain)" ]]; then
+            echo "Praxis anchor is dirty; refusing to rewrite it" >&2
+            git -C "$anchor" status --short >&2
+            exit 2
+          fi
+
+          git -C "$anchor" fetch --prune origin
+          git -C "$anchor" checkout -B main origin/main
+          test "$(git -C "$anchor" rev-parse HEAD)" = "$(git -C "$anchor" rev-parse origin/main)"
+          test -s "$anchor/.atlas/project.json"
+          test -f "$anchor/tools/atlas_research_task_v6.py"
+
+      - name: Build explicit Go2 project profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          config="$RUNNER_TEMP/go2-project.json"
+          python3 - "$GO2_PRAXIS_ANCHOR/.atlas/project.json" "$config" <<'PY'
+          import json
+          import os
+          import sys
+
+          source, target = sys.argv[1:]
+          with open(source, encoding="utf-8") as handle:
+              data = json.load(handle)
+
+          worker = data.setdefault("worker", {})
+          env = worker.setdefault("environment", {})
+          env.update(
+              {
+                  "GO2_ATLAS_REPO": os.environ["GO2_PRAXIS_ANCHOR"],
+                  "GO2_AGENT_WORKTREE_ROOT": os.environ["GO2_PRAXIS_TASKS"],
+                  "GO2_AGENT_STATE_ROOT": os.environ["GO2_PRAXIS_STATE"],
+                  "GO2_RESEARCH_WORKER_LOCK": "/tmp/atlas-host-live.lock",
+              }
+          )
+
+          with open(target, "w", encoding="utf-8") as handle:
+              json.dump(data, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+          test -s "$config"
+
       - name: Run central Praxis dispatch core
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -50,26 +122,12 @@ jobs:
           set -euo pipefail
           export PATH="$HOME/.local/bin:$PATH"
           core="$RUNNER_TEMP/praxis-core"
-          anchor="$HOME/dev/go2-workspace/current"
           config="$RUNNER_TEMP/go2-project.json"
-          if [[ ! -e "$anchor" ]]; then
-            echo "Go2 persistent repository anchor is missing: $anchor" >&2
-            exit 2
-          fi
-          inside="$(git -C "$anchor" rev-parse --is-inside-work-tree 2>/dev/null || true)"
-          if [[ "$inside" != "true" ]]; then
-            echo "Go2 persistent anchor exists but is not a Git worktree: $anchor" >&2
-            exit 2
-          fi
-          git -C "$anchor" fetch --depth=1 origin main
-          git -C "$anchor" show FETCH_HEAD:.atlas/project.json > "$config"
-          test -s "$config"
-          test -f "$anchor/tools/atlas_research_task_v6.py"
           mkdir -p "$RUNNER_TEMP/praxis-dispatch"
           PYTHONPATH="$core" \
             python3 -m research_orchestrator.atlas_core.cli dispatch \
               --repository "$GITHUB_REPOSITORY" \
-              --repo-root "$anchor" \
+              --repo-root "$GO2_PRAXIS_ANCHOR" \
               --core-root "$core" \
               --config "$config" \
               --output-root "$RUNNER_TEMP/praxis-dispatch"
