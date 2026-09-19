@@ -203,7 +203,9 @@ for ((i=0; i < ${#controller_args[@]}; ++i)); do
   fi
 done
 # Named go2_* directories stay under experiments/; other output goes to experiments/_runs/.
-if [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
+if [[ "$experiment_name" == example/cpp/experiments/_runs/* ]]; then
+  experiment_dir="$repo_dir/$experiment_name"
+elif [[ "$experiment_name" == go2_* || "$experiment_name" == _runs/* ]]; then
   experiment_dir="$cpp_dir/experiments/$experiment_name"
 else
   experiment_dir="$cpp_dir/experiments/_runs/$experiment_name"
