@@ -28,13 +28,6 @@ jobs:
       ATLAS_MACHINE_MAX_WORKERS: "4"
       PRAXIS_CORE_REF: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
     steps:
-      - name: Checkout target project
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          path: target
-          fetch-depth: 1
-          persist-credentials: false
-
       - name: Materialize pinned private Praxis core
         shell: bash
         run: |
