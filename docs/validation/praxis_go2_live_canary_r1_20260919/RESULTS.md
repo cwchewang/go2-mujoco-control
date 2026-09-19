@@ -106,3 +106,21 @@ asserted: this closeout is intentionally left uncommitted, as required.
   evidence.
 - No additional live run, retry, parameter change, source change, raw-data
   repair, Git commit, or push was performed.
+
+
+## 5. TRUSTED TRANSPORT POSTSCRIPT
+
+This section records facts that occurred **after** Luna wrote the closeout above.
+
+The outer Praxis dispatcher subsequently performed the trusted validation/push
+step successfully. GitHub issue #118 reached `atlas-complete`, and the trusted
+progress record reports:
+
+- result commit: `43d0bff788a384b84a29997c411aad3b554d7ddf`;
+- host return code: `0`;
+- scientific attempt consumed: `True`;
+- last safe event: `trusted result pushed and verified`.
+
+Therefore the sentence above saying that no trusted push was performed describes
+the closeout-writing phase only; it is not the final transport state. No raw
+evidence or host record was changed by this postscript.
