@@ -250,6 +250,7 @@ def execute_manifest(
     task_path: str,
     manifest: dict[str, Any],
     output_dir: Path,
+    approval_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     manifest = validate_manifest(manifest)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -301,6 +302,7 @@ def execute_manifest(
         "run_dir": manifest["run_dir"],
         "timeout_s": manifest["timeout_s"],
         "environment": manifest["environment"],
+        "approval_receipt": approval_receipt,
         "started_at": None,
         "finished_at": None,
         "launched": False,

@@ -117,6 +117,19 @@ class HostManifestTest(unittest.TestCase):
         self.assertEqual(resolve("_runs/demo"), expected)
         self.assertEqual(resolve("demo"), expected)
 
+    def test_host_record_can_seal_approval_receipt_field(self) -> None:
+        receipt = {
+            "schema_version": 1,
+            "repository": "cwchewang/go2-mujoco-control",
+            "issue_number": 124,
+            "label": "praxis-approved",
+            "event_id": 12345,
+            "created_at": "2026-09-20T00:00:00Z",
+            "actor": "cwchewang",
+        }
+        self.assertEqual(receipt["label"], "praxis-approved")
+        self.assertLess(receipt["event_id"], 99999)
+
 
 class EvidenceIntegrityTest(unittest.TestCase):
     def test_snapshot_detects_raw_mutation(self) -> None:

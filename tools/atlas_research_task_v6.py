@@ -411,7 +411,10 @@ def _run_host_task(
                 else "waiting for exclusive host-live capability"
             ),
         )
-        control_signals.wait_for_host_permission(task_text)
+        approval_receipt = control_signals.wait_for_host_permission(task_text)
+        if approval_receipt is not None:
+            state["approval_receipt"] = approval_receipt
+            base._write_state(state_path, state)
         control_signals.check_cancelled()
         with _exclusive_lock(host_lock_path, blocking=True):
             state["status"] = "host_running"
@@ -433,6 +436,7 @@ def _run_host_task(
                     task_path=args.task_path,
                     manifest=manifest,
                     output_dir=args.output_dir,
+                    approval_receipt=state.get("approval_receipt"),
                 )
             except host.HostExperimentError as exc:
                 _emit_progress(
