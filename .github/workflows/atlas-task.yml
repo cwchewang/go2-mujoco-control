@@ -52,10 +52,15 @@ jobs:
           core="$RUNNER_TEMP/praxis-core"
           anchor="$HOME/dev/go2-workspace/current"
           config="$RUNNER_TEMP/go2-project.json"
-          test -d "$anchor/.git" || {
+          if [[ ! -e "$anchor" ]]; then
             echo "Go2 persistent repository anchor is missing: $anchor" >&2
             exit 2
-          }
+          fi
+          inside="$(git -C "$anchor" rev-parse --is-inside-work-tree 2>/dev/null || true)"
+          if [[ "$inside" != "true" ]]; then
+            echo "Go2 persistent anchor exists but is not a Git worktree: $anchor" >&2
+            exit 2
+          fi
           git -C "$anchor" fetch --depth=1 origin main
           git -C "$anchor" show FETCH_HEAD:.atlas/project.json > "$config"
           test -s "$config"
