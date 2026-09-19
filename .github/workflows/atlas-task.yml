@@ -8,6 +8,10 @@ permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: praxis-dispatch-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   dispatch:
     if: >-
@@ -17,7 +21,50 @@ jobs:
       (github.event.issue.author_association == 'OWNER' ||
        github.event.issue.author_association == 'MEMBER' ||
        github.event.issue.author_association == 'COLLABORATOR')
-    uses: cwchewang/praxis-research-runtime/.github/workflows/atlas-dispatch-reusable.yml@324d5d2bddcffb5b8c7efda067b568a1f00e4032
-    with:
-      project-config: .atlas/project.json
-      core-ref: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
+    runs-on: [self-hosted, linux, x64, atlas]
+    timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      ATLAS_MACHINE_MAX_WORKERS: "4"
+      PRAXIS_CORE_REF: 1594778e2a15a8fe9dcee8b4985d971a8d5110b2
+    steps:
+      - name: Checkout target project
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: target
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize pinned private Praxis core
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          command -v gh >/dev/null 2>&1
+          env -u GITHUB_TOKEN -u GH_TOKEN gh auth status -h github.com >/dev/null 2>&1
+          core="$RUNNER_TEMP/praxis-core"
+          rm -rf "$core"
+          env -u GITHUB_TOKEN -u GH_TOKEN gh repo clone cwchewang/praxis-research-runtime "$core" -- --filter=blob:none --no-checkout
+          git -C "$core" fetch --depth=1 origin "$PRAXIS_CORE_REF"
+          git -C "$core" checkout --detach "$PRAXIS_CORE_REF"
+          test "$(git -C "$core" rev-parse HEAD)" = "$PRAXIS_CORE_REF"
+
+      - name: Run central Praxis dispatch core
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          core="$RUNNER_TEMP/praxis-core"
+          mkdir -p "$RUNNER_TEMP/praxis-dispatch"
+          PYTHONPATH="$core"             python3 -m research_orchestrator.atlas_core.cli dispatch               --repository "$GITHUB_REPOSITORY"               --repo-root "$GITHUB_WORKSPACE/target"               --core-root "$core"               --config "$GITHUB_WORKSPACE/target/.atlas/project.json"               --output-root "$RUNNER_TEMP/praxis-dispatch"
+
+      - name: Upload Praxis dispatcher evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: praxis-dispatch-${{ github.run_id }}
+          path: ${{ runner.temp }}/praxis-dispatch
+          if-no-files-found: warn
+          retention-days: 14
