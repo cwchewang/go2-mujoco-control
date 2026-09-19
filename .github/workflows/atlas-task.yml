@@ -50,8 +50,24 @@ jobs:
           set -euo pipefail
           export PATH="$HOME/.local/bin:$PATH"
           core="$RUNNER_TEMP/praxis-core"
+          anchor="$HOME/dev/go2-workspace/current"
+          config="$RUNNER_TEMP/go2-project.json"
+          test -d "$anchor/.git" || {
+            echo "Go2 persistent repository anchor is missing: $anchor" >&2
+            exit 2
+          }
+          git -C "$anchor" fetch --depth=1 origin main
+          git -C "$anchor" show FETCH_HEAD:.atlas/project.json > "$config"
+          test -s "$config"
+          test -f "$anchor/tools/atlas_research_task_v6.py"
           mkdir -p "$RUNNER_TEMP/praxis-dispatch"
-          PYTHONPATH="$core"             python3 -m research_orchestrator.atlas_core.cli dispatch               --repository "$GITHUB_REPOSITORY"               --repo-root "$HOME/dev/go2-workspace/current"               --core-root "$core"               --config "$HOME/dev/go2-workspace/current/.atlas/project.json"               --output-root "$RUNNER_TEMP/praxis-dispatch"
+          PYTHONPATH="$core" \
+            python3 -m research_orchestrator.atlas_core.cli dispatch \
+              --repository "$GITHUB_REPOSITORY" \
+              --repo-root "$anchor" \
+              --core-root "$core" \
+              --config "$config" \
+              --output-root "$RUNNER_TEMP/praxis-dispatch"
 
       - name: Upload Praxis dispatcher evidence
         if: always()
