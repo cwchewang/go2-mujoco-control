@@ -48,9 +48,12 @@ jobs:
 
           current_status="$(gh api "repos/$TARGET_REPO/actions/runners?per_page=100" --jq '.runners[] | select(.name=="'"$TARGET_NAME"'") | .status' | head -n1 || true)"
           if [[ "$current_status" == "online" ]]; then
-            test -f "$target_dir/.runner"
-            promote_canonical
-            echo "PRAXIS_ATLAS_REBUILD=ALREADY_ONLINE_CANONICALIZED"
+            if [[ -f "$target_dir/.runner" ]]; then
+              promote_canonical
+              echo "PRAXIS_ATLAS_REBUILD=ALREADY_ONLINE_CANONICALIZED"
+            else
+              echo "PRAXIS_ATLAS_REBUILD=ALREADY_ONLINE"
+            fi
             exit 0
           fi
 
