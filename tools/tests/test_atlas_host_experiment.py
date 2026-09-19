@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -68,6 +69,51 @@ class HostManifestTest(unittest.TestCase):
         manifest["run_dir"] = "example/cpp/experiments/_runs/../escape"
         with self.assertRaises(host.HostExperimentError):
             host.validate_manifest(manifest)
+
+    def test_rejects_runner_path_mismatch(self) -> None:
+        manifest = _manifest()
+        manifest["run_dir"] = "example/cpp/experiments/_runs/expected"
+        manifest["command"] = [
+            "bash",
+            "example/cpp/scripts/run_trot.sh",
+            "45",
+            "different",
+            "--domain-id",
+            "220",
+        ]
+        with self.assertRaises(host.HostExperimentError):
+            host.validate_manifest(manifest)
+
+    def test_canonical_and_legacy_run_paths_resolve_identically(self) -> None:
+        helper = TOOLS.parent / "example/cpp/scripts/experiment_path.sh"
+        repo = "/repo"
+        cpp = "/repo/example/cpp"
+
+        def resolve(value: str) -> str:
+            completed = subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    'source "$1"; resolve_go2_experiment_dir "$2" "$3" "$4"',
+                    "bash",
+                    str(helper),
+                    repo,
+                    cpp,
+                    value,
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return completed.stdout.strip()
+
+        expected = "/repo/example/cpp/experiments/_runs/demo"
+        self.assertEqual(
+            resolve("example/cpp/experiments/_runs/demo"),
+            expected,
+        )
+        self.assertEqual(resolve("_runs/demo"), expected)
+        self.assertEqual(resolve("demo"), expected)
 
 
 class EvidenceIntegrityTest(unittest.TestCase):
