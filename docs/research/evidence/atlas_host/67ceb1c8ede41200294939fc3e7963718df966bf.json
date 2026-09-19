@@ -1,0 +1,178 @@
+{
+  "approval_receipt": {
+    "actor": "cwchewang",
+    "created_at": "2026-09-19T18:17:17Z",
+    "event_id": 31455090148,
+    "issue_number": 127,
+    "label": "praxis-approved",
+    "repository": "cwchewang/go2-mujoco-control",
+    "schema_version": 1
+  },
+  "candidate_commit": "67ceb1c8ede41200294939fc3e7963718df966bf",
+  "command": [
+    "bash",
+    "example/cpp/scripts/run_trot_exact_source.sh",
+    "45",
+    "example/cpp/experiments/_runs/praxis_v01_clean_acceptance_20260920_r1",
+    "--controller-duration",
+    "15",
+    "--kernel",
+    "raibert-trot",
+    "--period",
+    "0.60",
+    "--duty",
+    "0.75",
+    "--step-length",
+    "0.091",
+    "--foot-lift",
+    "0.020",
+    "--kp",
+    "63",
+    "--kd",
+    "2.8",
+    "--raibert-velocity-gain",
+    "0.05",
+    "--raibert-max-adjustment",
+    "0.010",
+    "--world-feedback-max",
+    "0.060",
+    "--world-feedback-slew",
+    "0.004",
+    "--clean-baseline",
+    "--tau-limit",
+    "35",
+    "--max-cycles",
+    "6",
+    "--headless",
+    "--domain-id",
+    "213"
+  ],
+  "domain_id": 213,
+  "environment": {},
+  "error": null,
+  "evidence": [
+    {
+      "path": "build_provenance.txt",
+      "sha256": "2f2b00d23990d4ff4b4539d7f2cb39abeff86aa330fda9e2d2b8f18d756979d7",
+      "size": 4126,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth.csv",
+      "sha256": "ddfa531a2b4bc29e8e7f7c74db6945b0a10112a55ecb2a0cfa791b5b83a43656",
+      "size": 23387746,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_analysis.txt",
+      "sha256": "51629d972533b8f69a565473360548c7d6bfed3f9dcd8ae818b747a28e12ae40",
+      "size": 214,
+      "type": "file"
+    },
+    {
+      "path": "contact_ground_truth_dynamics_analysis.txt",
+      "sha256": "924ed8fc557f8b9e671839bb3eb0a0900ea5d08f806f1e3342ebddf6f0ffabf1",
+      "size": 514,
+      "type": "file"
+    },
+    {
+      "path": "controller.log",
+      "sha256": "eb1b817afe759c00001b3ee65ec6d756995bd1b6eba3b6716d915913555debc4",
+      "size": 4477,
+      "type": "file"
+    },
+    {
+      "path": "controller_build.log",
+      "sha256": "42997b910b2af299cef097739ea70f29ae09fa9b4fefa62d546f4e375cf5029f",
+      "size": 1592,
+      "type": "file"
+    },
+    {
+      "path": "data.csv",
+      "sha256": "0c3b7fa8b0ba7206bba670460f00f7a873e6f846382e8152a7fb3fbb33cf310f",
+      "size": 15907710,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/dds_base4000_preload.so",
+      "sha256": "0631e8aa1b9826215ef268665049d154571d3ca332eeff478b8fa9d17691293f",
+      "size": 15560,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_clean_state.txt",
+      "sha256": "cd4ae03096d9ca0725537e0ced69a1c9973e7354ed02003c9fdc6844bf8bfa52",
+      "size": 3200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/post_state.txt",
+      "sha256": "83142971318f01d61ee8293501910219deea16d0bde9020ee701b35802f0b516",
+      "size": 3194,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/pre_state.txt",
+      "sha256": "bc8a9a5667b74e4fbf45d828f40588c1613a997d44992ea8a484b9029137d9cb",
+      "size": 3193,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/preparation_cleanup.txt",
+      "sha256": "a9654ae9b452294b003d0208155c73981dffc9f559906646400ed5954da484a6",
+      "size": 200,
+      "type": "file"
+    },
+    {
+      "path": "dds_runtime/runtime_metadata.txt",
+      "sha256": "0b8d05c158084207f552f59cb061860847ca73d64710212b08eb9b38ffec8268",
+      "size": 867,
+      "type": "file"
+    },
+    {
+      "path": "environment.txt",
+      "sha256": "fcdd684a211809d5382bb92eba651a1e7d3e75b7672a6674616e469c32d53981",
+      "size": 100,
+      "type": "file"
+    },
+    {
+      "path": "run_manifest.json",
+      "sha256": "f88bea29fcc88c42d9ea4f8b1570e8bf783b40d30b5fbb626e835d08b159634b",
+      "size": 3087,
+      "type": "file"
+    },
+    {
+      "path": "run_metadata.txt",
+      "sha256": "e96d3a99fdee70c942ea67e62f43526431e364856c935b6651b3f92246bd779e",
+      "size": 3486,
+      "type": "file"
+    },
+    {
+      "path": "simulator.log",
+      "sha256": "6a1d36c1e8246d8f0dbc0c40473825db04ef65ea35352bd97314efd19f8a5c40",
+      "size": 4078,
+      "type": "file"
+    },
+    {
+      "path": "simulator_build.log",
+      "sha256": "7f998f25bc1013301c84f8a0dc8b58472e5c13dbab02858e42a005b1b9f50ec3",
+      "size": 2196,
+      "type": "file"
+    }
+  ],
+  "finished_at": "2026-09-19T18:18:37.309456+00:00",
+  "launched": true,
+  "manifest_sha256": "43317db71cf3afd32315099562acf1e8b72b9033da2546dd064a888926033663",
+  "returncode": 0,
+  "run_dir": "example/cpp/experiments/_runs/praxis_v01_clean_acceptance_20260920_r1",
+  "schema_version": 1,
+  "started_at": "2026-09-19T18:17:22.209399+00:00",
+  "stderr": "/home/che/actions-runner/_work/_temp/praxis-dispatch/issue-127/host-experiment.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "/home/che/actions-runner/_work/_temp/praxis-dispatch/issue-127/host-experiment.stdout.log",
+  "stdout_sha256": "361f88e60b1c74aeffd67b1dd791ae79ac62c69bf4292e5e6bf5529b61966c98",
+  "task_commit": "67ceb1c8ede41200294939fc3e7963718df966bf",
+  "task_path": "docs/research/TASK_PRAXIS_PX_1A0BADD4BD4_B4C497420A.md",
+  "timed_out": false,
+  "timeout_s": 300
+}
