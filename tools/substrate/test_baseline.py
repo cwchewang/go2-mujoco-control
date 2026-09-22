@@ -10,7 +10,7 @@ from .contracts import POLICY_JOINTS, Proprioception
 from .guards import zero_step_guard
 from .integrity import strict_json
 from .rl import FrozenPolicy, observation45
-from .baseline_verify import audit_preflight, trace_consumed
+from .baseline_verify import audit_preflight, trace_consumed, independent_body_vx
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = strict_json(
@@ -59,6 +59,9 @@ class FakePolicy:
 
 
 class BaselineContractTests(unittest.TestCase):
+    def test_nonunit_terminal_orientation_preserves_metric_polynomial(self):
+        self.assertEqual(independent_body_vx([2, 0, 0, 0], [1, 0, 0]), 1)
+
     def test_failed_preflight_cannot_verify(self):
         with self.assertRaisesRegex(ValueError, "preflight not passing"):
             audit_preflight({"pass": False, "hard_failure_count": 1}, {}, {})

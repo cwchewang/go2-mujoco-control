@@ -36,7 +36,8 @@ second of each segment from steady metrics. Transition traces remain available.
 The pinned default cross-stairs direction has 0.23 m risers, 1.84 m summit,
 first edge x=2 m and last edge x=8.25 m. Twenty seconds is a bounded crossing
 probe. Success requires base x>=8.7 and all four foot centers x>=8.3, with
-|base y|<=1.3 m continuously for 0.5 s. A goal timeout is a negative result,
+|base y|<=1.3 m continuously for 0.5 s and safety through the full 20 s horizon,
+including after the goal is reached. A goal timeout is a negative result,
 not proof of universal terrain incapability. Terrain-relative clearance is
 reported; there is no flat-world maximum-height guard on stairs.
 
@@ -66,6 +67,13 @@ and first inference after ten steps. The finite endpoint omits an unused final
 inference. Telemetry forwards a separate MjData only; it never forwards the live
 plant between steps. Runtime is our pinned CPU stack; exact original training
 environment and historical deployment runtime remain unknown.
+
+The pinned `deploy/deploy_mujoco/utils.py` (Git blob
+`2badcd8edb467e47c237ccdb47a0e23ecc83c2f7`) is included in the reference lock.
+`MujocoRenderUtils.update` only stores references; external rendering reads
+qpos/qvel and writes separate temporary arrays and viewer scene arrows. Neither
+method writes the live physics state. The headless baseline omits GUI edits and
+joystick input; it does not claim equivalence to interactive perturbations.
 
 One-factor differences establish effects in these local conditions only. They
 do not decompose the original low-speed failure or establish interactions.

@@ -51,6 +51,7 @@
     "resources/robots/go2/race_track.xml": "b5f5d9995429f71e38b7b37e98588c7ac8eb035a87ea1a62931fa91d0e5cc79c",
     "resources/robots/go2/stairs.xml": "d3e43ab7e11bf7a7320c45a5cbd42fd5991bca813452cb026da28cc8cf5ce922",
     "resources/robots/go2/urdf/go2.urdf": "4f306754e9b3d73930ac8362aa456eb8912f2e886665618e7eced9627c1704a4",
-    "rsl_rl/rsl_rl/modules/actor_critic_moe_cts.py": "ff3689a3cfdaf80246e7be76b9c5eae54054112f2d4b5750798980a8033e7d58"
+    "rsl_rl/rsl_rl/modules/actor_critic_moe_cts.py": "ff3689a3cfdaf80246e7be76b9c5eae54054112f2d4b5750798980a8033e7d58",
+    "deploy/deploy_mujoco/utils.py": "58e576d2c285a16b491f62e55f75c49b15177d4b879cb1731180b47ca4a2d2b4"
   }
 }

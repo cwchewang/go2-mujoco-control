@@ -65,6 +65,19 @@ def trace_consumed(rows):
     return any(r["applied"] is not None for r in rows)
 
 
+def independent_body_vx(quaternion, velocity):
+    # Same declared rotation polynomial without assuming a unit failure frame.
+    w, *xyz = quaternion
+    xyz, velocity = np.asarray(xyz), np.asarray(velocity)
+    return float(
+        (
+            velocity
+            - 2 * w * np.cross(xyz, velocity)
+            + 2 * np.cross(xyz, np.cross(xyz, velocity))
+        )[0]
+    )
+
+
 def audit_rows(rows, plant, policy, case, protocol):
     require(bool(rows), "empty trace")
     expected_target = policy.default.copy()
@@ -161,13 +174,7 @@ def audit_rows(rows, plant, policy, case, protocol):
                 <= r["tick"]
                 < window["end_tick"]
             ):
-                w, x, y, z = r["qpos"][3:7]
-                vx, vy, vz = r["qvel"][:3]
-                values.append(
-                    (w * w + x * x - y * y - z * z) * vx
-                    + 2 * (x * y + w * z) * vy
-                    + 2 * (x * z - w * y) * vz
-                )
+                values.append(independent_body_vx(r["qpos"][3:7], r["qvel"][:3]))
         if values:
             require(
                 abs(
