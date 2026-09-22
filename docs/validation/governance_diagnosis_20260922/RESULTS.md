@@ -113,12 +113,16 @@ reverification and archive member verification are recorded in this evidence
 root's final acceptance/closeout records. A closed v1 campaign can only return
 `VERIFIED_ZERO_STEP_CAMPAIGN_CLOSED` during preparation, never a ready-to-start
 status. Repository engineering admission remains distinct from Gate 0 capability.
+Clean qualification `qualification_clean_02` passed 175 checks: 34 controller
+CTest cases, 86 substrate tests, 26 preflight tests and 29 tooling tests. Producer
+HEAD is `d5d05586b7e67f8cad91628b02355878086c4e68`; the final prose/navigation
+update deliberately reuses that receipt under fresh input and quality checks.
 
 Pinned primary upstream sources, commit
 `30e74dc507bec7a642a8c98be26081f2c6f0822d`:
 
 - [Deployment configuration](https://github.com/wty-yy/go2_rl_gym/blob/30e74dc507bec7a642a8c98be26081f2c6f0822d/deploy/deploy_mujoco/configs/go2.yaml).
-- [Deployment loop](https://github.com/wty-yy/go2_rl_gym/blob/30e74dc507bec7a642a8c98be26081f2c6f0822d/deploy/deploy_mujoco/deploy_mujoco.py).
+- [Deployment loop](https://github.com/wty-yy/go2_rl_gym/blob/30e74dc507bec7a642a8c98be26081f2c6f0822d/deploy/deploy_mujoco/deploy_go2.py).
 - [Training task](https://github.com/wty-yy/go2_rl_gym/blob/30e74dc507bec7a642a8c98be26081f2c6f0822d/legged_gym/envs/base/legged_robot.py).
 - [Go2 configuration](https://github.com/wty-yy/go2_rl_gym/blob/30e74dc507bec7a642a8c98be26081f2c6f0822d/legged_gym/envs/go2/go2_config.py).
 

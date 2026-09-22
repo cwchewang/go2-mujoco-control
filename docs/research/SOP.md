@@ -27,7 +27,11 @@ accepted implementation and review current execution identity before live.
 
 Substrate prepare requires a sealed clean/non-development qualification receipt.
 Its content fingerprint binds tracked runtime/tests/build inputs, model assets,
-actual isolated runtime, interpreter, checkpoint, native dependencies and binary.
+actual isolated runtime, interpreter, checkpoint, native dependencies and binary,
+controller build products and compiler header/link dependencies. Current
+lightweight quality checks always rerun, including prose/link hygiene. Selected
+protocols must belong to the fingerprinted protocol directory; their positive
+integer budget is bound to preparation and explicit authorization.
 Changed inputs invalidate reuse; matching inputs may reuse offline tests across
 documentation or merge commits. Producer HEAD is retained, never rewritten.
 Current task, review, exact execution HEAD and user authorization are not cached.
