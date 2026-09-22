@@ -33,7 +33,7 @@ from .guards import zero_step_guard as zero_step_guard, wall_deadline as wall_de
 
 TRANSPORT = "inprocess"
 PROTOCOL = ROOT / "tools/substrate/protocols/rl_flat_v1.json"
-BRANCH = "research/substrate-prelaunch-20260922"
+BRANCH = "research/substrate-first-capture-20260922"
 CHECKPOINT = ROOT / ".substrate/rl/policy.pt"
 
 

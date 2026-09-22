@@ -41,7 +41,8 @@ Challengers / baselines：
 
 ## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
 
-当前准备分支为 `research/substrate-prelaunch-20260922`，任务见
+工程准备分支 `research/substrate-prelaunch-20260922` 已通过 PR #139 合入主线
+`c5582af60b802b688e4e526845402deb33cf29cd`。其任务见
 `docs/research/TASK_REPOSITORY_CEE_20260922.md`，最新结果见
 `docs/validation/repository_cee_20260922/RESULTS.md`。首轮准备验收保留于
 `docs/validation/substrate_prelaunch_20260922/RESULTS.md`。可靠性验收保留于
@@ -57,7 +58,11 @@ Challengers / baselines：
 两者共同使用现有 MuJoCo 3.3.6 模型与力矩出口，但信息条件不同，不能据此做
 公平能力对比。工程准入不是 Gate 0。首轮平地 RL 移植验收已有前瞻协议、
 闭环 runner、分析器及三次失败即停预算；其准备流程禁止真实物理步进，
-用户尚未授权开始。定义见 `docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
+准备阶段没有启动授权。用户现已明确要求“合入主线，然后开正式实验”；
+当前分支为 `research/substrate-first-capture-20260922`，执行任务见
+`docs/research/TASK_SUBSTRATE_FIRST_CAPTURE_20260922.md`。必须重新完成准确
+HEAD 验收、独立审阅和准备，再按原冻结协议采集；截至此提交正式结果仍为
+NOT_RUN。协议定义见 `docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
 
 后续可靠性加固补齐独立依赖环境、源码/二进制构建绑定、模型输入快照、策略
 状态隔离和重放、严格类型/时钟契约、超时子进程清理、失败证据封存及独立
