@@ -4,6 +4,10 @@
 frontier may live on a separate `research/*` branch. This file contains
 repository guardrails; it is not a scientific plan or current-status report.
 
+## Research handoff
+
+Before choosing research direction, read `docs/PROJECT_RECORD.md` and then `docs/TOPIC_AUDIT.md`. They are the repo-native canonical scientific state and topic audit. `CURRENT.md` remains the canonical execution-frontier pointer. Chat history, Memory, screenshots, and old Library copies cannot override these repo records.
+
 ## Task discovery bootstrap
 
 Before accepting, declining, or executing any task from a local worktree, first
