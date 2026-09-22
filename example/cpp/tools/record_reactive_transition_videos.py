@@ -32,7 +32,10 @@ def main() -> int:
 
     repo = Path(__file__).resolve().parents[3]
     record = repo / "example/cpp/scripts/record_reactive_acceptance.sh"
-    ffmpeg = Path.home() / ".local/share/unitree_mujoco_capture_tools/tools/ffmpeg-static/bin/ffmpeg"
+    ffmpeg = (
+        Path.home()
+        / ".local/share/unitree_mujoco_capture_tools/tools/ffmpeg-static/bin/ffmpeg"
+    )
     manifests = sorted((args.matrix_root / "manifests").glob("*.json"))
     selected = []
     for path in manifests:
@@ -56,7 +59,8 @@ def main() -> int:
             previous = []
         if isinstance(previous, list):
             records = [
-                item for item in previous
+                item
+                for item in previous
                 if int(item.get("pair_index", -1)) not in selected_indices
             ]
 
@@ -85,11 +89,13 @@ def main() -> int:
             "status": "pending",
         }
         if final.exists() and final.stat().st_size >= 100_000:
-            record_item.update({
-                "status": "pass",
-                "size_bytes": final.stat().st_size,
-                "resumed": True,
-            })
+            record_item.update(
+                {
+                    "status": "pass",
+                    "size_bytes": final.stat().st_size,
+                    "resumed": True,
+                }
+            )
             records.append(record_item)
             continue
         records.append(record_item)
@@ -100,26 +106,54 @@ def main() -> int:
         raw.unlink(missing_ok=True)
         final.unlink(missing_ok=True)
         env = os.environ.copy()
-        env.update({
-            "TROT_RECORD_DURATION_S": str(args.raw_duration),
-            "TROT_RECORD_FPS": "20",
-            "TROT_RECORDING_GRACE_S": "1",
-        })
+        env.update(
+            {
+                "TROT_RECORD_DURATION_S": str(args.raw_duration),
+                "TROT_RECORD_FPS": "20",
+                "TROT_RECORDING_GRACE_S": "1",
+            }
+        )
         command = [
-            "bash", str(record), str(args.wall_timeout), run_name, str(raw),
-            "--wbc-full", "--step-length", "0.091", "--period", "0.60",
-            "--duty", "0.75", "--foot-lift", "0.020", "--kernel", "raibert-trot",
-            "--raibert-velocity-gain", "0.05", "--raibert-max-adjustment", "0.010",
-            "--tau-limit", "35", "--controller-duration", "10",
-            "--event-script", str(event_script), "--domain-id", str(domain),
+            "bash",
+            str(record),
+            str(args.wall_timeout),
+            run_name,
+            str(raw),
+            "--wbc-full",
+            "--step-length",
+            "0.091",
+            "--period",
+            "0.60",
+            "--duty",
+            "0.75",
+            "--foot-lift",
+            "0.020",
+            "--kernel",
+            "raibert-trot",
+            "--raibert-velocity-gain",
+            "0.05",
+            "--raibert-max-adjustment",
+            "0.010",
+            "--tau-limit",
+            "35",
+            "--controller-duration",
+            "10",
+            "--event-script",
+            str(event_script),
+            "--domain-id",
+            str(domain),
             "--camera-follow",
         ]
         print(f"[{index:03d}/049] {source} -> {target}", flush=True)
         started = time.monotonic()
         result = subprocess.run(command, cwd=repo, env=env)
         if result.returncode != 0:
-            record_item.update({"status": "record_failed", "returncode": result.returncode})
-            manifest_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+            record_item.update(
+                {"status": "record_failed", "returncode": result.returncode}
+            )
+            manifest_out.write_text(
+                json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
             raise SystemExit(f"recording failed for {run_id}: {result.returncode}")
 
         title = f"REACTIVE TRANSITION {index:03d} | {source} -> {target}"
@@ -144,26 +178,60 @@ def main() -> int:
             "fontsize=18:fontcolor=white:enable='gt(t,5.5)'"
         )
         ffmpeg_command = [
-            str(ffmpeg), "-y", "-hide_banner", "-loglevel", "error",
-            "-ss", str(args.clip_start), "-i", str(raw), "-vf", filter_text,
-            "-t", str(args.clip_duration), "-an", "-c:v", "libx264",
-            "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart", str(final),
+            str(ffmpeg),
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-ss",
+            str(args.clip_start),
+            "-i",
+            str(raw),
+            "-vf",
+            filter_text,
+            "-t",
+            str(args.clip_duration),
+            "-an",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "medium",
+            "-crf",
+            "18",
+            "-pix_fmt",
+            "yuv420p",
+            "-movflags",
+            "+faststart",
+            str(final),
         ]
         render = subprocess.run(ffmpeg_command, cwd=repo)
-        if render.returncode != 0 or not final.exists() or final.stat().st_size < 100_000:
-            record_item.update({"status": "render_failed", "returncode": render.returncode})
-            manifest_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+        if (
+            render.returncode != 0
+            or not final.exists()
+            or final.stat().st_size < 100_000
+        ):
+            record_item.update(
+                {"status": "render_failed", "returncode": render.returncode}
+            )
+            manifest_out.write_text(
+                json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
             raise SystemExit(f"rendering failed for {run_id}")
         raw.unlink(missing_ok=True)
-        record_item.update({
-            "status": "pass",
-            "size_bytes": final.stat().st_size,
-            "elapsed_s": round(time.monotonic() - started, 2),
-        })
-        manifest_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+        record_item.update(
+            {
+                "status": "pass",
+                "size_bytes": final.stat().st_size,
+                "elapsed_s": round(time.monotonic() - started, 2),
+            }
+        )
+        manifest_out.write_text(
+            json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
-    manifest_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+    manifest_out.write_text(
+        json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     passed = sum(item.get("status") == "pass" for item in records)
     print(f"video batch complete: {passed}/{len(records)}", flush=True)
     return 0 if args.dry_run or passed == len(records) else 1
@@ -171,4 +239,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

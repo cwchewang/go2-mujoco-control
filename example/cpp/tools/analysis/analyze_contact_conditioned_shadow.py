@@ -72,9 +72,7 @@ def main() -> int:
             fields = set(reader.fieldnames or [])
             missing = sorted(REQUIRED_FIELDS - fields)
             if missing:
-                raise ValueError(
-                    "replay CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("replay CSV missing fields: " + ",".join(missing))
             rows = list(reader)
     except (OSError, ValueError) as exc:
         print(f"validation=FAIL: {exc}")
@@ -95,31 +93,19 @@ def main() -> int:
         try:
             contacts = int(round(finite(row, "selected_contact_count")))
             active = finite(row, "shadow_active") >= 0.5
-            policy_satisfied = (
-                finite(row, "shadow_policy_satisfied") >= 0.5
-            )
-            moment_active = (
-                finite(row, "shadow_moment_task_active") >= 0.5
-            )
-            fallback = (
-                finite(row, "shadow_fallback_to_force_solution") >= 0.5
-            )
+            policy_satisfied = finite(row, "shadow_policy_satisfied") >= 0.5
+            moment_active = finite(row, "shadow_moment_task_active") >= 0.5
+            fallback = finite(row, "shadow_fallback_to_force_solution") >= 0.5
             force_excess = finite(row, "shadow_max_force_excess_n")
             moment_excess = finite(row, "shadow_max_moment_excess_nm")
             max_abs_torque = finite(row, "max_abs_torque")
-            force_slack = {
-                name: finite(row, name) for name in FORCE_SLACK_FIELDS
-            }
-            moment_slack = {
-                name: finite(row, name) for name in MOMENT_SLACK_FIELDS
-            }
+            force_slack = {name: finite(row, name) for name in FORCE_SLACK_FIELDS}
+            moment_slack = {name: finite(row, name) for name in MOMENT_SLACK_FIELDS}
         except (KeyError, ValueError, OverflowError):
             invalid_rows += 1
             continue
 
-        expected_moment_active = contacts >= (
-            args.moment_required_at_or_above_contacts
-        )
+        expected_moment_active = contacts >= (args.moment_required_at_or_above_contacts)
         if not active or moment_active != expected_moment_active:
             invalid_rows += 1
         if active:

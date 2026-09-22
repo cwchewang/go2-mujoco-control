@@ -8,9 +8,15 @@ import math
 from pathlib import Path
 
 EVENT_NAMES = {
-    0: "none", 1: "emergency_stop", 2: "obstacle_left",
-    3: "obstacle_right", 4: "turn_left", 5: "turn_right",
-    6: "slip", 7: "low_friction", 8: "impact",
+    0: "none",
+    1: "emergency_stop",
+    2: "obstacle_left",
+    3: "obstacle_right",
+    4: "turn_left",
+    5: "turn_right",
+    6: "slip",
+    7: "low_friction",
+    8: "impact",
 }
 
 
@@ -51,11 +57,13 @@ def analyze(path):
         except (TypeError, ValueError):
             continue
         if event != previous:
-            transitions.append({
-                "time_s": round(time_s, 3),
-                "type": EVENT_NAMES.get(event, f"unknown_{event}"),
-                "priority": int(float(row.get("event_priority", 0))),
-            })
+            transitions.append(
+                {
+                    "time_s": round(time_s, 3),
+                    "type": EVENT_NAMES.get(event, f"unknown_{event}"),
+                    "priority": int(float(row.get("event_priority", 0))),
+                }
+            )
             previous = event
     roll = finite_values(rows, "imu_roll_rad")
     pitch = finite_values(rows, "imu_pitch_rad")
@@ -66,8 +74,12 @@ def analyze(path):
         "safety_status": int(metadata.get("safety_status", -1)),
         "quality_status": int(metadata.get("quality_status", -1)),
         "completion_status": int(metadata.get("completion_status", -1)),
-        "max_abs_roll_deg": round(max((abs(x) for x in roll), default=0.0) * 180.0 / math.pi, 3),
-        "max_abs_pitch_deg": round(max((abs(x) for x in pitch), default=0.0) * 180.0 / math.pi, 3),
+        "max_abs_roll_deg": round(
+            max((abs(x) for x in roll), default=0.0) * 180.0 / math.pi, 3
+        ),
+        "max_abs_pitch_deg": round(
+            max((abs(x) for x in pitch), default=0.0) * 180.0 / math.pi, 3
+        ),
         "event_transitions": transitions,
     }
 

@@ -96,6 +96,17 @@ int main()
             strict_params, input, strict_out) && strict_out.ok,
         "strict clean-baseline ID-WBC rejected an accepted solve");
 
+    // Inconsistent normal-force inequalities force QP rejection. Reusing
+    // an accepted output object must not retain a stale success or torque.
+    auto impossible = strict_params;
+    impossible.min_normal_n = 200.0;
+    impossible.max_normal_n = 100.0;
+    auto rejected = strict_out;
+    passed &= Check(
+        !go2_control::SolveInverseDynamicsWbc(impossible, input, rejected) &&
+            !rejected.ok && rejected.tau.isZero(),
+        "strict rejection retained a stale accepted output");
+
     // A terrain hold must keep every selected contact physically loadable,
     // rather than allowing the solver to satisfy the base equations with a
     // near-zero held-foot force.

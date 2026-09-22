@@ -74,9 +74,7 @@ def main() -> int:
             fields = set(reader.fieldnames or [])
             missing = sorted(REQUIRED_FIELDS - fields)
             if missing:
-                raise ValueError(
-                    "replay CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("replay CSV missing fields: " + ",".join(missing))
             for row in reader:
                 try:
                     contacts = int(round(finite(row, "selected_contact_count")))
@@ -134,8 +132,7 @@ def main() -> int:
         contact_conditioned_pass = sum(
             force <= args.force_tolerance_n
             and (
-                contacts < args.moment_required_at_or_above_contacts
-                or moment <= slack
+                contacts < args.moment_required_at_or_above_contacts or moment <= slack
             )
             for moment, force, contacts in zip(
                 moment_residuals, force_residuals, contact_counts

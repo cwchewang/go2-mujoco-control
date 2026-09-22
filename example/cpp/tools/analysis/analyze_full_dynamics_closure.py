@@ -89,15 +89,13 @@ def main() -> int:
     rows = 0
 
     try:
-        with args.ground_truth_csv.open(
-            newline="", encoding="utf-8"
-        ) as handle:
+        with args.ground_truth_csv.open(newline="", encoding="utf-8") as handle:
             reader = csv.DictReader(handle)
             fields = reader.fieldnames or []
             if len(fields) != len(set(fields)):
                 raise ValueError("duplicate CSV fields")
             labels = [
-                field[len(MASS_PREFIX):]
+                field[len(MASS_PREFIX) :]
                 for field in fields
                 if field.startswith(MASS_PREFIX)
             ]
@@ -107,14 +105,11 @@ def main() -> int:
                 raise ValueError("duplicate full generalized-force labels")
             for prefix in prefixes:
                 missing = [
-                    prefix + label
-                    for label in labels
-                    if prefix + label not in fields
+                    prefix + label for label in labels if prefix + label not in fields
                 ]
                 if missing:
                     raise ValueError(
-                        "missing full generalized-force fields: "
-                        + ",".join(missing)
+                        "missing full generalized-force fields: " + ",".join(missing)
                     )
             closure_errors = {label: [] for label in labels}
             for row_number, row in enumerate(reader, start=2):
@@ -130,9 +125,7 @@ def main() -> int:
                     smooth = finite(row, SMOOTH_PREFIX + label)
                     constraint = finite(row, CONSTRAINT_PREFIX + label)
                     finite(row, ACTUATOR_PREFIX + label)
-                    closure_errors[label].append(
-                        mass - smooth - constraint
-                    )
+                    closure_errors[label].append(mass - smooth - constraint)
 
                 if all(label in labels for label in BASE_LABELS):
                     for kind, full_prefix, base_prefix in (
@@ -157,9 +150,7 @@ def main() -> int:
                             "base_qfrc_actuator_qcoord_",
                         ),
                     ):
-                        for label, suffix in zip(
-                            BASE_LABELS, BASE_SUFFIXES
-                        ):
+                        for label, suffix in zip(BASE_LABELS, BASE_SUFFIXES):
                             mirror_errors[kind].append(
                                 finite(row, full_prefix + label)
                                 - finite(row, base_prefix + suffix)
@@ -173,8 +164,7 @@ def main() -> int:
         return 1
 
     closure_pass = all(
-        percentile([abs(value) for value in errors], 0.95)
-        <= args.closure_p95_tolerance
+        percentile([abs(value) for value in errors], 0.95) <= args.closure_p95_tolerance
         and maximum_abs(errors) <= args.closure_max_tolerance
         for errors in closure_errors.values()
     )
@@ -183,9 +173,7 @@ def main() -> int:
         for errors in mirror_errors.values()
     )
     all_abs_errors = [
-        abs(value)
-        for errors in closure_errors.values()
-        for value in errors
+        abs(value) for errors in closure_errors.values() for value in errors
     ]
 
     lines = [
@@ -206,22 +194,17 @@ def main() -> int:
             [
                 f"closure_{label}_p95_abs=%.9g"
                 % percentile([abs(value) for value in errors], 0.95),
-                f"closure_{label}_max_abs=%.9g"
-                % maximum_abs(errors),
+                f"closure_{label}_max_abs=%.9g" % maximum_abs(errors),
             ]
         )
     for kind, errors in mirror_errors.items():
-        lines.append(
-            f"base_mirror_{kind}_max_abs=%.9g" % maximum_abs(errors)
-        )
+        lines.append(f"base_mirror_{kind}_max_abs=%.9g" % maximum_abs(errors))
     lines.extend(
         [
             "closure_validation=" + ("PASS" if closure_pass else "FAIL"),
-            "base_mirror_validation="
-            + ("PASS" if base_mirror_pass else "FAIL"),
+            "base_mirror_validation=" + ("PASS" if base_mirror_pass else "FAIL"),
             "interpretation=ground_truth_observation_only_no_control_injection",
-            "validation="
-            + ("PASS" if closure_pass and base_mirror_pass else "FAIL"),
+            "validation=" + ("PASS" if closure_pass and base_mirror_pass else "FAIL"),
         ]
     )
     report = "\n".join(lines) + "\n"

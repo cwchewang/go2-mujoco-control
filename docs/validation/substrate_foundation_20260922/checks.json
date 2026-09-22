@@ -1,0 +1,39 @@
+{
+  "base_commit": "02caf95b120bba07ae67a9e7b440194fb0ac8ddb",
+  "branch": "research/substrate-foundation-20260922",
+  "scope": "engineering foundation and offline admission",
+  "capability_status": "NOT_RUN",
+  "live_runs": 0,
+  "ctest": {
+    "passed": 34,
+    "failed": 0,
+    "log": "controller_ctest.txt"
+  },
+  "substrate_tests": {
+    "passed": 15,
+    "failed": 0,
+    "portable": 12,
+    "native_model": 3,
+    "log": "substrate_tests.txt"
+  },
+  "dispatcher_tests": {
+    "passed": 25,
+    "failed": 0,
+    "log": "dispatcher_tests.txt"
+  },
+  "final_admission": "/home/che/dev/go2-workspace/current/_runs/substrate_foundation_20260922/admission_05",
+  "admission_status": "ENGINEERING_ADMITTED",
+  "source_identity": "admission.json source_files; final branch commit contains these files",
+  "native_binary_sha256": "cd86cbf984ed07c9a2dce866bc1115c9a8d527a73a7e032c07b8d907c696b4dd",
+  "rl_checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "same_mujoco_library_sha256": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495",
+  "curated_evidence_sha256": {
+    "mjpc_result.json": "b02ac29ad3abea508fa0bd47a1dafa3839ac8769f50abfb1cd866e9242bf19a9",
+    "raw_manifest.json": "be6c8539cdcb84e7886d215376e7be86bd138a2e03975b69a8ba4ddd9e8c19dc",
+    "dispatcher_tests.txt": "5af4c0a59e04b4e0b39a15b579d9ddab6cabdeece62bf90e383c04d0329ffb5f",
+    "admission.json": "d4a9ae80b641c04bc74cf93e3447e026322f41510e03166a00b580e0026efb19",
+    "substrate_tests.txt": "cfdb2ec1f732ac39b73d25ea9c165d72cfe43eb7cc8599d1f634cc2cd197cd08",
+    "controller_ctest.txt": "2e5296f112eee15134481d70f1b17e19fbcb83ca330f7ae1efbece4369e843ca",
+    "bootstrap_build.txt": "58cf56d77b0c91bb4555d27ad8d5c9e37d6b1db1c773f7bf1f024a8e8c3e1276"
+  }
+}

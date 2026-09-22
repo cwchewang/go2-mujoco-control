@@ -28,7 +28,9 @@ def percentile(values: list[float], fraction: float) -> float:
     return ordered[index]
 
 
-def summarize(path: Path, speed_threshold: float, angle_limit_deg: float) -> dict[str, object]:
+def summarize(
+    path: Path, speed_threshold: float, angle_limit_deg: float
+) -> dict[str, object]:
     with (path / "data.csv").open(newline="") as handle:
         rows = list(csv.DictReader(handle))
     speeds = [float(row["world_velocity_x_mps"]) for row in rows]
@@ -41,7 +43,10 @@ def summarize(path: Path, speed_threshold: float, angle_limit_deg: float) -> dic
         / math.pi
         for row in rows
     ]
-    good = [speed >= speed_threshold and angle <= angle_limit_deg for speed, angle in zip(speeds, angles)]
+    good = [
+        speed >= speed_threshold and angle <= angle_limit_deg
+        for speed, angle in zip(speeds, angles)
+    ]
     best_duration = 0.0
     best_start = math.nan
     best_end = math.nan
@@ -64,12 +69,21 @@ def summarize(path: Path, speed_threshold: float, angle_limit_deg: float) -> dic
     final = stage3[-1] if stage3 else rows[-1]
     metadata = read_metadata(path)
     log = (path / "controller.log").read_text(errors="replace")
-    controlled_stop = "High-speed stop: WBC four-contact hold complete; finished in WBC stance" in log
-    safe = "Trot hard safety limit reached" not in log and "Trot hard posture limit" not in log
-    final_angle = max(
-        abs(float(final["imu_roll_rad"])),
-        abs(float(final["imu_pitch_rad"])),
-    ) * 180.0 / math.pi
+    controlled_stop = (
+        "High-speed stop: WBC four-contact hold complete; finished in WBC stance" in log
+    )
+    safe = (
+        "Trot hard safety limit reached" not in log
+        and "Trot hard posture limit" not in log
+    )
+    final_angle = (
+        max(
+            abs(float(final["imu_roll_rad"])),
+            abs(float(final["imu_pitch_rad"])),
+        )
+        * 180.0
+        / math.pi
+    )
     return {
         "run": path.name,
         "max_speed": max(speeds),
@@ -109,7 +123,9 @@ def main() -> int:
         summarize(Path(run), args.speed_threshold, args.angle_limit_deg)
         for run in args.run_dirs
     ]
-    print("run,max_speed_mps,good_window_s,window_angle_p95_deg,stage3_rows,final_speed_mps,final_angle_deg,dynamics_status,controlled_stop,safe,pass")
+    print(
+        "run,max_speed_mps,good_window_s,window_angle_p95_deg,stage3_rows,final_speed_mps,final_angle_deg,dynamics_status,controlled_stop,safe,pass"
+    )
     for result in results:
         print(
             f"{result['run']},{result['max_speed']:.3f},{result['window_s']:.3f},"

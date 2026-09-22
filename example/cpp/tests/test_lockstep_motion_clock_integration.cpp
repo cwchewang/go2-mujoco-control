@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <limits>
 #include <cstdio>
 #include <thread>
 
@@ -31,6 +32,41 @@ unitree_go::msg::dds_::LowState_ State(std::uint32_t tick)
         state.motor_state()[i].dq(0.0);
     }
     return state;
+}
+
+void TestCleanCurrentTickCommand()
+{
+    go2_trot::TrotParams params;
+    params.clean_baseline = true;
+    params.wbc_primary = true;
+    params.wbc_full = true;
+    params.kp = 63.0;
+    params.kd = 2.8;
+    params.tau_limit_nm = 35.0;
+    TrotExperiment experiment(10.0, "", params, 1, false, "", false);
+    auto command = experiment.TestWriteCleanCommand(false, true, true, 2.0);
+    Check(command.tau == 2.0 && command.dq == 1.25 &&
+              command.feedforward_applied,
+          "clean first accepted tick uses current result");
+    command = experiment.TestWriteCleanCommand(true, false, true, 0.0);
+    Check(command.tau == 0.0 && command.dq == 0.0 &&
+              !command.feedforward_applied,
+          "clean current rejected tick emits zero-feedforward zero-dq hold");
+    command = experiment.TestWriteCleanCommand(true, true, false, 2.0);
+    Check(command.tau == 0.0 && command.dq == 0.0,
+          "clean mapping rejection cannot use prior active flag");
+    command = experiment.TestWriteCleanCommand(false, true, true, -2.0);
+    Check(command.tau == -2.0 && command.dq == 1.25,
+          "clean recovery uses current accepted result");
+    command = experiment.TestWriteCleanCommand(true, true, true, 36.0);
+    Check(command.tau == 0.0 && command.dq == 0.0,
+          "clean current excessive candidate holds");
+    command = experiment.TestWriteCleanCommand(
+        true, true, true, std::numeric_limits<double>::quiet_NaN());
+    Check(command.tau == 0.0 && command.dq == 0.0,
+          "clean nonfinite candidate holds");
+    Check(command.kp == 63.0 && std::fabs(command.kd - 2.8) < 1e-6,
+          "safe hold retains explicit impedance, not zero plant torque");
 }
 
 void TestProductionChain()
@@ -114,6 +150,7 @@ void TestProductionChain()
 int main()
 {
     TestProductionChain();
+    TestCleanCurrentTickCommand();
     if (failures != 0)
     {
         std::fprintf(stderr, "lockstep_motion_clock_integration: %d failure(s)\n", failures);

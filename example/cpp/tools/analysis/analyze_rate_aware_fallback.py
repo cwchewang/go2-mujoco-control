@@ -34,9 +34,8 @@ def flag(row: dict[str, str], field: str) -> bool:
 
 
 def rate_ok(row: dict[str, str]) -> bool:
-    return (
-        not flag(row, "shadow_torque_rate_task_active")
-        or flag(row, "shadow_torque_rate_satisfied")
+    return not flag(row, "shadow_torque_rate_task_active") or flag(
+        row, "shadow_torque_rate_satisfied"
     )
 
 
@@ -82,10 +81,7 @@ def longest_run(values: list[str], target: str) -> int:
 
 
 def transition_count(values: list[str]) -> int:
-    return sum(
-        values[index] != values[index - 1]
-        for index in range(1, len(values))
-    )
+    return sum(values[index] != values[index - 1] for index in range(1, len(values)))
 
 
 def main() -> int:
@@ -118,9 +114,7 @@ def main() -> int:
 
     try:
         moment_rows, moment_fields = read_csv(args.moment_replay_csv)
-        moment_full_rows, moment_full_fields = read_csv(
-            args.moment_fullbody_detail_csv
-        )
+        moment_full_rows, moment_full_fields = read_csv(args.moment_fullbody_detail_csv)
         force_rows, force_fields = read_csv(args.force_only_replay_csv)
         force_full_rows, force_full_fields = read_csv(
             args.force_only_fullbody_detail_csv
@@ -143,18 +137,14 @@ def main() -> int:
         ):
             missing = sorted(required_replay - set(fields))
             if missing:
-                raise ValueError(
-                    f"{name} missing fields: {','.join(missing)}"
-                )
+                raise ValueError(f"{name} missing fields: {','.join(missing)}")
         for name, fields in (
             ("moment fullbody", moment_full_fields),
             ("force-only fullbody", force_full_fields),
         ):
             missing = sorted(required_fullbody - set(fields))
             if missing:
-                raise ValueError(
-                    f"{name} missing fields: {','.join(missing)}"
-                )
+                raise ValueError(f"{name} missing fields: {','.join(missing)}")
         lengths = {
             len(moment_rows),
             len(moment_full_rows),
@@ -162,9 +152,7 @@ def main() -> int:
             len(force_full_rows),
         }
         if len(lengths) != 1:
-            raise ValueError(
-                "replay and fullbody detail row counts do not match"
-            )
+            raise ValueError("replay and fullbody detail row counts do not match")
     except (OSError, KeyError, ValueError) as exc:
         print(f"validation=FAIL: {exc}")
         return 2
@@ -182,10 +170,8 @@ def main() -> int:
             force_full_time = finite(force_full, "replay_time_s")
             if (
                 abs(moment_time - force_time) > args.time_tolerance_s
-                or abs(moment_time - moment_full_time)
-                > args.time_tolerance_s
-                or abs(force_time - force_full_time)
-                > args.time_tolerance_s
+                or abs(moment_time - moment_full_time) > args.time_tolerance_s
+                or abs(force_time - force_full_time) > args.time_tolerance_s
             ):
                 raise ValueError("time alignment mismatch")
             if moment["row_number"] != force["row_number"]:
@@ -205,13 +191,9 @@ def main() -> int:
         classifications.append(classification)
         reasons = []
         if not moment_pass:
-            reasons.extend(
-                candidate_reasons(moment, moment_full, "moment")
-            )
+            reasons.extend(candidate_reasons(moment, moment_full, "moment"))
         if classification == "hold":
-            reasons.extend(
-                candidate_reasons(force, force_full, "force_only")
-            )
+            reasons.extend(candidate_reasons(force, force_full, "force_only"))
         detail_rows.append(
             {
                 "row_number": moment["row_number"],
@@ -223,24 +205,16 @@ def main() -> int:
                 "moment_shadow_policy_satisfied": int(
                     flag(moment, "shadow_policy_satisfied")
                 ),
-                "moment_torque_rate_satisfied": int(
-                    rate_ok(moment)
-                ),
-                "moment_fullbody_task_gate": int(
-                    flag(moment_full, "task_gate")
-                ),
+                "moment_torque_rate_satisfied": int(rate_ok(moment)),
+                "moment_fullbody_task_gate": int(flag(moment_full, "task_gate")),
                 "moment_fullbody_candidate": int(
                     flag(moment_full, "feasible_candidate")
                 ),
                 "force_only_shadow_policy_satisfied": int(
                     flag(force, "shadow_policy_satisfied")
                 ),
-                "force_only_torque_rate_satisfied": int(
-                    rate_ok(force)
-                ),
-                "force_only_fullbody_task_gate": int(
-                    flag(force_full, "task_gate")
-                ),
+                "force_only_torque_rate_satisfied": int(rate_ok(force)),
+                "force_only_fullbody_task_gate": int(flag(force_full, "task_gate")),
                 "force_only_fullbody_candidate": int(
                     flag(force_full, "feasible_candidate")
                 ),
@@ -256,23 +230,15 @@ def main() -> int:
         writer.writerows(detail_rows)
     with args.out.open("w", encoding="utf-8") as handle:
         handle.write("rate-aware fallback audit\n")
-        handle.write(
-            "policy=moment_first_then_explicit_force_only_then_hold\n"
-        )
+        handle.write("policy=moment_first_then_explicit_force_only_then_hold\n")
         handle.write(f"replay_rows={len(detail_rows)}\n")
         handle.write(f"moment_pass_rows={counts['moment']}\n")
         handle.write(f"force_only_rows={counts['force-only']}\n")
         handle.write(f"hold_rows={counts['hold']}\n")
-        handle.write(
-            f"longest_hold_run={longest_run(classifications, 'hold')}\n"
-        )
-        handle.write(
-            f"hold_transition_count={transition_count(classifications)}\n"
-        )
+        handle.write(f"longest_hold_run={longest_run(classifications, 'hold')}\n")
+        handle.write(f"hold_transition_count={transition_count(classifications)}\n")
         handle.write("validation=PASS\n")
-        handle.write(
-            "interpretation=offline_policy_audit_not_runtime_safety_proof\n"
-        )
+        handle.write("interpretation=offline_policy_audit_not_runtime_safety_proof\n")
     print("rate-aware fallback audit")
     print("policy=moment_first_then_explicit_force_only_then_hold")
     print(f"replay_rows={len(detail_rows)}")

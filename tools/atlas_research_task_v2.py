@@ -18,7 +18,9 @@ WORKER_VERSION = 2
 MODEL = base.MODEL
 
 
-def _prompt(*, branch: str, task_path: str, task_commit: str, reference_worktree: Path) -> str:
+def _prompt(
+    *, branch: str, task_path: str, task_commit: str, reference_worktree: Path
+) -> str:
     return f"""You are the unattended execution worker for one Go2 research task.
 
 Task identity:
@@ -122,8 +124,10 @@ def _run_codex(
         )
     )
 
-    with stdout_path.open("a", encoding="utf-8") as stdout_file, \
-            stderr_path.open("a", encoding="utf-8") as stderr_file:
+    with (
+        stdout_path.open("a", encoding="utf-8") as stdout_file,
+        stderr_path.open("a", encoding="utf-8") as stderr_file,
+    ):
         process = subprocess.Popen(
             command,
             cwd=worktree,
@@ -193,7 +197,9 @@ def _trusted_commit(worktree: Path, task_path: str) -> tuple[str, list[str]]:
 
     staged = [
         line
-        for line in base._git(worktree, "diff", "--cached", "--name-only", "--").splitlines()
+        for line in base._git(
+            worktree, "diff", "--cached", "--name-only", "--"
+        ).splitlines()
         if line
     ]
     _validate_paths(staged)
@@ -317,9 +323,7 @@ def main() -> int:
             )
 
         result_commit, staged_paths = _trusted_commit(worktree, args.task_path)
-        validated_commit, changed = base._validate_closeout(
-            worktree, args.task_commit
-        )
+        validated_commit, changed = base._validate_closeout(worktree, args.task_commit)
         if validated_commit != result_commit:
             raise base.ResearchTaskError("trusted closeout validation moved HEAD")
 

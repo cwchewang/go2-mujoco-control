@@ -59,18 +59,10 @@ def main() -> int:
             reader = csv.DictReader(handle)
             fields = set(reader.fieldnames or ())
             required = {"time_s"}
-            required.update(
-                f"base_qfrc_constraint_trans_{axis}_N" for axis in AXES
-            )
-            required.update(
-                f"base_qfrc_constraint_rot_{axis}_Nm" for axis in AXES
-            )
-            required.update(
-                f"total_contact_grf_world_{axis}_N" for axis in AXES
-            )
-            required.update(
-                f"total_contact_moment_world_{axis}_Nm" for axis in AXES
-            )
+            required.update(f"base_qfrc_constraint_trans_{axis}_N" for axis in AXES)
+            required.update(f"base_qfrc_constraint_rot_{axis}_Nm" for axis in AXES)
+            required.update(f"total_contact_grf_world_{axis}_N" for axis in AXES)
+            required.update(f"total_contact_moment_world_{axis}_Nm" for axis in AXES)
             missing = sorted(required - fields)
             if missing:
                 raise ValueError("missing fields: " + ",".join(missing))
@@ -90,9 +82,7 @@ def main() -> int:
         for row_number, row in enumerate(rows, start=2):
             time_s = finite(row, "time_s")
             if time_s <= previous_time:
-                raise ValueError(
-                    f"row {row_number}: time is not strictly increasing"
-                )
+                raise ValueError(f"row {row_number}: time is not strictly increasing")
             previous_time = time_s
             for index, axis in enumerate(AXES):
                 force_errors[index].append(
@@ -107,12 +97,8 @@ def main() -> int:
         print(f"validation=FAIL: {exc}")
         return 1
 
-    force_max_abs = max(
-        abs(value) for component in force_errors for value in component
-    )
-    moment_abs = [
-        abs(value) for component in moment_errors for value in component
-    ]
+    force_max_abs = max(abs(value) for component in force_errors for value in component)
+    moment_abs = [abs(value) for component in moment_errors for value in component]
     force_pass = force_max_abs <= args.force_tolerance_n
     moment_pass = (
         percentile(moment_abs, 0.95) <= args.moment_p95_tolerance_nm
@@ -132,21 +118,19 @@ def main() -> int:
                 "force_error_%s_max_abs_n=%.9g"
                 % (axis, max(abs(value) for value in force_errors[index])),
                 "moment_error_%s_p95_abs_nm=%.9g"
-                % (axis, percentile(
-                    [abs(value) for value in moment_errors[index]], 0.95
-                )),
+                % (
+                    axis,
+                    percentile([abs(value) for value in moment_errors[index]], 0.95),
+                ),
                 "moment_error_%s_max_abs_nm=%.9g"
                 % (axis, max(abs(value) for value in moment_errors[index])),
-                "moment_error_%s_rms_nm=%.9g"
-                % (axis, rms(moment_errors[index])),
+                "moment_error_%s_rms_nm=%.9g" % (axis, rms(moment_errors[index])),
             ]
         )
     lines.extend(
         [
             "force_mapping_validation=" + ("PASS" if force_pass else "FAIL"),
-            "moment_mapping_validation=" + (
-                "PASS" if moment_pass else "FAIL"
-            ),
+            "moment_mapping_validation=" + ("PASS" if moment_pass else "FAIL"),
             "qfrc_constraint_frame_note="
             "free_joint_q_coordinate_matches_logged_world_contact_wrench",
             "validation=" + ("PASS" if force_pass and moment_pass else "FAIL"),

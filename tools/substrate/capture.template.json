@@ -1,0 +1,14 @@
+{
+  "status": "DRAFT_NOT_AUTHORIZED",
+  "reviewed_by": null,
+  "model_sha256": null,
+  "backend_sha256": null,
+  "information_regime": null,
+  "start_state": null,
+  "command": null,
+  "horizon_s": null,
+  "repeat_count": null,
+  "thresholds": null,
+  "support_semantics": null,
+  "control_period_s": null
+}

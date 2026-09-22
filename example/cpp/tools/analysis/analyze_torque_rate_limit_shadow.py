@@ -82,8 +82,7 @@ def run_limit(
                 for value, previous in zip(limited, limited_previous)
             ]
             target_errors = [
-                abs(value - target)
-                for value, target in zip(limited, row["tau"])
+                abs(value - target) for value, target in zip(limited, row["tau"])
             ]
             limited_delta = max(deltas, default=0.0)
             tracking_error = max(target_errors, default=0.0)
@@ -239,19 +238,17 @@ def main() -> int:
             "same_contact_count",
             "contact_count_transition",
         ):
-            lines.append(
-                f"    {group}={stats(result['group_errors'][group])}"
-            )
+            lines.append(f"    {group}={stats(result['group_errors'][group])}")
         lines.append("  applied_rate_nm_s_by_group:")
         for group in (
             "all_positive_dt",
             "same_contact_count",
             "contact_count_transition",
         ):
-            lines.append(
-                f"    {group}={stats(result['group_rates'][group])}"
-            )
-        lines.append(f"  top_tracking_error_n={min(args.top_n, len(result['top_events']))}:")
+            lines.append(f"    {group}={stats(result['group_rates'][group])}")
+        lines.append(
+            f"  top_tracking_error_n={min(args.top_n, len(result['top_events']))}:"
+        )
         for event in result["top_events"][: args.top_n]:
             lines.append(
                 "    "

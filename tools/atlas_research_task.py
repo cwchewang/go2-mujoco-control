@@ -138,9 +138,7 @@ def _verify_remote_task(
         check=False,
     )
     if shown.returncode:
-        raise ResearchTaskError(
-            f"task file does not exist at task_commit: {task_path}"
-        )
+        raise ResearchTaskError(f"task file does not exist at task_commit: {task_path}")
     task_text = shown.stdout
     if not task_text.lstrip().startswith("#"):
         raise ResearchTaskError("task file is not a Markdown task document")
@@ -293,8 +291,10 @@ def _run_codex(
         )
     )
 
-    with stdout_path.open("a", encoding="utf-8") as stdout_file, \
-            stderr_path.open("a", encoding="utf-8") as stderr_file:
+    with (
+        stdout_path.open("a", encoding="utf-8") as stdout_file,
+        stderr_path.open("a", encoding="utf-8") as stderr_file,
+    ):
         process = subprocess.Popen(
             command,
             cwd=worktree,
@@ -434,7 +434,9 @@ def main() -> int:
 
         if state.get("status") == "complete_local":
             result_commit = state.get("result_commit")
-            if not isinstance(result_commit, str) or not COMMIT_RE.fullmatch(result_commit):
+            if not isinstance(result_commit, str) or not COMMIT_RE.fullmatch(
+                result_commit
+            ):
                 raise ResearchTaskError("stored local result commit is invalid")
             _write_push_request(
                 output_dir=args.output_dir,

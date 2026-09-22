@@ -28,11 +28,7 @@ def longest_window(rows, speed_min: float, angle_max_deg: float):
             )
         except (KeyError, TypeError, ValueError):
             continue
-        good = (
-            sample[3] == 2
-            and sample[1] >= speed_min
-            and sample[2] <= angle_max_deg
-        )
+        good = sample[3] == 2 and sample[1] >= speed_min and sample[2] <= angle_max_deg
         if good and start is None:
             start = sample[0]
         if not good and start is not None:
@@ -55,10 +51,7 @@ def main() -> None:
         rows = list(csv.DictReader(handle))
     duration, start, end = longest_window(rows, args.speed, args.angle_deg)
     if start is None:
-        print(
-            "window speed>=%.2f angle<=%.1fdeg: none"
-            % (args.speed, args.angle_deg)
-        )
+        print("window speed>=%.2f angle<=%.1fdeg: none" % (args.speed, args.angle_deg))
         return
     print(
         "window speed>=%.2f angle<=%.1fdeg: duration=%.3fs start=%.3f end=%.3f"

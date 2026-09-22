@@ -11,15 +11,9 @@ from pathlib import Path
 LEGS = ("FR", "FL", "RR", "RL")
 JOINTS = ("hip", "thigh", "calf")
 TORQUE_FIELDS = tuple(
-    f"{leg}_{joint}_tau_ff_candidate"
-    for leg in LEGS
-    for joint in JOINTS
+    f"{leg}_{joint}_tau_ff_candidate" for leg in LEGS for joint in JOINTS
 )
-TRUTH_LABELS = tuple(
-    f"{leg}_{joint}_joint"
-    for leg in LEGS
-    for joint in JOINTS
-)
+TRUTH_LABELS = tuple(f"{leg}_{joint}_joint" for leg in LEGS for joint in JOINTS)
 
 
 def read_csv(path):
@@ -67,15 +61,13 @@ def main():
         print("validation=FAIL: invalid time tolerance")
         return 2
 
-    if (
-        (args.hold_budget_contact_gap_nm is None)
-        != (args.hold_budget_actuator_delta_nm is None)
-        or (
-            args.hold_budget_contact_gap_nm is not None
-            and (
-                args.hold_budget_contact_gap_nm <= 0.0
-                or args.hold_budget_actuator_delta_nm <= 0.0
-            )
+    if (args.hold_budget_contact_gap_nm is None) != (
+        args.hold_budget_actuator_delta_nm is None
+    ) or (
+        args.hold_budget_contact_gap_nm is not None
+        and (
+            args.hold_budget_contact_gap_nm <= 0.0
+            or args.hold_budget_actuator_delta_nm <= 0.0
         )
     ):
         print("validation=FAIL: invalid hold budget")
@@ -91,22 +83,10 @@ def main():
         required_replay = {"row_number", *TORQUE_FIELDS}
         required_truth = {
             "time_s",
-            *(
-                f"full_mass_qacc_qfrc_qcoord_{label}"
-                for label in TRUTH_LABELS
-            ),
-            *(
-                f"full_qfrc_smooth_qcoord_{label}"
-                for label in TRUTH_LABELS
-            ),
-            *(
-                f"full_qfrc_constraint_qcoord_{label}"
-                for label in TRUTH_LABELS
-            ),
-            *(
-                f"full_qfrc_actuator_qcoord_{label}"
-                for label in TRUTH_LABELS
-            ),
+            *(f"full_mass_qacc_qfrc_qcoord_{label}" for label in TRUTH_LABELS),
+            *(f"full_qfrc_smooth_qcoord_{label}" for label in TRUTH_LABELS),
+            *(f"full_qfrc_constraint_qcoord_{label}" for label in TRUTH_LABELS),
+            *(f"full_qfrc_actuator_qcoord_{label}" for label in TRUTH_LABELS),
         }
         missing = []
         if required_state - set(state_fields):
@@ -119,9 +99,7 @@ def main():
             )
         if required_replay - set(force_fields):
             missing.append(
-                "force_only=" + ",".join(
-                    sorted(required_replay - set(force_fields))
-                )
+                "force_only=" + ",".join(sorted(required_replay - set(force_fields)))
             )
         if required_truth - set(truth_fields):
             missing.append(
@@ -129,16 +107,11 @@ def main():
             )
         if missing:
             raise ValueError("missing fields: " + ";".join(missing))
-        moment_by_row = {
-            int(row["row_number"]): row for row in moment_rows
-        }
-        force_by_row = {
-            int(row["row_number"]): row for row in force_rows
-        }
+        moment_by_row = {int(row["row_number"]): row for row in moment_rows}
+        force_by_row = {int(row["row_number"]): row for row in force_rows}
         truth_times = [finite(row, "time_s") for row in truth_rows]
         if any(
-            truth_times[i] <= truth_times[i - 1]
-            for i in range(1, len(truth_times))
+            truth_times[i] <= truth_times[i - 1] for i in range(1, len(truth_times))
         ):
             raise ValueError("truth time is not strictly increasing")
     except (OSError, KeyError, ValueError) as exc:
@@ -190,21 +163,13 @@ def main():
             contact_gaps = []
             actuator_deltas = []
             for index_joint, label in enumerate(TRUTH_LABELS):
-                mass = finite(
-                    truth, f"full_mass_qacc_qfrc_qcoord_{label}"
-                )
+                mass = finite(truth, f"full_mass_qacc_qfrc_qcoord_{label}")
                 smooth = finite(truth, f"full_qfrc_smooth_qcoord_{label}")
-                contact = finite(
-                    truth, f"full_qfrc_constraint_qcoord_{label}"
-                )
-                actuator = finite(
-                    truth, f"full_qfrc_actuator_qcoord_{label}"
-                )
+                contact = finite(truth, f"full_qfrc_constraint_qcoord_{label}")
+                actuator = finite(truth, f"full_qfrc_actuator_qcoord_{label}")
                 contact_gaps.append(abs(contact - selected[index_joint]))
                 required_actuator = mass - smooth - selected[index_joint]
-                actuator_deltas.append(
-                    abs(required_actuator - actuator)
-                )
+                actuator_deltas.append(abs(required_actuator - actuator))
         except (KeyError, ValueError) as exc:
             print(f"validation=FAIL: row {index}: {exc}")
             return 2
@@ -221,8 +186,7 @@ def main():
                 hold_budget_checked_rows += 1
                 hold_budget_pass = int(
                     max_contact_gap <= args.hold_budget_contact_gap_nm
-                    and max_actuator_delta
-                    <= args.hold_budget_actuator_delta_nm
+                    and max_actuator_delta <= args.hold_budget_actuator_delta_nm
                 )
                 if not hold_budget_pass:
                     hold_budget_fail_rows += 1
@@ -250,14 +214,10 @@ def main():
 
     hold_task_not_certified = 1 if hold_contact_gap else 0
     hold_budget_contact_limit = (
-        f"{args.hold_budget_contact_gap_nm:.17g}"
-        if hold_budget_enabled
-        else "none"
+        f"{args.hold_budget_contact_gap_nm:.17g}" if hold_budget_enabled else "none"
     )
     hold_budget_actuator_limit = (
-        f"{args.hold_budget_actuator_delta_nm:.17g}"
-        if hold_budget_enabled
-        else "none"
+        f"{args.hold_budget_actuator_delta_nm:.17g}" if hold_budget_enabled else "none"
     )
     hold_budget_summary_pass = (
         "not_evaluated"

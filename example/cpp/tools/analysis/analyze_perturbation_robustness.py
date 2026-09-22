@@ -110,7 +110,10 @@ def main() -> int:
         policy_pass = 0
         rate_pass = 0
         for key in reference_keys:
-            if abs(float(rows[key]["time_s"]) - float(reference[key]["time_s"])) > args.time_tolerance_s:
+            if (
+                abs(float(rows[key]["time_s"]) - float(reference[key]["time_s"]))
+                > args.time_tolerance_s
+            ):
                 mismatch_rows += 1
                 continue
             task_pass += bool(rows[key]["task_ok"])

@@ -22,9 +22,11 @@ import atlas_research_task as base
 import atlas_research_task_v2 as v2
 import atlas_research_task_v3 as v3
 import atlas_research_task_v4 as v4
+
 try:
     from research_orchestrator.atlas_core import control_signals
 except ModuleNotFoundError:
+
     class _MissingControlSignals:
         class TaskCancelled(RuntimeError):
             pass
@@ -142,7 +144,9 @@ def _write_existing_push_request(
     state: dict[str, Any],
 ) -> str:
     result_commit = state.get("result_commit")
-    if not isinstance(result_commit, str) or not base.COMMIT_RE.fullmatch(result_commit):
+    if not isinstance(result_commit, str) or not base.COMMIT_RE.fullmatch(
+        result_commit
+    ):
         raise base.ResearchTaskError("stored local result commit is invalid")
     base._write_push_request(
         output_dir=args.output_dir,
@@ -468,7 +472,9 @@ def _run_host_task(
     if not isinstance(host_record, dict):
         raise base.ResearchTaskError("host record missing after host phase")
     if not host.verify_host_record(worktree, host_record):
-        raise base.ResearchTaskError("host facts/raw evidence failed integrity verification")
+        raise base.ResearchTaskError(
+            "host facts/raw evidence failed integrity verification"
+        )
 
     state["status"] = "analyzing"
     base._write_state(state_path, state)

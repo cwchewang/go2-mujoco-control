@@ -1,0 +1,20 @@
+test_asset_closure_detects_included_mesh_mutation (tools.substrate.test_substrate.Boundaries) ... ok
+test_duplicate_missing_nonfinite_rejected (tools.substrate.test_substrate.Boundaries) ... ok
+test_duplicate_or_gap_rejected (tools.substrate.test_substrate.Boundaries) ... ok
+test_earliest_failure_preserved (tools.substrate.test_substrate.Boundaries) ... ok
+test_include_cycle_and_missing_rejected (tools.substrate.test_substrate.Boundaries) ... ok
+test_invalid_gain_and_range (tools.substrate.test_substrate.Boundaries) ... ok
+test_jump_traverse_vs_mandatory_support (tools.substrate.test_substrate.Boundaries) ... ok
+test_named_permutation_roundtrip (tools.substrate.test_substrate.Boundaries) ... ok
+test_policy_observation_golden (tools.substrate.test_substrate.Boundaries) ... ok
+test_policy_rejects_bad_quaternion_command (tools.substrate.test_substrate.Boundaries) ... ok
+test_torque_pd_sum_before_model_limit (tools.substrate.test_substrate.Boundaries) ... ok
+test_unreviewed_capture_fail_closed (tools.substrate.test_substrate.Boundaries) ... ok
+test_decorated_physics_identical (tools.substrate.test_native_boundary.NativeBoundary) ... ok
+test_friction_or_actuator_drift_detected (tools.substrate.test_native_boundary.NativeBoundary) ... ok
+test_named_joints_and_model_limits (tools.substrate.test_native_boundary.NativeBoundary) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.865s
+
+OK

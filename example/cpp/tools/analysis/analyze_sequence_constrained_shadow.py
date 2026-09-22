@@ -64,9 +64,7 @@ def main() -> int:
             fields = set(reader.fieldnames or [])
             missing = sorted(required_fields - fields)
             if missing:
-                raise ValueError(
-                    "replay CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("replay CSV missing fields: " + ",".join(missing))
             for raw in reader:
                 try:
                     rows.append(
@@ -77,23 +75,12 @@ def main() -> int:
                                 round(finite(raw, "selected_contact_count"))
                             ),
                             "active": finite(raw, "shadow_active") >= 0.5,
-                            "policy": finite(
-                                raw, "shadow_policy_satisfied"
-                            )
+                            "policy": finite(raw, "shadow_policy_satisfied") >= 0.5,
+                            "fallback": finite(raw, "shadow_fallback_to_force_solution")
                             >= 0.5,
-                            "fallback": finite(
-                                raw, "shadow_fallback_to_force_solution"
-                            )
-                            >= 0.5,
-                            "force_excess": finite(
-                                raw, "shadow_max_force_excess_n"
-                            ),
-                            "moment_excess": finite(
-                                raw, "shadow_max_moment_excess_nm"
-                            ),
-                            "rate_active": finite(
-                                raw, "shadow_torque_rate_task_active"
-                            )
+                            "force_excess": finite(raw, "shadow_max_force_excess_n"),
+                            "moment_excess": finite(raw, "shadow_max_moment_excess_nm"),
+                            "rate_active": finite(raw, "shadow_torque_rate_task_active")
                             >= 0.5,
                             "rate_satisfied": finite(
                                 raw, "shadow_torque_rate_satisfied"
@@ -156,9 +143,7 @@ def main() -> int:
             not rate_satisfied or abs(rate_excess) > RESIDUAL_TOLERANCE
         ):
             invalid_rows += 1
-        if rate_active and (
-            rate_satisfied != (rate_excess <= RESIDUAL_TOLERANCE)
-        ):
+        if rate_active and (rate_satisfied != (rate_excess <= RESIDUAL_TOLERANCE)):
             invalid_rows += 1
         if rate_active and not rate_satisfied and policy:
             invalid_rows += 1
@@ -206,9 +191,7 @@ def main() -> int:
         )
 
     validation_pass = (
-        invalid_rows == 0
-        and negative_dt_pairs == 0
-        and active_rows == len(rows)
+        invalid_rows == 0 and negative_dt_pairs == 0 and active_rows == len(rows)
     )
     lines.append("validation=" + ("PASS" if validation_pass else "FAIL"))
     report = "\n".join(lines) + "\n"

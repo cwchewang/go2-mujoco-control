@@ -54,8 +54,10 @@ def percentile(values: list[float], q: float) -> float:
 
 
 def angles_deg(row: dict[str, str]) -> tuple[float, float]:
-    w, x, y, z = (num(row, key) for key in (
-        "base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z"))
+    w, x, y, z = (
+        num(row, key)
+        for key in ("base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z")
+    )
     roll = math.atan2(
         2.0 * (w * x + y * z),
         1.0 - 2.0 * (x * x + y * y),
@@ -80,8 +82,9 @@ def longest_good_window(
         speed = num(row, "base_qvel_world_x_mps")
         good = min_speed <= speed <= max_speed
         contiguous = (
-            previous_good and math.isfinite(previous_time) and
-            0.0 <= time_s - previous_time <= 0.02
+            previous_good
+            and math.isfinite(previous_time)
+            and 0.0 <= time_s - previous_time <= 0.02
         )
         if good and not contiguous:
             current_start = time_s
@@ -148,9 +151,15 @@ def main() -> int:
     cycle_health_count = len(re.findall(r"Trot cycle .* health:", log_text))
     if cycle_health_count < 100:
         failures.append(f"cycle_health_count={cycle_health_count}<100")
-    if "High-speed stop: brake complete; entering WBC four-contact hold" not in log_text:
+    if (
+        "High-speed stop: brake complete; entering WBC four-contact hold"
+        not in log_text
+    ):
         failures.append("brake_complete_not_recorded")
-    if "High-speed stop: WBC four-contact hold complete; finished in WBC stance" not in log_text:
+    if (
+        "High-speed stop: WBC four-contact hold complete; finished in WBC stance"
+        not in log_text
+    ):
         failures.append("wbc_stop_hold_not_recorded")
     if re.search(r"Trot (?:hard|cycle quality guard|safety rejected)", log_text):
         failures.append("controller_log_contains_rejection")
@@ -180,10 +189,7 @@ def main() -> int:
     stage2_end = max(num(row, "cmd_time_s") for row in stage2)
     cruise_start = stage2_start + 2.0
     cruise_end = min(stage2_end - 2.0, stop_start - 2.0)
-    cruise = [
-        row for row in truth
-        if cruise_start <= num(row, "time_s") <= cruise_end
-    ]
+    cruise = [row for row in truth if cruise_start <= num(row, "time_s") <= cruise_end]
     if len(cruise) < 1000:
         failures.append(f"cruise_samples={len(cruise)}<1000")
 
@@ -191,39 +197,37 @@ def main() -> int:
     base_z = [num(row, "base_pos_world_z_m") for row in cruise]
     roll = [angles_deg(row)[0] for row in cruise]
     pitch = [angles_deg(row)[1] for row in cruise]
-    foot_z = {
-        leg: [num(row, f"{leg}_pos_world_z_m") for row in cruise]
-        for leg in LEGS
-    }
+    foot_z = {leg: [num(row, f"{leg}_pos_world_z_m") for row in cruise] for leg in LEGS}
     contacts = {
-        leg: [num(row, f"{leg}_touch_N") > 5.0 for row in cruise]
-        for leg in LEGS
+        leg: [num(row, f"{leg}_touch_N") > 5.0 for row in cruise] for leg in LEGS
     }
     contact_counts = Counter(
-        sum(contacts[leg][index] for leg in LEGS)
-        for index in range(len(cruise))
+        sum(contacts[leg][index] for leg in LEGS) for index in range(len(cruise))
     )
     n = max(1, len(cruise))
     aerial_fraction = contact_counts[0] / n
     two_contact_fraction = contact_counts[2] / n
-    three_contact_fraction = (
-        contact_counts[3] + contact_counts[4]
-    ) / n
-    all_feet_low_fraction = sum(
-        all(num(row, f"{leg}_pos_world_z_m") <= 0.035 for leg in LEGS)
-        for row in cruise
-    ) / n
+    three_contact_fraction = (contact_counts[3] + contact_counts[4]) / n
+    all_feet_low_fraction = (
+        sum(
+            all(num(row, f"{leg}_pos_world_z_m") <= 0.035 for leg in LEGS)
+            for row in cruise
+        )
+        / n
+    )
     pair_sync = {
         f"{first}+{second}": sum(
             a == b for a, b in zip(contacts[first], contacts[second])
-        ) / n
+        )
+        / n
         for first, second in PAIRS
     }
     speed_window, window_start, window_end = longest_good_window(
-        cruise, args.min_speed, args.max_speed)
-    min_clearance = min(
-        percentile(foot_z[leg], 95.0) for leg in LEGS
-    ) if cruise else float("nan")
+        cruise, args.min_speed, args.max_speed
+    )
+    min_clearance = (
+        min(percentile(foot_z[leg], 95.0) for leg in LEGS) if cruise else float("nan")
+    )
     final_row = truth[-1]
     final_speed = abs(num(final_row, "base_qvel_world_x_mps"))
     final_roll, final_pitch = angles_deg(final_row)
@@ -234,10 +238,7 @@ def main() -> int:
     # avoids dependence on simulator shutdown latency.
     final_time = num(truth[-1], "time_s")
     settled_start = max(stop_start + 1.5, final_time - 1.5)
-    stop_tail = [
-        row for row in truth
-        if num(row, "time_s") >= settled_start
-    ]
+    stop_tail = [row for row in truth if num(row, "time_s") >= settled_start]
     stop_tail_speed_p95 = percentile(
         [abs(num(row, "base_qvel_world_x_mps")) for row in stop_tail], 95.0
     )
@@ -259,7 +260,10 @@ def main() -> int:
         failures.append(f"pitch_p95={percentile(pitch, 95.0):.4f}")
     if min_clearance < args.min_foot_clearance_m:
         failures.append(f"foot_clearance_p95_min={min_clearance:.4f}")
-    if aerial_fraction < args.min_aerial_fraction or aerial_fraction > args.max_aerial_fraction:
+    if (
+        aerial_fraction < args.min_aerial_fraction
+        or aerial_fraction > args.max_aerial_fraction
+    ):
         failures.append(f"aerial_fraction={aerial_fraction:.4f}")
     if two_contact_fraction < args.min_two_contact_fraction:
         failures.append(f"two_contact_fraction={two_contact_fraction:.4f}")
@@ -283,17 +287,27 @@ def main() -> int:
     print(f"speed_p05_mps={percentile(speed, 5.0):.6f}")
     print(f"speed_median_mps={percentile(speed, 50.0):.6f}")
     print(f"speed_p95_mps={percentile(speed, 95.0):.6f}")
-    print(f"good_speed_window_s={speed_window:.6f} ({window_start:.3f}..{window_end:.3f})")
-    print(f"base_z_p01_p99_m={percentile(base_z, 1.0):.6f},{percentile(base_z, 99.0):.6f}")
-    print(f"body_angle_p95_deg=roll:{percentile(roll, 95.0):.6f},pitch:{percentile(pitch, 95.0):.6f}")
-    print("foot_z_p95_m=" + ",".join(
-        f"{leg}:{percentile(foot_z[leg], 95.0):.6f}" for leg in LEGS
-    ))
+    print(
+        f"good_speed_window_s={speed_window:.6f} ({window_start:.3f}..{window_end:.3f})"
+    )
+    print(
+        f"base_z_p01_p99_m={percentile(base_z, 1.0):.6f},{percentile(base_z, 99.0):.6f}"
+    )
+    print(
+        f"body_angle_p95_deg=roll:{percentile(roll, 95.0):.6f},pitch:{percentile(pitch, 95.0):.6f}"
+    )
+    print(
+        "foot_z_p95_m="
+        + ",".join(f"{leg}:{percentile(foot_z[leg], 95.0):.6f}" for leg in LEGS)
+    )
     print(f"aerial_fraction={aerial_fraction:.6f}")
     print(f"two_contact_fraction={two_contact_fraction:.6f}")
     print(f"three_contact_fraction={three_contact_fraction:.6f}")
     print(f"all_feet_low_fraction={all_feet_low_fraction:.6f}")
-    print("pair_sync=" + ",".join(f"{key}:{value:.6f}" for key, value in pair_sync.items()))
+    print(
+        "pair_sync="
+        + ",".join(f"{key}:{value:.6f}" for key, value in pair_sync.items())
+    )
     print(f"stop_tail_start_s={settled_start:.3f}")
     print(f"stop_tail_samples={len(stop_tail)}")
     print(f"stop_tail_speed_p95_mps={stop_tail_speed_p95:.6f}")

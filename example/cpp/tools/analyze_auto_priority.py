@@ -57,7 +57,8 @@ def transitions_with_state(data: list[dict[str, str]]) -> list[dict[str, object]
                     "priority": int(number(row, "event_priority", 0.0)),
                     "source": int(number(row, "event_source", 0.0)),
                     "source_name": SOURCE_NAMES.get(
-                        int(number(row, "event_source", 0.0)), "unknown"),
+                        int(number(row, "event_source", 0.0)), "unknown"
+                    ),
                 }
             )
             previous = event
@@ -116,21 +117,16 @@ def analyze(path: Path, push_tolerance_s: float) -> dict:
         else math.nan
     )
     target_ok = (
-        (obstacle_type == "obstacle_left" and target_vy >= 0.20 and target_yaw >= 0.10)
-        or (
-            obstacle_type == "obstacle_right"
-            and target_vy <= -0.20
-            and target_yaw <= -0.10
-        )
+        obstacle_type == "obstacle_left" and target_vy >= 0.20 and target_yaw >= 0.10
+    ) or (
+        obstacle_type == "obstacle_right" and target_vy <= -0.20 and target_yaw <= -0.10
     )
 
     contact = contact_max(path)
     valid_map = [
         row for row in data if number(row, "environment_map_valid", 0.0) >= 0.5
     ]
-    first_map = min(
-        (number(row, "cmd_time_s") for row in valid_map), default=math.nan
-    )
+    first_map = min((number(row, "cmd_time_s") for row in valid_map), default=math.nan)
     map_tail = [
         row
         for row in data
@@ -141,9 +137,7 @@ def analyze(path: Path, push_tolerance_s: float) -> dict:
         (number(row, "environment_map_age_s") for row in valid_map),
         default=math.nan,
     )
-    max_roll = max(
-        (abs(number(row, "imu_roll_rad")) for row in data), default=math.nan
-    )
+    max_roll = max((abs(number(row, "imu_roll_rad")) for row in data), default=math.nan)
     max_pitch = max(
         (abs(number(row, "imu_pitch_rad")) for row in data), default=math.nan
     )
@@ -157,8 +151,7 @@ def analyze(path: Path, push_tolerance_s: float) -> dict:
     )
     emergency_delay = (
         emergency_state_time - impact_state_time
-        if math.isfinite(emergency_state_time)
-        and math.isfinite(impact_state_time)
+        if math.isfinite(emergency_state_time) and math.isfinite(impact_state_time)
         else math.nan
     )
     velocity_jump = max_adjacent_velocity_jump(data, push)
@@ -210,10 +203,9 @@ def analyze(path: Path, push_tolerance_s: float) -> dict:
         and contact["max_force_N"] == 0
     )
     status_ok = all(value == 0 for value in statuses_value.values())
-    hold_complete = (
-        "Emergency stop hold complete; ending in WBC stance"
-        in (path / "controller.log").read_text(errors="replace")
-    )
+    hold_complete = "Emergency stop hold complete; ending in WBC stance" in (
+        path / "controller.log"
+    ).read_text(errors="replace")
     result.update(
         {
             "rows": len(data),
@@ -301,7 +293,9 @@ def main() -> int:
         + "\n",
         encoding="utf-8",
     )
-    print(json.dumps({"strict_pass": report["strict_pass"], "output": str(args.output)}))
+    print(
+        json.dumps({"strict_pass": report["strict_pass"], "output": str(args.output)})
+    )
     return 0 if report["strict_pass"] else 1
 
 

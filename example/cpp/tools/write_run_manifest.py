@@ -36,8 +36,12 @@ def main() -> int:
     environment_path = options.experiment_dir / "environment.txt"
     metadata = read_kv(metadata_path)
     environment = read_kv(environment_path) if environment_path.exists() else {}
-    profile_path = pathlib.Path(metadata["profile_path"]) if metadata.get("profile_path") else None
-    profile_hash = sha256(profile_path) if profile_path and profile_path.is_file() else ""
+    profile_path = (
+        pathlib.Path(metadata["profile_path"]) if metadata.get("profile_path") else None
+    )
+    profile_hash = (
+        sha256(profile_path) if profile_path and profile_path.is_file() else ""
+    )
     controller_argv = shlex.split(metadata.get("controller_argv_shell", ""))
     analyzer_names = [
         "analyze_contact_ground_truth.py",
@@ -47,15 +51,17 @@ def main() -> int:
     for name in analyzer_names:
         analyzer_path = options.cpp_dir / "tools" / "analysis" / name
         analyzers[name] = sha256(analyzer_path) if analyzer_path.is_file() else ""
-    phase2_contract_path = options.repo / "docs" / "research" / \
-        "PHASE2_ACCEPTANCE.md"
-    phase2_holdout_path = options.repo / "docs" / "research" / \
-        "PHASE2_HOLDOUT_MANIFEST.json"
+    phase2_contract_path = options.repo / "docs" / "research" / "PHASE2_ACCEPTANCE.md"
+    phase2_holdout_path = (
+        options.repo / "docs" / "research" / "PHASE2_HOLDOUT_MANIFEST.json"
+    )
     phase2_analyzer_path = options.cpp_dir / "tools" / "analyze_phase2_b0.py"
-    phase2_terrain_analyzer_path = options.cpp_dir / "tools" / \
-        "analyze_phase2_terrain.py"
-    sustained_analyzer_path = options.cpp_dir / "tools" / "analysis" / \
-        "analyze_sustained_running.py"
+    phase2_terrain_analyzer_path = (
+        options.cpp_dir / "tools" / "analyze_phase2_terrain.py"
+    )
+    sustained_analyzer_path = (
+        options.cpp_dir / "tools" / "analysis" / "analyze_sustained_running.py"
+    )
 
     manifest = {
         "schema_version": 1,
@@ -82,21 +88,32 @@ def main() -> int:
             "scenario_sha256": metadata.get("scene_sha256", ""),
             "event_script_sha256": metadata.get("event_script_sha256", ""),
             "phase2_acceptance_contract_sha256": sha256(phase2_contract_path)
-            if phase2_contract_path.is_file() else "",
+            if phase2_contract_path.is_file()
+            else "",
             "phase2_holdout_manifest_sha256": sha256(phase2_holdout_path)
-            if phase2_holdout_path.is_file() else "",
+            if phase2_holdout_path.is_file()
+            else "",
             "phase2_b0_analyzer_sha256": sha256(phase2_analyzer_path)
-            if phase2_analyzer_path.is_file() else "",
+            if phase2_analyzer_path.is_file()
+            else "",
             "phase2_b123_analyzer_sha256": sha256(phase2_terrain_analyzer_path)
-            if phase2_terrain_analyzer_path.is_file() else "",
+            if phase2_terrain_analyzer_path.is_file()
+            else "",
             "phase2_fixed_3mps_analyzer_sha256": sha256(sustained_analyzer_path)
-            if sustained_analyzer_path.is_file() else "",
-            "phase2_contract_sha256": sha256(pathlib.Path(environment["TROT_PHASE2_CONTRACT"]))
-            if environment.get("TROT_PHASE2_CONTRACT") and
-            pathlib.Path(environment["TROT_PHASE2_CONTRACT"]).is_file() else "",
-            "phase2_analyzer_sha256": sha256(pathlib.Path(environment["TROT_PHASE2_ANALYZER"]))
-            if environment.get("TROT_PHASE2_ANALYZER") and
-            pathlib.Path(environment["TROT_PHASE2_ANALYZER"]).is_file() else "",
+            if sustained_analyzer_path.is_file()
+            else "",
+            "phase2_contract_sha256": sha256(
+                pathlib.Path(environment["TROT_PHASE2_CONTRACT"])
+            )
+            if environment.get("TROT_PHASE2_CONTRACT")
+            and pathlib.Path(environment["TROT_PHASE2_CONTRACT"]).is_file()
+            else "",
+            "phase2_analyzer_sha256": sha256(
+                pathlib.Path(environment["TROT_PHASE2_ANALYZER"])
+            )
+            if environment.get("TROT_PHASE2_ANALYZER")
+            and pathlib.Path(environment["TROT_PHASE2_ANALYZER"]).is_file()
+            else "",
         },
         "analyzers": analyzers,
         "statuses": {
@@ -131,12 +148,18 @@ def main() -> int:
             "headless": metadata.get("headless", ""),
             "phase2_milestone": metadata.get("phase2_milestone", ""),
             "scene_file": metadata.get("scene_file", ""),
-            "initial_x_m": environment.get("TROT_INITIAL_X_M", metadata.get("initial_x_m", "0.0")),
-            "initial_y_m": environment.get("TROT_INITIAL_Y_M", metadata.get("initial_y_m", "0.0")),
+            "initial_x_m": environment.get(
+                "TROT_INITIAL_X_M", metadata.get("initial_x_m", "0.0")
+            ),
+            "initial_y_m": environment.get(
+                "TROT_INITIAL_Y_M", metadata.get("initial_y_m", "0.0")
+            ),
         },
     }
     output_path = options.experiment_dir / "run_manifest.json"
-    output_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(output_path)
     return 0
 

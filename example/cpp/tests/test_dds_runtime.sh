@@ -16,6 +16,11 @@ cleanup_test_root()
 }
 trap cleanup_test_root EXIT
 
+# The positive deletion fixture must not depend on privileges over host
+# processes. Negative fixtures below exercise missing surfaces and references.
+fake_proc="$test_root/proc"
+mkdir -p "$fake_proc"
+export DDS_RUNTIME_PROC_ROOT="$fake_proc"
 export DDS_RUNTIME_SHM_ROOT="$test_root/shm"
 mkdir -p "$DDS_RUNTIME_SHM_ROOT"
 mkdir -p "$DDS_RUNTIME_SHM_ROOT/cdds_test_segment"
@@ -86,7 +91,9 @@ fi
 [[ -e "$incomplete" ]]
 grep -q 'decision=KEEP reason=process_inspection_incomplete' \
   "$dds_runtime_cleanup_report"
-unset DDS_RUNTIME_PROC_ROOT
+# Restore an inspectable fixture, not the unrelated privileged host tree.
+rm -rf -- "$fake_proc/901"
+export DDS_RUNTIME_PROC_ROOT="$fake_proc"
 
 mkdir -p "$DDS_RUNTIME_SHM_ROOT/cdds_fail_safe_test"
 export DDS_RUNTIME_CLEANUP_REPORT="$run_dir/dds_runtime/active_cleanup.txt"

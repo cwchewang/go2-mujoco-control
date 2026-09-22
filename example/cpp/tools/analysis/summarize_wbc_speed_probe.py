@@ -1,4 +1,5 @@
 """Print compact metrics for one WBC speed-probe CSV."""
+
 import csv
 import math
 import statistics
@@ -23,12 +24,22 @@ def main() -> None:
     if not cruise:
         print(f"rows={len(rows)} cruise=0")
         return
+
     def mean(key: str) -> float:
         return statistics.mean(r.get(key, 0.0) for r in cruise)
-    p95_angle = max(
-        sorted(abs(r.get("imu_roll_rad", 0.0)) for r in cruise)[int(.95 * len(cruise))],
-        sorted(abs(r.get("imu_pitch_rad", 0.0)) for r in cruise)[int(.95 * len(cruise))],
-    ) * 180.0 / math.pi
+
+    p95_angle = (
+        max(
+            sorted(abs(r.get("imu_roll_rad", 0.0)) for r in cruise)[
+                int(0.95 * len(cruise))
+            ],
+            sorted(abs(r.get("imu_pitch_rad", 0.0)) for r in cruise)[
+                int(0.95 * len(cruise))
+            ],
+        )
+        * 180.0
+        / math.pi
+    )
     print(
         f"rows={len(rows)} cruise={len(cruise)} "
         f"max_v={max(r['world_velocity_x_mps'] for r in cruise):.3f} "

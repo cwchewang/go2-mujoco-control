@@ -57,7 +57,9 @@ def geometry(leg: int) -> tuple[float, float, float, float, float]:
     )
 
 
-def foot_position(leg: int, q: tuple[float, float, float]) -> tuple[float, float, float]:
+def foot_position(
+    leg: int, q: tuple[float, float, float]
+) -> tuple[float, float, float]:
     hip_x, hip_y, hip_link_y, thigh, calf = geometry(leg)
     q_hip, q_thigh, q_calf = q
     sin_hip, cos_hip = math.sin(q_hip), math.cos(q_hip)
@@ -106,17 +108,12 @@ def solve_transpose(
     torque: tuple[float, float, float],
 ) -> tuple[float, float, float] | None:
     matrix = tuple(
-        tuple(jacobian[column][row] for column in range(3))
-        for row in range(3)
+        tuple(jacobian[column][row] for column in range(3)) for row in range(3)
     )
     a, b, c = matrix[0]
     d, e, f = matrix[1]
     g, h, i = matrix[2]
-    determinant = (
-        a * (e * i - f * h)
-        - b * (d * i - f * g)
-        + c * (d * h - e * g)
-    )
+    determinant = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
     if abs(determinant) <= 1e-10:
         return None
     inverse = (
@@ -191,18 +188,11 @@ def run_limit(
     for row in rows:
         state = state_rows[row["row_number"] - 1]
         q = tuple(
-            tuple(
-                finite(state, f"{leg}_{joint}_q_state")
-                for joint in JOINTS
-            )
+            tuple(finite(state, f"{leg}_{joint}_q_state") for joint in JOINTS)
             for leg in LEGS
         )
-        contacts = tuple(
-            finite(state, name) >= 0.5 for name in CONTACT_FIELDS
-        )
-        positions = tuple(
-            foot_position(leg, q[leg]) for leg in range(len(LEGS))
-        )
+        contacts = tuple(finite(state, name) >= 0.5 for name in CONTACT_FIELDS)
+        positions = tuple(foot_position(leg, q[leg]) for leg in range(len(LEGS)))
         candidate_tau = tuple(row["tau"])
         previous_limited_tau = list(limited_tau)
         dt_s = row["time_s"] - previous_time
@@ -281,10 +271,13 @@ def run_limit(
         moment_norms.append(moment_norm)
         wrench_norms.append(wrench_norm)
         if dt_s > TIME_EPSILON_S:
-            applied_rate = max(
-                abs(limited - previous)
-                for limited, previous in zip(limited_tau, previous_limited_tau)
-            ) / dt_s
+            applied_rate = (
+                max(
+                    abs(limited - previous)
+                    for limited, previous in zip(limited_tau, previous_limited_tau)
+                )
+                / dt_s
+            )
             applied_rates.append(applied_rate)
             group = (
                 "contact_count_transition"
@@ -356,13 +349,9 @@ def main() -> int:
         with args.state_csv.open(newline="", encoding="utf-8") as handle:
             state_reader = csv.DictReader(handle)
             state_fields = set(state_reader.fieldnames or [])
-            missing = sorted(
-                {"cmd_time_s", *CONTACT_FIELDS, *Q_FIELDS} - state_fields
-            )
+            missing = sorted({"cmd_time_s", *CONTACT_FIELDS, *Q_FIELDS} - state_fields)
             if missing:
-                raise ValueError(
-                    "state CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("state CSV missing fields: " + ",".join(missing))
             state_rows = list(state_reader)
         with args.replay_csv.open(newline="", encoding="utf-8") as handle:
             replay_reader = csv.DictReader(handle)
@@ -389,9 +378,7 @@ def main() -> int:
                 - replay_fields
             )
             if missing:
-                raise ValueError(
-                    "replay CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("replay CSV missing fields: " + ",".join(missing))
             replay_rows = list(replay_reader)
     except (OSError, ValueError) as exc:
         print(f"validation=FAIL: {exc}")
@@ -409,9 +396,7 @@ def main() -> int:
             row = {
                 "row_number": row_number,
                 "time_s": finite(raw, "cmd_time_s"),
-                "contacts": int(
-                    round(finite(raw, "selected_contact_count"))
-                ),
+                "contacts": int(round(finite(raw, "selected_contact_count"))),
                 "tau": tuple(finite(raw, name) for name in TAU_FIELDS),
                 "desired_wrench": tuple(
                     finite(raw, name)
@@ -464,9 +449,7 @@ def main() -> int:
     for rate_limit in sorted(set(args.max_torque_rate_nm_s)):
         result = run_limit(state_rows=state_rows, rows=rows, rate_limit=rate_limit)
         all_mapping_errors.extend(result["mapping_errors"])
-        any_inverse_failures = any_inverse_failures or bool(
-            result["inverse_failures"]
-        )
+        any_inverse_failures = any_inverse_failures or bool(result["inverse_failures"])
         lines.extend(
             [
                 f"rate_limit_nm_s={rate_limit:.9g}",
@@ -487,19 +470,17 @@ def main() -> int:
             "same_contact_count",
             "contact_count_transition",
         ):
-            lines.append(
-                f"    {group}={stats(result['group_wrench'][group])}"
-            )
+            lines.append(f"    {group}={stats(result['group_wrench'][group])}")
         lines.append("  tracking_error_by_group:")
         for group in (
             "all_positive_dt",
             "same_contact_count",
             "contact_count_transition",
         ):
-            lines.append(
-                f"    {group}={stats(result['group_tracking'][group])}"
-            )
-        lines.append(f"  top_tracking_error_n={min(args.top_n, len(result['top_events']))}:")
+            lines.append(f"    {group}={stats(result['group_tracking'][group])}")
+        lines.append(
+            f"  top_tracking_error_n={min(args.top_n, len(result['top_events']))}:"
+        )
         for event in result["top_events"][: args.top_n]:
             lines.append(
                 "    "
@@ -511,9 +492,7 @@ def main() -> int:
                 f"wrench_residual_norm={event['wrench_norm']:.9g}"
             )
 
-    lines.append(
-        f"global_original_Jt_mapping_error={stats(all_mapping_errors)}"
-    )
+    lines.append(f"global_original_Jt_mapping_error={stats(all_mapping_errors)}")
     validation_pass = (
         invalid_rows == 0
         and negative_dt_pairs == 0
@@ -522,7 +501,11 @@ def main() -> int:
     )
     lines.append(
         "mapping_validation="
-        + ("PASS" if max(all_mapping_errors, default=math.inf) <= MAPPING_TOLERANCE else "FAIL")
+        + (
+            "PASS"
+            if max(all_mapping_errors, default=math.inf) <= MAPPING_TOLERANCE
+            else "FAIL"
+        )
     )
     lines.append("validation=" + ("PASS" if validation_pass else "FAIL"))
     report = "\n".join(lines) + "\n"

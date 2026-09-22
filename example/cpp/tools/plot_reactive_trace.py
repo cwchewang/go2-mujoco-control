@@ -52,7 +52,11 @@ def main() -> None:
     strict = "PASS" if result.get("strict_pass") else ("N/A" if not event else "CHECK")
 
     fig, axes = plt.subplots(
-        2, 1, figsize=(3.0, 4.8), dpi=120, sharex=True,
+        2,
+        1,
+        figsize=(3.0, 4.8),
+        dpi=120,
+        sharex=True,
         facecolor="#111827",
     )
     fig.subplots_adjust(left=0.17, right=0.96, top=0.82, bottom=0.12, hspace=0.30)
@@ -67,7 +71,14 @@ def main() -> None:
 
     axes[0].plot(times, vx, color="#67e8f9", linewidth=1.25, label="measured vx")
     if any(math.isfinite(value) for value in target_vx):
-        axes[0].plot(times, target_vx, color="#fbbf24", linewidth=0.9, linestyle="--", label="target vx")
+        axes[0].plot(
+            times,
+            target_vx,
+            color="#fbbf24",
+            linewidth=0.9,
+            linestyle="--",
+            label="target vx",
+        )
     axes[0].axhline(0.0, color="#9ca3af", linewidth=0.6)
     axes[0].set_ylabel("vx (m/s)", color="#e5e7eb", fontsize=8)
     axes[0].legend(loc="upper right", fontsize=6, frameon=False, labelcolor="#e5e7eb")
@@ -81,7 +92,10 @@ def main() -> None:
 
     fig.suptitle(
         f"{event_name}  |  DATA GATE: {strict}",
-        color="white", fontsize=11, fontweight="bold", y=0.95,
+        color="white",
+        fontsize=11,
+        fontweight="bold",
+        y=0.95,
     )
     if math.isfinite(start) and math.isfinite(end):
         subtitle = f"event {start:.2f}–{end:.2f}s  |  red = active window"
@@ -94,12 +108,19 @@ def main() -> None:
         f"jump {float(metrics.get('max_velocity_jump_mps', math.nan)):.3f} m/s"
     )
     fig.text(
-        0.18, 0.845, summary, va="top", color="#e5e7eb", fontsize=7,
+        0.18,
+        0.845,
+        summary,
+        va="top",
+        color="#e5e7eb",
+        fontsize=7,
         family="DejaVu Sans Mono",
         bbox={"facecolor": "#1f2937", "edgecolor": "#4b5563", "alpha": 0.95, "pad": 4},
     )
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(args.output, facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0.05)
+    fig.savefig(
+        args.output, facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0.05
+    )
     plt.close(fig)
     print(f"wrote {args.output}")
 

@@ -51,9 +51,7 @@ def body_to_world(
     norm = math.sqrt(sum(value * value for value in quaternion))
     if not math.isfinite(norm) or norm <= 1e-12:
         raise ValueError("invalid base quaternion")
-    w, x, y, z = (
-        value / norm for value in quaternion
-    )
+    w, x, y, z = (value / norm for value in quaternion)
     vx, vy, vz = vector
     return (
         (1 - 2 * (y * y + z * z)) * vx
@@ -72,10 +70,7 @@ def solve_linear_system(
     matrix: list[list[float]], right_hand_side: list[float]
 ) -> list[float]:
     size = len(right_hand_side)
-    augmented = [
-        matrix[row][:] + [right_hand_side[row]]
-        for row in range(size)
-    ]
+    augmented = [matrix[row][:] + [right_hand_side[row]] for row in range(size)]
     for column in range(size):
         pivot = max(
             range(column, size),
@@ -97,9 +92,7 @@ def solve_linear_system(
             if factor == 0.0:
                 continue
             for index in range(column, size + 1):
-                augmented[row][index] -= (
-                    factor * augmented[column][index]
-                )
+                augmented[row][index] -= factor * augmented[column][index]
     return [augmented[row][size] for row in range(size)]
 
 
@@ -113,11 +106,7 @@ def main() -> int:
     parser.add_argument("--gravity-mps2", type=float, default=GRAVITY_MPS2)
     args = parser.parse_args()
 
-    if (
-        args.match_tolerance_s <= 0.0
-        or args.mass_kg <= 0.0
-        or args.gravity_mps2 <= 0.0
-    ):
+    if args.match_tolerance_s <= 0.0 or args.mass_kg <= 0.0 or args.gravity_mps2 <= 0.0:
         print("validation=FAIL: invalid audit parameters")
         return 2
 
@@ -133,13 +122,9 @@ def main() -> int:
             }
             missing = sorted(state_required - state_fields)
             if missing:
-                raise ValueError(
-                    "state CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("state CSV missing fields: " + ",".join(missing))
             state_rows = list(state_reader)
-        with args.ground_truth_csv.open(
-            newline="", encoding="utf-8"
-        ) as handle:
+        with args.ground_truth_csv.open(newline="", encoding="utf-8") as handle:
             truth_reader = csv.DictReader(handle)
             truth_fields = set(truth_reader.fieldnames or ())
             truth_required = {
@@ -150,8 +135,7 @@ def main() -> int:
                 "base_quat_z",
             }
             truth_required.update(
-                f"base_qfrc_constraint_{suffix}"
-                for suffix in QCOORD_SUFFIXES
+                f"base_qfrc_constraint_{suffix}" for suffix in QCOORD_SUFFIXES
             )
             truth_required.update(
                 f"base_mass_matrix_qcoord_r{row}c{column}"
@@ -202,9 +186,7 @@ def main() -> int:
         state_walking_rows += 1
         try:
             state_time = finite(state, "state_tick_s")
-            desired_force_x = finite(
-                state, "wbc_shadow_desired_force_x_n"
-            )
+            desired_force_x = finite(state, "wbc_shadow_desired_force_x_n")
             contact_count = int(finite(state, "contact_count"))
         except (KeyError, ValueError):
             match_failures += 1
@@ -233,8 +215,7 @@ def main() -> int:
 
         truth = truth_rows[truth_index]
         quaternion = tuple(
-            finite(truth, f"base_quat_{axis}")
-            for axis in ("w", "x", "y", "z")
+            finite(truth, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
         )
         desired_force_world = body_to_world(
             quaternion,
@@ -262,10 +243,7 @@ def main() -> int:
             ]
             for row in range(6)
         ]
-        gap = [
-            actual_qforce[index] - target_qforce[index]
-            for index in range(6)
-        ]
+        gap = [actual_qforce[index] - target_qforce[index] for index in range(6)]
         try:
             delta_acceleration = solve_linear_system(
                 matrix,
@@ -276,16 +254,12 @@ def main() -> int:
             continue
         for index in range(6):
             qforce_gap[index].append(gap[index])
-            delta_base_acceleration[index].append(
-                delta_acceleration[index]
-            )
+            delta_base_acceleration[index].append(delta_acceleration[index])
         if contact_count in by_contact:
             bucket = by_contact[contact_count]
             for index in range(6):
                 bucket["qforce_gap"][index].append(gap[index])
-                bucket["delta_acceleration"][index].append(
-                    delta_acceleration[index]
-                )
+                bucket["delta_acceleration"][index].append(delta_acceleration[index])
 
     if matched_rows == 0:
         print("validation=FAIL: no matched walking rows")
@@ -308,16 +282,11 @@ def main() -> int:
             [
                 f"qforce_gap_{suffix}_p95_abs=%.9g"
                 % percentile([abs(value) for value in qforce_gap[index]], 0.95),
-                f"qforce_gap_{suffix}_rms=%.9g"
-                % rms(qforce_gap[index]),
-                f"qforce_gap_{suffix}_max_abs=%.9g"
-                % maximum_abs(qforce_gap[index]),
+                f"qforce_gap_{suffix}_rms=%.9g" % rms(qforce_gap[index]),
+                f"qforce_gap_{suffix}_max_abs=%.9g" % maximum_abs(qforce_gap[index]),
                 f"delta_base_accel_{suffix}_p95_abs=%.9g"
                 % percentile(
-                    [
-                        abs(value)
-                        for value in delta_base_acceleration[index]
-                    ],
+                    [abs(value) for value in delta_base_acceleration[index]],
                     0.95,
                 ),
                 f"delta_base_accel_{suffix}_rms=%.9g"
@@ -329,27 +298,18 @@ def main() -> int:
     for contact_count, bucket in by_contact.items():
         if not bucket["qforce_gap"][0]:
             continue
-        lines.append(
-            f"contact_{contact_count}_rows="
-            f"{len(bucket['qforce_gap'][0])}"
-        )
+        lines.append(f"contact_{contact_count}_rows={len(bucket['qforce_gap'][0])}")
         for index, suffix in enumerate(QCOORD_SUFFIXES):
             lines.extend(
                 [
                     f"contact_{contact_count}_qforce_gap_{suffix}_p95_abs=%.9g"
                     % percentile(
-                        [
-                            abs(value)
-                            for value in bucket["qforce_gap"][index]
-                        ],
+                        [abs(value) for value in bucket["qforce_gap"][index]],
                         0.95,
                     ),
                     f"contact_{contact_count}_delta_base_accel_{suffix}_p95_abs=%.9g"
                     % percentile(
-                        [
-                            abs(value)
-                            for value in bucket["delta_acceleration"][index]
-                        ],
+                        [abs(value) for value in bucket["delta_acceleration"][index]],
                         0.95,
                     ),
                 ]
@@ -358,11 +318,7 @@ def main() -> int:
         [
             "interpretation=diagnostic_only_no_wbc_injection",
             "validation="
-            + (
-                "PASS"
-                if match_failures == 0 and solve_failures == 0
-                else "FAIL"
-            ),
+            + ("PASS" if match_failures == 0 and solve_failures == 0 else "FAIL"),
         ]
     )
     report = "\n".join(lines) + "\n"

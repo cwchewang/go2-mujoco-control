@@ -1,0 +1,4 @@
+# Native Linux x86_64 / CPython 3.10 research runtime.
+numpy==2.2.6
+mujoco==3.3.6
+torch==2.6.0+cpu

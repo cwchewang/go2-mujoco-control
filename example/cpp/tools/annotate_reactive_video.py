@@ -66,20 +66,31 @@ def main() -> None:
     result = analyze(args.experiment)
     scheduled = result.get("scheduled_event")
     metrics = result.get("metrics", {})
-    start = num(scheduled.get("start_s")) if scheduled else (args.external_start if args.external_start is not None else math.nan)
-    end = num(scheduled.get("end_s")) if scheduled else (args.external_end if args.external_end is not None else math.nan)
+    start = (
+        num(scheduled.get("start_s"))
+        if scheduled
+        else (args.external_start if args.external_start is not None else math.nan)
+    )
+    end = (
+        num(scheduled.get("end_s"))
+        if scheduled
+        else (args.external_end if args.external_end is not None else math.nan)
+    )
     start -= args.time_offset
     end -= args.time_offset
     event_name = (
         str(scheduled["type"]).upper()
-        if scheduled else (args.external_label or "NOMINAL").upper()
+        if scheduled
+        else (args.external_label or "NOMINAL").upper()
     )
     phase_text = (
         f"EVENT ACTIVE: {event_name}  [{start:.2f}-{end:.2f}s]"
         if math.isfinite(start) and math.isfinite(end)
         else f"EVENT: {event_name}"
     )
-    strict = "PASS" if result.get("strict_pass") else ("N/A" if not scheduled else "CHECK")
+    strict = (
+        "PASS" if result.get("strict_pass") else ("N/A" if not scheduled else "CHECK")
+    )
     yaw = num(metrics.get("yaw_change_rad"))
     dv = num(metrics.get("braking_drop_mps"))
     ref_yaw = num(metrics.get("reference_yaw_rate_radps"))
@@ -89,8 +100,11 @@ def main() -> None:
         response = (
             f"response: Δy={dy:+.3f} m | yaw_delta={yaw:+.3f} rad | "
             f"ref_yaw={ref_yaw:+.3f} rad/s"
-            + (f" | obstacle_contact_max={contact_max:.1f} N"
-               if math.isfinite(contact_max) else "")
+            + (
+                f" | obstacle_contact_max={contact_max:.1f} N"
+                if math.isfinite(contact_max)
+                else ""
+            )
         )
     elif math.isfinite(yaw) and math.isfinite(dv):
         response = (
@@ -98,9 +112,11 @@ def main() -> None:
             f"vx_drop={dv:.3f} m/s | ref_yaw={ref_yaw:+.3f} rad/s"
         )
     else:
-        response = ("response: nominal walk; no event injected"
-                    if not scheduled else
-                    "response: physical disturbance; see synchronized CSV report")
+        response = (
+            "response: nominal walk; no event injected"
+            if not scheduled
+            else "response: physical disturbance; see synchronized CSV report"
+        )
     filters = [
         "drawbox=x=0:y=0:w=iw:h=86:color=black@0.65:t=fill",
         text_filter(
@@ -141,7 +157,17 @@ def main() -> None:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     trace_path = output.with_suffix(".trace.png")
-    subprocess.run([sys.executable, str(Path(__file__).with_name("plot_reactive_trace.py")), args.experiment, str(trace_path), "--time-offset", str(args.time_offset)], check=True)
+    subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).with_name("plot_reactive_trace.py")),
+            args.experiment,
+            str(trace_path),
+            "--time-offset",
+            str(args.time_offset),
+        ],
+        check=True,
+    )
     filter_complex = f"[0:v]{','.join(filters)}[base];[1:v]format=rgba[trace];[base][trace]overlay=900:90:format=auto[v]"
     subprocess.run(
         [

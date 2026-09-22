@@ -43,12 +43,8 @@ def correlation(first: list[float], second: list[float]) -> float:
         (left - first_mean) * (right - second_mean)
         for left, right in zip(first, second)
     )
-    first_norm = math.sqrt(
-        sum((value - first_mean) ** 2 for value in first)
-    )
-    second_norm = math.sqrt(
-        sum((value - second_mean) ** 2 for value in second)
-    )
+    first_norm = math.sqrt(sum((value - first_mean) ** 2 for value in first))
+    second_norm = math.sqrt(sum((value - second_mean) ** 2 for value in second))
     if first_norm <= 1e-12 or second_norm <= 1e-12:
         return 0.0
     return numerator / (first_norm * second_norm)
@@ -86,11 +82,7 @@ def main() -> int:
     parser.add_argument("--mass-kg", type=float, default=MASS_KG)
     parser.add_argument("--gravity-mps2", type=float, default=GRAVITY_MPS2)
     args = parser.parse_args()
-    if (
-        args.match_tolerance_s <= 0.0
-        or args.mass_kg <= 0.0
-        or args.gravity_mps2 <= 0.0
-    ):
+    if args.match_tolerance_s <= 0.0 or args.mass_kg <= 0.0 or args.gravity_mps2 <= 0.0:
         print("validation=FAIL: invalid audit parameters")
         return 2
 
@@ -106,13 +98,9 @@ def main() -> int:
             }
             missing = sorted(state_required - set(state_fields))
             if missing:
-                raise ValueError(
-                    "state CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("state CSV missing fields: " + ",".join(missing))
             state_rows = list(reader)
-        with args.ground_truth_csv.open(
-            newline="", encoding="utf-8"
-        ) as handle:
+        with args.ground_truth_csv.open(newline="", encoding="utf-8") as handle:
             reader = csv.DictReader(handle)
             truth_fields = reader.fieldnames or []
             truth_required = {
@@ -122,17 +110,12 @@ def main() -> int:
                 "base_quat_y",
                 "base_quat_z",
             }
-            truth_required.update(
-                f"base_qacc_world_{axis}_mps2" for axis in AXES
-            )
-            truth_required.update(
-                f"total_contact_grf_world_{axis}_N" for axis in AXES
-            )
+            truth_required.update(f"base_qacc_world_{axis}_mps2" for axis in AXES)
+            truth_required.update(f"total_contact_grf_world_{axis}_N" for axis in AXES)
             missing = sorted(truth_required - set(truth_fields))
             if missing:
                 raise ValueError(
-                    "ground-truth CSV missing fields: "
-                    + ",".join(missing)
+                    "ground-truth CSV missing fields: " + ",".join(missing)
                 )
             truth_rows = list(reader)
     except (OSError, KeyError, ValueError) as exc:
@@ -169,9 +152,7 @@ def main() -> int:
             walking_rows += 1
             state_time = finite(state, "state_tick_s")
             contact_count = int(finite(state, "contact_count"))
-            desired_force_x = finite(
-                state, "wbc_shadow_desired_force_x_n"
-            )
+            desired_force_x = finite(state, "wbc_shadow_desired_force_x_n")
         except (KeyError, ValueError):
             invalid_rows += 1
             continue
@@ -197,20 +178,17 @@ def main() -> int:
         try:
             truth = truth_rows[truth_index]
             quaternion = tuple(
-                finite(truth, f"base_quat_{axis}")
-                for axis in ("w", "x", "y", "z")
+                finite(truth, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
             )
             static_target = body_to_world(
                 quaternion,
                 (desired_force_x, 0.0, args.mass_kg * args.gravity_mps2),
             )
             measured_accel = tuple(
-                finite(truth, f"base_qacc_world_{axis}_mps2")
-                for axis in AXES
+                finite(truth, f"base_qacc_world_{axis}_mps2") for axis in AXES
             )
             actual_force = tuple(
-                finite(truth, f"total_contact_grf_world_{axis}_N")
-                for axis in AXES
+                finite(truth, f"total_contact_grf_world_{axis}_N") for axis in AXES
             )
         except (KeyError, ValueError):
             invalid_rows += 1
@@ -221,12 +199,10 @@ def main() -> int:
             for index in range(3)
         )
         static_error = tuple(
-            actual_force[index] - static_target[index]
-            for index in range(3)
+            actual_force[index] - static_target[index] for index in range(3)
         )
         adjusted_error = tuple(
-            actual_force[index] - adjusted_target[index]
-            for index in range(3)
+            actual_force[index] - adjusted_target[index] for index in range(3)
         )
         matched_rows += 1
         time_errors.append(abs(time_error))
@@ -244,9 +220,7 @@ def main() -> int:
         for index, axis in enumerate(AXES):
             static_errors[axis].append(static_error[index])
             adjusted_errors[axis].append(adjusted_error[index])
-            acceleration_force[axis].append(
-                args.mass_kg * measured_accel[index]
-            )
+            acceleration_force[axis].append(args.mass_kg * measured_accel[index])
             contact_bucket[f"static_{axis}"].append(static_error[index])
             contact_bucket[f"adjusted_{axis}"].append(adjusted_error[index])
         detail = {
@@ -260,13 +234,13 @@ def main() -> int:
             detail[f"base_qacc_world_{axis}_mps2"] = measured_accel[index]
             detail[f"actual_contact_force_world_{axis}_N"] = actual_force[index]
             detail[f"static_target_force_world_{axis}_N"] = static_target[index]
-            detail[
-                f"acceleration_adjusted_target_force_world_{axis}_N"
-            ] = adjusted_target[index]
-            detail[f"static_error_world_{axis}_N"] = static_error[index]
-            detail[f"acceleration_adjusted_error_world_{axis}_N"] = (
-                adjusted_error[index]
+            detail[f"acceleration_adjusted_target_force_world_{axis}_N"] = (
+                adjusted_target[index]
             )
+            detail[f"static_error_world_{axis}_N"] = static_error[index]
+            detail[f"acceleration_adjusted_error_world_{axis}_N"] = adjusted_error[
+                index
+            ]
         detail_rows.append(detail)
 
     if matched_rows == 0:
@@ -305,14 +279,12 @@ def main() -> int:
             [
                 f"static_error_world_{axis}_p95_abs_N=%.9g"
                 % percentile_abs(static_errors[axis]),
-                f"static_error_world_{axis}_rms_N=%.9g"
-                % rms(static_errors[axis]),
+                f"static_error_world_{axis}_rms_N=%.9g" % rms(static_errors[axis]),
                 f"static_error_world_{axis}_max_abs_N=%.9g"
                 % maximum_abs(static_errors[axis]),
                 f"adjusted_error_world_{axis}_p95_abs_N=%.9g"
                 % percentile_abs(adjusted_errors[axis]),
-                f"adjusted_error_world_{axis}_rms_N=%.9g"
-                % rms(adjusted_errors[axis]),
+                f"adjusted_error_world_{axis}_rms_N=%.9g" % rms(adjusted_errors[axis]),
                 f"adjusted_error_world_{axis}_max_abs_N=%.9g"
                 % maximum_abs(adjusted_errors[axis]),
                 f"measured_acceleration_force_world_{axis}_p95_abs_N=%.9g"

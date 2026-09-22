@@ -21,9 +21,7 @@ from analyze_rate_aware_fallback import (
 LEGS = ("FR", "FL", "RR", "RL")
 JOINTS = ("hip", "thigh", "calf")
 TORQUE_FIELDS = tuple(
-    f"{leg}_{joint}_tau_ff_candidate"
-    for leg in LEGS
-    for joint in JOINTS
+    f"{leg}_{joint}_tau_ff_candidate" for leg in LEGS for joint in JOINTS
 )
 
 
@@ -59,17 +57,13 @@ def parse_phase_windows(values):
 
 
 def phase_in_windows(phase, windows):
-    return not windows or any(
-        start <= phase <= end for start, end in windows
-    )
+    return not windows or any(start <= phase <= end for start, end in windows)
 
 
 def format_phase_windows(windows):
     if not windows:
         return "none"
-    return ",".join(
-        f"{start:.6g}:{end:.6g}" for start, end in windows
-    )
+    return ",".join(f"{start:.6g}:{end:.6g}" for start, end in windows)
 
 
 def torque(row):
@@ -82,8 +76,7 @@ def cross_rate(candidate, previous, dt_s, rate_limit, tolerance):
     if dt_s < 0.0:
         raise ValueError("non-positive replay dt")
     delta = max(
-        abs(candidate[index] - previous[index])
-        for index in range(len(candidate))
+        abs(candidate[index] - previous[index]) for index in range(len(candidate))
     )
     if dt_s <= 1e-12:
         return delta <= tolerance, delta, 0.0
@@ -191,9 +184,7 @@ def main():
         return 2
 
     try:
-        recovery_phase_windows = parse_phase_windows(
-            args.recovery_phase_window
-        )
+        recovery_phase_windows = parse_phase_windows(args.recovery_phase_window)
         force_only_switch_phase_windows = parse_phase_windows(
             args.force_only_switch_phase_window
         )
@@ -218,29 +209,26 @@ def main():
     force_only_switch_phase_summary = format_phase_windows(
         force_only_switch_phase_windows
     )
-    moment_recovery_phase_summary = format_phase_windows(
-        moment_recovery_phase_windows
-    )
-    hold_recovery_phase_summary = format_phase_windows(
-        hold_recovery_phase_windows
-    )
+    moment_recovery_phase_summary = format_phase_windows(moment_recovery_phase_windows)
+    hold_recovery_phase_summary = format_phase_windows(hold_recovery_phase_windows)
     try:
         moment, moment_fields = read_csv(args.moment_replay_csv)
-        moment_truth, moment_truth_fields = read_csv(
-            args.moment_fullbody_detail_csv
-        )
+        moment_truth, moment_truth_fields = read_csv(args.moment_fullbody_detail_csv)
         force, force_fields = read_csv(args.force_only_replay_csv)
-        force_truth, force_truth_fields = read_csv(
-            args.force_only_fullbody_detail_csv
-        )
+        force_truth, force_truth_fields = read_csv(args.force_only_fullbody_detail_csv)
         check_fields(moment_fields, moment_truth_fields, "moment")
         check_fields(force_fields, force_truth_fields, "force-only")
-        if len({
-            len(moment),
-            len(moment_truth),
-            len(force),
-            len(force_truth),
-        }) != 1:
+        if (
+            len(
+                {
+                    len(moment),
+                    len(moment_truth),
+                    len(force),
+                    len(force_truth),
+                }
+            )
+            != 1
+        ):
             raise ValueError("replay/fullbody row counts do not match")
         input_rows = len(moment)
         moment, moment_truth = collapse_duplicates(
@@ -279,10 +267,8 @@ def main():
             f_phase = finite(f, "phase")
             if (
                 abs(mtime - ftime) > args.time_tolerance_s
-                or abs(mtime - finite(mt, "replay_time_s"))
-                > args.time_tolerance_s
-                or abs(ftime - finite(ft, "replay_time_s"))
-                > args.time_tolerance_s
+                or abs(mtime - finite(mt, "replay_time_s")) > args.time_tolerance_s
+                or abs(ftime - finite(ft, "replay_time_s")) > args.time_tolerance_s
             ):
                 raise ValueError("time alignment mismatch")
             if m["row_number"] != f["row_number"]:
@@ -316,9 +302,7 @@ def main():
 
         moment_ok = moment_base and moment_cont
         force_ok = force_base and force_cont
-        recovery_phase_allowed = phase_in_windows(
-            m_phase, recovery_phase_windows
-        )
+        recovery_phase_allowed = phase_in_windows(m_phase, recovery_phase_windows)
         moment_recovery_phase_allowed = phase_in_windows(
             m_phase, moment_recovery_phase_windows
         )
@@ -397,10 +381,7 @@ def main():
             hold_run += 1
         else:
             hold_run = 0
-        hold_timeout = (
-            args.max_hold_rows > 0
-            and hold_run > args.max_hold_rows
-        )
+        hold_timeout = args.max_hold_rows > 0 and hold_run > args.max_hold_rows
         if hold_timeout:
             hold_timeout_rows += 1
             if hold_run == args.max_hold_rows + 1:

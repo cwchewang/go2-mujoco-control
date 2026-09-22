@@ -38,13 +38,9 @@ def main() -> None:
         except (KeyError, TypeError, ValueError):
             continue
     for sample in selected[:: max(1, args.every)]:
-        print(
-            "t=%.3f cycle=%d v=%.3f roll=%.2f pitch=%.2f" % sample
-        )
+        print("t=%.3f cycle=%d v=%.3f roll=%.2f pitch=%.2f" % sample)
     if selected:
-        print(
-            "last t=%.3f cycle=%d v=%.3f roll=%.2f pitch=%.2f" % selected[-1]
-        )
+        print("last t=%.3f cycle=%d v=%.3f roll=%.2f pitch=%.2f" % selected[-1])
 
 
 if __name__ == "__main__":

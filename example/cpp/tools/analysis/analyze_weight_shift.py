@@ -26,22 +26,16 @@ def analyze_run(path):
     baseline = (data["motion_stage"] == 1) & (data["cmd_time_s"] >= 3.2)
     hold = (data["motion_stage"] == 3) & (data["cmd_time_s"] >= 6.0)
 
-    baseline_force = {
-        leg: mean(data, f"{leg}_foot_force", baseline) for leg in LEGS
-    }
-    hold_force = {
-        leg: mean(data, f"{leg}_foot_force", hold) for leg in LEGS
-    }
+    baseline_force = {leg: mean(data, f"{leg}_foot_force", baseline) for leg in LEGS}
+    hold_force = {leg: mean(data, f"{leg}_foot_force", hold) for leg in LEGS}
 
     estimated_shift = []
     for leg in LEGS:
-        foot_dx = (
-            mean(data, f"{leg}_foot_x_state_m", hold)
-            - mean(data, f"{leg}_foot_x_state_m", baseline)
+        foot_dx = mean(data, f"{leg}_foot_x_state_m", hold) - mean(
+            data, f"{leg}_foot_x_state_m", baseline
         )
-        foot_dy = (
-            mean(data, f"{leg}_foot_y_state_m", hold)
-            - mean(data, f"{leg}_foot_y_state_m", baseline)
+        foot_dy = mean(data, f"{leg}_foot_y_state_m", hold) - mean(
+            data, f"{leg}_foot_y_state_m", baseline
         )
         estimated_shift.append((-foot_dx, -foot_dy))
 
@@ -59,8 +53,7 @@ def analyze_run(path):
         "estimated_shift_y_m": float(np.mean([value[1] for value in estimated_shift])),
         "fr_force_baseline": baseline_force["FR"],
         "fr_force_hold": hold_force["FR"],
-        "fr_unload_percent": 100.0
-        * (1.0 - hold_force["FR"] / baseline_force["FR"]),
+        "fr_unload_percent": 100.0 * (1.0 - hold_force["FR"] / baseline_force["FR"]),
         "roll_delta_deg": math.degrees(hold_roll - baseline_roll),
         "pitch_delta_deg": math.degrees(hold_pitch - baseline_pitch),
         "max_abs_roll_deg": math.degrees(

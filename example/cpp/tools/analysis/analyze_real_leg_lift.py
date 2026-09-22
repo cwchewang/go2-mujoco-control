@@ -31,13 +31,11 @@ def analyze_run(path):
 
     fr_force_baseline = mean(data, "FR_foot_force", baseline)
     fr_force_hold = mean(data, "FR_foot_force", hold)
-    target_lift = (
-        mean(data, "FR_foot_z_target_m", hold)
-        - mean(data, "FR_foot_z_target_m", baseline)
+    target_lift = mean(data, "FR_foot_z_target_m", hold) - mean(
+        data, "FR_foot_z_target_m", baseline
     )
-    actual_lift = (
-        mean(data, "FR_foot_z_state_m", hold)
-        - mean(data, "FR_foot_z_state_m", baseline)
+    actual_lift = mean(data, "FR_foot_z_state_m", hold) - mean(
+        data, "FR_foot_z_state_m", baseline
     )
 
     return {
@@ -48,8 +46,7 @@ def analyze_run(path):
         "actual_lift_m": actual_lift,
         "fr_force_baseline": fr_force_baseline,
         "fr_force_hold": fr_force_hold,
-        "fr_unload_percent": 100.0
-        * (1.0 - fr_force_hold / fr_force_baseline),
+        "fr_unload_percent": 100.0 * (1.0 - fr_force_hold / fr_force_baseline),
         "fr_force_hold_min": float(np.min(data["FR_foot_force"][hold])),
         "max_abs_roll_deg": math.degrees(
             float(np.max(np.abs(data["imu_roll_rad"][hold])))
@@ -58,9 +55,7 @@ def analyze_run(path):
             float(np.max(np.abs(data["imu_pitch_rad"][hold])))
         ),
         "fr_force_final": mean(data, "FR_foot_force", final),
-        "hold_forces": {
-            leg: mean(data, f"{leg}_foot_force", hold) for leg in LEGS
-        },
+        "hold_forces": {leg: mean(data, f"{leg}_foot_force", hold) for leg in LEGS},
     }
 
 
@@ -93,19 +88,11 @@ def plot_results(results, path):
     for result in results:
         data = result["data"]
         label = f"{result['command_lift_m'] * 100:.0f} cm"
-        baseline_mask = (
-            (data["motion_stage"] == 3) & (data["cmd_time_s"] >= 5.7)
-        )
-        baseline_target_z = float(
-            np.mean(data["FR_foot_z_target_m"][baseline_mask])
-        )
-        baseline_state_z = float(
-            np.mean(data["FR_foot_z_state_m"][baseline_mask])
-        )
+        baseline_mask = (data["motion_stage"] == 3) & (data["cmd_time_s"] >= 5.7)
+        baseline_target_z = float(np.mean(data["FR_foot_z_target_m"][baseline_mask]))
+        baseline_state_z = float(np.mean(data["FR_foot_z_state_m"][baseline_mask]))
 
-        axes[0, 0].plot(
-            data["cmd_time_s"], data["FR_foot_force"], label=label
-        )
+        axes[0, 0].plot(data["cmd_time_s"], data["FR_foot_force"], label=label)
         axes[0, 1].plot(
             data["cmd_time_s"],
             1000.0 * (data["FR_foot_z_target_m"] - baseline_target_z),

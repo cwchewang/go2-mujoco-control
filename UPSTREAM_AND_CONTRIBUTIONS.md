@@ -1,6 +1,8 @@
 # Upstream and research contributions
 
-This repository combines the Unitree MuJoCo simulator with research-specific C++ control and experiment code.
+This repository combines the Unitree MuJoCo simulator with a shared research
+substrate and retained C++ control/experiment code. CURRENT and PROJECT_RECORD
+identify the active task and scientific status.
 
 ## Upstream components
 
@@ -10,6 +12,14 @@ This repository combines the Unitree MuJoCo simulator with research-specific C++
 | Unitree SDK2 / DDS | Unitree Robotics | runtime dependency |
 | MuJoCo | DeepMind | physics; 3.3.6 in the research environment |
 | Robot/URDF assets | Unitree | this checkout vendors Go2 only; H1/G1/B2/… remain upstream |
+| MJPC / iLQG | pinned MuJoCo MPC Go2 source | unchanged optimizer compiled for static admission |
+| Public CTS policy | pinned wty-yy/go2_rl_gym source and checkpoint | CPU inference behind shared named state/action contracts |
+
+Exact source commits, checkpoint identity and source URLs are locked in
+[`tools/substrate/sources.lock.json`](tools/substrate/sources.lock.json).
+Python versions/wheel hashes and native build identity are documented in the
+[substrate guide](tools/substrate/README.md). These dependencies keep their own
+licenses; the root license does not relicense externally downloaded code/weights.
 
 Isaac Lab / RSL-RL velocity RL is maintained in the companion repository
 [`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl).
@@ -26,7 +36,9 @@ Original Unitree READMEs: `docs/upstream/`. The repository root README is the re
 - `--wbc-full` 18-DoF inverse-dynamics WBC and receding-horizon SRBD MPC; `--wbc-primary` remains incremental feedforward with guarded fallback;
 - controlled experiment runners and retained evidence.
 
-Reliable `--wbc-full` cruise on this tree is about 0.12–0.15 m/s. `--wbc-full` is an 18-DoF inverse-dynamics WBC; it is not a claim of demo-speed locomotion.
+Historical `--wbc-full` cruise records report about 0.12–0.15 m/s on their exact
+configurations. They do not establish current substrate performance. The retained
+`--wbc-full` implementation is an 18-DoF inverse-dynamics WBC.
 
 ## Licensing and citation
 

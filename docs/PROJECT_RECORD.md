@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
 > **最后更新：2026-09-22**
-> **状态：ACTIVE / SUBSTRATE GATE 0 DESIGN**
+> **状态：ACTIVE / SUBSTRATE ENGINEERING FOUNDATION; GATE 0 CAPABILITY NOT_RUN**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -38,6 +38,31 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
+
+当前准备分支为 `research/substrate-prelaunch-20260922`，任务见
+`docs/research/TASK_REPOSITORY_CEE_20260922.md`，最新结果见
+`docs/validation/repository_cee_20260922/RESULTS.md`。首轮准备验收保留于
+`docs/validation/substrate_prelaunch_20260922/RESULTS.md`。可靠性验收保留于
+`docs/validation/substrate_reliability_20260922/RESULTS.md`。首轮工程记录保留于
+`docs/validation/substrate_foundation_20260922/RESULTS.md`。
+
+现有 clean 控制出口改为根据当前周期求解/映射结果决策；增加失败、恢复、
+非有限/越界候选测试。DDS 清理测试采用隔离 proc fixture，生产 fail-closed
+检查不变。旧 sealed evidence 不变；新二进制尚无行走验收。
+
+`tools/substrate/` 新增命名关节/观测/动作边界、源锁定、模型资产闭包与物理
+指纹、真实 public RL 推理、原生 MJPC iLQG 静态求解准入，以及原始证据输出。
+两者共同使用现有 MuJoCo 3.3.6 模型与力矩出口，但信息条件不同，不能据此做
+公平能力对比。工程准入不是 Gate 0。首轮平地 RL 移植验收已有前瞻协议、
+闭环 runner、分析器及三次失败即停预算；其准备流程禁止真实物理步进，
+用户尚未授权开始。定义见 `docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
+
+后续可靠性加固补齐独立依赖环境、源码/二进制构建绑定、模型输入快照、策略
+状态隔离和重放、严格类型/时钟契约、超时子进程清理、失败证据封存及独立
+校验，并恢复 SOP 预检入口。统一 `tools.substrate.qualify` 命令在干净提交上
+完成工程验收；其通过仍不是正式实验的科学授权或能力结论。
 
 ## 2. [2026-09-17 | VERIFIED / LEGACY] Sealed flat baseline
 

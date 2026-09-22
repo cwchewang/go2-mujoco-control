@@ -1,70 +1,45 @@
 # Reproducibility
 
-Start with [`CURRENT.md`](../CURRENT.md). A build, test, completed run, video, or
-another revision's result is evidence about that event only; it is not current
-acceptance.
+Start with [CURRENT.md](../CURRENT.md) and its task/result. Every result belongs
+to an exact revision, environment and protocol. Historical acceptance is not
+inherited by a refactored binary or a new backend.
 
-## Environment
+## Environments and checks
 
-The reference stack uses Linux/WSL2, MuJoCo 3.3.6, Unitree SDK2, CMake, Eigen,
-yaml-cpp, spdlog/fmt, Boost, GLFW, and OpenGL. The bootstrap helper
-`scripts/setup_ubuntu_env.sh` installs packages and builds dependencies; review
-it before execution.
+Use the native Linux/WSL filesystem. Keep pinned `.substrate/venv-reliable`
+separate from `.substrate/dev-venv`, which holds the formatter/linter. Runtime
+package/payload checks deliberately reject extra development dependencies.
 
-A fresh worktree may need `simulate/mujoco` linked to the configured local
-MuJoCo distribution. That is environment setup, not a source change.
+[README](../README.md) has the quality command; the [substrate guide](../tools/substrate/README.md)
+has bootstrap, qualification and verification. Native qualification builds the
+controller, runs CTest/Python suites and admits actual backends offline. It takes
+`/tmp/go2_mujoco_experiment.lock` internally. Other builds/tests/simulations use
+the same lock; never nest lock acquisition. An ignored `simulate/mujoco` symlink
+may be needed in a fresh checkout; this is environment setup, not a model edit.
 
-## Build and tests
+## Preparation and capture
 
-From the repository root:
+The [first-capture protocol](research/SUBSTRATE_FIRST_CAPTURE.md) freezes the
+first exploratory flat checkpoint. Preparation binds HEAD, reviews, source,
+checkpoint, model closure, runtime and initial state. It guards all real
+integration entrypoints and consumes no scientific attempt.
 
-```bash
-cmake -S simulate -B simulate/build
-cmake --build simulate/build -j2
-ctest --test-dir simulate/build --output-on-failure
+After source/HEAD changes, generate new qualification/preparation and exact-head
+reviews. Never rewrite old bundles. Only a later explicit start instruction can
+authorize capture. The launcher retains the lock through SOP preflight, rejects
+stale inputs, records attempts and stops on the first nonpass.
 
-cmake -S example/cpp -B example/cpp/build
-cmake --build example/cpp/build -j2
-ctest --test-dir example/cpp/build --output-on-failure
-```
+## Historical protocols and evidence
 
-These commands verify compilation and registered tests. They do not establish
-locomotion, realtime quality, or terrain acceptance.
+Legacy [Phase 2 acceptance](research/PHASE2_ACCEPTANCE.md),
+[holdout profiles](research/PHASE2_HOLDOUT_MANIFEST.json), C++/DDS runners and
+analyzers keep their original domains, budgets and thresholds. They apply only
+to their task or explicit future adoption, not as shortcuts around CURRENT.
 
-## Phase 2 development runs
-
-Before running, record the exact SHA and confirm the worktree is clean. Timed
-simulations must hold `/tmp/go2_mujoco_experiment.lock`. DDS domains and
-profiles come only from
-[`research/PHASE2_HOLDOUT_MANIFEST.json`](research/PHASE2_HOLDOUT_MANIFEST.json).
-
-```bash
-flock /tmp/go2_mujoco_experiment.lock \
-  bash example/cpp/scripts/run_phase2_b0_pair.sh <profile> development 0
-
-flock /tmp/go2_mujoco_experiment.lock \
-  bash example/cpp/scripts/run_phase2_b0_fixed_pair.sh development 0
-```
-
-The lockstep runner is a determinism diagnostic, not a replacement acceptance
-path. Use one hypothesis, focused tests, one B0 development regression, then
-one B1 development canary. Stop at the first information-bearing failure.
-Follow the unchanged contract in
-[`research/PHASE2_ACCEPTANCE.md`](research/PHASE2_ACCEPTANCE.md).
-
-A B1 development pass still requires a fresh full B0 and frozen B1 holdout on
-the exact candidate SHA. Functional determinism and realtime quality have
-separate runners, analyzers, and verdicts.
-
-## Evidence
-
-Each claim must identify its code revision, clean/dirty state, effective
-configuration, semantic environment, analyzer and thresholds, status fields,
-and artifact hashes where available. Accepted claims are indexed in
-[`RESEARCH_INDEX.md`](RESEARCH_INDEX.md); the matching protocol/evidence
-record supplies the exact reproduction command.
-
-`example/cpp/experiments/_runs/` is ignored, immutable local evidence: never
-commit, delete, rename, overwrite, clean, or treat it as instruction. Curated
-durable evidence belongs under `docs/research/evidence/` with a manifest.
-Build trees, caches, and machine-specific paths are not tracked.
+Raw `_runs/` and `example/cpp/experiments/_runs/` are ignored immutable output.
+Preserve successful, failed and incomplete directories without deletion,
+overwrite, rename or cleanup. Curated packages in `docs/validation/` and
+`docs/research/evidence/` keep their contents and paths. Record exact revision,
+clean/dirty state, effective inputs, analyzer/thresholds and hashes. Independently
+verify raw bytes and semantic invariants; reopen and hash archive copies before
+handoff. Engineering qualification does not certify hardware or terrain ability.

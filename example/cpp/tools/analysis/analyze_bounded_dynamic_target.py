@@ -87,39 +87,30 @@ def main() -> int:
         try:
             time_s = finite(row, "cmd_time_s")
             current_raw = {
-                axis: finite(
-                    row, f"dynamic_accel_correction_raw_{axis}_mps2"
-                )
+                axis: finite(row, f"dynamic_accel_correction_raw_{axis}_mps2")
                 for axis in AXES
             }
             current_applied = {
-                axis: finite(
-                    row, f"dynamic_accel_correction_applied_{axis}_mps2"
-                )
+                axis: finite(row, f"dynamic_accel_correction_applied_{axis}_mps2")
                 for axis in AXES
             }
             current_slack = {
-                axis: finite(
-                    row, f"dynamic_accel_correction_slack_{axis}_mps2"
-                )
+                axis: finite(row, f"dynamic_accel_correction_slack_{axis}_mps2")
                 for axis in AXES
             }
-            held = finite(
-                row, "dynamic_accel_reference_held_for_duplicate_time"
-            ) >= 0.5
+            held = finite(row, "dynamic_accel_reference_held_for_duplicate_time") >= 0.5
             slew_limited = finite(row, "dynamic_accel_slew_limited") >= 0.5
         except (KeyError, ValueError):
             invalid_rows += 1
             continue
 
-        if any(abs(current_applied[axis]) > args.correction_limit_mps2 + args.tolerance for axis in AXES):
+        if any(
+            abs(current_applied[axis]) > args.correction_limit_mps2 + args.tolerance
+            for axis in AXES
+        ):
             limit_violations += 1
         if any(
-            abs(
-                current_raw[axis]
-                - current_applied[axis]
-                - current_slack[axis]
-            )
+            abs(current_raw[axis] - current_applied[axis] - current_slack[axis])
             > args.tolerance
             for axis in AXES
         ):
@@ -132,8 +123,7 @@ def main() -> int:
             elif dt_s <= args.tolerance:
                 duplicate_pairs += 1
                 if not held or any(
-                    abs(current_applied[axis] - previous_applied[axis])
-                    > args.tolerance
+                    abs(current_applied[axis] - previous_applied[axis]) > args.tolerance
                     for axis in AXES
                 ):
                     held_reference_violations += 1

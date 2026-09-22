@@ -30,10 +30,10 @@ def correlation(left, right):
     )
     if denominator == 0.0:
         return 0.0
-    return sum(
-        (a - left_mean) * (b - right_mean)
-        for a, b in zip(left, right)
-    ) / denominator
+    return (
+        sum((a - left_mean) * (b - right_mean) for a, b in zip(left, right))
+        / denominator
+    )
 
 
 def mean_abs(rows, name):
@@ -64,18 +64,14 @@ def main():
     if missing:
         raise ValueError("missing required fields: %s" % ", ".join(missing))
 
-    walking = [
-        row for row in rows
-        if float(row["motion_stage"]) == 2.0
-    ]
+    walking = [row for row in rows if float(row["motion_stage"]) == 2.0]
     if not walking:
         raise ValueError("no walking rows")
-    raw_gyro_fields = [
-        "imu_gyro_x_radps", "imu_gyro_y_radps", "imu_gyro_z_radps"
-    ]
+    raw_gyro_fields = ["imu_gyro_x_radps", "imu_gyro_y_radps", "imu_gyro_z_radps"]
     body_gyro_fields = [
-        "imu_gyro_body_x_radps", "imu_gyro_body_y_radps",
-        "imu_gyro_body_z_radps"
+        "imu_gyro_body_x_radps",
+        "imu_gyro_body_y_radps",
+        "imu_gyro_body_z_radps",
     ]
     has_gyro = all(field in fields for field in raw_gyro_fields)
     has_body_gyro = all(field in fields for field in body_gyro_fields)
@@ -99,23 +95,14 @@ def main():
         "body_velocity_max_mps=%.6f" % max(body_velocity),
         "desired_force_min_n=%.6f" % min(desired_force),
         "desired_force_max_n=%.6f" % max(desired_force),
-        "desired_force_velocity_error_correlation=%.6f" % (
-            correlation(desired_force, velocity_error)
-        ),
-        "attitude_x_pitch_correlation=%.6f" % (
-            correlation(attitude_x, pitch)
-        ),
-        "attitude_y_roll_correlation=%.6f" % (
-            correlation(attitude_y, roll)
-        ),
+        "desired_force_velocity_error_correlation=%.6f"
+        % (correlation(desired_force, velocity_error)),
+        "attitude_x_pitch_correlation=%.6f" % (correlation(attitude_x, pitch)),
+        "attitude_y_roll_correlation=%.6f" % (correlation(attitude_y, roll)),
         "mean_abs_pitch_rad=%.6f" % mean_abs(walking, "imu_pitch_rad"),
         "mean_abs_roll_rad=%.6f" % mean_abs(walking, "imu_roll_rad"),
-        "mean_abs_attitude_x_m=%.6f" % mean_abs(
-            walking, "attitude_feedback_x_m"
-        ),
-        "mean_abs_attitude_y_m=%.6f" % mean_abs(
-            walking, "attitude_feedback_y_m"
-        ),
+        "mean_abs_attitude_x_m=%.6f" % mean_abs(walking, "attitude_feedback_x_m"),
+        "mean_abs_attitude_y_m=%.6f" % mean_abs(walking, "attitude_feedback_y_m"),
     ]
 
     if has_gyro:
@@ -139,27 +126,25 @@ def main():
             )
     for contact_count in (2, 4):
         phase_rows = [
-            row for row in walking
-            if int(float(row["contact_count"])) == contact_count
+            row for row in walking if int(float(row["contact_count"])) == contact_count
         ]
         if not phase_rows:
             continue
         lines.extend(
             [
                 "contact_%d_rows=%d" % (contact_count, len(phase_rows)),
-                "contact_%d_mean_desired_force_n=%.6f" % (
+                "contact_%d_mean_desired_force_n=%.6f"
+                % (
                     contact_count,
                     sum(
-                        float(row["wbc_shadow_desired_force_x_n"])
-                        for row in phase_rows
-                    ) / len(phase_rows),
+                        float(row["wbc_shadow_desired_force_x_n"]) for row in phase_rows
+                    )
+                    / len(phase_rows),
                 ),
-                "contact_%d_mean_abs_roll_rad=%.6f" % (
-                    contact_count, mean_abs(phase_rows, "imu_roll_rad")
-                ),
-                "contact_%d_mean_abs_pitch_rad=%.6f" % (
-                    contact_count, mean_abs(phase_rows, "imu_pitch_rad")
-                ),
+                "contact_%d_mean_abs_roll_rad=%.6f"
+                % (contact_count, mean_abs(phase_rows, "imu_roll_rad")),
+                "contact_%d_mean_abs_pitch_rad=%.6f"
+                % (contact_count, mean_abs(phase_rows, "imu_pitch_rad")),
             ]
         )
 

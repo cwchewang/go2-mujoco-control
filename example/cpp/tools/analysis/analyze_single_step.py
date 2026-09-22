@@ -79,34 +79,24 @@ def analyze(path, leg):
         start_y = mean(data, y_col, shift_tail)
         final_x = mean(data, x_col, final_tail)
         final_y = mean(data, y_col, final_tail)
-        support_drifts.append(
-            1000.0 * math.hypot(final_x - start_x, final_y - start_y)
-        )
+        support_drifts.append(1000.0 * math.hypot(final_x - start_x, final_y - start_y))
 
     return {
         "path": path,
         "data": data,
         "leg": leg,
-        "target_swing_x_m": float(
-            np.max(data[f"{leg}_foot_swing_x_target_m"])
-        ),
-        "target_swing_y_m": float(
-            np.max(data[f"{leg}_foot_swing_y_target_m"])
-        ),
+        "target_swing_x_m": float(np.max(data[f"{leg}_foot_swing_x_target_m"])),
+        "target_swing_y_m": float(np.max(data[f"{leg}_foot_swing_y_target_m"])),
         "actual_swing_x_m": final_foot_x - start_foot_x,
         "actual_swing_y_m": final_foot_y - start_foot_y,
         "body_displacement_x_m": final_body_x - initial_body_x,
         "body_displacement_y_m": final_body_y - initial_body_y,
-        "swing_clearance_mean_mm": 1000.0 * mean(
-            data, foot_clearance_col, swing
-        ),
+        "swing_clearance_mean_mm": 1000.0 * mean(data, foot_clearance_col, swing),
         "swing_clearance_max_mm": 1000.0
         * float(np.max(data[foot_clearance_col][swing])),
         "swing_force_mean": mean(data, foot_force_col, swing),
         "swing_force_max": float(np.max(data[foot_force_col][swing])),
-        "swing_zero_force_fraction": float(
-            np.mean(data[foot_force_col][swing] == 0.0)
-        ),
+        "swing_zero_force_fraction": float(np.mean(data[foot_force_col][swing] == 0.0)),
         "landing_force_mean": mean(
             data,
             foot_force_col,
@@ -120,13 +110,7 @@ def analyze(path, leg):
         ),
         "max_support_drift_mm": max(support_drifts),
         "max_abs_q_error_rad": max(
-            float(
-                np.max(
-                    np.abs(
-                        data[f"{leg_name}_q_error"][motion]
-                    )
-                )
-            )
+            float(np.max(np.abs(data[f"{leg_name}_q_error"][motion])))
             for leg_name in (
                 f"{candidate}_{joint}"
                 for candidate in LEGS
@@ -134,13 +118,7 @@ def analyze(path, leg):
             )
         ),
         "max_abs_tau_est": max(
-            float(
-                np.max(
-                    np.abs(
-                        data[f"{leg_name}_tau_est"][motion]
-                    )
-                )
-            )
+            float(np.max(np.abs(data[f"{leg_name}_tau_est"][motion])))
             for leg_name in (
                 f"{candidate}_{joint}"
                 for candidate in LEGS

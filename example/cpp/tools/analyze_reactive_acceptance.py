@@ -62,10 +62,7 @@ def extrema(rows: list[dict[str, str]], key: str) -> tuple[float, float]:
 def slice_time(
     rows: list[dict[str, str]], start: float, end: float
 ) -> list[dict[str, str]]:
-    return [
-        row for row in rows
-        if start <= number(row, "cmd_time_s") <= end
-    ]
+    return [row for row in rows if start <= number(row, "cmd_time_s") <= end]
 
 
 def read_metadata(path: Path) -> dict[str, str]:
@@ -158,17 +155,21 @@ def transitions(rows: list[dict[str, str]]) -> list[dict[str, object]]:
     for row in rows:
         event = int(number(row, "event_type", 0.0))
         if event != previous:
-            result.append({
-                "time_s": round(number(row, "cmd_time_s", 0.0), 4),
-                "type": EVENT_NAMES.get(event, f"unknown_{event}"),
-                "priority": int(number(row, "event_priority", 0.0)),
-            })
+            result.append(
+                {
+                    "time_s": round(number(row, "cmd_time_s", 0.0), 4),
+                    "type": EVENT_NAMES.get(event, f"unknown_{event}"),
+                    "priority": int(number(row, "event_priority", 0.0)),
+                }
+            )
             previous = event
     return result
 
 
 def scripted_transition_ok(event_transitions, expected):
-    return [item["type"] for item in event_transitions if item["type"] != "none"] == [expected]
+    return [item["type"] for item in event_transitions if item["type"] != "none"] == [
+        expected
+    ]
 
 
 def script_event(metadata: dict[str, str]) -> tuple[str, float, float] | None:
@@ -192,6 +193,7 @@ def script_event(metadata: dict[str, str]) -> tuple[str, float, float] | None:
             continue
         return SCRIPT_EVENTS.get(fields[2], fields[2]), start, start + duration
     return None
+
 
 def external_event(
     path: Path, rows: list[dict[str, str]]
@@ -222,9 +224,13 @@ def external_event(
         re.S,
     )
     if match:
-        return "low_friction", float(match.group(1)), float(match.group(2)), "simulator_friction"
+        return (
+            "low_friction",
+            float(match.group(1)),
+            float(match.group(2)),
+            "simulator_friction",
+        )
     return None
-
 
 
 def unwrap_delta(values: list[float]) -> float:
@@ -250,8 +256,7 @@ def response_metrics(
     active = slice_time(rows, start, end)
     post = [row for row in rows if end < number(row, "cmd_time_s") <= end + 3.0]
     yaw_values = [
-        value for row in active
-        if math.isfinite(value := number(row, "imu_yaw_rad"))
+        value for row in active if math.isfinite(value := number(row, "imu_yaw_rad"))
     ]
     ref_yaw_values = finite(active, "event_ref_yaw_rate_radps")
     ref_yaw_peak = max((abs(value) for value in ref_yaw_values), default=math.nan)
@@ -279,11 +284,11 @@ def response_metrics(
     ref_yaw = median(active, "event_ref_yaw_rate_radps")
     target_vx = median(active, "event_target_vx_mps")
     stop_tail = [
-        row for row in active
-        if number(row, "cmd_time_s") >= max(start, end - 0.75)
+        row for row in active if number(row, "cmd_time_s") >= max(start, end - 0.75)
     ]
     stop_tail_vx = [
-        abs(value) for row in stop_tail
+        abs(value)
+        for row in stop_tail
         if math.isfinite(value := number(row, "world_velocity_x_mps"))
     ]
     target_yaw = median(active, "event_target_yaw_rate_radps")
@@ -293,7 +298,9 @@ def response_metrics(
         "active_vx_max_mps": active_vx_max,
         "post_vx_mps": post_vx,
         "stop_tail_abs_vx_max_mps": max(stop_tail_vx, default=math.nan),
-        "stop_tail_abs_vx_median_mps": statistics.median(stop_tail_vx) if stop_tail_vx else math.nan,
+        "stop_tail_abs_vx_median_mps": statistics.median(stop_tail_vx)
+        if stop_tail_vx
+        else math.nan,
         "max_velocity_jump_mps": max_velocity_jump_mps,
         "braking_drop_mps": pre_vx - active_vx_min,
         "pre_y_m": pre_y,
@@ -306,8 +313,12 @@ def response_metrics(
         "reference_vx_mps": ref_vx,
         "reference_yaw_rate_radps": ref_yaw,
         "reference_yaw_rate_peak_abs_radps": ref_yaw_peak,
-        "active_abs_roll_max_rad": max((abs(value) for value in active_roll), default=math.nan),
-        "active_abs_pitch_max_rad": max((abs(value) for value in active_pitch), default=math.nan),
+        "active_abs_roll_max_rad": max(
+            (abs(value) for value in active_roll), default=math.nan
+        ),
+        "active_abs_pitch_max_rad": max(
+            (abs(value) for value in active_pitch), default=math.nan
+        ),
         "post_yaw_min_rad": min(post_yaw_values, default=math.nan),
         "post_yaw_max_rad": max(post_yaw_values, default=math.nan),
         "target_vx_mps": target_vx,
@@ -328,9 +339,7 @@ def response_metrics(
     else:
         metrics["lateral_shift_ok"] = math.nan
     if event == "emergency_stop":
-        hold_values = [
-            int(number(row, "event_hold_stance", 0.0)) for row in stop_tail
-        ]
+        hold_values = [int(number(row, "event_hold_stance", 0.0)) for row in stop_tail]
         metrics["brake_ok"] = float(
             math.isfinite(pre_vx)
             and math.isfinite(metrics["stop_tail_abs_vx_max_mps"])
@@ -341,20 +350,23 @@ def response_metrics(
         )
     elif event in {"turn_left", "turn_right"}:
         metrics["brake_ok"] = float(
-            math.isfinite(ref_yaw) and abs(ref_yaw) >= 0.20
+            math.isfinite(ref_yaw)
+            and abs(ref_yaw) >= 0.20
             and math.isfinite(metrics["yaw_change_rad"])
             and abs(metrics["yaw_change_rad"]) >= 0.12
         )
     elif event in {"obstacle_left", "obstacle_right"}:
         metrics["brake_ok"] = float(
-            math.isfinite(ref_yaw_peak) and ref_yaw_peak >= 0.10
+            math.isfinite(ref_yaw_peak)
+            and ref_yaw_peak >= 0.10
             and math.isfinite(metrics["yaw_change_rad"])
             and abs(metrics["yaw_change_rad"]) >= 0.08
             and metrics["lateral_shift_ok"] == 1.0
         )
     elif event in {"slip", "low_friction", "impact"}:
         metrics["brake_ok"] = float(
-            math.isfinite(pre_vx) and math.isfinite(active_vx_min)
+            math.isfinite(pre_vx)
+            and math.isfinite(active_vx_min)
             and pre_vx - active_vx_min >= 0.03
         )
     else:
@@ -369,6 +381,7 @@ def gait_start_time(rows: list[dict[str, str]]) -> float:
         if int(number(row, "motion_stage", -1.0)) == 2
     ]
     return min(values) if values else math.nan
+
 
 def analyze(path_string: str) -> dict[str, object]:
     path = Path(path_string)
@@ -395,9 +408,7 @@ def analyze(path_string: str) -> dict[str, object]:
         scene_exists, scene_physical, _ = scene_obstacle_status(metadata)
         contact = obstacle_contact_metrics(path)
         metrics.update(contact)
-        metrics["obstacle_scene_physical_ok"] = float(
-            scene_exists and scene_physical
-        )
+        metrics["obstacle_scene_physical_ok"] = float(scene_exists and scene_physical)
         metrics["obstacle_contact_ok"] = float(
             contact["obstacle_contact_data_ok"] == 1.0
             and contact["obstacle_contact_max_count"] <= 0.0
@@ -410,16 +421,16 @@ def analyze(path_string: str) -> dict[str, object]:
             and metrics["active_abs_pitch_max_rad"] <= 0.20
         )
         if expected == "obstacle_right":
-            metrics["post_yaw_sign_ok"] = float(
-                metrics["post_yaw_max_rad"] <= 0.05
-            )
+            metrics["post_yaw_sign_ok"] = float(metrics["post_yaw_max_rad"] <= 0.05)
         else:
-            metrics["post_yaw_sign_ok"] = float(
-                metrics["post_yaw_min_rad"] >= -0.05
-            )
+            metrics["post_yaw_sign_ok"] = float(metrics["post_yaw_min_rad"] >= -0.05)
     status_keys = (
-        "controller_status", "safety_status", "quality_status",
-        "analysis_status", "ground_truth_status", "dynamics_status",
+        "controller_status",
+        "safety_status",
+        "quality_status",
+        "analysis_status",
+        "ground_truth_status",
+        "dynamics_status",
         "completion_status",
     )
     statuses = {key: int(metadata.get(key, -1)) for key in status_keys}
@@ -431,23 +442,32 @@ def analyze(path_string: str) -> dict[str, object]:
         "statuses": statuses,
         "event_transitions": event_transitions,
         "scheduled_event": (
-            {"type": expected, "start_s": start, "end_s": end,
-             "relative_start_s": relative_start,
-             "relative_end_s": relative_end}
-            if scheduled else (
-                {"type": expected, "start_s": start, "end_s": end,
-                 "source": external_detail}
-                if external else None
+            {
+                "type": expected,
+                "start_s": start,
+                "end_s": end,
+                "relative_start_s": relative_start,
+                "relative_end_s": relative_end,
+            }
+            if scheduled
+            else (
+                {
+                    "type": expected,
+                    "start_s": start,
+                    "end_s": end,
+                    "source": external_detail,
+                }
+                if external
+                else None
             )
         ),
         "gait_start_s": gait_start_s,
         "metrics": metrics,
     }
     status_ok = bool(rows) and all(value == 0 for value in statuses.values())
-    obstacle_ok = (
-        expected not in {"obstacle_left", "obstacle_right"}
-        or (metrics.get("obstacle_scene_physical_ok", 0.0) == 1.0
-            and metrics.get("obstacle_contact_ok", 0.0) == 1.0)
+    obstacle_ok = expected not in {"obstacle_left", "obstacle_right"} or (
+        metrics.get("obstacle_scene_physical_ok", 0.0) == 1.0
+        and metrics.get("obstacle_contact_ok", 0.0) == 1.0
     )
     script_ok = bool(
         scheduled
@@ -456,28 +476,39 @@ def analyze(path_string: str) -> dict[str, object]:
         and metrics.get("post_rows", 0.0) >= 50.0
         and metrics.get("brake_ok", 0.0) == 1.0
         and obstacle_ok
-        and (expected not in {"obstacle_left", "obstacle_right"}
-             or metrics.get("post_yaw_sign_ok", 0.0) == 1.0)
-        and (expected not in {"obstacle_left", "obstacle_right"}
-             or metrics.get("obstacle_posture_ok", 0.0) == 1.0)
         and (
-            expected not in {"turn_left", "turn_right",
-                             "obstacle_left", "obstacle_right"}
+            expected not in {"obstacle_left", "obstacle_right"}
+            or metrics.get("post_yaw_sign_ok", 0.0) == 1.0
+        )
+        and (
+            expected not in {"obstacle_left", "obstacle_right"}
+            or metrics.get("obstacle_posture_ok", 0.0) == 1.0
+        )
+        and (
+            expected
+            not in {"turn_left", "turn_right", "obstacle_left", "obstacle_right"}
             or metrics.get("directional_yaw_ok", 0.0) == 1.0
         )
     )
     external_ok = bool(
-        external and (
-            (expected == "impact" and
-             float(re.search(r"push_dv=([0-9.]+)", external_detail or "0").group(1)) >= 0.35 and
-             sum(item["type"] == "impact" for item in event_transitions) == 1)
-            or (expected == "low_friction" and
-                external_detail == "simulator_friction")
+        external
+        and (
+            (
+                expected == "impact"
+                and float(
+                    re.search(r"push_dv=([0-9.]+)", external_detail or "0").group(1)
+                )
+                >= 0.35
+                and sum(item["type"] == "impact" for item in event_transitions) == 1
+            )
+            or (expected == "low_friction" and external_detail == "simulator_friction")
         )
     )
     baseline_ok = (
-        scheduled is None and external is None
-        and len(rows) >= 10000 and math.isfinite(max_time)
+        scheduled is None
+        and external is None
+        and len(rows) >= 10000
+        and math.isfinite(max_time)
         and max_time >= 20.0
     )
     result["strict_pass"] = status_ok and (script_ok or external_ok or baseline_ok)

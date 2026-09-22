@@ -39,12 +39,8 @@ def main() -> int:
 
     if args.offset is not None:
         if args.column is None and (args.set_column or args.scale_column):
-            raise SystemExit(
-                "set-column with offset requires explicit column"
-            )
-        offset_columns = args.column or [
-            "wbc_shadow_desired_force_x_n"
-        ]
+            raise SystemExit("set-column with offset requires explicit column")
+        offset_columns = args.column or ["wbc_shadow_desired_force_x_n"]
     else:
         if args.column:
             raise SystemExit("column requires offset")
@@ -83,9 +79,7 @@ def main() -> int:
         scale_values[column] = factor
     if args.offset is None and not set_values and not scale_values:
         raise SystemExit("provide offset, set-column or scale-column")
-    operation_columns = (
-        offset_columns + list(scale_values) + list(set_values)
-    )
+    operation_columns = offset_columns + list(scale_values) + list(set_values)
 
     if (args.start_time_s is None) != (args.end_time_s is None):
         raise SystemExit("start-time-s and end-time-s must be provided together")
@@ -103,17 +97,11 @@ def main() -> int:
     with input_path.open(newline="") as stream:
         reader = csv.DictReader(stream)
         fieldnames = reader.fieldnames or []
-        missing = [
-            column for column in operation_columns if column not in fieldnames
-        ]
+        missing = [column for column in operation_columns if column not in fieldnames]
         if missing:
-            raise SystemExit(
-                "missing perturbation columns: " + ",".join(missing)
-            )
+            raise SystemExit("missing perturbation columns: " + ",".join(missing))
         if args.start_time_s is not None and args.time_column not in fieldnames:
-            raise SystemExit(
-                "time-window perturbation requires " + args.time_column
-            )
+            raise SystemExit("time-window perturbation requires " + args.time_column)
         rows = list(reader)
 
     changed_cells = 0

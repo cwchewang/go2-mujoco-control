@@ -60,16 +60,11 @@ def analyze(path, leg):
     for cycle in cycle_numbers:
         cycle_mask = data["cycle_index"] == cycle
         baseline = require(
-            cycle_mask
-            & (
-                (data["motion_stage"] == 3)
-                | (data["motion_stage"] == 11)
-            ),
+            cycle_mask & ((data["motion_stage"] == 3) | (data["motion_stage"] == 11)),
             f"cycle {cycle} shifted baseline",
         )
         baseline_tail = baseline & (
-            data["cmd_time_s"]
-            >= np.max(data["cmd_time_s"][baseline]) - 0.25
+            data["cmd_time_s"] >= np.max(data["cmd_time_s"][baseline]) - 0.25
         )
         hold = require(
             cycle_mask & (data["motion_stage"] == 5),
@@ -83,12 +78,8 @@ def analyze(path, leg):
             f"cycle {cycle} motion",
         )
 
-        baseline_clearance = float(
-            np.mean(data[foot_clearance_col][baseline])
-        )
-        hold_clearance = float(
-            np.mean(data[foot_clearance_col][hold])
-        )
+        baseline_clearance = float(np.mean(data[foot_clearance_col][baseline]))
+        hold_clearance = float(np.mean(data[foot_clearance_col][hold]))
         support_x = float(np.mean(data["base_world_x_m"][baseline_tail]))
         support_y = float(np.mean(data["base_world_y_m"][baseline_tail]))
         if first_support_x is None:
@@ -107,12 +98,8 @@ def analyze(path, leg):
         results.append(
             {
                 "cycle": cycle,
-                "lift_hold_force_mean": float(
-                    np.mean(data[foot_force_col][hold])
-                ),
-                "lift_hold_force_max": float(
-                    np.max(data[foot_force_col][hold])
-                ),
+                "lift_hold_force_mean": float(np.mean(data[foot_force_col][hold])),
+                "lift_hold_force_max": float(np.max(data[foot_force_col][hold])),
                 "lift_zero_force_fraction": float(
                     np.mean(data[foot_force_col][hold] == 0.0)
                 ),
@@ -131,8 +118,7 @@ def analyze(path, leg):
                     support_y - first_support_y,
                 ),
                 "final_xy_drift_mm": (
-                    1000.0
-                    * math.hypot(final_x - initial_x, final_y - initial_y)
+                    1000.0 * math.hypot(final_x - initial_x, final_y - initial_y)
                     if np.isfinite(final_x)
                     else float("nan")
                 ),
@@ -183,9 +169,7 @@ def plot(data, results, path, leg):
     axes[0, 0].set_ylabel("millimeters")
     axes[0, 0].set_title(f"{leg} foot world clearance")
 
-    axes[0, 1].plot(
-        time, data[foot_force_col], color="#d98b2b", label=f"{leg} force"
-    )
+    axes[0, 1].plot(time, data[foot_force_col], color="#d98b2b", label=f"{leg} force")
     axes[0, 1].set_title(f"{leg} foot force")
 
     axes[1, 0].plot(
