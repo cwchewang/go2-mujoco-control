@@ -1,0 +1,166 @@
+{
+  "archive": {
+    "path": "/home/che/dev/go2-workspace/archive/evidence/substrate_first_capture_20260922/09a9a31e2ab6eefcd4d3193107e8e17dad642129/first-capture.tar.gz",
+    "sha256": "e644991e3533f3e1f567bdde29591a9d335705cbbb6995cd9e3090d063fb2a3e",
+    "verified_files": 100
+  },
+  "attempts": [
+    {
+      "index": 1,
+      "status": "FAIL"
+    },
+    {
+      "index": 2,
+      "status": "NOT_RUN"
+    },
+    {
+      "index": 3,
+      "status": "NOT_RUN"
+    }
+  ],
+  "causal_status": "UNRESOLVED: this one frozen deployment trace does not isolate policy quality, model mismatch or adapter/startup effects",
+  "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "closeout_reviews": {
+    "execution": {
+      "evidence": "Exact-head authorization, preflight, preparation reference and all manifests consistent. External ledger byte-identical to capture claim copies, exactly one consumed attempt and one raw trace. Continuous 5001 frames, 500 target updates, normal horizon termination at tick 5000; endpoint metrics fail. No evidence of continuation or replacement reruns; remaining attempts NOT_RUN.",
+      "reviewer": "/root/prelaunch_execution_review",
+      "verdict": "ACCEPTED"
+    },
+    "execution_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
+    "science": {
+      "evidence": "Independent row-by-row recomputation confirms complete 10-second capture, only frozen endpoint progress and velocity MAE failures, safety conditions satisfied, attempts 2/3 NOT_RUN. Reference self-match is not repeatability evidence. No causal attribution to a module or rejection of overall policy capability. Further work limited to offline diagnostics without tuning or reruns.",
+      "reviewer": "/root/prelaunch_science_review",
+      "verdict": "ACCEPTED"
+    }
+  },
+  "descriptive_only": {
+    "final_position": [
+      0.36412410794767114,
+      -0.0368578163832783,
+      0.367044558922023
+    ],
+    "final_world_vx_mps": 0.008334915777735796,
+    "height_max_m": 0.36907814007496126,
+    "height_min_m": 0.27,
+    "initial_position": [
+      0.0,
+      0.0,
+      0.27
+    ],
+    "lateral_abs_max_m": 0.0368578163832783,
+    "tilt_max_rad": 0.05704560452542069,
+    "windows": [
+      {
+        "inclusive_tick_range": [
+          0,
+          499
+        ],
+        "mean_command_vx_mps": 0.0,
+        "mean_world_vx_mps": 0.007252886995402107,
+        "name": "zero_command",
+        "samples": 500,
+        "vx_mae_against_constant_0_15_mps": 0.1427471130045979
+      },
+      {
+        "inclusive_tick_range": [
+          500,
+          999
+        ],
+        "mean_command_vx_mps": 0.07485,
+        "mean_world_vx_mps": 0.04709738595704812,
+        "name": "ramp",
+        "samples": 500,
+        "vx_mae_against_constant_0_15_mps": 0.10290261404295188
+      },
+      {
+        "inclusive_tick_range": [
+          1000,
+          2499
+        ],
+        "mean_command_vx_mps": 0.15,
+        "mean_world_vx_mps": 0.03223420866135931,
+        "name": "early_fixed_command",
+        "samples": 1500,
+        "vx_mae_against_constant_0_15_mps": 0.1177657913386407
+      },
+      {
+        "inclusive_tick_range": [
+          2500,
+          5000
+        ],
+        "mean_command_vx_mps": 0.15,
+        "mean_world_vx_mps": 0.04259720292106014,
+        "name": "primary_measurement",
+        "samples": 2501,
+        "vx_mae_against_constant_0_15_mps": 0.10740279707893985
+      }
+    ],
+    "yaw_abs_max_rad": 0.014668621483775882
+  },
+  "earliest_failed_boundary": "scientific",
+  "execution_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
+  "failed_metrics": [
+    "progress_min_m",
+    "vx_mae_max_mps"
+  ],
+  "merged_parent": "c5582af60b802b688e4e526845402deb33cf29cd",
+  "mode": "exploratory",
+  "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+  "physics_steps": 5000,
+  "primary": {
+    "first_failure": null,
+    "frames": 5001,
+    "policy_updates": 500,
+    "policy_wall_p50_s": 0.0002906099980464205,
+    "policy_wall_p95_s": 0.0009282330865971741,
+    "progress_m": 0.36412410794767114,
+    "real_time_factor": 5.2235424307773295,
+    "repeatability_matches": true,
+    "resources": {
+      "cpu_system_s": 0.04945200000000005,
+      "cpu_user_s": 2.741261,
+      "elapsed_s": 2.8123399459873326,
+      "process_peak_rss_kib": 715292
+    },
+    "saturated_motor_ticks": 0,
+    "terminal_reason": "horizon",
+    "trace_sha256": "1ff68709d354dcd16406285a1090573b369bb83d873a51bd0141aabe1a52d152",
+    "verdict": "FAIL",
+    "vx_mae_mps": 0.10740279707893986,
+    "wall_time_s": 1.9144096429808997
+  },
+  "protocol_sha256": "d8ae529b39207a1fcb4450b163bc0a8b71955513260f0cd6959911705e0d5f35",
+  "qualification_tests": 164,
+  "reason_code": "metric_failure",
+  "repeatability": "NOT_EVALUATED: only one attempt; reference self-match is not repeatability evidence",
+  "scientific_attempts": 1,
+  "simulated_seconds": 10.000000000000009,
+  "thresholds": {
+    "progress_min_m": 1.0,
+    "vx_mae_max_mps": 0.1
+  },
+  "verdict": "FAIL",
+  "verification": {
+    "attempts": [
+      {
+        "index": 1,
+        "status": "FAIL"
+      },
+      {
+        "index": 2,
+        "status": "NOT_RUN"
+      },
+      {
+        "index": 3,
+        "status": "NOT_RUN"
+      }
+    ],
+    "capability_status": "FAIL",
+    "external_ledger_files": {
+      "attempt_01.json": "ba8d8d85e250b2201c36d7d28274f395aaefae8593d32a89021860003fb62d35",
+      "campaign.json": "546164adf80883af7d05c50eaf145bcf8d929f267b53446b5b29c30e176cd27b"
+    },
+    "external_ledger_verified": true,
+    "status": "VERIFIED"
+  }
+}

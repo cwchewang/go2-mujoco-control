@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
 > **最后更新：2026-09-22**
-> **状态：ACTIVE / SUBSTRATE ENGINEERING FOUNDATION; GATE 0 CAPABILITY NOT_RUN**
+> **状态：ACTIVE / FIRST FLAT DEPLOYMENT CAPTURE FAIL; FULL SUBSTRATE GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -59,10 +59,18 @@ Challengers / baselines：
 公平能力对比。工程准入不是 Gate 0。首轮平地 RL 移植验收已有前瞻协议、
 闭环 runner、分析器及三次失败即停预算；其准备流程禁止真实物理步进，
 准备阶段没有启动授权。用户现已明确要求“合入主线，然后开正式实验”；
-当前分支为 `research/substrate-first-capture-20260922`，执行任务见
-`docs/research/TASK_SUBSTRATE_FIRST_CAPTURE_20260922.md`。必须重新完成准确
-HEAD 验收、独立审阅和准备，再按原冻结协议采集；截至此提交正式结果仍为
-NOT_RUN。协议定义见 `docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
+正式采集在 `research/substrate-first-capture-20260922` 的准确 HEAD
+`09a9a31e2ab6eefcd4d3193107e8e17dad642129` 完成。执行任务见
+`docs/research/TASK_SUBSTRATE_FIRST_CAPTURE_20260922.md`，协议定义见
+`docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
+
+首轮完整运行 5000 个物理步 / 10 秒，5001 帧证据通过独立复算及外部次数
+账本核验。冻结终点位移 0.364124 米（要求 >=1 米），末 5 秒速度 MAE
+0.107403 m/s（要求 <=0.1 m/s）；两项均失败，科学结果 FAIL。未触发安全
+条件，未发生力矩饱和。按原协议停止，第 2、3 次 NOT_RUN；重复性未检验。
+最早失败边界为 scientific / metric_failure，具体机制尚未归因。该结果
+不能外推为策略整体能力失败或完整 Gate 0 结论。原始证据与授权、账本已
+归档；见 `docs/validation/substrate_first_capture_20260922/RESULTS.md`。
 
 后续可靠性加固补齐独立依赖环境、源码/二进制构建绑定、模型输入快照、策略
 状态隔离和重放、严格类型/时钟契约、超时子进程清理、失败证据封存及独立
@@ -161,7 +169,8 @@ GitHub main 最近已完成 Praxis dispatcher / runner / origin 基础设施修�
 
 由于这是 host-local fact，**接手时必须重新用 Praxis / Git 核验，不得把它永久写成当前事实。**
 
-截至本记录，repo 中没有正式 Substrate Gate 0 scientific closeout；不能从基础设施 commit 推断 MJPC/RL/DIAL capability 实验已完成。
+首轮正式平地 RL 移植验收已有 FAIL closeout，但完整 Substrate Gate 0 尚未完成；
+不能从基础设施 commit 或这一单次结果推断 MJPC/RL/DIAL 地形能力实验已完成。
 
 ## 8. [CURRENT | TOPIC STATUS] 选题状态
 
@@ -177,6 +186,11 @@ GitHub main 最近已完成 Praxis dispatcher / runner / origin 基础设施修�
 Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
+
+当前先对已封存的首轮轨迹做离线诊断：核对分段速度、姿态、触地、目标与
+PD 力矩，并比较锁定上游部署的初始化、观测缩放及关节映射。原 campaign
+已经停止，禁止补跑、放宽阈值或替换场景；后续 live 干预须另立前瞻任务。
+以下 Gate 0 路线保持待执行，不能跳过当前失败解释：
 
 1. 用 Praxis 重新核验 Atlas canonical Go2 workspace / local research branch；
 2. 冻结 benchmark v0：terrain family、speed axis、success semantics、resource schema；
