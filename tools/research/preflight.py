@@ -230,10 +230,26 @@ def infer_changed_surfaces(paths: list[str]) -> set[str]:
         ):
             out.add("scene")
         if p.startswith("tools/substrate/") and not name.startswith("test_"):
-            if name in ("contracts.py", "evidence.py", "capture.template.json"):
+            if "/tasks/" in p:
+                out.add("runner")
+            elif "/protocols/" in p or name in (
+                "contracts.py",
+                "evidence.py",
+                "capture.template.json",
+            ):
                 out.add("schema")
-            elif name in ("rl.py", "model.py", "admit.py") or "/native/" in p:
+            elif name in ("analyze_capture.py", "verify_capture.py"):
+                out.add("analyzer")
+            elif name == "launch.py":
+                out.update(("runner", "runtime"))
+            elif Path(p).suffix.lower() not in (".md", ".rst"):
                 out.add("runtime")
+        if (
+            p.startswith("tools/research/")
+            and not name.startswith("test_")
+            and p.endswith(".py")
+        ):
+            out.add("runtime")
         if p.startswith("example/cpp/scripts/"):
             out.add("runner")
         if (
@@ -339,6 +355,9 @@ def _main() -> int:
     ap.add_argument("--domain", type=int)
     ap.add_argument("--transport", choices=("dds", "inprocess"), default="dds")
     ap.add_argument("--held-lock-fd", type=int)
+    ap.add_argument(
+        "--qualification", type=Path, help="verified content-bound offline test receipt"
+    )
     ap.add_argument(
         "--participants",
         type=int,
@@ -592,7 +611,7 @@ def _main() -> int:
             )
     elif (
         args.diff_base
-        and "runner" in auto_surfaces
+        and "runner" in changed
         and runner_exists
         and inside(runner, repo)
     ):
@@ -623,12 +642,24 @@ def _main() -> int:
         tests.append(item)
         add_check(checks, f"test_{i}", rc == 0, item)
     report["tests"] = tests
+    qualified = False
+    if args.qualification and not initial_failures:
+        try:
+            sys.path.insert(0, str(repo))
+            from tools.substrate.qualification import validate
+
+            receipt = validate(args.qualification)
+            qualified = True
+            report["qualification"] = receipt
+            add_check(checks, "qualification_receipt_valid", True, receipt)
+        except Exception as exc:
+            add_check(checks, "qualification_receipt_valid", False, str(exc))
     needs_test = bool(changed & AUTO_TEST_SURFACES)
     if needs_test:
         add_check(
             checks,
             "changed_surface_has_no_live_test",
-            bool(args.test),
+            bool(args.test) or qualified,
             {
                 "surfaces": sorted(changed & AUTO_TEST_SURFACES),
                 "test_count": len(args.test),

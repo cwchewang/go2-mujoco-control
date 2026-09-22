@@ -8,6 +8,7 @@ import sys
 from .admit import admit, source_manifest
 from .integrity import EvidenceRun, experiment_lock, run_logged
 from .environment import verify_environment
+from .qualification import current_inputs, fingerprint
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -33,6 +34,8 @@ def main():
             if before and not args.development:
                 raise ValueError("final qualification requires a clean worktree")
             source_before = source_manifest()
+            input_before = current_inputs(include_controller=False)
+            qualification_inputs = None
             diff_before = subprocess.check_output(
                 ["git", "diff", "--binary", "HEAD"], cwd=ROOT
             )
@@ -68,6 +71,7 @@ def main():
                         "tools.substrate.test_policy_runtime",
                         "tools.substrate.test_clock",
                         "tools.substrate.test_launch",
+                        "tools.substrate.test_qualification",
                         "-v",
                     ],
                     120,
@@ -106,6 +110,14 @@ def main():
                 run.result["qualification_checks"][name] = run_logged(
                     argv, run.path, name, timeout, ROOT
                 )
+                if name == "controller_build":
+                    qualification_inputs = current_inputs()
+                    if any(
+                        input_before[key] != qualification_inputs[key]
+                        for key in input_before
+                        if key != "controller_build"
+                    ):
+                        raise ValueError("qualification inputs changed during build")
             admit(
                 run,
                 ROOT / ".substrate/rl/policy.pt",
@@ -125,6 +137,7 @@ def main():
                 or head != final_head
                 or source_before != source_manifest()
                 or diff_before != diff_after
+                or qualification_inputs != current_inputs()
             ):
                 raise ValueError("checkout changed during qualification")
             run.result["qualification"] = {
@@ -132,6 +145,8 @@ def main():
                 "development": args.development,
                 "head": head,
             }
+            run.result["qualification_inputs"] = qualification_inputs
+            run.result["qualification_fingerprint"] = fingerprint(qualification_inputs)
     except (Exception, KeyboardInterrupt) as exc:
         print(
             json.dumps(

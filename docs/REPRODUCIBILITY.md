@@ -24,7 +24,9 @@ first exploratory flat checkpoint. Preparation binds HEAD, reviews, source,
 checkpoint, model closure, runtime and initial state. It guards all real
 integration entrypoints and consumes no scientific attempt.
 
-After source/HEAD changes, generate new qualification/preparation and exact-head
+After runtime/test/model/dependency changes, generate new qualification. Matching
+content-bound receipts can be reused across prose or merge commits. Always create
+new preparation and exact-head
 reviews. Never rewrite old bundles. Only a later explicit start instruction can
 authorize capture. The launcher retains the lock through SOP preflight, rejects
 stale inputs, records attempts and stops on the first nonpass.

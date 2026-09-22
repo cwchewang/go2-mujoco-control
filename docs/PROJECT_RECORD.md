@@ -41,6 +41,15 @@ Challengers / baselines：
 
 ## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
 
+治理与首次失败的离线诊断见
+`docs/validation/governance_diagnosis_20260922/RESULTS.md`。资格缓存按真实源码、
+环境、构建及依赖内容复用，执行仍绑定当前 HEAD、任务、独立审查与授权；
+原实验预算和 FAIL 均未改变。500 次策略输入及 5000 次 PD 控制与上游独立
+实现逐点一致，5001 帧接触重建一致。0.15 m/s 指令确有策略响应；低速奖励
+区分度、模型及启动条件差异仍是候选解释，不能从单条轨迹宣布单一根因。
+本轮没有新物理步进，也没有新增能力通过结论。下一阶段先冻结上游复现与
+受控移植对照方案，不继续已封存失败的 v1 campaign。
+
 工程准备分支 `research/substrate-prelaunch-20260922` 已通过 PR #139 合入主线
 `c5582af60b802b688e4e526845402deb33cf29cd`。其任务见
 `docs/research/TASK_REPOSITORY_CEE_20260922.md`，最新结果见

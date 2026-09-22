@@ -1,0 +1,40 @@
+{
+  "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "fixed_state_command_grid_mps": [
+    0.0,
+    0.15,
+    0.3,
+    1.0
+  ],
+  "new_scientific_attempts": 0,
+  "physics_steps": 0,
+  "raw_sha256": "c398a7c6dfffd65c6d9195bcf0fc68c388848af07c67e6e5f8946ed10a87476f",
+  "recorded_policy_frames": 500,
+  "scope": "Identical measured states with fresh policy history per fixed command; previous actions evolve only inside inference. Not a new plant rollout, speed prediction, causal intervention or tuning recommendation.",
+  "sensitivity": {
+    "0.0": {
+      "target_delta_from_zero_rms_rad": 0.0,
+      "target_temporal_delta_rms_rad": 0.030426334156526128
+    },
+    "0.15": {
+      "target_delta_from_zero_rms_rad": 0.2676714418350851,
+      "target_temporal_delta_rms_rad": 0.02489971785983998
+    },
+    "0.3": {
+      "target_delta_from_zero_rms_rad": 0.4608805927205163,
+      "target_temporal_delta_rms_rad": 0.019488160361133152
+    },
+    "1.0": {
+      "target_delta_from_zero_rms_rad": 0.5347979742175181,
+      "target_temporal_delta_rms_rad": 0.019886451358239948
+    }
+  },
+  "visible_source_reward_illustration": {
+    "recorded_body_vx_mean": 0.04263530251593275,
+    "recorded_primary_window_mean": 0.9508464892234707,
+    "sigma": 0.25,
+    "standing_at_command_0_15": 0.9139311852712282,
+    "standing_at_command_1_0": 0.01831563888873418,
+    "training_run_configuration_proven": false
+  }
+}

@@ -29,9 +29,17 @@ dependency chain, not interchangeable old copies. Preserve upstream attribution.
 ## Research semantics and reviews
 
 Call out changes to trajectories, protocol, analyzer meaning or claims. Follow
-SOP review rules and bind approval to the final SHA. Prior preparation becomes
-stale after a source or HEAD change: qualify and prepare new output, never edit
-an old bundle. User permission to start formal experiments remains separate.
+SOP review rules and bind execution approval to the final SHA. Preparation is
+always new for the actual execution identity; sealed offline qualification may
+be reused only when the complete implementation/environment fingerprint matches.
+Prepare requires `--qualification` and a tracked `--task`; never edit old bundles.
+User permission to start formal experiments remains separate. Local capture
+verification checks the attempt ledger; `--portable` explicitly omits that check.
+
+Edit `docs/research/current.json`, then run `python -m tools.research.workspace`
+to regenerate CURRENT.md. `--check` detects drift. Workspace policy sources are
+under `docs/governance/`; `--workspace /home/che/dev/go2-workspace` applies them,
+refreshes the verified archive inventory, and generates START_HERE.md.
 
 PRs should explain the concrete behavior/change, validation and historical
 comparison boundary. Failed experiments remain in the evidence record.

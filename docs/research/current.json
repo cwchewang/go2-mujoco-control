@@ -1,0 +1,10 @@
+{
+  "branch": "main",
+  "title": "Governance repair and offline diagnosis",
+  "task": "docs/research/TASK_GOVERNANCE_DIAGNOSIS_20260922.md",
+  "result": "docs/validation/governance_diagnosis_20260922/RESULTS.md",
+  "stage": "governance repair and first-trace offline diagnosis complete; no new physics",
+  "scientific_status": "first flat campaign FAIL and sealed; full Gate 0 incomplete",
+  "last_live_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
+  "next": "freeze an upstream reproduction and controlled transfer protocol; no replacement of the closed v1 capture"
+}

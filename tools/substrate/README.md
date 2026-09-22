@@ -114,10 +114,26 @@ semantics, and a user-supplied approved SHA is not independent proof of review.
 The older generic capture template remains unfrozen and is not the first-run entrypoint.
 The concrete first-run protocol is now `protocols/rl_flat_v1.json`; see
 `docs/research/SUBSTRATE_FIRST_CAPTURE.md` for its prospective rationale and exact
-commands. `launch prepare` guards every real integration entrypoint and stops at
-READY_AWAITING_START. `launch capture` requires separate explicit user start
+historical commands. Under SOP v0.3, `launch prepare` additionally requires
+`--qualification QUALIFIED_BUNDLE --task TRACKED_TASK_JSON`. Task metadata owns
+branch/accepted-parent/protocol identity; no branch edit in launch.py is needed.
+Qualification must be sealed, clean, non-development and match current
+runtime/test/model/dependency inputs. Matching inputs reuse offline tests; fresh
+lock/process/input checks and exact-head review/start identity remain mandatory.
+`launch prepare` guards every real integration entrypoint and stops at
+READY_AWAITING_START, or VERIFIED_ZERO_STEP_CAMPAIGN_CLOSED when the permanent
+campaign ledger is already claimed. The latter is never a new start permission.
+`launch capture` requires separate explicit user start
 authorization, source-bound preparation and independent exact-head reviews.
-`verify_capture` verifies raw integrity and independently recomputes the result.
+`verify_capture` verifies raw integrity and recomputes the result with an
+additional independent algebraic oracle. The local CLI checks the external ledger
+by default; `--ledger` selects an archived copy and `--portable` explicitly reports
+that the external ledger was not verified. Contact reconstruction from the model
+is available in the zero-integration `diagnose` command, separately from algebra.
+
+The first campaign is CLOSED / FAIL and cannot be retried. Its outcome and exact
+execution HEAD remain in `docs/validation/substrate_first_capture_20260922/`.
+Upstream comparisons use the pinned reference manifest, not latest upstream files.
 
 The generic `evidence.py` checks typed
 completeness, unique support names and exact cadence; it preserves the earliest

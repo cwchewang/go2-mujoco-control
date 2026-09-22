@@ -70,6 +70,17 @@ class ReadinessFixtures(unittest.TestCase):
         self.assertTrue(result["pass"])
         self.assertFalse((self.root / "out/capture").exists())
 
+    def test_explicit_runner_change_records_diff_for_nonstandard_path(self):
+        base = self.head
+        with (self.root / "runner.sh").open("a") as stream:
+            stream.write("# bookkeeping change\n")
+        self.git("add", ".")
+        self.git("commit", "-m", "runner change")
+        self.head = self.git("rev-parse", "HEAD")
+        code, result = self.call("--diff-base", base, "--changed-surface", "runner")
+        self.assertEqual(code, 0)
+        self.assertTrue(result["runner_diff"]["changed"])
+
     def test_wrong_head_or_dirty_checkout_fails(self):
         code, result = self.call("--expected-head", "a" * 40)
         self.assertEqual(code, 2)

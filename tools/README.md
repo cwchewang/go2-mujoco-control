@@ -1,5 +1,12 @@
 # Tooling ownership
 
+`research/workspace.py` generates frontier navigation, workspace policy copies,
+handoff and the archive/branch/worktree catalog. It never deletes raw data or
+retires branches. `substrate/qualification.py` binds offline test receipts to
+actual inputs; `task.py` validates tracked execution metadata. `diagnose.py` and
+`policy_sensitivity.py` only consume recorded states under a zero-step guard;
+neither predicts a new closed-loop trajectory.
+
 [CURRENT](../CURRENT.md) selects the task. Tooling is not an alternate plan.
 
 | Area | Entry and boundary |
