@@ -6,7 +6,7 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 ## Active research frontier
 
-Branch: `research/rl-baseline-20260923`.
+Branch: `main`.
 Task: [Public RL source baseline](docs/research/TASK_RL_BASELINE_20260923.md).
 Closeout: [Public RL source baseline results](docs/validation/rl_baseline_20260923/RESULTS.md).
 Stage: source baseline characterized and sealed; ten cases consumed.

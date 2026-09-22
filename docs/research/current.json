@@ -1,5 +1,5 @@
 {
-  "branch": "research/rl-baseline-20260923",
+  "branch": "main",
   "title": "Public RL source baseline",
   "task": "docs/research/TASK_RL_BASELINE_20260923.md",
   "result": "docs/validation/rl_baseline_20260923/RESULTS.md",
