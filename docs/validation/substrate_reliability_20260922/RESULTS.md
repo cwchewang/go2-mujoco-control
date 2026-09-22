@@ -27,8 +27,12 @@ the future launcher must recheck while holding its lock.
 `tools.substrate.qualify` provides the common offline qualification path. Its
 default requires clean HEAD and checks that source bytes, Git diff and HEAD do
 not change during the tests. Development iterations are explicitly marked.
-The pending final clean-head result and exact artifacts are recorded in
-`analysis.json` after the committed implementation is qualified.
+Clean-head qualification and independent manifest verification passed at
+`1fe1818ea521e457216f821ae2abec1ddae5ed79`. All 131 tests passed. The 17,610 installed
+payload files were verified; regenerable bytecode rows are explicitly excluded.
+Exact counts, binary/library identities, source hashes, replay result and archive
+location are recorded in `analysis.json`; `provenance.csv` identifies raw logs.
+Later closeout-only commits preserve these exact executable source bytes.
 
 ## Verification scope
 
@@ -58,7 +62,9 @@ Local immutable raw root:
 path-dependent `.pyc`, and RECORD contained hashed/unhashed rows for that cache.
 The fix excludes regenerable bytecode while continuing to verify its source and
 all immutable package payloads. Source corruption remains a failing test.
-`qualification_03` passed that check; later clean-head qualification is authoritative.
+`qualification_03` passed that check. `qualification_clean_01` is the final
+clean-head qualification. Its archive was reopened and every manifest-listed
+member rehashed successfully; the archive itself has a separate SHA256SUMS.
 All successful and failed directories remain unchanged.
 
 ## Remaining scientific decisions
