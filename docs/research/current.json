@@ -1,10 +1,10 @@
 {
   "branch": "main",
-  "title": "Project foundations and operator handoff",
-  "task": "docs/research/TASK_PROJECT_FOUNDATIONS_20260923.md",
-  "result": "docs/validation/project_foundations_20260923/RESULTS.md",
-  "stage": "foundations and operating guidance; concrete research and experiments on hold by user scope",
-  "scientific_status": "first flat campaign FAIL and sealed; full Gate 0 incomplete",
-  "last_live_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
-  "next": "use the operating guide to define the next user-directed bounded task; do not select policies or launch experiments implicitly"
+  "title": "Public RL source baseline",
+  "task": "docs/research/TASK_RL_BASELINE_20260923.md",
+  "result": "docs/validation/rl_baseline_20260923/RESULTS.md",
+  "stage": "source baseline characterized and sealed; ten cases consumed",
+  "scientific_status": "source 1m/s flat repeat/interface verified; low speed and drift limitations; stairs base-contact stop; full Gate 0 incomplete",
+  "last_live_head": "f0eaa4417d384f24dd31ab22c1bd70abfea76b25",
+  "next": "prospectively confirm the shared-model/home/ten-step-start/adapter combination; preserve the closed ten-case campaign"
 }

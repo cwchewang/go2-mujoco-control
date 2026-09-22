@@ -50,7 +50,18 @@ def current_identity(task=None):
     return head, source_manifest()
 
 
-def preflight(lock, head, review, report, fresh_run, task, qualification):
+def preflight(
+    lock,
+    head,
+    review,
+    report,
+    fresh_run,
+    task,
+    qualification,
+    *,
+    runner=None,
+    experiment_id="rl-flat-compatibility-v1",
+):
     validate_review(review, head)
     argv = [
         sys.executable,
@@ -58,13 +69,13 @@ def preflight(lock, head, review, report, fresh_run, task, qualification):
         "--repo-root",
         str(ROOT),
         "--experiment-id",
-        "rl-flat-compatibility-v1",
+        experiment_id,
         "--expected-branch",
         task["configuration"]["branch"],
         "--expected-head",
         head,
         "--runner",
-        str(Path(__file__)),
+        str(runner or Path(__file__)),
         "--run-dir",
         str(fresh_run),
         "--transport",

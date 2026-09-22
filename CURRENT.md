@@ -7,12 +7,12 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 ## Active research frontier
 
 Branch: `main`.
-Task: [Project foundations and operator handoff](docs/research/TASK_PROJECT_FOUNDATIONS_20260923.md).
-Closeout: [Project foundations and operator handoff results](docs/validation/project_foundations_20260923/RESULTS.md).
-Stage: foundations and operating guidance; concrete research and experiments on hold by user scope.
-Scientific status: first flat campaign FAIL and sealed; full Gate 0 incomplete.
-Last live HEAD: `09a9a31e2ab6eefcd4d3193107e8e17dad642129`.
-Next: use the operating guide to define the next user-directed bounded task; do not select policies or launch experiments implicitly.
+Task: [Public RL source baseline](docs/research/TASK_RL_BASELINE_20260923.md).
+Closeout: [Public RL source baseline results](docs/validation/rl_baseline_20260923/RESULTS.md).
+Stage: source baseline characterized and sealed; ten cases consumed.
+Scientific status: source 1m/s flat repeat/interface verified; low speed and drift limitations; stairs base-contact stop; full Gate 0 incomplete.
+Last live HEAD: `f0eaa4417d384f24dd31ab22c1bd70abfea76b25`.
+Next: prospectively confirm the shared-model/home/ten-step-start/adapter combination; preserve the closed ten-case campaign.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

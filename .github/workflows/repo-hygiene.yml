@@ -21,7 +21,7 @@ jobs:
       - name: Install substrate contract test dependency
         run: python3 -m pip install numpy==2.2.6
       - name: Run portable substrate contract tests
-        run: python3 -m unittest tools.substrate.test_substrate tools.substrate.test_reliability tools.substrate.test_clock tools.substrate.test_launch tools.substrate.test_qualification tools.research.test_preflight tools.research.test_preflight_integration -v
+        run: python3 -m unittest tools.substrate.test_substrate tools.substrate.test_reliability tools.substrate.test_clock tools.substrate.test_launch tools.substrate.test_qualification tools.substrate.test_baseline tools.research.test_preflight tools.research.test_preflight_integration -v
       - name: Run repository and Atlas contract tests
         run: python3 -m unittest discover -s tools/tests -p 'test_*.py'
 

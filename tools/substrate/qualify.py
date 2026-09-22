@@ -72,6 +72,7 @@ def main():
                         "tools.substrate.test_clock",
                         "tools.substrate.test_launch",
                         "tools.substrate.test_qualification",
+                        "tools.substrate.test_baseline",
                         "-v",
                     ],
                     120,
