@@ -86,7 +86,9 @@ the exact entrypoints, manifest, experiment lock, and analyzer specified by
 
 | Need | Start here |
 |---|---|
-| Scientific state / current Gate / next step | [`docs/PROJECT_RECORD.md`](docs/PROJECT_RECORD.md) |\n| Topic landscape / rejected routes / novelty audit | [`docs/TOPIC_AUDIT.md`](docs/TOPIC_AUDIT.md) |\n| Exact active execution frontier | [`CURRENT.md`](CURRENT.md) |
+| Scientific state / current Gate / next step | [`docs/PROJECT_RECORD.md`](docs/PROJECT_RECORD.md) |
+| Topic landscape / rejected routes / novelty audit | [`docs/TOPIC_AUDIT.md`](docs/TOPIC_AUDIT.md) |
+| Exact active execution frontier | [`CURRENT.md`](CURRENT.md) |
 | Complete documentation map | [`docs/README.md`](docs/README.md) |
 | Reproduction rules | [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) |
 | Accepted claims | [`docs/RESEARCH_INDEX.md`](docs/RESEARCH_INDEX.md) |
