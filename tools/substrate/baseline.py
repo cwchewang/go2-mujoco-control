@@ -68,6 +68,12 @@ def fresh_preflight(lock, head, review, report, fresh, task, qualification, prot
     )
 
 
+def validate_snapshot(path, expected_manifest):
+    verify_bundle(path)
+    if digest(path / "manifest.json") != expected_manifest:
+        raise ValueError("prepared snapshot changed")
+
+
 def prepare(output, review_path, qualification_path):
     with (
         experiment_lock() as lock,
@@ -227,6 +233,7 @@ def capture(prepared_path, authorization_path, output):
                     continue
                 if (head, sources) != current_identity(task):
                     raise ValueError("source changed")
+                validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
                 plant = Plant(
                     prepared_path / "inputs" / case["scene"],
                     case,
@@ -288,6 +295,9 @@ def capture(prepared_path, authorization_path, output):
                     write_new(run.path / (case["id"] + "_analysis.json"), result)
                     item.update(status=result["verdict"], analysis=result)
                     completed[case["id"]] = result
+                    validate_snapshot(
+                        prepared_path, prepared["prepared_manifest_sha256"]
+                    )
                     print(json.dumps({"case": case["id"], **result}), flush=True)
                     if result["verdict"] in ("SAFETY_STOP", "INTEGRITY_STOP"):
                         break
@@ -296,6 +306,7 @@ def capture(prepared_path, authorization_path, output):
                         status="ERROR", reason=type(exc).__name__ + ": " + str(exc)
                     )
                     raise
+            validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
             if (head, sources) != current_identity(task) or inputs(
                 protocol
             ) != prepared["source_inputs"]:

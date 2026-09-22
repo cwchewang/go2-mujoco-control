@@ -10,6 +10,7 @@ from .contracts import POLICY_JOINTS, Proprioception
 from .guards import zero_step_guard
 from .integrity import strict_json
 from .rl import FrozenPolicy, observation45
+from .baseline_verify import audit_preflight, trace_consumed
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = strict_json(
@@ -58,6 +59,24 @@ class FakePolicy:
 
 
 class BaselineContractTests(unittest.TestCase):
+    def test_failed_preflight_cannot_verify(self):
+        with self.assertRaisesRegex(ValueError, "preflight not passing"):
+            audit_preflight({"pass": False, "hard_failure_count": 1}, {}, {})
+
+    def test_initial_safety_stop_does_not_consume(self):
+        rows, claims = [], []
+        episode(
+            FakePlant(0),
+            FakePolicy(),
+            PROTOCOL["cases"][0],
+            PROTOCOL,
+            rows.append,
+            lambda: claims.append(1),
+        )
+        self.assertEqual(claims, [])
+        self.assertFalse(trace_consumed(rows))
+        self.assertEqual(len(rows), 1)
+
     def test_schedule_transition_exact(self):
         case = PROTOCOL["cases"][5]
         self.assertEqual(command_at(case, 2499)[0], 1)

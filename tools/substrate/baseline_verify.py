@@ -24,6 +24,47 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def audit_preflight(value, prepared, protocol):
+    require(
+        value.get("pass") is True and value.get("hard_failure_count") == 0,
+        "preflight not passing",
+    )
+    require(
+        value["git"]
+        == dict(
+            head=prepared["head"], branch=prepared["task"]["configuration"]["branch"]
+        ),
+        "preflight identity mismatch",
+    )
+    require(
+        value["experiment_id"] == protocol["id"]
+        and value["qualification"] == prepared["qualification_reference"],
+        "preflight scope mismatch",
+    )
+    checks = {c["name"]: c for c in value["checks"]}
+    require(
+        all(c["status"] != "FAIL" for c in value["checks"]), "failed preflight check"
+    )
+    require(
+        checks["runner_python_syntax"]["detail"]
+        == str(ROOT / "tools/substrate/baseline.py"),
+        "preflight runner mismatch",
+    )
+    require(
+        checks["runner_unchanged_after_tests"]["detail"]
+        == prepared["source_files"]["tools/substrate/baseline.py"],
+        "preflight runner hash mismatch",
+    )
+    require(
+        value["sol_review"]["approved_head"] == prepared["head"],
+        "preflight review mismatch",
+    )
+
+
+def trace_consumed(rows):
+    return any(r["applied"] is not None for r in rows)
+
+
 def audit_rows(rows, plant, policy, case, protocol):
     require(bool(rows), "empty trace")
     expected_target = policy.default.copy()
@@ -169,6 +210,9 @@ def verify(capture, prepared_path, output):
             strict_json((capture / "authorization.json").read_text()), prepared
         )
         validate_review(prepared["review"], prepared["head"])
+        audit_preflight(
+            strict_json((capture / "preflight.json").read_text()), prepared, protocol
+        )
         require(admission["head"] == prepared["head"], "capture head mismatch")
         ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
         claim = strict_json((capture / "campaign-claim.json").read_text())
@@ -213,19 +257,31 @@ def verify(capture, prepared_path, output):
             require(
                 item["status"] != "NOT_RUN" and raw.exists(), "missing prescribed case"
             )
-            require(
-                strict_json((capture / (case["id"] + "_claim.json")).read_text())
-                == strict_json((ledger / (case["id"] + ".json")).read_text())
-                == dict(
-                    index=index + 1,
-                    case=case["id"],
-                    head=prepared["head"],
-                    raw=str(raw.resolve()),
-                    boundary="first_post_handoff_state_control_sample",
-                ),
-                "external attempt mismatch",
-            )
-            consumed.add(case["id"] + ".json")
+            rows = [strict_json(line) for line in raw.read_text().splitlines()]
+            if trace_consumed(rows):
+                require(
+                    strict_json((capture / (case["id"] + "_claim.json")).read_text())
+                    == strict_json((ledger / (case["id"] + ".json")).read_text())
+                    == dict(
+                        index=index + 1,
+                        case=case["id"],
+                        head=prepared["head"],
+                        raw=str(raw.resolve()),
+                        boundary="first_post_handoff_state_control_sample",
+                    ),
+                    "external attempt mismatch",
+                )
+                consumed.add(case["id"] + ".json")
+            else:
+                require(
+                    len(rows) == 1 and rows[0]["failure"] is not None,
+                    "unconsumed trace is not initial safety stop",
+                )
+                require(
+                    not (capture / (case["id"] + "_claim.json")).exists()
+                    and not (ledger / (case["id"] + ".json")).exists(),
+                    "claim without control sample",
+                )
             plant = Plant(
                 prepared_path / "inputs" / case["scene"],
                 case,
@@ -236,7 +292,6 @@ def verify(capture, prepared_path, output):
                 prepared_path / "inputs/.substrate/rl/policy.pt",
                 prepared["source_inputs"][".substrate/rl/policy.pt"],
             )
-            rows = [strict_json(line) for line in raw.read_text().splitlines()]
             result, audit = audit_rows(rows, plant, policy, case, protocol)
             if (
                 case["id"] in ("source_repeat", "shared_adapter")
