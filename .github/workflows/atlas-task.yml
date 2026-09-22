@@ -26,7 +26,7 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       ATLAS_MACHINE_MAX_WORKERS: "4"
-      PRAXIS_CORE_REF: 22e6b908ad69f51ec6e3a528b92a6e39a90c3486
+      PRAXIS_CORE_REF: adf418e61cd42487328fc50dfcbd4fce3a6eec4d
       GO2_CANONICAL_REPO: https://github.com/cwchewang/go2-mujoco-control.git
       GO2_PRAXIS_ANCHOR_REL: dev/go2-workspace/praxis-anchor
       GO2_PRAXIS_TASKS_REL: dev/go2-praxis/tasks
