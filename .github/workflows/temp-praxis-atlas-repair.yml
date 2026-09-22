@@ -1,0 +1,65 @@
+name: Temporary Praxis Atlas repair
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  repair:
+    if: >-
+      github.event.issue.pull_request == null &&
+      github.event.issue.title == 'Recover Praxis Atlas runner and canonical Go2 origin' &&
+      github.event.issue.author_association == 'OWNER'
+    runs-on: [self-hosted, linux, x64, atlas]
+    timeout-minutes: 10
+    steps:
+      - name: Repair Praxis runner and Go2 origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          uid="$(id -u)"
+          if [[ -S "/run/user/$uid/bus" ]]; then
+            export XDG_RUNTIME_DIR="/run/user/$uid"
+            export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus"
+          fi
+
+          unit="praxis-runner-atlas.service"
+          systemctl --user cat "$unit" >/dev/null
+          systemctl --user restart "$unit"
+          for _ in $(seq 1 20); do
+            if systemctl --user is-active --quiet "$unit"; then
+              break
+            fi
+            sleep 1
+          done
+          systemctl --user is-active --quiet "$unit"
+
+          repo="/home/che/dev/go2-workspace/current"
+          test "$(git -C "$repo" rev-parse --is-inside-work-tree)" = "true"
+          old="$(git -C "$repo" remote get-url origin)"
+          canonical="https://github.com/cwchewang/go2-mujoco-control.git"
+          legacy="https://github.com/kairoi-k/go2-mujoco-control.git"
+          if [[ "$old" == "$legacy" ]]; then
+            git -C "$repo" remote set-url origin "$canonical"
+          elif [[ "$old" != "$canonical" ]]; then
+            echo "unexpected Go2 origin: $old" >&2
+            exit 2
+          fi
+          test "$(git -C "$repo" remote get-url origin)" = "$canonical"
+          test -z "$(git -C "$repo" status --porcelain)"
+
+          echo "PRAXIS_RUNNER=ACTIVE"
+          echo "GO2_ORIGIN=$canonical"
+
+      - name: Close repair issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "Praxis Atlas runner is active and the Go2 current worktree origin is canonical. No working-tree files or stashes were changed."
+          gh issue close "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --reason completed
