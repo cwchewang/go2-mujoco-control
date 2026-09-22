@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "branch": "infra/governance-diagnosis-20260922",
+  "protocol": "tools/substrate/protocols/rl_flat_v1.json",
+  "protocol_sha256": "d8ae529b39207a1fcb4450b163bc0a8b71955513260f0cd6959911705e0d5f35",
+  "diff_base": "9f7ee6eb226cbdedad5b514328b8fa72463c1d0f"
+}

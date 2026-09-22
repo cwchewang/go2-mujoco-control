@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "branch": "research/substrate-first-capture-20260922",
+  "protocol": "tools/substrate/protocols/rl_flat_v1.json",
+  "protocol_sha256": "d8ae529b39207a1fcb4450b163bc0a8b71955513260f0cd6959911705e0d5f35",
+  "diff_base": "c5582af60b802b688e4e526845402deb33cf29cd"
+}

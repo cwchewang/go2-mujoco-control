@@ -13,6 +13,32 @@ SPEC.loader.exec_module(preflight)
 
 
 class PreflightRegressionTest(unittest.TestCase):
+    def test_substrate_runtime_protocol_runner_and_analyzer_changes_are_detected(self):
+        for name in (
+            "episode.py",
+            "clock.py",
+            "guards.py",
+            "readiness.py",
+            "unknown_future.py",
+        ):
+            self.assertIn(
+                "runtime", preflight.infer_changed_surfaces(["tools/substrate/" + name])
+            )
+        self.assertIn(
+            "schema",
+            preflight.infer_changed_surfaces(
+                ["tools/substrate/protocols/rl_flat_v1.json"]
+            ),
+        )
+        self.assertIn(
+            "runner", preflight.infer_changed_surfaces(["tools/substrate/launch.py"])
+        )
+        for name in ("analyze_capture.py", "verify_capture.py"):
+            self.assertIn(
+                "analyzer",
+                preflight.infer_changed_surfaces(["tools/substrate/" + name]),
+            )
+
     def test_domain_233_exceeds_rtps_udp_range(self) -> None:
         self.assertGreater(max(preflight.dds_ports(233).values()), 65535)
         self.assertFalse(preflight.domain_in_linux_safe_pool(233))

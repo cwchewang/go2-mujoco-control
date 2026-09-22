@@ -6,9 +6,10 @@ from pathlib import Path
 import numpy as np
 from .integrity import digest, strict_json, verify_bundle, verify_manifest
 from .analyze_capture import analyze
+from .oracle import verify_algebra
 
 
-def verify_capture(directory, prepared_directory):
+def verify_capture(directory, prepared_directory, ledger_directory=None):
     directory, prepared_directory = Path(directory), Path(prepared_directory)
     result = verify_manifest(directory)
     prepared = verify_bundle(prepared_directory)
@@ -81,6 +82,19 @@ def verify_capture(directory, prepared_directory):
             prepared["layout"],
             reference_trace,
         )
+        independent = verify_algebra(
+            rows,
+            protocol,
+            np.array(prepared["lower"]),
+            np.array(prepared["upper"]),
+            prepared["layout"],
+        )
+        for key in ("progress_m", "vx_mae_mps"):
+            if independent[key] is None or value[key] is None:
+                if independent[key] != value[key]:
+                    raise ValueError("independent metric oracle mismatch")
+            elif not np.isclose(independent[key], value[key], rtol=0, atol=1e-12):
+                raise ValueError("independent metric oracle mismatch")
         if reference_trace is None:
             reference_trace = value["trace_sha256"]
         original = strict_json((prepared_directory / "initial-state.json").read_text())
@@ -101,11 +115,31 @@ def verify_capture(directory, prepared_directory):
         raise ValueError("campaign verdict mismatch")
     if type(result["live_runs"]) is not int or result["live_runs"] != consumed:
         raise ValueError("consumed attempt count mismatch")
+    ledger_verified = False
+    if ledger_directory is not None:
+        ledger = Path(ledger_directory)
+        expected = {"campaign.json": "campaign-claim.json"}
+        for item in attempts:
+            name = "attempt_%02d_claim.json" % item["index"]
+            if (directory / name).exists():
+                expected["attempt_%02d.json" % item["index"]] = name
+        if (
+            not ledger.is_dir()
+            or ledger.is_symlink()
+            or {p.name for p in ledger.iterdir()} != set(expected)
+        ):
+            raise ValueError("external ledger file set differs")
+        for original, copied in expected.items():
+            if (ledger / original).is_symlink() or digest(ledger / original) != digest(
+                directory / copied
+            ):
+                raise ValueError("external ledger claim mismatch")
+        ledger_verified = True
     return {
         "status": "VERIFIED",
         "capability_status": verdict,
         "attempts": recomputed,
-        "external_ledger_verified": False,
+        "external_ledger_verified": ledger_verified,
     }
 
 
@@ -113,8 +147,24 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("directory", type=Path)
     p.add_argument("--prepared", type=Path, required=True)
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument("--ledger", type=Path)
+    mode.add_argument(
+        "--portable",
+        action="store_true",
+        help="explicitly omit local ledger verification",
+    )
     args = p.parse_args()
-    print(json.dumps(verify_capture(args.directory, args.prepared)))
+    protocol = strict_json((args.directory / "protocol.json").read_text())
+    ledger = (
+        None
+        if args.portable
+        else args.ledger
+        or Path(__file__).resolve().parents[2]
+        / "_runs/substrate_attempts"
+        / protocol["id"]
+    )
+    print(json.dumps(verify_capture(args.directory, args.prepared, ledger)))
 
 
 if __name__ == "__main__":

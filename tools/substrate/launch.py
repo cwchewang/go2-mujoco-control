@@ -30,10 +30,11 @@ from .readiness import (
     validate_authorization as validate_authorization,
 )
 from .guards import zero_step_guard as zero_step_guard, wall_deadline as wall_deadline
+from .task import DEFAULT_TASK, load_task
+from .qualification import validate as validate_qualification, validate_reference
 
 TRANSPORT = "inprocess"
 PROTOCOL = ROOT / "tools/substrate/protocols/rl_flat_v1.json"
-BRANCH = "research/substrate-first-capture-20260922"
 CHECKPOINT = ROOT / ".substrate/rl/policy.pt"
 
 
@@ -41,14 +42,15 @@ def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
-def current_identity():
+def current_identity(task=None):
     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
-    if branch != BRANCH or git("status", "--porcelain"):
+    task = task or load_task(DEFAULT_TASK)
+    if branch != task["configuration"]["branch"] or git("status", "--porcelain"):
         raise ValueError("launch preparation requires the clean reserved branch")
     return head, source_manifest()
 
 
-def preflight(lock, head, review, report, fresh_run):
+def preflight(lock, head, review, report, fresh_run, task, qualification):
     validate_review(review, head)
     argv = [
         sys.executable,
@@ -58,7 +60,7 @@ def preflight(lock, head, review, report, fresh_run):
         "--experiment-id",
         "rl-flat-compatibility-v1",
         "--expected-branch",
-        BRANCH,
+        task["configuration"]["branch"],
         "--expected-head",
         head,
         "--runner",
@@ -70,20 +72,12 @@ def preflight(lock, head, review, report, fresh_run):
         "--held-lock-fd",
         str(lock.fileno()),
         "--diff-base",
-        "96859ea767efac5557eaf55d95cfd25c95025367",
-        "--changed-surface",
-        "runtime",
-        "--changed-surface",
-        "schema",
-        "--changed-surface",
-        "runner",
-        "--changed-surface",
-        "analyzer",
+        task["configuration"]["diff_base"],
         "--requires-sol-review",
         "--approved-head",
         head,
-        "--test",
-        sys.executable + " -m unittest tools.substrate.test_launch -q",
+        "--qualification",
+        qualification["path"],
         "--output",
         str(report),
     ]
@@ -112,13 +106,16 @@ def setup_runtime():
     torch.manual_seed(0)
 
 
-def prepare(directory, review_path):
+def prepare(directory, review_path, qualification_path, task_path=DEFAULT_TASK):
     with LOCK_PATH.open("a") as lock, zero_step_guard():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         with EvidenceRun(
             directory, {"argv": sys.argv, "operation": "prepare_zero_step"}
         ) as run:
-            head, sources = current_identity()
+            task = load_task(task_path)
+            protocol_path = ROOT / task["configuration"]["protocol"]
+            head, sources = current_identity(task)
+            qualification = validate_qualification(qualification_path)
             review = strict_json(review_path.read_text())
             preflight(
                 lock,
@@ -126,10 +123,12 @@ def prepare(directory, review_path):
                 review,
                 run.path / "preflight.json",
                 run.path / "future_capture",
+                task,
+                qualification,
             )
             runtime = verify_environment()
             setup_runtime()
-            protocol = strict_json(PROTOCOL.read_text())
+            protocol = strict_json(protocol_path.read_text())
             write_new(run.path / "protocol.json", protocol)
             write_new(run.path / "review.json", review)
             closure = dependency_manifest(ROOT / protocol["scene"], ROOT)
@@ -165,18 +164,28 @@ def prepare(directory, review_path):
                 run.path / "initial-action.json",
                 {k: v.tolist() for k, v in action.items()},
             )
-            if (head, sources) != current_identity() or closure != dependency_manifest(
-                ROOT / protocol["scene"], ROOT
-            ):
+            if (head, sources) != current_identity(
+                task
+            ) or closure != dependency_manifest(ROOT / protocol["scene"], ROOT):
                 raise ValueError("source changed during prepare")
+            validate_reference(qualification)
+            if task != load_task(task_path):
+                raise ValueError("task changed during prepare")
+            readiness = (
+                "VERIFIED_ZERO_STEP_CAMPAIGN_CLOSED"
+                if (ROOT / "_runs/substrate_attempts" / protocol["id"]).exists()
+                else "READY_AWAITING_START"
+            )
             run.result.update(
                 {
                     "status": "ENGINEERING_ADMITTED",
-                    "readiness": "READY_AWAITING_START",
+                    "readiness": readiness,
                     "head": head,
                     "source_files": sources,
                     "runtime": runtime,
-                    "protocol_sha256": digest(PROTOCOL),
+                    "protocol_sha256": digest(protocol_path),
+                    "task": task,
+                    "qualification_reference": qualification,
                     "checkpoint_sha256": expected,
                     "model": closure,
                     "physical_sha256": physical_fingerprint(plant.model),
@@ -194,7 +203,7 @@ def prepare(directory, review_path):
             )
     verify_bundle(directory)
     return {
-        "readiness": "READY_AWAITING_START",
+        "readiness": readiness,
         "head": head,
         "physics_steps": 0,
         "output": str(directory),
@@ -206,21 +215,28 @@ def capture(prepared_dir, authorization_path, output):
     with LOCK_PATH.open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         prepared = verify_bundle(prepared_dir)
-        head, sources = current_identity()
+        if not isinstance(prepared.get("task"), dict):
+            raise ValueError("new capture requires task-bound preparation")
+        task = load_task(ROOT / prepared["task"]["path"])
+        if task != prepared["task"]:
+            raise ValueError("task changed since preparation")
+        protocol_path = ROOT / task["configuration"]["protocol"]
+        head, sources = current_identity(task)
         if (
             prepared.get("readiness") != "READY_AWAITING_START"
             or prepared["head"] != head
             or prepared["source_files"] != sources
-            or prepared["protocol_sha256"] != digest(PROTOCOL)
+            or prepared["protocol_sha256"] != digest(protocol_path)
         ):
             raise ValueError("stale preparation")
         prepared["prepared_manifest_sha256"] = digest(prepared_dir / "manifest.json")
         authorization = strict_json(authorization_path.read_text())
         validate_authorization(authorization, prepared)
         validate_review(prepared["review"], head)
+        qualification = validate_reference(prepared.get("qualification_reference"))
         verify_environment()
         setup_runtime()
-        protocol = strict_json(PROTOCOL.read_text())
+        protocol = strict_json(protocol_path.read_text())
         if (
             digest(CHECKPOINT) != prepared["checkpoint_sha256"]
             or dependency_manifest(ROOT / protocol["scene"], ROOT) != prepared["model"]
@@ -244,9 +260,15 @@ def capture(prepared_dir, authorization_path, output):
                 }
             )
             preflight(
-                lock, head, prepared["review"], run.path / "preflight.json", ledger
+                lock,
+                head,
+                prepared["review"],
+                run.path / "preflight.json",
+                ledger,
+                task,
+                qualification,
             )
-            if (head, sources) != current_identity():
+            if (head, sources) != current_identity(task):
                 raise ValueError("source changed before launch")
             write_new(run.path / "authorization.json", authorization)
             write_new(run.path / "protocol.json", protocol)
@@ -336,7 +358,7 @@ def capture(prepared_dir, authorization_path, output):
                         run.path / ("attempt_%02d_analysis.json" % number), result
                     )
                     item.update({"status": result["verdict"], "analysis": result})
-                    if (head, sources) != current_identity():
+                    if (head, sources) != current_identity(task):
                         raise ValueError("source_changed")
                     if result["verdict"] != "PASS":
                         break
@@ -362,6 +384,8 @@ def main():
     prep = sub.add_parser("prepare")
     prep.add_argument("--output", type=Path, required=True)
     prep.add_argument("--review", type=Path, required=True)
+    prep.add_argument("--qualification", type=Path, required=True)
+    prep.add_argument("--task", type=Path, default=DEFAULT_TASK)
     live = sub.add_parser("capture")
     live.add_argument("--prepared", type=Path, required=True)
     live.add_argument("--authorization", type=Path, required=True)
@@ -369,7 +393,7 @@ def main():
     args = parser.parse_args()
     try:
         result = (
-            prepare(args.output, args.review)
+            prepare(args.output, args.review, args.qualification, args.task)
             if args.operation == "prepare"
             else capture(args.prepared, args.authorization, args.output)
         )

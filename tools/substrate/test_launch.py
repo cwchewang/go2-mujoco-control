@@ -384,6 +384,11 @@ class LaunchTests(unittest.TestCase):
                 layout=self.layout,
                 lower=plant.lower.tolist(),
                 upper=plant.upper.tolist(),
+                task={
+                    "path": "task.json",
+                    "configuration": {"protocol": "protocol.json"},
+                },
+                qualification_reference={"path": "fixture"},
             )
             write_new(run.path / "protocol.json", self.short)
             write_new(run.path / "initial-state.json", plant.snapshot(0))
@@ -412,15 +417,23 @@ class LaunchTests(unittest.TestCase):
                 setup_runtime=None,
                 dependency_manifest={},
                 physical_fingerprint="fixture",
+                load_task={
+                    "path": "task.json",
+                    "configuration": {"protocol": "protocol.json"},
+                },
+                validate_reference={"path": "fixture"},
             ).items():
                 stack.enter_context(patch.object(launch, name, return_value=value))
             stack.enter_context(
                 patch.object(
                     launch,
                     "preflight",
-                    side_effect=lambda lock, head, review, report, fresh: write_new(
-                        report, {"pass": True, "git": {"head": head}}
-                    ),
+                    side_effect=lambda lock,
+                    head,
+                    review,
+                    report,
+                    fresh,
+                    *extra: write_new(report, {"pass": True, "git": {"head": head}}),
                 )
             )
             stack.enter_context(patch.object(launch, "MujocoPlant", return_value=plant))
