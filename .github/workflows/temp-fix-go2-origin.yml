@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          repo="/home/che/dev/go2-workspace/current"
+          repo="$HOME/dev/go2-workspace/current"
           old="https://github.com/kairoi-k/go2-mujoco-control.git"
           new="https://github.com/cwchewang/go2-mujoco-control.git"
 
