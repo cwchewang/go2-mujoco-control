@@ -147,6 +147,11 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 ## 9. [CURRENT | NEXT AUDIT]
 
+2026-09-22 首轮正式平地 RL 移植验收完整采集但未达位移和速度误差门槛，
+结果见 `docs/validation/substrate_first_capture_20260922/RESULTS.md`。这是单次
+部署兼容性失败，尚未归因；不改变候选排序，也不能晋级为论文问题。先完成
+保留轨迹与锁定部署语义的离线诊断，再决定后续前瞻实验。
+
 先读 `docs/PROJECT_RECORD.md` 的 Substrate Gate 结果，再问：
 
 > 解除 fixed-gait / SRBD architectural bias 后，强 WBMPC substrate 与强 learned baseline 仍共同暴露哪些稳定 terrain-locomotion failure？
