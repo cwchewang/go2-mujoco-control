@@ -109,6 +109,10 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 第一阶段优先使用公开 checkpoint，不从头训练。
 
+2026-09-23 已建立冻结1 m/s源条件平地参考，重复和接口轨迹一致；低速、横漂
+与23 cm楼梯机身接触边界已记录。当前只够支持有限能力对照，不足以宣布强
+地形天花板、跨控制器共同瓶颈或晋级论文题。详见 PROJECT_RECORD。
+
 ## 6. [CANDIDATE LEDGER]
 
 | 候选 | 状态 | 核心原因 / 重启条件 |

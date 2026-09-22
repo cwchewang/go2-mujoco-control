@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
 > **最后更新：2026-09-23**
-> **状态：PUBLIC RL BASELINE RESEARCH; FIRST CAPTURE FAIL; GATE 0 INCOMPLETE**
+> **状态：SOURCE RL FLAT REFERENCE VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -42,6 +42,15 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1B. [2026-09-23 | VERIFIED / BOUNDED] 公开RL源条件基线
+
+十例固定协议已封存，见[完整结果](validation/rl_baseline_20260923/RESULTS.md)。
+源模型1 m/s指令平均速度0.938050 m/s；源重复与共享策略接口三条轨迹完全一致。
+原条件0.15 m/s仍仅0.021824 m/s，低速不足不能全归模型或接口移植；奖励机制
+尚未证实。变速纵向跟踪好但横漂超限；默认23 cm楼梯在2.5 s因机身前部接触
+第二级立面停止，不能称摔倒或证明永远无法跨越。共享模型单因素1 m/s通过，
+不等于模型/home/接口组合已确认。这是有限平地参考，不是强地形能力天花板。
 
 ## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
 
@@ -157,8 +166,8 @@ Challengers / baselines：
 ### RL baseline
 优先直接用公开 checkpoint，不从头训练。目标是建立 terrain capability ceiling / failure map，并防止把 learning policy 已轻松解决的问题当科研 gap。
 
-现已接入的 Gym checkpoint 是上游默认配置的工程参考候选，尚未通过原条件
-能力复现及横向比较选定为主基线。默认后端和已投入的工程成本不能替代科学
+现已接入的 Gym checkpoint 已通过冻结1 m/s平地原条件复现与接口等价核验，
+可作为有限对照；尚未通过跨地形、鲁棒性及横向比较选定为强主基线。默认后端和已投入的工程成本不能替代科学
 选型依据。0.15 m/s 是历史局部兼容性协议的工程设定，没有被论证为全项目目标；
 今后参数先说明需求/来源/假设和对决策的作用，再定义验收。原 FAIL 不追溯改写。
 
@@ -203,9 +212,10 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-按新 RL baseline 任务先复现公开策略的原部署条件，核验重复性与接口等价，
-再报告已测前向速度和单一上游楼梯方向的能力边界。所有新运行绑定独立协议；
-不从单条轨迹宣布单一根因，不把单策略当能力天花板。具体入口见 CURRENT。
+公开RL源条件复现已完成并封存，当前有可重复的1 m/s平地对照与明确的低速、
+横漂和机身接触边界。下一项前瞻确认共享模型/home/十步启动/接口的组合，
+随后按需求扩展地形与方向覆盖。不要把单因素通过拼成未运行的组合通过，
+也不把接触停止写成摔倒。入口见 CURRENT；历史与本轮campaign均不可续跑。
 
 ## 10. [2026-09-22 | GOVERNANCE] Repo-native 项目记录
 

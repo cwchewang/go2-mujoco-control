@@ -8,11 +8,11 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 Branch: `research/rl-baseline-20260923`.
 Task: [Public RL source baseline](docs/research/TASK_RL_BASELINE_20260923.md).
-Closeout: [Public RL source baseline results](docs/validation/governance_diagnosis_20260922/RESULTS.md).
-Stage: source reproduction and controlled transfer; user-authorized research resumed.
-Scientific status: first flat campaign FAIL and sealed; full Gate 0 incomplete.
-Last live HEAD: `09a9a31e2ab6eefcd4d3193107e8e17dad642129`.
-Next: qualify and independently review rl-source-baseline-v1, then prepare and capture the ten predeclared cases.
+Closeout: [Public RL source baseline results](docs/validation/rl_baseline_20260923/RESULTS.md).
+Stage: source baseline characterized and sealed; ten cases consumed.
+Scientific status: source 1m/s flat repeat/interface verified; low speed and drift limitations; stairs base-contact stop; full Gate 0 incomplete.
+Last live HEAD: `f0eaa4417d384f24dd31ab22c1bd70abfea76b25`.
+Next: prospectively confirm the shared-model/home/ten-step-start/adapter combination; preserve the closed ten-case campaign.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

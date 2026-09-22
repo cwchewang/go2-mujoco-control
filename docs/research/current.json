@@ -2,9 +2,9 @@
   "branch": "research/rl-baseline-20260923",
   "title": "Public RL source baseline",
   "task": "docs/research/TASK_RL_BASELINE_20260923.md",
-  "result": "docs/validation/governance_diagnosis_20260922/RESULTS.md",
-  "stage": "source reproduction and controlled transfer; user-authorized research resumed",
-  "scientific_status": "first flat campaign FAIL and sealed; full Gate 0 incomplete",
-  "last_live_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
-  "next": "qualify and independently review rl-source-baseline-v1, then prepare and capture the ten predeclared cases"
+  "result": "docs/validation/rl_baseline_20260923/RESULTS.md",
+  "stage": "source baseline characterized and sealed; ten cases consumed",
+  "scientific_status": "source 1m/s flat repeat/interface verified; low speed and drift limitations; stairs base-contact stop; full Gate 0 incomplete",
+  "last_live_head": "f0eaa4417d384f24dd31ab22c1bd70abfea76b25",
+  "next": "prospectively confirm the shared-model/home/ten-step-start/adapter combination; preserve the closed ten-case campaign"
 }

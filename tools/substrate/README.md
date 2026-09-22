@@ -147,3 +147,45 @@ Hosted CI runs dependency-light tests, pinned lint/format, tracked-source syntax
 and portable documentation checks. Native qualification adds controller CTests,
 actual Torch/model fixtures and backend admission. Exact counts belong to each
 qualification report, not this guide. CI does not certify a robot capability.
+
+
+## Verified public source baseline
+
+The source-aligned runner is `python -m tools.substrate.baseline` in the reliable
+runtime. See `docs/validation/rl_baseline_20260923/RESULTS.md` for exact conditions,
+negative cases and source identity. The measured reference is 1 m/s flat forward
+locomotion; this is not a general terrain or robustness claim.
+
+On a fresh checkout, `python -m tools.substrate.fetch_reference` materializes and
+hash-verifies the 50 pinned upstream deployment/source assets. Existing mismatched
+files are rejected, never replaced. The checkpoint and reliable environment use
+the existing substrate bootstrap. Do not run the upstream interactive entrypoint
+as an implicit experiment.
+
+Historical source-bound preparation used:
+
+```sh
+.substrate/venv-reliable/bin/python -m tools.substrate.baseline prepare \
+  --review _runs/rl_baseline_20260923/review_f0eaa44.json \
+  --qualification _runs/rl_baseline_20260923/qualification_03 \
+  --output NEW_EMPTY_DIRECTORY
+```
+
+That review belongs only to the historical execution HEAD. The ten-case campaign
+is now CLOSED and cannot be recaptured. New experiments require a new prospective
+task/protocol and exact-HEAD review, not an edit of the closed protocol or ledger.
+For offline verification of preserved native evidence:
+
+```sh
+.substrate/venv-reliable/bin/python -m tools.substrate.baseline verify \
+  --prepared _runs/rl_baseline_20260923/prepared_01 \
+  --capture _runs/rl_baseline_20260923/capture_01 --output NEW_EMPTY_DIRECTORY
+```
+
+Verification checks the native external ledger, replays policy history and
+reconstructs contact geometry under a zero-step guard. Plotting uses a separate
+analysis Python with matplotlib, without altering the frozen physics environment:
+`python -m tools.substrate.plot_baseline --capture CAPTURE --verification VERIFIED --output NEW_EMPTY_DIRECTORY`.
+The reusable plant, named policy interface and case definitions are in
+`baseline_episode.py` and `protocols/rl_source_v1.json`; source physics retains joint
+force limits, and telemetry never forwards the live MjData between steps.
