@@ -1,12 +1,17 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-09-22**
+> **最后更新：2026-09-23**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
 > **当前 canonical 决策：先完成 clean-slate whole-body Substrate Gate，再重新筛题。**
 
 ## 0. [CURRENT | SNAPSHOT]
+
+2026-09-23 用户将当前工作限定为项目基础、规范和可交接推进方式建设。以下
+路线与候选账本保留为研究方向，不是当前执行清单；本轮不新增或晋级论文题。
+方法/权重先按任务需要确定其证据等级，不能把工程默认选项写成已选定最优方案。
+具体阶段和下一步跟随 PROJECT_RECORD 与 CURRENT。
 
 当前不再围绕 Raibert / fixed-trot / SRBD hierarchy 直接锁题。
 
@@ -149,8 +154,10 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 2026-09-22 首轮正式平地 RL 移植验收完整采集但未达位移和速度误差门槛，
 结果见 `docs/validation/substrate_first_capture_20260922/RESULTS.md`。这是单次
-部署兼容性失败，尚未归因；不改变候选排序，也不能晋级为论文问题。先完成
-保留轨迹与锁定部署语义的离线诊断，再决定后续前瞻实验。
+部署兼容性失败，尚未完成因果归因；不改变候选排序，也不能晋级为论文问题。
+保留轨迹与锁定部署语义的离线诊断已经完成，见
+[诊断结果](validation/governance_diagnosis_20260922/RESULTS.md)。当前按用户指令
+先做基础与推进方式建设，不在本轮继续实验或选题；下述审计问题留待研究恢复。
 
 先读 `docs/PROJECT_RECORD.md` 的 Substrate Gate 结果，再问：
 

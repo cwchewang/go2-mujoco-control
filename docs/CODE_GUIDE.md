@@ -28,7 +28,7 @@ legacy controller remains under `example/cpp`.
 
 | Task | Start here |
 |---|---|
-| Read current Phase 2 route/status | `CURRENT.md`, then `AGENTS.md` and `docs/research/PHASE2_ACCEPTANCE.md` |
+| Read current route/status | `CURRENT.md`, its active task, then `docs/OPERATING_GUIDE.md`; `docs/research/PHASE2_ACCEPTANCE.md` is a historical contract |
 | Understand the runtime/control data flow | `docs/ARCHITECTURE.md` |
 | Build or run the C++ stack | `example/cpp/README.md` |
 | Change command-line configuration | `example/cpp/trot/trot_cli.*` |

@@ -7,8 +7,9 @@ is retained as a traceable legacy baseline. This is a research fork of
 
 Start with [CURRENT.md](CURRENT.md) for the exact branch, task and evidence.
 [PROJECT_RECORD](docs/PROJECT_RECORD.md) owns scientific status; the
-[SOP](docs/research/SOP.md) owns execution rules. The present boundary is before
-formal experiments: engineering admission does not certify locomotion or Gate 0.
+[SOP](docs/research/SOP.md) owns execution rules. For manual work or a new agent,
+use the [project operating guide](docs/OPERATING_GUIDE.md). Engineering admission
+does not certify locomotion or Gate 0; CURRENT owns the present work boundary.
 
 ## Development
 
@@ -33,8 +34,9 @@ For complete native engineering qualification after runtime/bootstrap setup:
 
 Use a new output every time. Qualification holds the experiment lock internally.
 Setup and zero-step preparation: [substrate guide](tools/substrate/README.md).
-Formal capture is separate; the [first-capture protocol](docs/research/SUBSTRATE_FIRST_CAPTURE.md)
-fixes its inputs, budget and stopping rules.
+Formal capture is separate and follows the active task's authorization. The
+[first-capture protocol](docs/research/SUBSTRATE_FIRST_CAPTURE.md) is a closed
+historical campaign, not a runnable next-task template.
 
 ## Repository map
 

@@ -10,6 +10,7 @@ A historical protocol applies only when the active task adopts it explicitly.
 
 | Need | Entry |
 |---|---|
+| Human/agent onboarding, decisions and handoff | [Operating guide](OPERATING_GUIDE.md) / [short task template](research/TASK_TEMPLATE.md) |
 | Build, isolate dependencies, qualify and verify | [Substrate guide](../tools/substrate/README.md) |
 | Frozen first-capture definitions and stop boundary | [First capture](research/SUBSTRATE_FIRST_CAPTURE.md) |
 | Runtime and evidence data flow | [Architecture](ARCHITECTURE.md) |

@@ -4,6 +4,9 @@ Read [AGENTS.md](AGENTS.md), [PROJECT_RECORD](docs/PROJECT_RECORD.md) and
 [CURRENT.md](CURRENT.md) first. Scientific state, active execution and code
 navigation have different owners; old experiments cannot override the active
 task and [SOP](docs/research/SOP.md).
+The [operating guide](docs/OPERATING_GUIDE.md) explains task sizing, decision
+ownership and handoff. Use its short template when a new bounded task is needed;
+do not create duplicate records for routine edits.
 
 ## Development
 

@@ -6,12 +6,20 @@ repository guardrails; it is not a scientific plan or current-status report.
 
 ## Research handoff
 
+Use [OPERATING_GUIDE](docs/OPERATING_GUIDE.md) to turn the current objective into
+a bounded task that a human or any model can execute. State the decision it
+serves before choosing a method, checkpoint, parameter or pass threshold.
+Upstream defaults are candidate choices, not validated research requirements.
+Do not silently invent missing scientific decisions; resolve the specific gap
+while continuing independent authorized work. Keep routine execution autonomous.
+
 Before choosing research direction, read `docs/PROJECT_RECORD.md` and then `docs/TOPIC_AUDIT.md`. They are the repo-native canonical scientific state and topic audit. `CURRENT.md` remains the canonical execution-frontier pointer. Chat history, Memory, screenshots, and old Library copies cannot override these repo records.
 
 ## Task discovery bootstrap
 
-Before accepting, declining, or executing any task from a local worktree, first
-refresh the remote source of truth:
+At session entry or when resuming a stale task, refresh the remote source of
+truth once. Repeat when new upstream work could affect the task, not before
+every small edit:
 
 1. run `git fetch origin --prune`;
 2. read `origin/main:CURRENT.md` (for example with
