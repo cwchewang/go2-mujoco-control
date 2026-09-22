@@ -192,6 +192,16 @@ class ReadinessFixtures(unittest.TestCase):
         self.assertTrue(result["pass"])
         self.assertFalse(any(x["name"].startswith("dds_") for x in result["checks"]))
 
+    def test_baseline_runner_declares_real_transport(self):
+        source = Path(__file__).resolve().parents[1] / "substrate/baseline.py"
+        (self.root / "runner.py").write_bytes(source.read_bytes())
+        self.git("add", ".")
+        self.git("commit", "-m", "actual baseline runner fixture")
+        self.head = self.git("rev-parse", "HEAD")
+        code, result = self.call("--transport", "inprocess", "--runner", "runner.py")
+        self.assertEqual(code, 0)
+        self.assertTrue(result["pass"])
+
     def test_inprocess_rejects_fictitious_dds_domain(self):
         self.inprocess_fixture()
         code, result = self.call(

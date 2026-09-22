@@ -1,10 +1,10 @@
 {
-  "branch": "main",
-  "title": "Project foundations and operator handoff",
-  "task": "docs/research/TASK_PROJECT_FOUNDATIONS_20260923.md",
-  "result": "docs/validation/project_foundations_20260923/RESULTS.md",
-  "stage": "foundations and operating guidance; concrete research and experiments on hold by user scope",
+  "branch": "research/rl-baseline-20260923",
+  "title": "Public RL source baseline",
+  "task": "docs/research/TASK_RL_BASELINE_20260923.md",
+  "result": "docs/validation/governance_diagnosis_20260922/RESULTS.md",
+  "stage": "source reproduction and controlled transfer; user-authorized research resumed",
   "scientific_status": "first flat campaign FAIL and sealed; full Gate 0 incomplete",
   "last_live_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
-  "next": "use the operating guide to define the next user-directed bounded task; do not select policies or launch experiments implicitly"
+  "next": "qualify and independently review rl-source-baseline-v1, then prepare and capture the ten predeclared cases"
 }

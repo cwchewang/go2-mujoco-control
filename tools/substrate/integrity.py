@@ -52,7 +52,7 @@ def experiment_lock(path=LOCK_PATH):
     with Path(path).open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         try:
-            yield
+            yield lock
         finally:
             fcntl.flock(lock, fcntl.LOCK_UN)
 

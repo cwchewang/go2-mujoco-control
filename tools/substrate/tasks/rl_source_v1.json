@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "branch": "research/rl-baseline-20260923",
+  "protocol": "tools/substrate/protocols/rl_source_v1.json",
+  "protocol_sha256": "62f241d3bf191f13d2a49c95e5430c8bc7122e1ff856db5793465775349e2585",
+  "diff_base": "81dec52dd3c83c6ffeae1f0f053dea4358eb80c4"
+}

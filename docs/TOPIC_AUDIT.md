@@ -8,8 +8,8 @@
 
 ## 0. [CURRENT | SNAPSHOT]
 
-2026-09-23 用户将当前工作限定为项目基础、规范和可交接推进方式建设。以下
-路线与候选账本保留为研究方向，不是当前执行清单；本轮不新增或晋级论文题。
+2026-09-23 项目基础建设完成后，用户恢复实际研究，优先建立可靠且能力明确的
+公开 RL 策略基线。以下候选账本保留；本轮不新增或晋级论文题。
 方法/权重先按任务需要确定其证据等级，不能把工程默认选项写成已选定最优方案。
 具体阶段和下一步跟随 PROJECT_RECORD 与 CURRENT。
 
@@ -156,8 +156,8 @@ DIAL 当前只做 challenger / diagnostic backend。
 结果见 `docs/validation/substrate_first_capture_20260922/RESULTS.md`。这是单次
 部署兼容性失败，尚未完成因果归因；不改变候选排序，也不能晋级为论文问题。
 保留轨迹与锁定部署语义的离线诊断已经完成，见
-[诊断结果](validation/governance_diagnosis_20260922/RESULTS.md)。当前按用户指令
-先做基础与推进方式建设，不在本轮继续实验或选题；下述审计问题留待研究恢复。
+[诊断结果](validation/governance_diagnosis_20260922/RESULTS.md)。当前按新任务
+推进源条件复现与受控测试；能力结果不足时，不把部署差异升级为选题。
 
 先读 `docs/PROJECT_RECORD.md` 的 Substrate Gate 结果，再问：
 
