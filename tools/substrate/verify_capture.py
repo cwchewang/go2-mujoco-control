@@ -27,9 +27,8 @@ def verify_capture(directory, prepared_directory, ledger_directory=None):
     from .readiness import validate_authorization, validate_review
 
     prepared["prepared_manifest_sha256"] = digest(prepared_directory / "manifest.json")
-    validate_authorization(
-        strict_json((directory / "authorization.json").read_text()), prepared
-    )
+    authorization = strict_json((directory / "authorization.json").read_text())
+    validate_authorization(authorization, prepared)
     validate_review(prepared["review"], prepared["head"])
     preflight = strict_json((directory / "preflight.json").read_text())
     if (
@@ -46,6 +45,8 @@ def verify_capture(directory, prepared_directory, ledger_directory=None):
     protocol = strict_json((directory / "protocol.json").read_text())
     if protocol != strict_json((prepared_directory / "protocol.json").read_text()):
         raise ValueError("capture protocol mismatch")
+    if authorization["max_attempts"] != protocol["max_attempts"]:
+        raise ValueError("authorization and protocol attempt budget differ")
     attempts = result["attempts"]
     if len(attempts) != protocol["max_attempts"]:
         raise ValueError("attempt budget mismatch")
@@ -53,12 +54,17 @@ def verify_capture(directory, prepared_directory, ledger_directory=None):
     recomputed = []
     reference_trace = None
     consumed = 0
+    expected = {"campaign.json": "campaign-claim.json"}
     for index, item in enumerate(attempts, 1):
         if item["index"] != index:
             raise ValueError("attempt order mismatch")
         raw = directory / ("attempt_%02d.jsonl" % index)
         if stopped:
-            if item["status"] != "NOT_RUN" or raw.exists():
+            if (
+                item["status"] != "NOT_RUN"
+                or raw.exists()
+                or (directory / ("attempt_%02d_claim.json" % index)).exists()
+            ):
                 raise ValueError("attempt exists after campaign stop")
             recomputed.append({"index": index, "status": "NOT_RUN"})
             continue
@@ -72,8 +78,12 @@ def verify_capture(directory, prepared_directory, ledger_directory=None):
                 claim["index"] != index
                 or claim["head"] != prepared["head"]
                 or claim["boundary"] != "first_post_handoff_state_control_sample"
+                or claim["raw"] != str(Path(campaign_claim["output"]) / raw.name)
             ):
                 raise ValueError("attempt claim mismatch")
+            expected["attempt_%02d.json" % index] = "attempt_%02d_claim.json" % index
+        elif (directory / ("attempt_%02d_claim.json" % index)).exists():
+            raise ValueError("unconsumed attempt has a claim")
         value = analyze(
             rows,
             protocol,
@@ -116,13 +126,12 @@ def verify_capture(directory, prepared_directory, ledger_directory=None):
     if type(result["live_runs"]) is not int or result["live_runs"] != consumed:
         raise ValueError("consumed attempt count mismatch")
     ledger_verified = False
+    if {p.name for p in directory.glob("attempt_*_claim.json")} != set(
+        expected.values()
+    ) - {"campaign-claim.json"}:
+        raise ValueError("capture claim file set differs from consumed attempts")
     if ledger_directory is not None:
         ledger = Path(ledger_directory)
-        expected = {"campaign.json": "campaign-claim.json"}
-        for item in attempts:
-            name = "attempt_%02d_claim.json" % item["index"]
-            if (directory / name).exists():
-                expected["attempt_%02d.json" % item["index"]] = name
         if (
             not ledger.is_dir()
             or ledger.is_symlink()

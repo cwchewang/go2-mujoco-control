@@ -36,8 +36,12 @@ def load_task(path, root=ROOT):
         capture_output=True,
     )
     protocol = (root / value["protocol"]).resolve()
-    if not protocol.is_relative_to(root) or not protocol.is_file():
-        raise ValueError("protocol must be inside repository")
+    if (
+        not protocol.is_relative_to(root / "tools/substrate/protocols")
+        or protocol.suffix != ".json"
+        or not protocol.is_file()
+    ):
+        raise ValueError("protocol must belong to qualified protocol directory")
     subprocess.run(
         ["git", "ls-files", "--error-unmatch", protocol.relative_to(root).as_posix()],
         cwd=root,
@@ -46,6 +50,9 @@ def load_task(path, root=ROOT):
     )
     if digest(protocol) != value["protocol_sha256"]:
         raise ValueError("task protocol hash mismatch")
+    budget = strict_json(protocol.read_text()).get("max_attempts")
+    if type(budget) is not int or budget < 1:
+        raise ValueError("protocol requires positive integer attempt budget")
     if not isinstance(value["diff_base"], str) or not re.fullmatch(
         r"[0-9a-f]{40}", value["diff_base"]
     ):

@@ -1,0 +1,678 @@
+{
+  "capture_head": "09a9a31e2ab6eefcd4d3193107e8e17dad642129",
+  "capture_initial_qpos": [
+    0.0,
+    0.0,
+    0.27,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.9,
+    -1.8,
+    0.0,
+    0.9,
+    -1.8,
+    0.0,
+    0.9,
+    -1.8,
+    0.0,
+    0.9,
+    -1.8
+  ],
+  "causal_scope": "Fixed observed states only; model/startup/command-domain differences are candidates, not isolated closed-loop causes.",
+  "contact_reconstruction_mismatches": 0,
+  "current_mass_kg": 15.206408,
+  "model_joint_parameters": {
+    "FL_calf_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -45.43,
+          45.43
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -35.55,
+          35.55
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      }
+    },
+    "FL_hip_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      }
+    },
+    "FL_thigh_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.5708,
+          3.4907
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.5708,
+          3.4907
+        ]
+      }
+    },
+    "FR_calf_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -45.43,
+          45.43
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -35.55,
+          35.55
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      }
+    },
+    "FR_hip_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      }
+    },
+    "FR_thigh_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.5708,
+          3.4907
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.5708,
+          3.4907
+        ]
+      }
+    },
+    "RL_calf_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -45.43,
+          45.43
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -35.55,
+          35.55
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      }
+    },
+    "RL_hip_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      }
+    },
+    "RL_thigh_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -0.5236,
+          4.5379
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -0.5236,
+          4.5379
+        ]
+      }
+    },
+    "RR_calf_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -45.43,
+          45.43
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -35.55,
+          35.55
+        ],
+        "joint_range": [
+          -2.7227,
+          -0.83776
+        ]
+      }
+    },
+    "RR_hip_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -1.0472,
+          1.0472
+        ]
+      }
+    },
+    "RR_thigh_joint": {
+      "current": {
+        "armature": 0.01,
+        "ctrlrange": [
+          -40.0,
+          40.0
+        ],
+        "damping": 0.1,
+        "frictionloss": 0.2,
+        "joint_force_limited": 0,
+        "joint_force_range": [
+          0.0,
+          0.0
+        ],
+        "joint_range": [
+          -0.5236,
+          4.5379
+        ]
+      },
+      "upstream": {
+        "armature": 0.01,
+        "ctrlrange": [
+          0.0,
+          0.0
+        ],
+        "damping": 0.001,
+        "frictionloss": 0.1,
+        "joint_force_limited": 1,
+        "joint_force_range": [
+          -23.7,
+          23.7
+        ],
+        "joint_range": [
+          -0.5236,
+          4.5379
+        ]
+      }
+    }
+  },
+  "new_scientific_attempts": 0,
+  "phase_descriptions": [
+    {
+      "four_foot_support_fraction": 0.986,
+      "mean_vx": 0.007252886995402107,
+      "ticks": [
+        0,
+        499
+      ]
+    },
+    {
+      "four_foot_support_fraction": 0.974,
+      "mean_vx": 0.04709738595704812,
+      "ticks": [
+        500,
+        999
+      ]
+    },
+    {
+      "four_foot_support_fraction": 0.5653333333333334,
+      "mean_vx": 0.0322342086613593,
+      "ticks": [
+        1000,
+        2499
+      ]
+    },
+    {
+      "four_foot_support_fraction": 0.6365453818472611,
+      "mean_vx": 0.04259720292106014,
+      "ticks": [
+        2500,
+        5000
+      ]
+    }
+  ],
+  "physics_steps": 0,
+  "policy_frames": 500,
+  "policy_interface_maximum_errors": {
+    "observation_abs": 0.0,
+    "pd_vs_record_abs": 0.0,
+    "target_vs_record_abs": 0.0,
+    "target_vs_upstream_abs": 0.0
+  },
+  "recorded_control_rms_nm": 3.6916219573118045,
+  "same_state_extra_damping_rms_nm": 0.03537244429673646,
+  "same_state_passive_torque_difference_rms_nm": 0.03537244429673646,
+  "support_frame_counts": {
+    "FL": 4934,
+    "FR": 4918,
+    "RL": 3756,
+    "RR": 4685
+  },
+  "upstream_commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+  "upstream_configuration": {
+    "action_scale": 0.25,
+    "ang_vel_scale": 0.25,
+    "cmd_init": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "cmd_scale": [
+      2.0,
+      2.0,
+      0.25
+    ],
+    "control_decimation": 10,
+    "default_angles": [
+      0.1,
+      0.8,
+      -1.5,
+      -0.1,
+      0.8,
+      -1.5,
+      0.1,
+      1.0,
+      -1.5,
+      -0.1,
+      1.0,
+      -1.5
+    ],
+    "dof_pos_scale": 1.0,
+    "dof_vel_scale": 0.05,
+    "kds": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "kps": [
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0,
+      20.0
+    ],
+    "lin_vel_scale": 2.0,
+    "max_cmd": [
+      2.0,
+      1.0,
+      2.5
+    ],
+    "model_joint_names": [
+      "FL_hip_joint",
+      "FL_thigh_joint",
+      "FL_calf_joint",
+      "FR_hip_joint",
+      "FR_thigh_joint",
+      "FR_calf_joint",
+      "RL_hip_joint",
+      "RL_thigh_joint",
+      "RL_calf_joint",
+      "RR_hip_joint",
+      "RR_thigh_joint",
+      "RR_calf_joint"
+    ],
+    "mujoco_joint_names": [
+      "FL_hip_joint",
+      "FL_thigh_joint",
+      "FL_calf_joint",
+      "FR_hip_joint",
+      "FR_thigh_joint",
+      "FR_calf_joint",
+      "RL_hip_joint",
+      "RL_thigh_joint",
+      "RL_calf_joint",
+      "RR_hip_joint",
+      "RR_thigh_joint",
+      "RR_calf_joint"
+    ],
+    "num_actions": 12,
+    "num_obs": 45,
+    "policy_path": "{LEGGED_GYM_ROOT_DIR}/deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt",
+    "simulation_dt": 0.002,
+    "simulation_duration": 60000000.0,
+    "xml_path": "{LEGGED_GYM_ROOT_DIR}/resources/robots/go2/cross_stairs.xml"
+  },
+  "upstream_initial_qpos": [
+    0.0,
+    0.0,
+    0.445,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "upstream_mass_kg": 15.206408000000003,
+  "verification": {
+    "attempts": [
+      {
+        "index": 1,
+        "status": "FAIL"
+      },
+      {
+        "index": 2,
+        "status": "NOT_RUN"
+      },
+      {
+        "index": 3,
+        "status": "NOT_RUN"
+      }
+    ],
+    "capability_status": "FAIL",
+    "external_ledger_verified": true,
+    "status": "VERIFIED"
+  }
+}

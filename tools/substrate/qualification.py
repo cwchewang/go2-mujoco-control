@@ -6,6 +6,9 @@ import json
 import subprocess
 import sys
 import re
+import shlex
+import shutil
+from tools.check_quality import source_paths
 
 from .integrity import digest, verify_bundle
 from .environment import verify_environment
@@ -31,19 +34,57 @@ def tracked_inputs(root=ROOT):
         .decode()
         .split("\0")
     )
-    prefixes = ("tools/", "example/cpp/", "simulate/", "unitree_robots/")
+    quality_sources = set(source_paths(root))
     return {
         name: digest(root / name)
         for name in sorted(names)
         if name
-        and (name.startswith(prefixes) or name == "pyproject.toml")
+        and (not name.startswith("docs/") or name in quality_sources)
         and not name.startswith(("tools/substrate/tasks/", "example/cpp/experiments/"))
         and Path(name).suffix.lower() not in (".md", ".rst")
         and (root / name).is_file()
     }
 
 
-def current_inputs():
+def controller_inputs(build):
+    """Bind actual CMake products, compiler inputs and resolved link dependencies."""
+    files = set()
+    depfiles = list(build.rglob("*.o.d"))
+    if not depfiles or not (build / "CMakeCache.txt").is_file():
+        raise ValueError("controller build dependencies missing")
+    for depfile in depfiles:
+        content = depfile.read_text().replace("\\\n", " ")
+        for name in shlex.split(content.split(":", 1)[1]):
+            path = Path(name)
+            files.add((path if path.is_absolute() else build / path).resolve())
+    for path in build.rglob("*"):
+        if path.is_file() and (
+            path.name
+            in ("CMakeCache.txt", "flags.make", "link.txt", "CTestTestfile.cmake")
+            or path.suffix in (".a", ".so")
+            or (path.parent == build and path.read_bytes()[:4] == b"\x7fELF")
+        ):
+            files.add(path.resolve())
+            if path.name == "link.txt":
+                for name in shlex.split(path.read_text()):
+                    item = Path(name)
+                    if item.is_absolute() and item.is_file():
+                        files.add(item.resolve())
+            if path.read_bytes()[:4] == b"\x7fELF":
+                result = subprocess.run(
+                    ["ldd", str(path)], capture_output=True, text=True
+                )
+                for name in re.findall(r"(?:=>\s*)?(/[^\s]+)", result.stdout):
+                    files.add(Path(name).resolve())
+    for command in ("c++", "cc", "cmake", "ctest", "make"):
+        found = shutil.which(command)
+        if found is None:
+            raise ValueError("controller tool missing: " + command)
+        files.add(Path(found).resolve())
+    return {str(path): digest(path) for path in sorted(files)}
+
+
+def current_inputs(include_controller=True):
     binary = ROOT / ".substrate/headless-reliable/go2_mjpc_admit"
     libraries = {}
     for executable in (binary, Path(sys.executable).resolve()):
@@ -69,6 +110,11 @@ def current_inputs():
         "native_binary_sha256": digest(binary),
         "linked_libraries": libraries,
         "cpu_identity": cpu,
+        "controller_build": (
+            controller_inputs(ROOT / ".substrate/controller-reliable")
+            if include_controller
+            else None
+        ),
     }
 
 
@@ -100,6 +146,14 @@ def validate(directory):
     directory = Path(directory).resolve()
     record = verify_bundle(directory)
     validate_record(record, current_inputs())
+    # Prose does not invalidate expensive tests, but its current hygiene still matters.
+    subprocess.run(
+        [sys.executable, "-m", "tools.check_quality"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        timeout=120,
+    )
     for name in REQUIRED_CHECKS:
         for suffix in ("stdout", "stderr"):
             if not (directory / f"{name}.{suffix}").is_file():

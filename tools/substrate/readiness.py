@@ -31,8 +31,10 @@ def validate_authorization(value, prepared):
         "head": prepared["head"],
         "protocol_sha256": prepared["protocol_sha256"],
         "prepared_manifest_sha256": prepared["prepared_manifest_sha256"],
-        "max_attempts": 3,
+        "max_attempts": prepared.get("max_attempts", 3),
     }
+    if type(expected["max_attempts"]) is not int or expected["max_attempts"] < 1:
+        raise ValueError("invalid attempt budget")
     if not isinstance(value, dict) or any(
         type(value.get(k)) is not type(v) or value[k] != v for k, v in expected.items()
     ):

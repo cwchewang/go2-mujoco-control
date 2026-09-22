@@ -34,7 +34,8 @@ def main():
             if before and not args.development:
                 raise ValueError("final qualification requires a clean worktree")
             source_before = source_manifest()
-            qualification_inputs = current_inputs()
+            input_before = current_inputs(include_controller=False)
+            qualification_inputs = None
             diff_before = subprocess.check_output(
                 ["git", "diff", "--binary", "HEAD"], cwd=ROOT
             )
@@ -109,6 +110,14 @@ def main():
                 run.result["qualification_checks"][name] = run_logged(
                     argv, run.path, name, timeout, ROOT
                 )
+                if name == "controller_build":
+                    qualification_inputs = current_inputs()
+                    if any(
+                        input_before[key] != qualification_inputs[key]
+                        for key in input_before
+                        if key != "controller_build"
+                    ):
+                        raise ValueError("qualification inputs changed during build")
             admit(
                 run,
                 ROOT / ".substrate/rl/policy.pt",

@@ -184,6 +184,7 @@ def prepare(directory, review_path, qualification_path, task_path=DEFAULT_TASK):
                     "source_files": sources,
                     "runtime": runtime,
                     "protocol_sha256": digest(protocol_path),
+                    "max_attempts": protocol["max_attempts"],
                     "task": task,
                     "qualification_reference": qualification,
                     "checkpoint_sha256": expected,
@@ -237,6 +238,8 @@ def capture(prepared_dir, authorization_path, output):
         verify_environment()
         setup_runtime()
         protocol = strict_json(protocol_path.read_text())
+        if authorization["max_attempts"] != protocol["max_attempts"]:
+            raise ValueError("authorization and protocol attempt budget differ")
         if (
             digest(CHECKPOINT) != prepared["checkpoint_sha256"]
             or dependency_manifest(ROOT / protocol["scene"], ROOT) != prepared["model"]

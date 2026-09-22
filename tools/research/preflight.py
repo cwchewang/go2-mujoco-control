@@ -242,15 +242,7 @@ def infer_changed_surfaces(paths: list[str]) -> set[str]:
                 out.add("analyzer")
             elif name == "launch.py":
                 out.update(("runner", "runtime"))
-            elif Path(p).suffix in (
-                ".py",
-                ".cc",
-                ".h",
-                ".txt",
-                ".json",
-                ".in",
-                ".lock",
-            ):
+            elif Path(p).suffix.lower() not in (".md", ".rst"):
                 out.add("runtime")
         if (
             p.startswith("tools/research/")
