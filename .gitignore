@@ -67,3 +67,7 @@ example/cpp/experiments/go2_reactive_transition_matrix_final_2026-08-20/runner_l
 # Automatic environment-sensing raw runs are local/evidence artifacts; keep
 # large CSV/log outputs out of the repository.
 example/cpp/experiments/go2_auto_environment_*/
+
+# Reproducible local substrate dependencies (pins remain tracked)
+.substrate/
+/_runs/

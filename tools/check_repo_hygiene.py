@@ -22,7 +22,7 @@ FORBIDDEN_NAMES = {
     "CTestTestfile.cmake",
 }
 FORBIDDEN_PREFIXES = ("._",)
-FORBIDDEN_TRACKED_PREFIXES = ("example/cpp/experiments/_runs/",)
+FORBIDDEN_TRACKED_PREFIXES = ("example/cpp/experiments/_runs/", "_runs/", ".substrate/")
 # `.obj` is intentionally allowed: Unitree robot/scene meshes are source assets.
 FORBIDDEN_SUFFIXES = (
     ".o",

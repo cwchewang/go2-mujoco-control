@@ -1,0 +1,4 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/che/dev/go2-workspace/current/.substrate/headless-build
+ninja: no work to do.

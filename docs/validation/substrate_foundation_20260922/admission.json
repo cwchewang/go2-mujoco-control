@@ -1,0 +1,720 @@
+{
+  "scope": "offline_engineering_admission",
+  "live_runs": 0,
+  "capability_status": "NOT_RUN",
+  "status": "ENGINEERING_ADMITTED",
+  "errors": [],
+  "runtime": {
+    "python": "3.10.12",
+    "mujoco": "3.3.6",
+    "torch": "2.6.0+cpu",
+    "numpy": "2.2.6"
+  },
+  "git_head": "02caf95b120bba07ae67a9e7b440194fb0ac8ddb",
+  "working_tree_patch_sha256": "419de8ed6cc037285d4dbcf4e8d8735b46d642126721ac0736b54fc144e8c5d1",
+  "source_files": {
+    "tools/substrate/__init__.py": "21d11ab6c567e3c2047880b40932a104ecf6a62f34a0f5f0a0c72f70875c28da",
+    "tools/substrate/admit.py": "069d7a8cd80a6e9f9f3a31cc30016424c506db9000b2a19a0ca39125efe0808f",
+    "tools/substrate/bootstrap.py": "07d58bbf6324da98f7a26c17dcfd6bbee7310ceef83f76483594b759bea0f8ef",
+    "tools/substrate/contracts.py": "2601a6a6d4fb45eed4c852890ad8466f0c81b5c40398eb789dd2d0dd9ae5de23",
+    "tools/substrate/evidence.py": "9b33745a95334f545e050e90c250cf31f1c5e05ad90c6c8b1d9c53ad294625cb",
+    "tools/substrate/model.py": "38a59a252783baf927c81945655af75146853806c35ba8f1d8a933edcd9f5792",
+    "tools/substrate/native/CMakeLists.txt": "bc676f77a72fb69226340f7e4d12845a970acfcee61644570b8453c04a997304",
+    "tools/substrate/native/admit.cc": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+    "tools/substrate/rl.py": "d05e2b535f55108d9b18fe13df49efbeabce386886f2ad119cb0fcba5821301a",
+    "tools/substrate/sources.lock.json": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+    "tools/substrate/test_native_boundary.py": "40477510795bfe86bbe6c26324fa9044e811968c20628aeec3c2adf621b44b0a",
+    "tools/substrate/test_substrate.py": "dace5f4e061962429a46684e5f65bac0fcc77ef57f7eb71b90d94019f8ab5d55"
+  },
+  "mjpc_source_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+  "mjpc_binary_sha256": "cd86cbf984ed07c9a2dce866bc1115c9a8d527a73a7e032c07b8d907c696b4dd",
+  "mujoco_libraries": {
+    "native": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495",
+    "python": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495"
+  },
+  "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "models": {
+    "phase2_flat": {
+      "closure": {
+        "files": {
+          "unitree_robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+          "unitree_robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+          "unitree_robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+          "unitree_robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+          "unitree_robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+          "unitree_robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+          "unitree_robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+          "unitree_robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+          "unitree_robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+          "unitree_robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+          "unitree_robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+          "unitree_robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+          "unitree_robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+          "unitree_robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+          "unitree_robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+          "unitree_robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+          "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+          "unitree_robots/go2/phase2_flat.xml": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e"
+        },
+        "sha256": "4dcb8a1df2472ba8730861c7b09829a52df1a8f6f8205e0bb110028ef1770406"
+      },
+      "physical_sha256": "6a0ed8b61132050e78dd75072bb8ab8a0f1bf6ad124796b0443c47dc942903bb",
+      "joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "qpos_addresses": [
+        10,
+        11,
+        12,
+        7,
+        8,
+        9,
+        16,
+        17,
+        18,
+        13,
+        14,
+        15
+      ],
+      "dof_addresses": [
+        9,
+        10,
+        11,
+        6,
+        7,
+        8,
+        15,
+        16,
+        17,
+        12,
+        13,
+        14
+      ],
+      "actuator_range": [
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ]
+      ],
+      "timestep_s": 0.002
+    },
+    "phase2_step_5cm": {
+      "closure": {
+        "files": {
+          "unitree_robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+          "unitree_robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+          "unitree_robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+          "unitree_robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+          "unitree_robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+          "unitree_robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+          "unitree_robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+          "unitree_robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+          "unitree_robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+          "unitree_robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+          "unitree_robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+          "unitree_robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+          "unitree_robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+          "unitree_robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+          "unitree_robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+          "unitree_robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+          "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+          "unitree_robots/go2/phase2_step_5cm.xml": "ab2106afe65c86827aae02158e3b35b5ebb61e2b14d3665ddbd7c971e7573b0e"
+        },
+        "sha256": "91c57685ed4923fd5a623d7585acee678230235c43f7f6db841a6359e7efc6bd"
+      },
+      "physical_sha256": "6db736ef5393f078dadb5e5ad161016c65a7564b52e76e2b0c7d22f05c580bc7",
+      "joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "qpos_addresses": [
+        10,
+        11,
+        12,
+        7,
+        8,
+        9,
+        16,
+        17,
+        18,
+        13,
+        14,
+        15
+      ],
+      "dof_addresses": [
+        9,
+        10,
+        11,
+        6,
+        7,
+        8,
+        15,
+        16,
+        17,
+        12,
+        13,
+        14
+      ],
+      "actuator_range": [
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ]
+      ],
+      "timestep_s": 0.002
+    },
+    "phase2_step_10cm": {
+      "closure": {
+        "files": {
+          "unitree_robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+          "unitree_robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+          "unitree_robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+          "unitree_robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+          "unitree_robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+          "unitree_robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+          "unitree_robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+          "unitree_robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+          "unitree_robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+          "unitree_robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+          "unitree_robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+          "unitree_robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+          "unitree_robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+          "unitree_robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+          "unitree_robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+          "unitree_robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+          "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+          "unitree_robots/go2/phase2_step_10cm.xml": "a7cca7c2d614b5ccf92ee5de686022a7999c11b2269d4c10fa0ed285a6080bc2"
+        },
+        "sha256": "61d9858423de511287f0467055ac328d0450f6ab2e41b0eb8df8ac6505705939"
+      },
+      "physical_sha256": "d47eca9fab8305a4647f7c77d8f75be93c9b33c9ebb2fc9ef1ceb66a91eed26d",
+      "joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "qpos_addresses": [
+        10,
+        11,
+        12,
+        7,
+        8,
+        9,
+        16,
+        17,
+        18,
+        13,
+        14,
+        15
+      ],
+      "dof_addresses": [
+        9,
+        10,
+        11,
+        6,
+        7,
+        8,
+        15,
+        16,
+        17,
+        12,
+        13,
+        14
+      ],
+      "actuator_range": [
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ]
+      ],
+      "timestep_s": 0.002
+    },
+    "phase2_repeated_steps": {
+      "closure": {
+        "files": {
+          "unitree_robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+          "unitree_robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+          "unitree_robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+          "unitree_robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+          "unitree_robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+          "unitree_robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+          "unitree_robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+          "unitree_robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+          "unitree_robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+          "unitree_robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+          "unitree_robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+          "unitree_robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+          "unitree_robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+          "unitree_robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+          "unitree_robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+          "unitree_robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+          "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+          "unitree_robots/go2/phase2_repeated_steps.xml": "07635f42395b5a5637da74829cd1a93d7ce257cd9d2b7056dc9a515e33fbd90a"
+        },
+        "sha256": "38db1be046f4833b19daf954b3cc4686541e9c75121865daa95a251a0cdf0725"
+      },
+      "physical_sha256": "ba3ee4170483c6794b97043df158ec5491c7069422ab6b6c06f17ae170e79e80",
+      "joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "qpos_addresses": [
+        10,
+        11,
+        12,
+        7,
+        8,
+        9,
+        16,
+        17,
+        18,
+        13,
+        14,
+        15
+      ],
+      "dof_addresses": [
+        9,
+        10,
+        11,
+        6,
+        7,
+        8,
+        15,
+        16,
+        17,
+        12,
+        13,
+        14
+      ],
+      "actuator_range": [
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ]
+      ],
+      "timestep_s": 0.002
+    }
+  },
+  "rl": {
+    "information_regime": "proprioceptive",
+    "frequency_hz": 50,
+    "reset_reproducible": true,
+    "position_target": [
+      0.11091344058513641,
+      0.6027562618255615,
+      -1.6447545289993286,
+      -0.09990997612476349,
+      0.5942661762237549,
+      -1.6869111061096191,
+      0.14771977066993713,
+      0.8788072466850281,
+      -1.6109919548034668,
+      -0.12309856712818146,
+      0.9860822558403015,
+      -1.5801090002059937
+    ],
+    "resolved_action": {
+      "feedforward": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pd": [
+        -1.9981995224952698,
+        -6.114676475524902,
+        2.261777877807618,
+        2.2182688117027283,
+        -5.9448747634887695,
+        3.1049094200134286,
+        -2.461971342563629,
+        1.7216451168060298,
+        4.397819995880128,
+        2.9543954133987427,
+        -0.4238550662994389,
+        3.780160903930665
+      ],
+      "total_unclipped": [
+        -1.9981995224952698,
+        -6.114676475524902,
+        2.261777877807618,
+        2.2182688117027283,
+        -5.9448747634887695,
+        3.1049094200134286,
+        -2.461971342563629,
+        1.7216451168060298,
+        4.397819995880128,
+        2.9543954133987427,
+        -0.4238550662994389,
+        3.780160903930665
+      ],
+      "ctrl": [
+        -1.9981995224952698,
+        -6.114676475524902,
+        2.261777877807618,
+        2.2182688117027283,
+        -5.9448747634887695,
+        3.1049094200134286,
+        -2.461971342563629,
+        1.7216451168060298,
+        4.397819995880128,
+        2.9543954133987427,
+        -0.4238550662994389,
+        3.780160903930665
+      ],
+      "saturated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "mjpc_physics_identical": true,
+  "mjpc": {
+    "backend": "MJPC iLQG",
+    "scope": "offline_static_state",
+    "mujoco": "3.3.6",
+    "planner": 2,
+    "plant_time_s": 0,
+    "initial_cost": 0.012825148116559385,
+    "rollout_failure": false,
+    "horizon_steps": 21,
+    "cost": 0.012825148116559378,
+    "finite_bounded": true,
+    "torque": [
+      7.592883425431127e-07,
+      -4.2773844421634076e-05,
+      9.996313617040177e-05,
+      -7.669246973160741e-07,
+      -4.277631854351887e-05,
+      9.996784425575084e-05,
+      5.131340560475466e-07,
+      -4.3178727939207534e-05,
+      0.00010076441822134932,
+      -5.206949918586759e-07,
+      -4.3181219482455145e-05,
+      0.00010076915524763163
+    ],
+    "wall_time_s": 0.8123002080101287,
+    "information_regime": "known_model_oracle",
+    "joint_names": [
+      "FR_hip_joint",
+      "FR_thigh_joint",
+      "FR_calf_joint",
+      "FL_hip_joint",
+      "FL_thigh_joint",
+      "FL_calf_joint",
+      "RR_hip_joint",
+      "RR_thigh_joint",
+      "RR_calf_joint",
+      "RL_hip_joint",
+      "RL_thigh_joint",
+      "RL_calf_joint"
+    ],
+    "resolved_action": {
+      "feedforward": [
+        7.592883425431127e-07,
+        -4.2773844421634076e-05,
+        9.996313617040177e-05,
+        -7.669246973160741e-07,
+        -4.277631854351887e-05,
+        9.996784425575084e-05,
+        5.131340560475466e-07,
+        -4.3178727939207534e-05,
+        0.00010076441822134932,
+        -5.206949918586759e-07,
+        -4.3181219482455145e-05,
+        0.00010076915524763163
+      ],
+      "pd": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "total_unclipped": [
+        7.592883425431127e-07,
+        -4.2773844421634076e-05,
+        9.996313617040177e-05,
+        -7.669246973160741e-07,
+        -4.277631854351887e-05,
+        9.996784425575084e-05,
+        5.131340560475466e-07,
+        -4.3178727939207534e-05,
+        0.00010076441822134932,
+        -5.206949918586759e-07,
+        -4.3181219482455145e-05,
+        0.00010076915524763163
+      ],
+      "ctrl": [
+        7.592883425431127e-07,
+        -4.2773844421634076e-05,
+        9.996313617040177e-05,
+        -7.669246973160741e-07,
+        -4.277631854351887e-05,
+        9.996784425575084e-05,
+        5.131340560475466e-07,
+        -4.3178727939207534e-05,
+        0.00010076441822134932,
+        -5.206949918586759e-07,
+        -4.3181219482455145e-05,
+        0.00010076915524763163
+      ],
+      "saturated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  }
+}

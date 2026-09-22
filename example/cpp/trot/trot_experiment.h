@@ -114,6 +114,14 @@ public:
     bool TestRunWallClockTick(const unitree_go::msg::dds_::LowState_ &state);
     bool TestRunLockstepTick(const unitree_go::msg::dds_::LowState_ &state);
     TestMotionClockSample TestLastMotionClockSample() const;
+    struct TestCleanCommandSample
+    {
+        double tau, dq, kp, kd;
+        bool feedforward_applied;
+    };
+    TestCleanCommandSample TestWriteCleanCommand(
+        bool previous_active, bool current_solver_ok,
+        bool current_mapping_ok, double current_torque);
 #endif
 
 private:

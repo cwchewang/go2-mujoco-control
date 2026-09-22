@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
 > **最后更新：2026-09-22**
-> **状态：ACTIVE / SUBSTRATE GATE 0 DESIGN**
+> **状态：ACTIVE / SUBSTRATE ENGINEERING FOUNDATION; GATE 0 CAPABILITY NOT_RUN**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -38,6 +38,21 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
+
+当前工程分支为 `research/substrate-foundation-20260922`，任务见
+`docs/research/TASK_SUBSTRATE_FOUNDATION_20260922.md`，结果见
+`docs/validation/substrate_foundation_20260922/RESULTS.md`。
+
+现有 clean 控制出口改为根据当前周期求解/映射结果决策；增加失败、恢复、
+非有限/越界候选测试。DDS 清理测试采用隔离 proc fixture，生产 fail-closed
+检查不变。旧 sealed evidence 不变；新二进制尚无行走验收。
+
+`tools/substrate/` 新增命名关节/观测/动作边界、源锁定、模型资产闭包与物理
+指纹、真实 public RL 推理、原生 MJPC iLQG 静态求解准入，以及原始证据输出。
+两者共同使用现有 MuJoCo 3.3.6 模型与力矩出口，但信息条件不同，不能据此做
+公平能力对比。工程准入不是 Gate 0；正式闭环 runner、验收阈值及预算仍待冻结。
 
 ## 2. [2026-09-17 | VERIFIED / LEGACY] Sealed flat baseline
 

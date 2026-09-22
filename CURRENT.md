@@ -1,19 +1,22 @@
-# Go2 repository bootstrap
+# Go2 current research frontier
 
-`main` is the stable code line and long-term route. The active research
-frontier may live on a separate `research/*` branch and is not implied by
-the code or history on `main`.
-
-This file is the only maintained repository-level frontier pointer. It is not
-a scientific plan. The active task owns the research question and design; the
-canonical execution rules live in [`docs/research/SOP.md`](docs/research/SOP.md).
+`main` remains the stable code line and long-term route.
 
 ## Active research frontier
 
-Update only this block when the frontier changes. The dated branch/task below
-are a pointer value, not a permanent architecture decision.
+Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) and [TOPIC_AUDIT](docs/TOPIC_AUDIT.md)
+for scientific context; the [SOP](docs/research/SOP.md) governs evidence.
 
-- Branch: [`research/canonical-clean-baseline-integration-20260917`](https://github.com/kairoi-k/go2-mujoco-control/tree/research/canonical-clean-baseline-integration-20260917)
-- Branch navigation: [`CURRENT.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/CURRENT.md)
-- Task: [`TASK_CANONICAL_CLEAN_BASELINE_INTEGRATION_20260917.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/docs/research/TASK_CANONICAL_CLEAN_BASELINE_INTEGRATION_20260917.md)
-- Expected closeout: [`RESULTS.md`](https://github.com/kairoi-k/go2-mujoco-control/blob/research/canonical-clean-baseline-integration-20260917/docs/validation/canonical_clean_baseline_integration_20260917/RESULTS.md)
+- Branch: `research/substrate-foundation-20260922`
+- Task: [Substrate foundation](docs/research/TASK_SUBSTRATE_FOUNDATION_20260922.md)
+- Closeout: `docs/validation/substrate_foundation_20260922/RESULTS.md`
+- Current stage: engineering foundation and offline backend admission.
+- Scientific status: no Substrate Gate 0 locomotion/capability acceptance.
+
+The 2026-09-17 integration and flat repeats are sealed legacy references, not
+the current execution task. Existing v0 design lives at immutable reference
+`ed3896c3f4355d6409077d61b14d6dc743d6655f`; it is not a live-run authorization.
+
+This branch-local pointer is proposed for main through the foundation PR.
+Until merged, main's old integration pointer is superseded for this user-
+authorized task only; preserve other tasks and raw evidence.

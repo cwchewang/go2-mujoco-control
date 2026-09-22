@@ -20,6 +20,10 @@ jobs:
         run: |
           find . -type f -name '*.py' -not -path './.git/*' -print0 |
             xargs -0 -r -n1 python3 -m py_compile
+      - name: Install substrate contract test dependency
+        run: python3 -m pip install numpy==2.2.6
+      - name: Run portable substrate contract tests
+        run: python3 -m unittest tools.substrate.test_substrate -v
       - name: Run Atlas dispatcher contract tests
         run: python3 -m unittest discover -s tools/tests -p 'test_atlas_*.py'
       - name: Run repository hygiene checker

@@ -507,6 +507,32 @@ void TrotExperiment::PublishLowCmdWithCrc()
 }
 
 #ifdef GO2_TROT_TESTING
+TrotExperiment::TestCleanCommandSample TrotExperiment::TestWriteCleanCommand(
+    bool previous_active, bool current_solver_ok,
+    bool current_mapping_ok, double current_torque)
+{
+    // No DDS initialization/publication: exercise the real command writer
+    // after a synthetic current-tick solver result, not a duplicate helper.
+    InitLowCmd();
+    task_.gait_started_ = true;
+    task_.motion_stage_ = 2;
+    task_.stop_requested_ = false;
+    task_.gait_start_time_s_ = 0.0;
+    running_time_ = 2.0;
+    wbc_shadow_diagnostics_.solver_ok = current_solver_ok;
+    wbc_shadow_diagnostics_.mapping_ok = current_mapping_ok;
+    for (auto &leg : wbc_shadow_candidate_torques_)
+        leg.fill(current_torque);
+    std::array<double, kMotorCount> velocities{};
+    velocities.fill(1.25);
+    std::array<double, kMotorCount> unused_feedforward{};
+    WriteMotorCommands(previous_active, 2.0, task_.stand_up_joint_pos_,
+                       velocities, unused_feedforward, false);
+    const auto &motor = low_cmd_.motor_cmd()[0];
+    return {motor.tau(), motor.dq(), motor.kp(), motor.kd(),
+            wbc_shadow_diagnostics_.feedforward_applied};
+}
+
 void TrotExperiment::TestPrepareMotionClock(std::uint32_t handoff_tick)
 {
     InitLowCmd();
@@ -1544,6 +1570,11 @@ void TrotExperiment::WriteMotorCommands(
     const std::array<double, go2_trot::kMotorCount> &wbc_torque_ff,
     bool apply_wbc_torque_ff)
 {
+    // The earlier active value precedes this tick's WBC update. Clean
+    // commands must use the current solver/mapping/candidate, including the
+    // first accepted tick and the first rejected tick. Legacy stays unchanged.
+    if (params_.clean_baseline)
+        wbc_primary_active = ComputeWbcPrimaryActive(gait_elapsed_s);
     if (params_.clean_baseline && !wbc_primary_active)
     {
         // Clean mode fails closed on target/WBC failure.  Holding the
@@ -1578,9 +1609,10 @@ void TrotExperiment::WriteMotorCommands(
             0.0, 1.0);
     if (params_.clean_baseline)
     {
-        // Clean mode has one post-QP operation only: the documented final
-        // ramp/absolute motor safety envelope.  No force or Cartesian torque
-        // overlay is allowed between the accepted ID-WBC torque and LowCmd.
+        // This envelope bounds LowCmd.tau (feedforward), not total plant
+        // torque. The bridge adds the explicit kp/kd impedance terms below;
+        // MuJoCo then applies its actuator limits. No legacy force/Cartesian
+        // overlay is allowed between accepted ID-WBC torque and LowCmd.tau.
         for (int i = 0; i < kMotorCount; ++i)
         {
             low_cmd_.motor_cmd()[i].q() = joint_targets[i];
