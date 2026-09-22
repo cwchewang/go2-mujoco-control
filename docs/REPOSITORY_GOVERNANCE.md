@@ -1,49 +1,68 @@
 # Repository governance
 
-## Source of truth
+These are ownership and lifecycle rules. Use [OPERATING_GUIDE](OPERATING_GUIDE.md)
+for planning/handoff and [SOP](research/SOP.md) for scientific execution.
 
-Root [`CURRENT.md`](../CURRENT.md) is the sole route/status authority for the
-active Phase 2 research line. The repository rules below remain general
-governance and cannot supersede that route.
+## One owner for each kind of truth
 
-| Scope | Canonical repository | Boundary |
-|---|---|---|
-| Model-based MuJoCo Go2 control | `kairoi-k/go2-mujoco-control` | C++ controller, simulator integration, MuJoCo scenes, and model-based evidence |
-| Isaac Lab velocity RL | `kairoi-k/go2-isaaclab-rl` | RL environments, training, checkpoints, and RL evidence |
-| Kine2Go / AMP imitation | `kairoi-k/kine2go-research` | Imitation, AMP, seam JSON, and imitation evidence |
-| Historical development | `*-dev` repositories | Read-only provenance only; no new feature work |
+| Question | Authority |
+|---|---|
+| What work is authorized now? | Current user instruction and active task; [CURRENT](../CURRENT.md) locates that task |
+| What is the project for; what is established? | [PROJECT_RECORD](PROJECT_RECORD.md) |
+| Why pursue or reject a topic? | [TOPIC_AUDIT](TOPIC_AUDIT.md) |
+| How do experiments execute and retain evidence? | [SOP](research/SOP.md) and the task's frozen protocol |
+| How do code changes get validated? | [CONTRIBUTING](../CONTRIBUTING.md) and module guides |
+| What happened in a run? | Immutable raw, source/protocol identity and verified result |
 
-Do not vendor or merge the RL or imitation tracks into the model-control repository. A claim is canonical only when its code revision, protocol, acceptance semantics, and evidence are recorded in the owning repository.
+docs/research/current.json owns navigation. CURRENT and workspace START_HERE
+are generated views. A new user instruction can narrow the scope; update the
+navigation instead of continuing a stale next-action list. History is context,
+not new authorization. Do not duplicate authoritative state in convenience pages.
 
-## Branch lifecycle
+## Repository scope
 
-- `main` is the canonical integrated line. It is changed through reviewed pull requests only.
-- Named feature, experiment, and maintenance branches start from an explicitly recorded base SHA and have one task owner.
-- Accepted milestones use an immutable annotated `milestone/` tag. A milestone tag records the source branch, exact SHA, evidence document, and simulation/hardware boundary.
-- Research in progress uses `review/` or `wip/` naming and an immutable `wip/` tag when the snapshot must remain recoverable. WIP is never presented as accepted delivery.
-- Recovery or superseded work uses an `archive/` tag and remains unmerged until semantic compatibility is reviewed.
-- Delete a remote working branch only after its current remote SHA is rechecked and is reachable from canonical `main` or an intentional immutable tag. Never delete a branch by wildcard.
+This repository owns the shared Go2/MuJoCo evaluation substrate, pluggable runtime
+adapters, task/evaluation definitions and source-bound evidence. Public RL
+adapters are within scope. Keep third-party training frameworks and downloaded
+checkpoints outside maintained source with pinned provenance and licenses;
+integrating an adapter does not require vendoring a whole training repository.
+The old fixed-gait Phase 2 stack is a retained baseline, not the current route.
+Historical multi-repository names do not establish current ownership; discover
+the actual remote and active task through AGENTS.
 
-## Accepted, WIP, and historical states
+## Branches and identity
 
-Accepted means the exact current code passed the protocol's unchanged analyzer and its evidence is indexed. WIP means the work is useful and recoverable but has not met acceptance. Historical means it is retained for provenance and must not be used as the current upper bound. Simulation results must state that they are simulation-only; they do not imply hardware performance, natural-animal gait, or sim-to-real transfer.
+main is the integrated line and changes through reviewed PRs with required CI.
+Use one owned branch per coherent task/campaign, not per replicate or prose edit.
+Record the base SHA and scope. Preserve divergence and other owners' work.
 
-## Tags and provenance
+Accepted milestone tags are annotated with source SHA, evidence and acceptance
+scope. Archive tags preserve exact completed branch tips without upgrading their
+scientific status. Existing lightweight archive tags remain valid identity
+anchors. Tags are immutable; never move them to repair a record. Remote archive
+tags are protected against update/deletion. Retire only owned completed branches
+after verifying their current remote tip and surviving main/tag reference;
+never delete historical branches by wildcard.
 
-Tags are annotated, immutable identity records. Never move or force-update a tag. Tag messages include source branch, exact SHA, status, relevant acceptance or archival document, and an explicit statement that the tag does not upgrade WIP to accepted status. A run record includes Git SHA, branch and dirty state, effective arguments, semantic environment, binary/scene hashes, analyzer identity, statuses, and artifact hashes where available.
+## Evidence and claims
 
-## Evidence storage
+Code merged, engineering admitted, experiment valid, task passed and causal claim
+supported are separate statements. Retain failed and incomplete evidence.
+Raw `_runs/`, builds, dependencies and checkpoints stay ignored; compact
+protocols/results and provenance belong in Git. Raw and sealed archives are
+immutable; generated archive indexes may be refreshed. The
+[workspace standard](governance/WORKSPACE_STANDARD.md) owns storage rules.
 
-Keep compact protocols, summaries, manifests, and acceptance records in Git. Keep raw `_runs/`, build directories, caches, temporary logs, and generated media ignored unless a documented delivery requires a specific retained artifact. Do not delete unique failure bundles, checkpoints, videos, or unpromoted research evidence during cleanup. Classify local artifacts before removal: disposable/reproducible, unique evidence, or unknown.
+For the legacy controller, configuration precedence is compiled defaults,
+versioned profile, then explicit CLI override; record semantic environment.
+Other backends declare effective configuration through their task and input
+manifest. There is no implicit permission to override a frozen protocol.
 
-## Configuration precedence
+## Proportional review
 
-The effective runtime configuration is resolved as:
-
-`compiled defaults < versioned profile < explicit CLI override`
-
-Semantic environment variables remain recorded during migration. A profile must identify its schema version, ordered controller arguments, and hash. Infrastructure changes must prove baseline equivalence and must not tune controller gains, control laws, physics, or acceptance thresholds.
-
-## Pull-request requirements
-
-Every PR states its base and source SHA, scope, research-semantic impact, exact commands, tests and acceptance results, evidence locations, and unresolved ambiguity. Governance/CI PRs must not change locomotion behavior. Integration PRs keep terrain WIP, recovery work, RL, and imitation boundaries explicit. Do not merge before the full diff and required checks have been reviewed. Hosted CI may run portable syntax, hygiene, and reference checks; it must not claim MuJoCo or Unitree integration without running that environment.
+PRs explain the concrete change, relevant validation and scientific impact.
+Prose-only work does not need experimental artifacts or full native qualification.
+Runtime and scientific changes follow SOP review rules. Review the diff and
+required checks before merging. Hosted portable CI does not certify native
+simulator integration or robot capability. Complete fields and hashes cannot
+substitute for a justified research decision.

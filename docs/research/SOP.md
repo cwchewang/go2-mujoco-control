@@ -1,8 +1,11 @@
-# Research Execution SOP v0.3
+# Research Execution SOP v0.4
 
 Applies prospectively. Sealed experiments retain their original protocol and
 interpretation. The normal path is task → applicable qualification → fresh
 preflight → authorized capture → verified closeout.
+The [operating guide](../OPERATING_GUIDE.md) covers goal alignment and handoff.
+Governance/prose tasks stop at their relevant documentation checks; the capture
+path below is only for tasks that actually require an experiment.
 
 ## Authority and roles
 
@@ -12,10 +15,19 @@ provide context, not new run permission. Science reviewer owns interpretation;
 an independent execution reviewer owns readiness and may veto unsafe or invalid
 execution. Roles are capabilities, not model brand names.
 
-A short task specifies mode (infrastructure, exploratory, confirmatory), parent,
-scientific delta, frozen variables, campaign budget, metrics, classifications,
-stop conditions, runner and raw root. Reference existing protocols rather than
-copying them. One branch per task/campaign; predeclared repeats share the branch.
+A short task states its purpose, mode, parent, scope and completion criteria.
+Experiments additionally specify scientific delta, frozen variables, budget,
+metrics, classifications, stop conditions, runner and raw root. Reference
+existing protocols rather than copying them. One branch per coherent task;
+predeclared repeats share the branch.
+
+Before scientific execution, the task must explain the decision served, why the
+chosen comparison/parameters fit that decision, and what each possible outcome
+changes. Defaults and unverified assumptions remain labelled as such. An
+engineering integration candidate is not automatically the chosen capability
+baseline. Check this substantive rationale during scientific review, not merely
+the presence of a protocol, hashes or complete fields. The short
+[task template](TASK_TEMPLATE.md) supplies these fields without another registry.
 
 ## Qualification and change review
 
@@ -88,7 +100,9 @@ to policy quality. Same robot name is not equal physics or equal task distributi
 
 ## Closeout and navigation
 
-Default tracked artifacts are RESULTS.md, analysis.json and provenance.csv.
+For experiments, the usual tracked artifacts are RESULTS.md, analysis.json and
+provenance.csv. Routine engineering and documentation work use only the records
+needed to support their actual claims; do not manufacture empty data artifacts.
 Archive source-bound raw evidence, including failed outcomes and the ledger,
 verify archive members, then regenerate the workspace catalog. Do not duplicate
 protocol text or state records across manually maintained status pages.

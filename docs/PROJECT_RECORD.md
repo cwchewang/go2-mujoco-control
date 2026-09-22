@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-09-22**
-> **状态：ACTIVE / FIRST FLAT DEPLOYMENT CAPTURE FAIL; FULL SUBSTRATE GATE 0 INCOMPLETE**
+> **最后更新：2026-09-23**
+> **状态：PROJECT FOUNDATIONS / NO NEW EXPERIMENTS; FIRST CAPTURE FAIL; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -18,7 +18,12 @@
 
 状态词：`CURRENT / VERIFIED / LEGACY BASELINE / HOLD / RE-AUDIT / SUPERSEDED / HISTORICAL`。
 
-## 1. [2026-09-22 | CURRENT | SNAPSHOT] 当前项目
+## 1. [2026-09-23 | CURRENT | SNAPSHOT] 当前项目
+
+用户当前要求先完善基础、规范和推进思路，使人工或 Luna 等执行者也能可靠接手；
+本阶段不深入具体策略、选型或实验。操作入口见 [项目推进指南](OPERATING_GUIDE.md)，
+当前任务与完成状态跟随 CURRENT.md。下述科研路线保留为方向，不构成本阶段
+实验待办或启动授权。
 
 项目以**研究为主**，老师任务是同一路线上的硬约束与早期交付；作品集价值是副产品。短期工程与长期科研不能拆成两条互不相干的线。
 
@@ -47,8 +52,8 @@ Challengers / baselines：
 原实验预算和 FAIL 均未改变。500 次策略输入及 5000 次 PD 控制与上游独立
 实现逐点一致，5001 帧接触重建一致。0.15 m/s 指令确有策略响应；低速奖励
 区分度、模型及启动条件差异仍是候选解释，不能从单条轨迹宣布单一根因。
-本轮没有新物理步进，也没有新增能力通过结论。下一阶段先冻结上游复现与
-受控移植对照方案，不继续已封存失败的 v1 campaign。
+该轮没有新物理步进，也没有新增能力通过结论。其提出的上游复现与受控移植
+方案留待恢复具体研究后决策；当前按用户指令先做项目基础，不继续已封存的 v1。
 
 工程准备分支 `research/substrate-prelaunch-20260922` 已通过 PR #139 合入主线
 `c5582af60b802b688e4e526845402deb33cf29cd`。其任务见
@@ -153,6 +158,11 @@ Challengers / baselines：
 ### RL baseline
 优先直接用公开 checkpoint，不从头训练。目标是建立 terrain capability ceiling / failure map，并防止把 learning policy 已轻松解决的问题当科研 gap。
 
+现已接入的 Gym checkpoint 是上游默认配置的工程参考候选，尚未通过原条件
+能力复现及横向比较选定为主基线。默认后端和已投入的工程成本不能替代科学
+选型依据。0.15 m/s 是历史局部兼容性协议的工程设定，没有被论证为全项目目标；
+今后参数先说明需求/来源/假设和对决策的作用，再定义验收。原 FAIL 不追溯改写。
+
 ### DIAL / MPPI
 只作为 challenger：判断 iLQR failure 是否来自 local gradient、nonsmooth contact 或 multimodality。先做小规模 throughput smoke，不承担默认 backend。
 
@@ -172,14 +182,12 @@ Gate 目的不是选“永远唯一 controller”，而是建立高天花板、�
 
 ## 7. [CURRENT | EXECUTION] Repo / host 状态边界
 
-GitHub main 最近已完成 Praxis dispatcher / runner / origin 基础设施修复，当前 main 最新可见提交为 `b1cec66f446c34e850c9caeeac82de52805a3889`（2026-09-22），这些不是新的科学 Gate 结果。
+实际工作区、branch/HEAD、dirty 状态和远端关系每次接手重新核验，命令见
+[项目推进指南](OPERATING_GUIDE.md)。本文件不维护会过期的“最新 main SHA”或
+机器工作分支快照；具体运行的历史 SHA 保留在对应结果中。
 
-最后一份项目状态记录曾指出：Atlas 从 `e01a3730...` 建立本地 `research/substrate-gate0-20260921` 作为 clean Gate 0 起点，且当时未推送远端。
-
-由于这是 host-local fact，**接手时必须重新用 Praxis / Git 核验，不得把它永久写成当前事实。**
-
-首轮正式平地 RL 移植验收已有 FAIL closeout，但完整 Substrate Gate 0 尚未完成；
-不能从基础设施 commit 或这一单次结果推断 MJPC/RL/DIAL 地形能力实验已完成。
+首轮正式平地 RL 移植验收已有 FAIL closeout，完整 Substrate Gate 0 尚未完成；
+基础设施合并或这一单次结果都不能代表 MJPC/RL/DIAL 地形能力已完成验证。
 
 ## 8. [CURRENT | TOPIC STATUS] 选题状态
 
@@ -196,18 +204,15 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-当前先对已封存的首轮轨迹做离线诊断：核对分段速度、姿态、触地、目标与
-PD 力矩，并比较锁定上游部署的初始化、观测缩放及关节映射。原 campaign
-已经停止，禁止补跑、放宽阈值或替换场景；后续 live 干预须另立前瞻任务。
-以下 Gate 0 路线保持待执行，不能跳过当前失败解释：
+当前优先建设可交接的项目工作方式：统一入口和权威来源，明确目标到任务的
+推导、选型/参数依据、按影响分级的检查、偏差处理和接手动作。完成与验收记录
+跟随 CURRENT。此前离线诊断已完成；不重新钻入具体策略，也不启动新实验。
 
-1. 用 Praxis 重新核验 Atlas canonical Go2 workspace / local research branch；
-2. 冻结 benchmark v0：terrain family、speed axis、success semantics、resource schema；
-3. MJPC build + flat smoke + task/cost modification smoke；
-4. RL checkpoint capability smoke；
-5. 只在需要时做 DIAL throughput / failure diagnosis；
-6. 形成 capability/failure map；
-7. Gate 0 后重新做 novelty landscape，只从仍稳定存在的 bottleneck 分叉论文题。
+后续具体研究任务需先说明它要支持的决策及与项目目标的关系；重大取舍依据
+不足时保持候选状态，不能由默认权重、旧参数或现有代码反推科研要求。任务
+明确后按 [短任务模板](research/TASK_TEMPLATE.md) 形成可执行边界；已有充分授权
+的小步骤自主完成，不为形式重复征求确认。第 6 节保留长期 Gate 路线，未排期
+部分不是当前执行清单。
 
 ## 10. [2026-09-22 | GOVERNANCE] Repo-native 项目记录
 
