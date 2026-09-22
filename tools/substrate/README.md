@@ -1,84 +1,122 @@
-# Go2 substrate engineering foundation
+# Go2 pre-experiment foundation
 
-This package admits real backend dependencies on the existing Go2 physical
-model. It is an offline engineering tool, not a locomotion controller or a
-Substrate Gate 0 capability verdict. The current admission runs no external
-plant timesteps, DDS pair, hardware, terrain sweep, or training.
+This is a source-bound offline engineering foundation, not a locomotion result.
+All commands below run in the canonical native WSL checkout. They do not launch
+a simulator/controller pair, hardware, training, or a terrain capability sweep.
 
-## Boundaries
+## Reproduce
 
-`contracts.py` owns named joints, proprioception, and the common action boundary.
-The model's actuator order is FR/FL/RR/RL; the published policy uses FL/FR/RL/RR.
-Joint position addresses are discovered by actuator transmission names. No
-backend may assume those two orders coincide.
-
-The shared action has feedforward, q/dq targets and declared kp/kd. Resolution
-records feedforward, PD, their sum, clipping, and applied motor ctrl separately.
-This model's hip/thigh limits are +/-40 Nm and calf limits +/-45.43 Nm. The
-legacy 35 Nm feedforward envelope is not a total-plant-torque limit.
-
-`rl.py` implements the pinned public CTS checkpoint's 45-dimensional input:
-body angular velocity, projected gravity, command, joint position deviation,
-joint velocity, previous action. Its declared regime is ideal simulated
-proprioception, without terrain access; inference is 50 Hz, kp=20, kd=0.5 and
-action scale=0.25. A reset reloads the exported module to reset internal history.
-The upstream deployment/configuration identities are in `sources.lock.json`.
-
-`native/admit.cc` uses unchanged upstream MJPC iLQG optimizer source, with a
-minimal custom static posture task and 21 prediction states at the model's
-2 ms timestep. It does not import the upstream Go2 actuator/model parameters.
-The task costs are engineering fixtures, not accepted locomotion objectives.
-Its information regime is `known_model_oracle`, distinct from the RL policy.
-Identical physics does not make these information budgets equivalent.
-
-The native build intentionally excludes upstream GUI/demo tasks, estimators,
-Menagerie and dm_control assets. It links the installed MuJoCo 3.3.6 library;
-admission requires its SHA-256 to match the Python MuJoCo library exactly.
-
-`model.py` hashes the registered local scene/include/mesh closure and compiled
-physical arrays/options. Task user-sensor decoration must preserve the physical
-fingerprint. The include/asset resolver is scoped to these local Go2 MJCFs;
-plugins, external URIs and arbitrary MJCF asset conventions are not supported.
-
-`evidence.py` preserves the first failure independently of the terminal reason,
-rejects duplicated/skipped/misaligned ticks, and distinguishes traverse from
-mandatory-support tasks. Its contract checker checks completeness only; it
-cannot authorize a capture. `capture.template.json` intentionally has unfrozen
-fields. No live capture command is exposed in this package.
-
-## Reproduce in the canonical native WSL worktree
-
-Prerequisites: Python 3.10+, CMake 3.20+, Ninja, GCC with C++20, git, the existing
-MuJoCo 3.3.6 native distribution. All source/checkpoint pins are tracked; large
-dependencies and builds stay in ignored `.substrate/`.
+Linux x86_64 / CPython 3.10, CMake 3.20+, Ninja, GCC with C++20, git, existing
+MuJoCo 3.3.6 native distribution, Unitree SDK and Eigen are required. The Python
+runtime is isolated from user/system site packages; all direct/transitive wheel
+versions and download hashes are locked in `requirements-linux-py310.lock`.
 
 ```sh
-python3 -m tools.substrate.bootstrap --install
-python3 -m tools.substrate.bootstrap --build
-flock -n /tmp/go2_mujoco_experiment.lock .substrate/venv/bin/python -m unittest tools.substrate.test_substrate tools.substrate.test_native_boundary -v
-.substrate/venv/bin/python -m tools.substrate.admit \
-  --output _runs/substrate_foundation_manual/admission_01 \
-  --checkpoint .substrate/rl/policy.pt \
-  --mjpc-binary .substrate/headless-build/go2_mjpc_admit
+python3 -m tools.substrate.bootstrap --install --build
+.substrate/venv-reliable/bin/python -m tools.substrate.qualify \
+  --output _runs/substrate_qualification/fresh_01
+.substrate/venv-reliable/bin/python -m tools.substrate.verify \
+  _runs/substrate_qualification/fresh_01
 ```
 
-Choose a new output directory for each engineering invocation. Existing output
-is rejected; failed directories are preserved. Admission holds the shared lock
-itself, records source hashes, source diff, dependency versions/library hashes,
-model closure, action decomposition, native stdout/stderr and a file manifest.
-Do not nest admission inside another holder of the shared flock.
+Every output must be new. Qualify holds `/tmp/go2_mujoco_experiment.lock` for the
+whole process, rebuilds the controller in `.substrate/controller-reliable`, runs
+the 34 CTests, 52 substrate tests, 20 preflight tests and 25 dispatcher tests,
+checks hygiene and diff, then runs actual RL/MJPC offline admission. A clean HEAD
+is required by default. `--development` explicitly records a dirty engineering
+iteration; it cannot stand for clean-head final qualification. The native
+optimizer build is separately sealed by bootstrap; stale inputs are rejected.
 
-Hosted CI runs the 12 portable NumPy contract tests. The three real-model checks,
-real checkpoint, native optimizer and 34 controller CTests are native-only checks;
-hosted CI must not be described as simulator/capability acceptance.
+To run only admission after a successful build:
 
-## Next stage
+```sh
+.substrate/venv-reliable/bin/python -m tools.substrate.admit \
+  --output _runs/substrate_admission/fresh_01 \
+  --checkpoint .substrate/rl/policy.pt \
+  --mjpc-binary .substrate/headless-reliable/go2_mjpc_admit
+```
 
-Review benchmark v0 at immutable design commit
-`ed3896c3f4355d6409077d61b14d6dc743d6655f`, then freeze start state, command,
-duration/repeats, success and failure thresholds, support semantics, shared
-physical model, each backend's actuator/frequency declaration, and information
-regime. Specify timestamp ordering and reset semantics before implementing the
-closed-loop runner. First capability admission should use flat ground with a
-predeclared budget and stop gate; terrain is conditional on that result.
-No conclusion about MJPC versus RL performance follows from this package.
+Bootstrap preserves the earlier `.substrate/venv` and `.substrate/headless-build`
+caches. It creates new isolated/runtime build directories rather than silently
+reusing an environment that inherited host packages. Existing raw directories
+are never cleaned or reused. A failed engineering invocation remains evidence.
+
+## Identity and evidence
+
+Native admission verifies the binary against a build identity covering actual
+MJPC/Abseil commits and tracked bytes, local native source, compiler binary,
+MuJoCo headers/library, CMake cache, Ninja rules and compile command database.
+The CMake target builds unchanged upstream iLQG sources directly, excluding demo
+models and GUI dependencies. MuJoCo Python/native libraries must match bytewise.
+
+Runtime verification checks installed versions and installed payloads against
+wheel RECORD hashes, including source and shared libraries. Generated `.pyc`
+and `.pyo` compilation caches are excluded explicitly: pip may regenerate them
+for the local installation path, and NumPy's wheel can contain duplicate
+hashed/unhashed cache rows. Their underlying source remains verified.
+
+Each run snapshots all registered scene/include/mesh files before model loading.
+The physical fingerprint includes reset keyframes as well as physical arrays
+and solver options. Unsupported plugin/attached-model/multi-compiler/external
+asset conventions fail closed rather than receiving an incomplete manifest.
+
+`started.json` is written first. Logs stream to exclusive files, including
+partial stdout/stderr on timeout. The whole child process group is terminated
+on failure/timeout; SIGTERM and keyboard interruption seal FAILED output.
+SIGKILL can leave only an incomplete marker; such a directory cannot verify as
+admitted. `manifest.json` is written last and file data is fsynced. Independent
+verification rejects changed bytes, missing/extra files, symlinks, incomplete
+or failed runs. These checks provide reproducibility/integrity, not an external
+cryptographic attestation against a user able to rewrite the whole environment.
+
+## Model, action, timing and state
+
+Actuator order is FR/FL/RR/RL; policy order is FL/FR/RL/RR. Names, not positional
+assumptions, determine the mapping. Input and command packets own immutable
+copies. Strings, booleans, nonfinite arrays and invalid quaternion inputs are
+rejected. The shared action exposes feedforward, position/velocity targets and
+declared gains. Resolution records PD, total pre-clamp torque and motor ctrl.
+Hip/thigh bounds are +/-40 Nm; calf bounds +/-45.43 Nm. Unsupported secondary
+force limits/transmissions are rejected; the legacy 35 Nm envelope limits
+feedforward, not total plant torque.
+
+The public CTS checkpoint uses a 45-dimensional proprioceptive observation,
+50 Hz update declaration, kp=20, kd=0.5 and action scale=0.25. Its verified bytes
+are retained in memory so reset cannot silently load changed weights. Separate
+instances have separate history; a failed inference requires explicit reset.
+Admission replays 12 nontrivial synthetic packets twice after reset. This is
+not a physics trajectory or a claim of achieved 50 Hz real-time control.
+
+`ControlClock` represents 50 Hz at 500 Hz as exactly one update per ten integer
+ticks, rejects fractional decimation, duplicate/skipped ticks and time drift.
+It is a contract for the future closed-loop runner, not wall-clock pacing.
+
+MJPC admission uses a static home state, actual iLQG, 21 predicted states at
+2 ms and a minimal posture cost. External plant time remains zero. Results
+must have correct types, finite nonnegative costs, no rollout warning, no
+nominal-cost regression and bounded torques. The fixture is not a locomotion
+objective, and its tiny improvement cannot establish useful gait optimization.
+MJPC has known-model access; RL receives ideal proprioception. Shared physics
+does not make these information conditions equivalent.
+
+## Formal experiment boundary
+
+The SOP preflight entry `tools/research/preflight.py` is restored from historical
+source and hardened. It checks exact branch/HEAD, clean state, runner/domain,
+all reserved participant ports, current UDP occupancy, global/domain locks,
+process inspection, files/hashes, changed surfaces, required review and tests.
+Existing output is protected, and tests are skipped after an early hard failure.
+It is a readiness snapshot: a future launcher must reacquire the lock and recheck
+before capture. A literal runner-domain check does not replace review of runner
+semantics, and a user-supplied approved SHA is not independent proof of review.
+
+The capture template deliberately remains unfrozen. `evidence.py` checks typed
+completeness, unique support names and exact cadence; it preserves the earliest
+failure separately from terminal state and rejects samples after termination.
+These helpers do not approve or launch experiments. Before the first formal run,
+freeze/review the scientific question, start state, information budgets, goals,
+thresholds, horizon/repeats, support semantics, runner and attempt boundary.
+No scientific thresholds, legacy evidence or method rankings change here.
+
+Hosted CI runs 90 dependency-light tests including the dispatcher; native
+qualification runs 131 in total. CI does not certify a robot capability.

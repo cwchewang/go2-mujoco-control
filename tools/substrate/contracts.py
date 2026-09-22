@@ -16,6 +16,9 @@ MOTOR_JOINTS = tuple(
 
 
 def vector(value, size, name):
+    raw = np.asarray(value)
+    if raw.dtype.kind not in "iuf":
+        raise ValueError(f"{name}: expected numeric values, not booleans/strings")
     result = np.asarray(value, dtype=np.float64)
     if result.shape != (size,) or not np.isfinite(result).all():
         raise ValueError(f"{name}: expected {size} finite values")
@@ -24,6 +27,8 @@ def vector(value, size, name):
 
 def reorder(values, source, target):
     source, target = tuple(source), tuple(target)
+    if any(not isinstance(name, str) or not name for name in source + target):
+        raise ValueError("joint names must be nonempty strings")
     if (
         len(set(source)) != len(source)
         or len(set(target)) != len(target)
@@ -43,6 +48,19 @@ class Proprioception:
     quaternion_wxyz: np.ndarray
     angular_velocity_body: np.ndarray
 
+    def __post_init__(self):
+        object.__setattr__(self, "joint_names", tuple(self.joint_names))
+        for name, size in (
+            ("position", 12),
+            ("velocity", 12),
+            ("quaternion_wxyz", 4),
+            ("angular_velocity_body", 3),
+        ):
+            value = vector(getattr(self, name), size, name)
+            object.__setattr__(
+                self, name, np.frombuffer(value.tobytes(), dtype=np.float64)
+            )
+
     def validate(self):
         reorder(self.position, self.joint_names, POLICY_JOINTS)
         vector(self.velocity, 12, "joint velocity")
@@ -60,6 +78,14 @@ class TorqueCommand:
     velocity_target: np.ndarray
     kp: np.ndarray
     kd: np.ndarray
+
+    def __post_init__(self):
+        object.__setattr__(self, "joint_names", tuple(self.joint_names))
+        for name in ("feedforward", "position_target", "velocity_target", "kp", "kd"):
+            value = vector(getattr(self, name), 12, name)
+            object.__setattr__(
+                self, name, np.frombuffer(value.tobytes(), dtype=np.float64)
+            )
 
     def resolve(self, observation, lower, upper, target_names):
         observation.validate()

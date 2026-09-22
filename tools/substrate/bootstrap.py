@@ -62,19 +62,28 @@ def main():
     base = ROOT / ".substrate"
     if args.install:
         base.mkdir(exist_ok=True)
-        env = base / "venv"
+        env = base / "venv-reliable"
         if not (env / "bin/python").exists():
             run(sys.executable, "-m", "venv", env)
-        run(env / "bin/python", "-m", "pip", "install", "numpy==2.2.6", "mujoco==3.3.6")
+        if (
+            "include-system-site-packages = false"
+            not in (env / "pyvenv.cfg").read_text()
+        ):
+            raise ValueError(
+                "existing venv is not isolated; preserve it and use a fresh environment"
+            )
         run(
             env / "bin/python",
             "-m",
             "pip",
             "install",
-            "--index-url",
+            "--require-hashes",
+            "--extra-index-url",
             "https://download.pytorch.org/whl/cpu",
-            "torch==2.6.0",
+            "-r",
+            ROOT / "tools/substrate/requirements-linux-py310.lock",
         )
+        run(env / "bin/python", "-m", "pip", "check")
         source = base / "mjpc"
         if not source.exists():
             run(
@@ -102,21 +111,25 @@ def main():
             "-S",
             "tools/substrate/native",
             "-B",
-            base / "headless-build",
+            base / "headless-reliable",
             "-G",
             "Ninja",
             "-DCMAKE_BUILD_TYPE=Release",
             "-DMJPC_SOURCE_DIR=" + str(base / "mjpc"),
         )
+        from .build_identity import inputs, seal
+
+        before = inputs(base / "headless-reliable")
         run(
             "cmake",
             "--build",
-            base / "headless-build",
+            base / "headless-reliable",
             "--target",
             "go2_mjpc_admit",
             "-j",
             "4",
         )
+        seal(base / "headless-reliable", before)
     if not args.install and not args.build:
         p.print_help()
 

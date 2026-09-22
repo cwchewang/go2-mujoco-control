@@ -7,14 +7,14 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 
-def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+from .integrity import digest
 
 
 def dependency_manifest(scene, repository):
     root = Path(repository).resolve()
     scene = Path(scene).resolve()
     files, active = {}, set()
+    compilers = []
 
     def confined(path):
         p = path.resolve()
@@ -31,16 +31,29 @@ def dependency_manifest(scene, repository):
         files[str(path.relative_to(root))] = digest(path)
         compiler = tree.find("compiler")
         if compiler is not None:
+            compilers.append(path)
+            if len(compilers) > 1 or path.parent != scene.parent:
+                raise ValueError(
+                    "unsupported multi-compiler or nested compiler asset semantics"
+                )
+            if compiler.get("strippath") not in (None, "false"):
+                raise ValueError("strippath is unsupported")
             assetdir = compiler.get("assetdir", "")
             meshdir = path.parent / compiler.get("meshdir", assetdir)
             texturedir = path.parent / compiler.get("texturedir", assetdir)
         for node in tree.iter():
+            if node.tag in ("plugin", "attach", "model") or any(
+                k.startswith("file") and k != "file" for k in node.attrib
+            ):
+                raise ValueError("unsupported external/model/plugin asset declaration")
             name = node.get("file")
             if not name:
                 continue
             if node.tag == "include":
                 visit(path.parent / name, meshdir, texturedir)
             else:
+                if node.tag not in ("mesh", "texture", "hfield"):
+                    raise ValueError("unsupported file-bearing asset: " + node.tag)
                 base = (
                     meshdir
                     if node.tag == "mesh"
@@ -78,6 +91,7 @@ def physical_fingerprint(model):
         "tendon_",
         "wrap_",
         "actuator_",
+        "key_",
     )
     arrays = {}
     for name in dir(model):

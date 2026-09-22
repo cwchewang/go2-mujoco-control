@@ -8,9 +8,9 @@ Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) and [TOPIC_AUDIT](docs/TOPIC_AUDIT
 for scientific context; the [SOP](docs/research/SOP.md) governs evidence.
 
 - Branch: `research/substrate-foundation-20260922`
-- Task: [Substrate foundation](docs/research/TASK_SUBSTRATE_FOUNDATION_20260922.md)
-- Closeout: `docs/validation/substrate_foundation_20260922/RESULTS.md`
-- Current stage: engineering foundation and offline backend admission.
+- Task: [Pre-experiment reliability](docs/research/TASK_SUBSTRATE_RELIABILITY_20260922.md)
+- Closeout: `docs/validation/substrate_reliability_20260922/RESULTS.md`
+- Current stage: isolated, source-bound pre-experiment engineering qualification.
 - Scientific status: no Substrate Gate 0 locomotion/capability acceptance.
 
 The 2026-09-17 integration and flat repeats are sealed legacy references, not
