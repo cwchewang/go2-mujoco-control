@@ -38,7 +38,7 @@ jobs:
           done
           systemctl --user is-active --quiet "$unit"
 
-          repo="/home/che/dev/go2-workspace/current"
+          repo="$HOME/dev/go2-workspace/current"
           test "$(git -C "$repo" rev-parse --is-inside-work-tree)" = "true"
           old="$(git -C "$repo" remote get-url origin)"
           canonical="https://github.com/cwchewang/go2-mujoco-control.git"
