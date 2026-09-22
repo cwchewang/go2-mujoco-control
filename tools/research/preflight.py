@@ -336,7 +336,9 @@ def _main() -> int:
     )
     ap.add_argument("--runner", type=Path, required=True)
     ap.add_argument("--run-dir", type=Path, required=True)
-    ap.add_argument("--domain", type=int, required=True)
+    ap.add_argument("--domain", type=int)
+    ap.add_argument("--transport", choices=("dds", "inprocess"), default="dds")
+    ap.add_argument("--held-lock-fd", type=int)
     ap.add_argument(
         "--participants",
         type=int,
@@ -454,80 +456,96 @@ def _main() -> int:
     runner_text = (
         runner.read_text(encoding="utf-8", errors="replace") if runner_exists else ""
     )
-    if runner_exists:
-        rc, _, err = command(["bash", "-n", str(runner)], repo)
-        add_check(checks, "runner_bash_syntax", rc == 0, err or "PASS")
-        domains = runner_domains(runner_text)
-        add_check(
-            checks,
-            "runner_domain_matches",
-            domains == [args.domain],
-            {"runner_domains": domains, "expected": args.domain},
-        )
+    if args.transport == "inprocess":
+        # Explicit transport semantics, not a fictitious reserved DDS domain.
+        add_check(checks, "inprocess_has_no_domain", args.domain is None, args.domain)
+        valid = runner_exists and runner.suffix == ".py"
+        if valid:
+            try:
+                compile(runner_text, str(runner), "exec")
+            except SyntaxError:
+                valid = False
+        add_check(checks, "runner_python_syntax", valid, str(runner))
+        add_check(checks, "reviewed_inprocess_runner",
+                  runner_text.count('TRANSPORT = "inprocess"') == 1,
+                  "declared and exact-head reviewed; no DDS sockets")
     else:
-        add_check(checks, "runner_bash_syntax", False, "runner missing")
-        add_check(checks, "runner_domain_matches", False, "runner missing")
-
-    ports = {}
-    if 0 <= args.domain <= 232 and 1 <= args.participants <= 120:
-        for participant in range(args.participants):
-            ports.update(
-                {
-                    f"{participant}:{key}": value
-                    for key, value in dds_ports(args.domain, participant).items()
-                }
+        if runner_exists:
+            rc, _, err = command(["bash", "-n", str(runner)], repo)
+            add_check(checks, "runner_bash_syntax", rc == 0, err or "PASS")
+            domains = runner_domains(runner_text)
+            add_check(
+                checks,
+                "runner_domain_matches",
+                domains == [args.domain],
+                {"runner_domains": domains, "expected": args.domain},
             )
-    add_check(
-        checks,
-        "participant_count_valid",
-        1 <= args.participants <= 120,
-        args.participants,
-    )
-    add_check(
-        checks,
-        "dds_domain_spec_range",
-        0 <= args.domain <= 232,
-        {"domain": args.domain, "allowed": [0, 232]},
-    )
-    add_check(
-        checks,
-        "dds_rtps_ports_legal",
-        bool(ports) and all(0 <= x <= 65535 for x in ports.values()),
-        ports,
-    )
-    if args.dds_policy == "linux-safe":
+        else:
+            add_check(checks, "runner_bash_syntax", False, "runner missing")
+            add_check(checks, "runner_domain_matches", False, "runner missing")
+
+        if args.domain is None:
+            args.domain = -1
+        ports = {}
+        if 0 <= args.domain <= 232 and 1 <= args.participants <= 120:
+            for participant in range(args.participants):
+                ports.update(
+                    {
+                        f"{participant}:{key}": value
+                        for key, value in dds_ports(args.domain, participant).items()
+                    }
+                )
         add_check(
             checks,
-            "dds_linux_safe_pool",
-            domain_in_linux_safe_pool(args.domain),
-            {"domain": args.domain, "allowed_ranges": LINUX_SAFE_DOMAIN_RANGES},
+            "participant_count_valid",
+            1 <= args.participants <= 120,
+            args.participants,
         )
-    eph = read_ephemeral_range()
-    if eph and ports:
-        lo, hi = eph
-        overlap = {k: v for k, v in ports.items() if lo <= v <= hi}
         add_check(
             checks,
-            "dds_ephemeral_port_overlap",
-            not overlap,
-            {"ephemeral_range": eph, "overlap": overlap},
-            "hard" if args.dds_policy == "linux-safe" else "warn",
+            "dds_domain_spec_range",
+            0 <= args.domain <= 232,
+            {"domain": args.domain, "allowed": [0, 232]},
         )
-    else:
         add_check(
             checks,
-            "dds_ephemeral_port_range_readable",
-            eph is not None,
-            eph or "unavailable",
+            "dds_rtps_ports_legal",
+            bool(ports) and all(0 <= x <= 65535 for x in ports.values()),
+            ports,
         )
-    try:
-        occupied = occupied_udp_ports()
-        conflicts = sorted(set(ports.values()) & occupied)
-        add_check(checks, "dds_udp_ports_unused", not conflicts, conflicts)
-    except RuntimeError as exc:
-        add_check(checks, "dds_udp_ports_unused", False, str(exc))
-    lock_ok, lock_path = domain_lock_free(args.domain)
-    add_check(checks, "dds_domain_lock_free", lock_ok, lock_path)
+        if args.dds_policy == "linux-safe":
+            add_check(
+                checks,
+                "dds_linux_safe_pool",
+                domain_in_linux_safe_pool(args.domain),
+                {"domain": args.domain, "allowed_ranges": LINUX_SAFE_DOMAIN_RANGES},
+            )
+        eph = read_ephemeral_range()
+        if eph and ports:
+            lo, hi = eph
+            overlap = {k: v for k, v in ports.items() if lo <= v <= hi}
+            add_check(
+                checks,
+                "dds_ephemeral_port_overlap",
+                not overlap,
+                {"ephemeral_range": eph, "overlap": overlap},
+                "hard" if args.dds_policy == "linux-safe" else "warn",
+            )
+        else:
+            add_check(
+                checks,
+                "dds_ephemeral_port_range_readable",
+                eph is not None,
+                eph or "unavailable",
+            )
+        try:
+            occupied = occupied_udp_ports()
+            conflicts = sorted(set(ports.values()) & occupied)
+            add_check(checks, "dds_udp_ports_unused", not conflicts, conflicts)
+        except RuntimeError as exc:
+            add_check(checks, "dds_udp_ports_unused", False, str(exc))
+        lock_ok, lock_path = domain_lock_free(args.domain)
+        add_check(checks, "dds_domain_lock_free", lock_ok, lock_path)
     add_check(checks, "run_directory_fresh", not run_dir.exists(), str(run_dir))
     names = (
         list(args.process_name) if args.process_name else list(DEFAULT_PROCESS_NAMES)
@@ -725,8 +743,27 @@ def _main() -> int:
 def main() -> int:
     # Held throughout tests and report generation. This is a readiness snapshot;
     # a future launcher must reacquire and recheck before starting capture.
+    def interrupted(signum, frame):
+        # selectors retries InterruptedError as EINTR, which would swallow the
+        # stop request inside subprocess.communicate and strand its test group.
+        raise RuntimeError("preflight interrupted")
+    previous_signal = signal.signal(signal.SIGTERM, interrupted)
     try:
-        with open("/tmp/go2_mujoco_experiment.lock", "a") as lock:
+        # A launcher may pass its already-held descriptor, preserving one
+        # uninterrupted lock across preflight and capture. Verify its inode and
+        # acquire on that same open file description; never trust an env flag.
+        probe = argparse.ArgumentParser(add_help=False)
+        probe.add_argument("--held-lock-fd", type=int)
+        inherited, _ = probe.parse_known_args()
+        lock_path = "/tmp/go2_mujoco_experiment.lock"
+        if inherited.held_lock_fd is not None:
+            fd = inherited.held_lock_fd
+            actual, expected = os.fstat(fd), os.stat(lock_path)
+            if (actual.st_dev, actual.st_ino) != (expected.st_dev, expected.st_ino):
+                raise RuntimeError("inherited lock descriptor mismatch")
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return _main()
+        with open(lock_path, "a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             return _main()
     except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
@@ -734,6 +771,8 @@ def main() -> int:
             json.dumps({"pass": False, "reason": type(exc).__name__ + ": " + str(exc)})
         )
         return 2
+    finally:
+        signal.signal(signal.SIGTERM, previous_signal)
 
 
 if __name__ == "__main__":

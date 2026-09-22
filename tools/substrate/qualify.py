@@ -67,6 +67,7 @@ def main():
                         "tools.substrate.test_reliability",
                         "tools.substrate.test_policy_runtime",
                         "tools.substrate.test_clock",
+                        "tools.substrate.test_launch",
                         "-v",
                     ],
                     120,

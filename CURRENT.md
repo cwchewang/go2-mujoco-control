@@ -7,10 +7,10 @@
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) and [TOPIC_AUDIT](docs/TOPIC_AUDIT.md)
 for scientific context; the [SOP](docs/research/SOP.md) governs evidence.
 
-- Branch: `research/substrate-foundation-20260922`
-- Task: [Pre-experiment reliability](docs/research/TASK_SUBSTRATE_RELIABILITY_20260922.md)
-- Closeout: `docs/validation/substrate_reliability_20260922/RESULTS.md`
-- Current stage: isolated, source-bound pre-experiment engineering qualification.
+- Branch: `research/substrate-prelaunch-20260922`
+- Task: [First capture preparation](docs/research/TASK_SUBSTRATE_PRELAUNCH_20260922.md)
+- Closeout: `docs/validation/substrate_prelaunch_20260922/RESULTS.md`
+- Current stage: first-capture protocol and runner preparation; stop before first scientific sample.
 - Scientific status: no Substrate Gate 0 locomotion/capability acceptance.
 
 The 2026-09-17 integration and flat repeats are sealed legacy references, not

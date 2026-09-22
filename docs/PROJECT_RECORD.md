@@ -41,8 +41,9 @@ Challengers / baselines：
 
 ## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
 
-当前工程分支为 `research/substrate-foundation-20260922`，任务见
-`docs/research/TASK_SUBSTRATE_RELIABILITY_20260922.md`，最新结果见
+当前准备分支为 `research/substrate-prelaunch-20260922`，任务见
+`docs/research/TASK_SUBSTRATE_PRELAUNCH_20260922.md`，最新结果见
+`docs/validation/substrate_prelaunch_20260922/RESULTS.md`。可靠性验收保留于
 `docs/validation/substrate_reliability_20260922/RESULTS.md`。首轮工程记录保留于
 `docs/validation/substrate_foundation_20260922/RESULTS.md`。
 
@@ -53,7 +54,9 @@ Challengers / baselines：
 `tools/substrate/` 新增命名关节/观测/动作边界、源锁定、模型资产闭包与物理
 指纹、真实 public RL 推理、原生 MJPC iLQG 静态求解准入，以及原始证据输出。
 两者共同使用现有 MuJoCo 3.3.6 模型与力矩出口，但信息条件不同，不能据此做
-公平能力对比。工程准入不是 Gate 0；正式闭环 runner、验收阈值及预算仍待冻结。
+公平能力对比。工程准入不是 Gate 0。首轮平地 RL 移植验收已有前瞻协议、
+闭环 runner、分析器及三次失败即停预算；其准备流程禁止真实物理步进，
+用户尚未授权开始。定义见 `docs/research/SUBSTRATE_FIRST_CAPTURE.md`。
 
 后续可靠性加固补齐独立依赖环境、源码/二进制构建绑定、模型输入快照、策略
 状态隔离和重放、严格类型/时钟契约、超时子进程清理、失败证据封存及独立

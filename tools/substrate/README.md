@@ -21,7 +21,7 @@ python3 -m tools.substrate.bootstrap --install --build
 
 Every output must be new. Qualify holds `/tmp/go2_mujoco_experiment.lock` for the
 whole process, rebuilds the controller in `.substrate/controller-reliable`, runs
-the 34 CTests, 52 substrate tests, 20 preflight tests and 25 dispatcher tests,
+the 34 CTests, 76 substrate tests, 24 preflight tests and 25 dispatcher tests,
 checks hygiene and diff, then runs actual RL/MJPC offline admission. A clean HEAD
 is required by default. `--development` explicitly records a dirty engineering
 iteration; it cannot stand for clean-head final qualification. The native
@@ -89,7 +89,7 @@ not a physics trajectory or a claim of achieved 50 Hz real-time control.
 
 `ControlClock` represents 50 Hz at 500 Hz as exactly one update per ten integer
 ticks, rejects fractional decimation, duplicate/skipped ticks and time drift.
-It is a contract for the future closed-loop runner, not wall-clock pacing.
+The first-capture runner uses this cadence; it does not impose wall-clock pacing.
 
 MJPC admission uses a static home state, actual iLQG, 21 predicted states at
 2 ms and a minimal posture cost. External plant time remains zero. Results
@@ -106,17 +106,26 @@ source and hardened. It checks exact branch/HEAD, clean state, runner/domain,
 all reserved participant ports, current UDP occupancy, global/domain locks,
 process inspection, files/hashes, changed surfaces, required review and tests.
 Existing output is protected, and tests are skipped after an early hard failure.
-It is a readiness snapshot: a future launcher must reacquire the lock and recheck
-before capture. A literal runner-domain check does not replace review of runner
+Standalone preflight is a readiness snapshot. The substrate launcher now passes
+its held lock descriptor to preflight and retains it through capture, with explicit
+in-process transport checks. A literal runner-domain check does not replace review of runner
 semantics, and a user-supplied approved SHA is not independent proof of review.
 
-The capture template deliberately remains unfrozen. `evidence.py` checks typed
+The older generic capture template remains unfrozen and is not the first-run entrypoint.
+The concrete first-run protocol is now `protocols/rl_flat_v1.json`; see
+`docs/research/SUBSTRATE_FIRST_CAPTURE.md` for its prospective rationale and exact
+commands. `launch prepare` guards every real integration entrypoint and stops at
+READY_AWAITING_START. `launch capture` requires separate explicit user start
+authorization, source-bound preparation and independent exact-head reviews.
+`verify_capture` verifies raw integrity and independently recomputes the result.
+
+The generic `evidence.py` checks typed
 completeness, unique support names and exact cadence; it preserves the earliest
 failure separately from terminal state and rejects samples after termination.
-These helpers do not approve or launch experiments. Before the first formal run,
-freeze/review the scientific question, start state, information budgets, goals,
-thresholds, horizon/repeats, support semantics, runner and attempt boundary.
+These helpers do not approve or launch experiments. The first-run protocol now fixes the scientific question, reset, information regime,
+goals, thresholds, horizon/repeats, support semantics, runner and attempt boundary.
+A future start must still validate the exact reviewed HEAD and explicit start record.
 No scientific thresholds, legacy evidence or method rankings change here.
 
-Hosted CI runs 90 dependency-light tests including the dispatcher; native
-qualification runs 131 in total. CI does not certify a robot capability.
+Hosted CI runs 118 dependency-light tests including the dispatcher; native
+qualification runs 159 in total. CI does not certify a robot capability.

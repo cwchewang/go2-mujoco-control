@@ -57,7 +57,7 @@ def experiment_lock(path=LOCK_PATH):
             fcntl.flock(lock, fcntl.LOCK_UN)
 
 
-def verify_bundle(directory):
+def verify_manifest(directory):
     directory = Path(directory).resolve()
     manifest = strict_json((directory / "manifest.json").read_text())
     if not isinstance(manifest, dict) or not manifest:
@@ -74,7 +74,11 @@ def verify_bundle(directory):
         path = directory / name
         if not path.resolve().is_relative_to(directory) or digest(path) != expected:
             raise ValueError("evidence digest mismatch: " + name)
-    result = strict_json((directory / "admission.json").read_text())
+    return strict_json((directory / "admission.json").read_text())
+
+
+def verify_bundle(directory):
+    result = verify_manifest(directory)
     if result.get("status") != "ENGINEERING_ADMITTED":
         raise ValueError("bundle is not admitted")
     return result
@@ -120,7 +124,7 @@ class EvidenceRun:
         self.previous_signal = signal.getsignal(signal.SIGTERM)
 
         def stop(signum, frame):
-            raise InterruptedError("SIGTERM")
+            raise RuntimeError("SIGTERM")
 
         signal.signal(signal.SIGTERM, stop)
         return self
@@ -146,7 +150,7 @@ class EvidenceRun:
         return False
 
 
-def run_logged(argv, directory, name, timeout=120, cwd=None):
+def run_logged(argv, directory, name, timeout=120, cwd=None, pass_fds=(), termination_grace=0.5):
     """Preserve partial output and reap the process group on all exit paths."""
     if not name.replace("_", "").isalnum():
         raise ValueError("invalid log name")
@@ -162,6 +166,7 @@ def run_logged(argv, directory, name, timeout=120, cwd=None):
             stdout=out,
             stderr=err,
             start_new_session=True,
+            pass_fds=pass_fds,
         )
         try:
             status = process.wait(timeout=timeout)
@@ -174,7 +179,7 @@ def run_logged(argv, directory, name, timeout=120, cwd=None):
             except ProcessLookupError:
                 pass
             try:
-                process.wait(timeout=0.5)
+                process.wait(timeout=termination_grace)
             except subprocess.TimeoutExpired:
                 pass
             try:

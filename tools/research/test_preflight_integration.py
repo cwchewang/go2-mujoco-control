@@ -50,8 +50,7 @@ class ReadinessFixtures(unittest.TestCase):
             "runner.sh",
             "--run-dir",
             "out/capture",
-            "--domain",
-            "230",
+            *([] if "inprocess" in extra else ["--domain", "230"]),
             *extra,
         ]
         stream = io.StringIO()
@@ -166,6 +165,37 @@ class ReadinessFixtures(unittest.TestCase):
             self.assertRaises(RuntimeError),
         ):
             p.find_processes(("fixture",))
+
+    def inprocess_fixture(self):
+        (self.root / "runner.py").write_text('TRANSPORT = "inprocess"\nraise RuntimeError("runner must never execute")\n')
+        self.git("add", ".")
+        self.git("commit", "-m", "inprocess fixture")
+        self.head = self.git("rev-parse", "HEAD")
+
+    def test_inprocess_preflight_never_executes_python_runner(self):
+        self.inprocess_fixture()
+        code, result = self.call("--transport", "inprocess", "--runner", "runner.py")
+        self.assertEqual(code, 0)
+        self.assertTrue(result["pass"])
+        self.assertFalse(any(x["name"].startswith("dds_") for x in result["checks"]))
+
+    def test_inprocess_rejects_fictitious_dds_domain(self):
+        self.inprocess_fixture()
+        code, result = self.call("--transport", "inprocess", "--runner", "runner.py", "--domain", "230")
+        self.assertEqual(code, 2)
+
+    def test_inprocess_requires_declared_transport(self):
+        self.inprocess_fixture()
+        code, result = self.call("--transport", "inprocess", "--runner", "runner.sh")
+        self.assertEqual(code, 2)
+
+    def test_inherited_lock_rejects_unrelated_descriptor(self):
+        with (self.root / "unrelated").open("w") as stream:
+            argv = ["preflight", "--held-lock-fd", str(stream.fileno())]
+            out = io.StringIO()
+            with patch.object(sys, "argv", argv), contextlib.redirect_stdout(out):
+                self.assertEqual(p.main(), 2)
+            self.assertFalse(json.loads(out.getvalue())["pass"])
 
 
 if __name__ == "__main__":
