@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-09-22
+
+- Current direction is a shared whole-body substrate; the hierarchical C++ stack
+  remains a historical baseline. README and maintained navigation now agree with
+  PROJECT_RECORD, CURRENT and the SOP; older entries below retain their dates.
+- Source-bound offline admission and guarded first-capture preparation are
+  available. Formal capability remains NOT_RUN.
+- Developer checks use tracked source only, a separately pinned formatter/linter,
+  and portable documentation links. Historical evidence/vendor assets are excluded.
+- Launcher review and protection responsibilities are separate modules; canonical
+  trace hashing preserves its bytes while avoiding an episode-sized JSON buffer.
+- CMake registers tests with their targets and shares repeated dependency setup.
+  Release plans are unchanged; an explicitly requested Debug build is now honored.
+
 ## 2026-09-04
 
 - `main` is the only active integrated line, and `CURRENT.md` is the sole Phase

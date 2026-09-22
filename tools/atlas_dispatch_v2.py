@@ -360,9 +360,7 @@ class ProductionDispatcher:
                 number,
                 {
                     "status": (
-                        status
-                        if status in issue_state.PROGRESS_STATES
-                        else "claimed"
+                        status if status in issue_state.PROGRESS_STATES else "claimed"
                     ),
                     "last_event": current.get("last_event", "worker active"),
                 },
@@ -376,9 +374,7 @@ class ProductionDispatcher:
 
         env = os.environ.copy()
         env["ATLAS_DISPATCH_PREFETCHED"] = "1"
-        env["ATLAS_PROTECTED_PREFIXES"] = ",".join(
-            self.config.protected_prefixes
-        )
+        env["ATLAS_PROTECTED_PREFIXES"] = ",".join(self.config.protected_prefixes)
         env["ATLAS_EVIDENCE_ROOTS"] = ",".join(self.config.evidence_roots)
         env["ATLAS_HOST_POLICY"] = self.config.host_policy
         command = [
@@ -404,9 +400,10 @@ class ProductionDispatcher:
         )
         heartbeat.start()
         try:
-            with stdout_path.open("a", encoding="utf-8") as stdout_log, stderr_path.open(
-                "a", encoding="utf-8"
-            ) as stderr_log:
+            with (
+                stdout_path.open("a", encoding="utf-8") as stdout_log,
+                stderr_path.open("a", encoding="utf-8") as stderr_log,
+            ):
                 process = subprocess.Popen(
                     command,
                     cwd=self.repo_root,

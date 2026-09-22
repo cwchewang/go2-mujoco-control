@@ -15,6 +15,7 @@ segment plus a PASS/FAIL gate with the documented tolerances. Purely
 diagnostic evidence for the acceptance report; the authoritative gates are
 the lifecycle statuses, the fixed 3 m/s analyzer and the B0 analyzer.
 """
+
 import argparse
 import csv
 import math
@@ -28,14 +29,16 @@ def load_gt(path):
     rows = []
     with open(path, newline="") as f:
         for r in csv.DictReader(f):
-            rows.append({
-                "t": float(r["time_s"]),
-                "z": float(r["base_pos_world_z_m"]),
-                "qx": float(r["base_quat_x"]),
-                "qy": float(r["base_quat_y"]),
-                "qz": float(r["base_quat_z"]),
-                "qw": float(r["base_quat_w"]),
-            })
+            rows.append(
+                {
+                    "t": float(r["time_s"]),
+                    "z": float(r["base_pos_world_z_m"]),
+                    "qx": float(r["base_quat_x"]),
+                    "qy": float(r["base_quat_y"]),
+                    "qz": float(r["base_quat_z"]),
+                    "qw": float(r["base_quat_w"]),
+                }
+            )
     rows.sort(key=lambda r: r["t"])
     return rows
 
@@ -47,7 +50,8 @@ def euler(rows):
         sp = max(-1.0, min(1.0, 2.0 * (w * y - z * x)))
         pitch = math.degrees(math.asin(sp))
         roll = math.degrees(
-            math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y)))
+            math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
+        )
         out.append({"t": r["t"], "z": r["z"], "pitch": pitch, "roll": roll})
     return out
 
@@ -72,10 +76,14 @@ def to_series(rows, key):
 
 def diff_stats(ref, cand, t0, t1):
     """Compare two euler-series over [t0, t1] on the union grid."""
-    times = np.unique(np.concatenate([
-        np.array([r["t"] for r in ref], dtype=float),
-        np.array([r["t"] for r in cand], dtype=float),
-    ]))
+    times = np.unique(
+        np.concatenate(
+            [
+                np.array([r["t"] for r in ref], dtype=float),
+                np.array([r["t"] for r in cand], dtype=float),
+            ]
+        )
+    )
     times = times[(times >= t0) & (times <= t1)]
     dz, dp, dr = [], [], []
     rz = to_series(ref, "z")
@@ -99,15 +107,21 @@ def diff_stats(ref, cand, t0, t1):
     dr = np.array(dr)
     return {
         "samples": len(dz),
-        "dz_m": {"p50": float(np.percentile(dz, 50)),
-                 "p95": float(np.percentile(dz, 95)),
-                 "max": float(dz.max())},
-        "dpitch_deg": {"p50": float(np.percentile(dp, 50)),
-                       "p95": float(np.percentile(dp, 95)),
-                       "max": float(dp.max())},
-        "droll_deg": {"p50": float(np.percentile(dr, 50)),
-                      "p95": float(np.percentile(dr, 95)),
-                      "max": float(dr.max())},
+        "dz_m": {
+            "p50": float(np.percentile(dz, 50)),
+            "p95": float(np.percentile(dz, 95)),
+            "max": float(dz.max()),
+        },
+        "dpitch_deg": {
+            "p50": float(np.percentile(dp, 50)),
+            "p95": float(np.percentile(dp, 95)),
+            "max": float(dp.max()),
+        },
+        "droll_deg": {
+            "p50": float(np.percentile(dr, 50)),
+            "p95": float(np.percentile(dr, 95)),
+            "max": float(dr.max()),
+        },
     }
 
 
@@ -147,24 +161,30 @@ def main():
         dz = seg["dz_m"]
         dp = seg["dpitch_deg"]
         dr = seg["droll_deg"]
-        print(f"{name}: samples={seg['samples']} "
-              f"dz(p50/p95/max)={dz['p50']:.4f}/{dz['p95']:.4f}/{dz['max']:.4f} m "
-              f"dpitch={dp['p50']:.3f}/{dp['p95']:.3f}/{dp['max']:.3f} deg "
-              f"droll={dr['p50']:.3f}/{dr['p95']:.3f}/{dr['max']:.3f} deg")
+        print(
+            f"{name}: samples={seg['samples']} "
+            f"dz(p50/p95/max)={dz['p50']:.4f}/{dz['p95']:.4f}/{dz['max']:.4f} m "
+            f"dpitch={dp['p50']:.3f}/{dp['p95']:.3f}/{dp['max']:.3f} deg "
+            f"droll={dr['p50']:.3f}/{dr['p95']:.3f}/{dr['max']:.3f} deg"
+        )
 
     def gate(seg):
         if seg is None:
             return False
         # Robust gate on p95; max is reported as diagnostic (stop-transition
         # and touchdown transients differ run-to-run).
-        return (seg["dz_m"]["p95"] <= args.tolerance_dz_m and
-                seg["dpitch_deg"]["p95"] <= args.tolerance_angle_deg and
-                seg["droll_deg"]["p95"] <= args.tolerance_angle_deg)
+        return (
+            seg["dz_m"]["p95"] <= args.tolerance_dz_m
+            and seg["dpitch_deg"]["p95"] <= args.tolerance_angle_deg
+            and seg["droll_deg"]["p95"] <= args.tolerance_angle_deg
+        )
 
     ok = gate(startup) and gate(lockstep_seg)
-    print(f"RESULT: {'PASS' if ok else 'FAIL'} "
-          f"(tolerances dz<={args.tolerance_dz_m} m, "
-          f"angle<={args.tolerance_angle_deg} deg)")
+    print(
+        f"RESULT: {'PASS' if ok else 'FAIL'} "
+        f"(tolerances dz<={args.tolerance_dz_m} m, "
+        f"angle<={args.tolerance_angle_deg} deg)"
+    )
     return 0 if ok else 1
 
 

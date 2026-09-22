@@ -24,14 +24,10 @@ def analyze_run(path):
     if not np.any(baseline) or not np.any(hold):
         raise ValueError(f"Missing baseline or hold samples in {path}")
 
-    forces = {
-        leg: float(np.mean(data[f"{leg}_foot_force"][hold])) for leg in LEGS
-    }
+    forces = {leg: float(np.mean(data[f"{leg}_foot_force"][hold])) for leg in LEGS}
     fr_baseline = float(np.mean(data["FR_foot_force"][baseline]))
     max_roll = float(np.degrees(np.max(np.abs(data["imu_roll_rad"][hold]))))
-    max_pitch = float(
-        np.degrees(np.max(np.abs(data["imu_pitch_rad"][hold])))
-    )
+    max_pitch = float(np.degrees(np.max(np.abs(data["imu_pitch_rad"][hold]))))
     shift_x_cm = -100.0 * float(data["body_shift_x_target_m"][-1])
     shift_y_cm = 100.0 * float(data["body_shift_y_target_m"][-1])
 

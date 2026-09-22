@@ -29,20 +29,18 @@ def analyze_run(path):
     baseline_z = float(np.mean(data["FR_foot_z_state_m"][baseline]))
     hold_z = float(np.mean(data["FR_foot_z_state_m"][hold]))
     fr_hold_force = data["FR_foot_force"][hold]
-    clearance_before_mm = (
-        1000.0 * float(np.mean(data["FR_foot_ground_clearance_m"][baseline]))
+    clearance_before_mm = 1000.0 * float(
+        np.mean(data["FR_foot_ground_clearance_m"][baseline])
     )
-    clearance_hold_mm = (
-        1000.0 * float(np.mean(data["FR_foot_ground_clearance_m"][hold]))
+    clearance_hold_mm = 1000.0 * float(
+        np.mean(data["FR_foot_ground_clearance_m"][hold])
     )
 
     return {
         "run": path.parent.name,
         "path": path,
         "data": data,
-        "fr_force_before_lift": float(
-            np.mean(data["FR_foot_force"][baseline])
-        ),
+        "fr_force_before_lift": float(np.mean(data["FR_foot_force"][baseline])),
         "fr_force_hold_mean": float(np.mean(fr_hold_force)),
         "fr_force_hold_max": float(np.max(fr_hold_force)),
         "fr_zero_force_fraction": float(np.mean(fr_hold_force == 0.0)),
@@ -57,16 +55,13 @@ def analyze_run(path):
             float(np.max(np.abs(data["imu_pitch_rad"][hold])))
         ),
         "max_abs_q_error_rad": max(
-            float(np.max(np.abs(data[f"{joint}_q_error"][motion])))
-            for joint in JOINTS
+            float(np.max(np.abs(data[f"{joint}_q_error"][motion]))) for joint in JOINTS
         ),
         "max_abs_dq_rad_s": max(
-            float(np.max(np.abs(data[f"{joint}_dq_state"][motion])))
-            for joint in JOINTS
+            float(np.max(np.abs(data[f"{joint}_dq_state"][motion]))) for joint in JOINTS
         ),
         "max_abs_tau_est": max(
-            float(np.max(np.abs(data[f"{joint}_tau_est"][motion])))
-            for joint in JOINTS
+            float(np.max(np.abs(data[f"{joint}_tau_est"][motion]))) for joint in JOINTS
         ),
     }
 

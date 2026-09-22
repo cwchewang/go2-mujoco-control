@@ -1,0 +1,3 @@
+# Formatting/static analysis only; keep separate from the frozen runtime venv.
+ruff==0.12.12 \
+    --hash=sha256:2afc2fa864197634e549d87fb1e7b6feb01df0a80fd510d6489e1ce8c0b1cc45

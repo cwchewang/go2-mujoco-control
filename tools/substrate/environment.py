@@ -36,7 +36,10 @@ def verify_environment():
         raise ValueError("system-site-packages is enabled")
     lock = ROOT / "tools/substrate/requirements-linux-py310.lock"
     expected = dict(re.findall(r"^([a-zA-Z0-9_.-]+)==(\S+)", lock.read_text(), re.M))
-    canonical = lambda s: re.sub(r"[-_.]+", "-", s).lower()
+
+    def canonical(name):
+        return re.sub(r"[-_.]+", "-", name).lower()
+
     expected = {canonical(k): v for k, v in expected.items()}
     actual = {
         canonical(d.metadata["Name"]): d.version for d in metadata.distributions()

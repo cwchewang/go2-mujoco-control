@@ -466,9 +466,12 @@ def _main() -> int:
             except SyntaxError:
                 valid = False
         add_check(checks, "runner_python_syntax", valid, str(runner))
-        add_check(checks, "reviewed_inprocess_runner",
-                  runner_text.count('TRANSPORT = "inprocess"') == 1,
-                  "declared and exact-head reviewed; no DDS sockets")
+        add_check(
+            checks,
+            "reviewed_inprocess_runner",
+            runner_text.count('TRANSPORT = "inprocess"') == 1,
+            "declared and exact-head reviewed; no DDS sockets",
+        )
     else:
         if runner_exists:
             rc, _, err = command(["bash", "-n", str(runner)], repo)
@@ -747,6 +750,7 @@ def main() -> int:
         # selectors retries InterruptedError as EINTR, which would swallow the
         # stop request inside subprocess.communicate and strand its test group.
         raise RuntimeError("preflight interrupted")
+
     previous_signal = signal.signal(signal.SIGTERM, interrupted)
     try:
         # A launcher may pass its already-held descriptor, preserving one

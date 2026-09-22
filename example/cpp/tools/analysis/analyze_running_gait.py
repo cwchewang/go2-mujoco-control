@@ -45,7 +45,10 @@ def f(row: dict[str, str], key: str) -> float:
 
 
 def roll_pitch(row: dict[str, str]) -> tuple[float, float]:
-    w, x, y, z = (f(row, key) for key in ("base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z"))
+    w, x, y, z = (
+        f(row, key)
+        for key in ("base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z")
+    )
     roll = math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
     pitch = math.asin(max(-1.0, min(1.0, 2.0 * (w * y - z * x))))
     return roll, pitch
@@ -65,7 +68,9 @@ def main() -> int:
     log_path = run_dir / "controller.log"
     data_path = run_dir / "data.csv"
     truth_path = run_dir / "contact_ground_truth.csv"
-    if not all(path.exists() for path in (metadata_path, log_path, data_path, truth_path)):
+    if not all(
+        path.exists() for path in (metadata_path, log_path, data_path, truth_path)
+    ):
         print("validation=FAIL")
         print("failure=missing required run artifact")
         return 2
@@ -75,7 +80,15 @@ def main() -> int:
         if "=" in line:
             key, item = line.split("=", 1)
             metadata[key] = item
-    for key in ("controller_status", "safety_status", "quality_status", "analysis_status", "ground_truth_status", "dynamics_status", "completion_status"):
+    for key in (
+        "controller_status",
+        "safety_status",
+        "quality_status",
+        "analysis_status",
+        "ground_truth_status",
+        "dynamics_status",
+        "completion_status",
+    ):
         if metadata.get(key) != "0":
             failures.append(f"{key}={metadata.get(key, 'missing')}")
 
@@ -100,8 +113,13 @@ def main() -> int:
 
     required_data = {"state_tick_s", "motion_stage", "event_active", "event_type"}
     required_truth = {
-        "time_s", "base_qvel_world_x_mps", "base_pos_world_z_m", "base_quat_w",
-        "base_quat_x", "base_quat_y", "base_quat_z",
+        "time_s",
+        "base_qvel_world_x_mps",
+        "base_pos_world_z_m",
+        "base_quat_w",
+        "base_quat_x",
+        "base_quat_y",
+        "base_quat_z",
     }
     required_truth.update(f"{leg}_pos_world_z_m" for leg in LEGS)
     required_truth.update(f"{leg}_touch_N" for leg in LEGS)
@@ -155,10 +173,22 @@ def main() -> int:
     z_p01, z_p50, z_p99 = (percentile(base_z, q) for q in (1.0, 50.0, 99.0))
     roll_p95, pitch_p95 = percentile(roll_deg, 95.0), percentile(pitch_deg, 95.0)
     foot_p95 = {leg: percentile(foot_z[leg], 95.0) for leg in LEGS}
-    low_fraction = sum(all(f(row, f"{leg}_pos_world_z_m") <= 0.035 for leg in LEGS) for row in cruise) / max(1, len(cruise))
-    aerial_fraction = sum(not any(f(row, f"{leg}_touch_N") > 5.0 for leg in LEGS) for row in cruise) / max(1, len(cruise))
-    diagonal_sync = [sum(a == b for a, b in zip(contacts[first], contacts[second])) / max(1, len(cruise)) for first, second in DIAGONALS]
-    cross_anti = [sum(a != b for a, b in zip(contacts[first], contacts[second])) / max(1, len(cruise)) for first, second in CROSS_PAIRS]
+    low_fraction = sum(
+        all(f(row, f"{leg}_pos_world_z_m") <= 0.035 for leg in LEGS) for row in cruise
+    ) / max(1, len(cruise))
+    aerial_fraction = sum(
+        not any(f(row, f"{leg}_touch_N") > 5.0 for leg in LEGS) for row in cruise
+    ) / max(1, len(cruise))
+    diagonal_sync = [
+        sum(a == b for a, b in zip(contacts[first], contacts[second]))
+        / max(1, len(cruise))
+        for first, second in DIAGONALS
+    ]
+    cross_anti = [
+        sum(a != b for a, b in zip(contacts[first], contacts[second]))
+        / max(1, len(cruise))
+        for first, second in CROSS_PAIRS
+    ]
 
     if not math.isfinite(speed_p50) or speed_p50 < args.min_cruise_speed:
         failures.append(f"speed_median={speed_p50:.4f}<{args.min_cruise_speed:.4f}")
@@ -206,7 +236,10 @@ def main() -> int:
     print("foot_z_p95_m=" + ",".join(f"{leg}:{foot_p95[leg]:.6f}" for leg in LEGS))
     print(f"all_feet_low_fraction={low_fraction:.6f}")
     print(f"aerial_fraction={aerial_fraction:.6f}")
-    print("diagonal_contact_sync=" + ",".join(f"{a}+{b}:{s:.6f}" for (a, b), s in zip(DIAGONALS, diagonal_sync)))
+    print(
+        "diagonal_contact_sync="
+        + ",".join(f"{a}+{b}:{s:.6f}" for (a, b), s in zip(DIAGONALS, diagonal_sync))
+    )
     print(f"cross_diagonal_contact_anti_min={min(cross_anti):.6f}")
     print(f"stop_tail_samples={len(stop_rows)}")
     if failures:

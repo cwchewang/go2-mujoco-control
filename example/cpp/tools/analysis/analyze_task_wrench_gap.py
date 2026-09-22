@@ -68,10 +68,13 @@ def correlation(left: list[float], right: list[float]) -> float:
     )
     if denominator <= 1e-15:
         return 0.0
-    return sum(
-        (left_value - left_mean) * (right_value - right_mean)
-        for left_value, right_value in zip(left, right)
-    ) / denominator
+    return (
+        sum(
+            (left_value - left_mean) * (right_value - right_mean)
+            for left_value, right_value in zip(left, right)
+        )
+        / denominator
+    )
 
 
 def main() -> int:
@@ -84,11 +87,7 @@ def main() -> int:
     parser.add_argument("--gravity-mps2", type=float, default=GRAVITY_MPS2)
     args = parser.parse_args()
 
-    if (
-        args.match_tolerance_s <= 0.0
-        or args.mass_kg <= 0.0
-        or args.gravity_mps2 <= 0.0
-    ):
+    if args.match_tolerance_s <= 0.0 or args.mass_kg <= 0.0 or args.gravity_mps2 <= 0.0:
         print("validation=FAIL: invalid audit parameters")
         return 2
 
@@ -104,13 +103,9 @@ def main() -> int:
             }
             missing = sorted(state_required - state_fields)
             if missing:
-                raise ValueError(
-                    "state CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("state CSV missing fields: " + ",".join(missing))
             state_rows = list(state_reader)
-        with args.ground_truth_csv.open(
-            newline="", encoding="utf-8"
-        ) as handle:
+        with args.ground_truth_csv.open(newline="", encoding="utf-8") as handle:
             truth_reader = csv.DictReader(handle)
             truth_fields = set(truth_reader.fieldnames or ())
             truth_required = {
@@ -150,10 +145,7 @@ def main() -> int:
     time_cursor = 0
     walking_rows = 0
     match_failures = 0
-    by_contact = {
-        count: {"desired": [], "actual": [], "gap": []}
-        for count in (2, 4)
-    }
+    by_contact = {count: {"desired": [], "actual": [], "gap": []} for count in (2, 4)}
 
     for row in state_rows:
         if finite(row, "motion_stage") != 2.0:
@@ -186,8 +178,7 @@ def main() -> int:
 
         truth = truth_rows[time_cursor]
         quaternion = tuple(
-            finite(truth, f"base_quat_{axis}")
-            for axis in ("w", "x", "y", "z")
+            finite(truth, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
         )
         force_world = tuple(
             finite(
@@ -213,9 +204,7 @@ def main() -> int:
             actual_force_body[index].append(force_body[index])
             actual_moment_body[index].append(moment_body[index])
             gaps_force[index].append(force_body[index] - desired_force[index])
-            gaps_moment[index].append(
-                moment_body[index] - desired_moment[index]
-            )
+            gaps_moment[index].append(moment_body[index] - desired_moment[index])
         if contact_count in by_contact:
             bucket = by_contact[contact_count]
             bucket["desired"].append(desired_x)
@@ -247,9 +236,15 @@ def main() -> int:
         lines.extend(
             [
                 "contact_%d_rows=%d" % (contact_count, len(bucket["desired"])),
-                "contact_%d_force_x_correlation=%.9g" % (contact_count, correlation(bucket["desired"], bucket["actual"])),
-                "contact_%d_force_x_gap_p95_abs_n=%.9g" % (contact_count, percentile([abs(value) for value in bucket["gap"]], 0.95)),
-                "contact_%d_force_x_gap_rms_n=%.9g" % (contact_count, rms(bucket["gap"])),
+                "contact_%d_force_x_correlation=%.9g"
+                % (contact_count, correlation(bucket["desired"], bucket["actual"])),
+                "contact_%d_force_x_gap_p95_abs_n=%.9g"
+                % (
+                    contact_count,
+                    percentile([abs(value) for value in bucket["gap"]], 0.95),
+                ),
+                "contact_%d_force_x_gap_rms_n=%.9g"
+                % (contact_count, rms(bucket["gap"])),
             ]
         )
     for index, axis in enumerate(AXES):
@@ -257,22 +252,21 @@ def main() -> int:
             [
                 "force_gap_body_%s_bias_n=%.9g"
                 % (axis, statistics.fmean(gaps_force[index])),
-                "force_gap_body_%s_rms_n=%.9g"
-                % (axis, rms(gaps_force[index])),
+                "force_gap_body_%s_rms_n=%.9g" % (axis, rms(gaps_force[index])),
                 "force_gap_body_%s_p95_abs_n=%.9g"
-                % (axis, percentile(
-                    [abs(value) for value in gaps_force[index]], 0.95
-                )),
+                % (axis, percentile([abs(value) for value in gaps_force[index]], 0.95)),
                 "force_gap_body_%s_max_abs_n=%.9g"
                 % (axis, max(abs(value) for value in gaps_force[index])),
                 "actual_moment_body_%s_p95_abs_nm=%.9g"
-                % (axis, percentile(
-                    [abs(value) for value in actual_moment_body[index]], 0.95
-                )),
+                % (
+                    axis,
+                    percentile(
+                        [abs(value) for value in actual_moment_body[index]], 0.95
+                    ),
+                ),
                 "actual_moment_body_%s_max_abs_nm=%.9g"
                 % (axis, max(abs(value) for value in actual_moment_body[index])),
-                "zero_moment_gap_body_%s_rms_nm=%.9g"
-                % (axis, rms(gaps_moment[index])),
+                "zero_moment_gap_body_%s_rms_nm=%.9g" % (axis, rms(gaps_moment[index])),
             ]
         )
     lines.extend(

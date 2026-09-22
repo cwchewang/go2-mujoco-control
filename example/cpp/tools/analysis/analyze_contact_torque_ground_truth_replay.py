@@ -30,13 +30,18 @@ def vector_norm(vector: tuple[float, float, float]) -> float:
     return math.sqrt(sum(value * value for value in vector))
 
 
-def world_to_body(quaternion: tuple[float, float, float, float],
-                  vector: tuple[float, float, float]) -> tuple[float, float, float]:
+def world_to_body(
+    quaternion: tuple[float, float, float, float], vector: tuple[float, float, float]
+) -> tuple[float, float, float]:
     norm = math.sqrt(sum(value * value for value in quaternion))
     if not math.isfinite(norm) or norm <= 1e-12:
         raise ValueError("invalid base quaternion")
-    w, x, y, z = (quaternion[0] / norm, -quaternion[1] / norm,
-                  -quaternion[2] / norm, -quaternion[3] / norm)
+    w, x, y, z = (
+        quaternion[0] / norm,
+        -quaternion[1] / norm,
+        -quaternion[2] / norm,
+        -quaternion[3] / norm,
+    )
     vx, vy, vz = vector
     return (
         (1 - 2 * (y * y + z * z)) * vx
@@ -51,8 +56,9 @@ def world_to_body(quaternion: tuple[float, float, float, float],
     )
 
 
-def foot_jacobian(leg: str, q_hip: float, q_thigh: float,
-                  q_calf: float) -> tuple[tuple[float, ...], ...]:
+def foot_jacobian(
+    leg: str, q_hip: float, q_thigh: float, q_calf: float
+) -> tuple[tuple[float, ...], ...]:
     _, _, hip_link_y, thigh_length, calf_length = GEOMETRY[leg]
     lower_angle = q_thigh + q_calf
     sin_hip, cos_hip = math.sin(q_hip), math.cos(q_hip)
@@ -65,15 +71,18 @@ def foot_jacobian(leg: str, q_hip: float, q_thigh: float,
     lateral_y = cos_hip * hip_link_y - sin_hip * leg_z
     return (
         (0.0, leg_z, lower_z),
-        (-sin_hip * hip_link_y - cos_hip * leg_z,
-         -sin_hip * d_leg_z_d_thigh, -sin_hip * d_leg_z_d_calf),
-        (lateral_y, cos_hip * d_leg_z_d_thigh,
-         cos_hip * d_leg_z_d_calf),
+        (
+            -sin_hip * hip_link_y - cos_hip * leg_z,
+            -sin_hip * d_leg_z_d_thigh,
+            -sin_hip * d_leg_z_d_calf,
+        ),
+        (lateral_y, cos_hip * d_leg_z_d_thigh, cos_hip * d_leg_z_d_calf),
     )
 
 
-def torque_from_force(leg: str, angles: tuple[float, float, float],
-                      force_body: tuple[float, float, float]) -> tuple[float, ...]:
+def torque_from_force(
+    leg: str, angles: tuple[float, float, float], force_body: tuple[float, float, float]
+) -> tuple[float, ...]:
     jacobian = foot_jacobian(leg, *angles)
     return tuple(
         sum(jacobian[row][joint] * force_body[row] for row in range(3))
@@ -84,8 +93,13 @@ def torque_from_force(leg: str, angles: tuple[float, float, float],
 def read_ground_truth(path: Path) -> list[dict[str, object]]:
     with path.open(newline="") as handle:
         reader = csv.DictReader(handle)
-        required = {"time_s", "base_quat_w", "base_quat_x",
-                    "base_quat_y", "base_quat_z"}
+        required = {
+            "time_s",
+            "base_quat_w",
+            "base_quat_x",
+            "base_quat_y",
+            "base_quat_z",
+        }
         for leg in LEGS:
             required.update(f"{leg}_foot_contact_grf_world_{axis}_N" for axis in "xyz")
         missing = sorted(required.difference(reader.fieldnames or ()))
@@ -96,11 +110,12 @@ def read_ground_truth(path: Path) -> list[dict[str, object]]:
         for row_number, row in enumerate(reader, start=2):
             time_s = finite_float(row, "time_s")
             if time_s <= previous_time:
-                raise ValueError(f"ground-truth row {row_number} time is not increasing")
+                raise ValueError(
+                    f"ground-truth row {row_number} time is not increasing"
+                )
             previous_time = time_s
             quaternion = tuple(
-                finite_float(row, f"base_quat_{axis}")
-                for axis in ("w", "x", "y", "z")
+                finite_float(row, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
             )
             forces = {
                 leg: tuple(
@@ -115,8 +130,9 @@ def read_ground_truth(path: Path) -> list[dict[str, object]]:
     return samples
 
 
-def nearest_sample(samples: list[dict[str, object]], target: float,
-                   cursor: int) -> tuple[int, float]:
+def nearest_sample(
+    samples: list[dict[str, object]], target: float, cursor: int
+) -> tuple[int, float]:
     while cursor + 1 < len(samples):
         current_error = abs(float(samples[cursor]["time"]) - target)
         next_error = abs(float(samples[cursor + 1]["time"]) - target)
@@ -142,9 +158,13 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    if (args.match_tolerance_s <= 0 or args.contact_force_threshold_n <= 0
-            or args.swing_force_tolerance_n <= 0
-            or args.mu < 0 or args.max_torque_nm <= 0):
+    if (
+        args.match_tolerance_s <= 0
+        or args.contact_force_threshold_n <= 0
+        or args.swing_force_tolerance_n <= 0
+        or args.mu < 0
+        or args.max_torque_nm <= 0
+    ):
         print("validation=FAIL: invalid audit parameters")
         return 2
     try:
@@ -164,22 +184,37 @@ def main() -> int:
         return 2
 
     summary = {
-        "state_rows": len(state_rows), "matched_rows": 0, "skipped_rows": 0,
+        "state_rows": len(state_rows),
+        "matched_rows": 0,
+        "skipped_rows": 0,
         "duplicate_state_rows": 0,
-        "time_match_failures": 0, "contact_mask_mismatch_rows": 0,
-        "force_on_state_swing_rows": 0, "friction_violation_rows": 0,
+        "time_match_failures": 0,
+        "contact_mask_mismatch_rows": 0,
+        "force_on_state_swing_rows": 0,
+        "friction_violation_rows": 0,
         "swing_force_violation_rows": 0,
-        "torque_limit_violation_rows": 0, "max_time_error_s": 0.0,
-        "max_force_on_state_swing_n": 0.0, "max_friction_ratio": 0.0,
-        "max_abs_torque_nm": 0.0, "max_torque_violation_nm": 0.0,
+        "torque_limit_violation_rows": 0,
+        "max_time_error_s": 0.0,
+        "max_force_on_state_swing_n": 0.0,
+        "max_friction_ratio": 0.0,
+        "max_abs_torque_nm": 0.0,
+        "max_torque_violation_nm": 0.0,
     }
     output_path = Path(args.out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_fields = [
-        "state_row", "state_tick_s", "ground_truth_time_s", "time_error_s",
-        "state_contact_count", "ground_truth_contact_count", "contact_mask_match",
-        "force_on_state_swing_max_N", "max_friction_ratio", "friction_ok",
-        "max_abs_torque_Nm", "torque_limits_ok",
+        "state_row",
+        "state_tick_s",
+        "ground_truth_time_s",
+        "time_error_s",
+        "state_contact_count",
+        "ground_truth_contact_count",
+        "contact_mask_match",
+        "force_on_state_swing_max_N",
+        "max_friction_ratio",
+        "friction_ok",
+        "max_abs_torque_Nm",
+        "torque_limits_ok",
     ] + [f"{leg}_{joint}_tau_candidate_Nm" for leg in LEGS for joint in JOINTS]
 
     cursor = 0
@@ -204,13 +239,11 @@ def main() -> int:
                     continue
                 sample = ground_truth[cursor]
                 state_contact = {
-                    leg: int(finite_float(row, f"contact_{leg}") >= 0.5)
-                    for leg in LEGS
+                    leg: int(finite_float(row, f"contact_{leg}") >= 0.5) for leg in LEGS
                 }
                 angles = {
                     leg: tuple(
-                        finite_float(row, f"{leg}_{joint}_q_state")
-                        for joint in JOINTS
+                        finite_float(row, f"{leg}_{joint}_q_state") for joint in JOINTS
                     )
                     for leg in LEGS
                 }
@@ -269,8 +302,11 @@ def main() -> int:
                 summary["friction_violation_rows"] += 1
 
             torques = {
-                leg: (torque_from_force(leg, angles[leg], body_forces[leg])
-                      if ground_contact[leg] else (0.0, 0.0, 0.0))
+                leg: (
+                    torque_from_force(leg, angles[leg], body_forces[leg])
+                    if ground_contact[leg]
+                    else (0.0, 0.0, 0.0)
+                )
                 for leg in LEGS
             }
             max_abs_torque = max(abs(value) for leg in LEGS for value in torques[leg])
@@ -285,7 +321,8 @@ def main() -> int:
                 summary["max_abs_torque_nm"], max_abs_torque
             )
             output_row = {
-                "state_row": row_number, "state_tick_s": f"{state_time:.12g}",
+                "state_row": row_number,
+                "state_tick_s": f"{state_time:.12g}",
                 "ground_truth_time_s": f"{sample['time']:.12g}",
                 "time_error_s": f"{time_error:.12g}",
                 "state_contact_count": sum(state_contact.values()),
@@ -302,9 +339,11 @@ def main() -> int:
                     output_row[f"{leg}_{joint}_tau_candidate_Nm"] = f"{torque:.12g}"
             writer.writerow(output_row)
 
-    structural_ok = (summary["matched_rows"] > 0
-                     and summary["time_match_failures"] == 0
-                     and summary["skipped_rows"] == 0)
+    structural_ok = (
+        summary["matched_rows"] > 0
+        and summary["time_match_failures"] == 0
+        and summary["skipped_rows"] == 0
+    )
     contact_ok = summary["contact_mask_mismatch_rows"] == 0
     swing_ok = summary["swing_force_violation_rows"] == 0
     friction_ok = summary["friction_violation_rows"] == 0

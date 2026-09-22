@@ -85,9 +85,7 @@ def main() -> int:
     if args.last_seconds > 0.0:
         end_t = walking[-1][0] if walking else 0.0
         walking = [
-            sample
-            for sample in walking
-            if sample[0] >= end_t - args.last_seconds
+            sample for sample in walking if sample[0] >= end_t - args.last_seconds
         ]
     if len(walking) < 2:
         print("validation=FAIL: fewer than two walking samples after window")
@@ -107,21 +105,16 @@ def main() -> int:
         print("validation=FAIL: zero time variance")
         return 2
 
-    regression_slope = sum(
-        (sample[0] - mean_t) * (sample[1] - mean_x)
-        for sample in walking
-    ) / denominator
+    regression_slope = (
+        sum((sample[0] - mean_t) * (sample[1] - mean_x) for sample in walking)
+        / denominator
+    )
     measured_speed = args.direction_sign * regression_slope
     endpoint_speed = args.direction_sign * (end_x - start_x) / duration
     speed_ratio = measured_speed / args.target_speed
-    lateral_drift = max(
-        abs(sample[2] - start_y) for sample in walking
-    )
+    lateral_drift = max(abs(sample[2] - start_y) for sample in walking)
 
-    validation = (
-        math.isfinite(measured_speed)
-        and speed_ratio >= args.min_speed_ratio
-    )
+    validation = math.isfinite(measured_speed) and speed_ratio >= args.min_speed_ratio
     print(f"walking_rows={len(walking)}")
     print(f"walking_duration_s={duration:.6f}")
     print(f"walking_distance_m={args.direction_sign * (end_x - start_x):.6f}")

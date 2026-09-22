@@ -42,7 +42,8 @@ Challengers / baselines：
 ## 1A. [2026-09-22 | CURRENT | ENGINEERING] 可执行的新阶段底座
 
 当前准备分支为 `research/substrate-prelaunch-20260922`，任务见
-`docs/research/TASK_SUBSTRATE_PRELAUNCH_20260922.md`，最新结果见
+`docs/research/TASK_REPOSITORY_CEE_20260922.md`，最新结果见
+`docs/validation/repository_cee_20260922/RESULTS.md`。首轮准备验收保留于
 `docs/validation/substrate_prelaunch_20260922/RESULTS.md`。可靠性验收保留于
 `docs/validation/substrate_reliability_20260922/RESULTS.md`。首轮工程记录保留于
 `docs/validation/substrate_foundation_20260922/RESULTS.md`。

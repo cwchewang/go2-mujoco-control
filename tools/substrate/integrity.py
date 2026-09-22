@@ -150,7 +150,9 @@ class EvidenceRun:
         return False
 
 
-def run_logged(argv, directory, name, timeout=120, cwd=None, pass_fds=(), termination_grace=0.5):
+def run_logged(
+    argv, directory, name, timeout=120, cwd=None, pass_fds=(), termination_grace=0.5
+):
     """Preserve partial output and reap the process group on all exit paths."""
     if not name.replace("_", "").isalnum():
         raise ValueError("invalid log name")

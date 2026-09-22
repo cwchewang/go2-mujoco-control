@@ -8,7 +8,6 @@ import csv
 import math
 import pathlib
 import re
-import statistics
 import sys
 
 
@@ -133,19 +132,16 @@ def main() -> int:
     stage2_end = max(float(row["state_tick_s"]) for row in stage2)
     cruise_start = stage2_start + args.cruise_trim_start_s
     cruise_end = stage2_end - args.cruise_trim_end_s
-    cruise = [
-        row for row in truth
-        if cruise_start <= float(row["time_s"]) < cruise_end
-    ]
+    cruise = [row for row in truth if cruise_start <= float(row["time_s"]) < cruise_end]
     if len(cruise) < 100:
         failures.append(f"cruise_samples={len(cruise)}<100")
-        cruise = [row for row in truth if stage2_start <= float(row["time_s"]) <= stage2_end]
+        cruise = [
+            row for row in truth if stage2_start <= float(row["time_s"]) <= stage2_end
+        ]
 
     speed = floats(cruise, "base_qvel_world_x_mps")
     base_z = floats(cruise, "base_pos_world_z_m")
-    foot_z = {
-        leg: floats(cruise, f"{leg}_pos_world_z_m") for leg in LEGS
-    }
+    foot_z = {leg: floats(cruise, f"{leg}_pos_world_z_m") for leg in LEGS}
     speed_p05 = percentile(speed, 5.0)
     speed_p50 = percentile(speed, 50.0)
     speed_p95 = percentile(speed, 95.0)
@@ -160,22 +156,16 @@ def main() -> int:
     ) / max(1, len(cruise))
 
     if not math.isfinite(speed_p50) or speed_p50 < args.min_cruise_speed:
-        failures.append(
-            f"speed_median={speed_p50:.4f}<{args.min_cruise_speed:.4f}"
-        )
+        failures.append(f"speed_median={speed_p50:.4f}<{args.min_cruise_speed:.4f}")
     if not math.isfinite(speed_p05) or speed_p05 < 0.85:
         failures.append(f"speed_p05={speed_p05:.4f}<0.8500")
     if not (0.33 <= base_z_p01 and base_z_p99 <= 0.40):
-        failures.append(
-            f"base_z_quantiles=[{base_z_p01:.4f},{base_z_p99:.4f}]"
-        )
+        failures.append(f"base_z_quantiles=[{base_z_p01:.4f},{base_z_p99:.4f}]")
     for leg in LEGS:
         if foot_p95[leg] < 0.045:
             failures.append(f"{leg}_swing_clearance_p95={foot_p95[leg]:.4f}<0.0450")
     if all_feet_low_fraction > 0.35:
-        failures.append(
-            f"all_feet_low_fraction={all_feet_low_fraction:.4f}>0.3500"
-        )
+        failures.append(f"all_feet_low_fraction={all_feet_low_fraction:.4f}>0.3500")
 
     truth_time = floats(truth, "time_s")
     stop_start = max(stage2_end, truth_time[0])
@@ -184,11 +174,18 @@ def main() -> int:
         failures.append(f"stop_tail_samples={len(stop_rows)}<100")
     else:
         stop_speed = [abs(float(row["base_qvel_world_x_mps"])) for row in stop_rows]
-        stop_roll_rate = [abs(float(row["base_angvel_body_x_radps"])) for row in stop_rows]
-        stop_pitch_rate = [abs(float(row["base_angvel_body_y_radps"])) for row in stop_rows]
+        stop_roll_rate = [
+            abs(float(row["base_angvel_body_x_radps"])) for row in stop_rows
+        ]
+        stop_pitch_rate = [
+            abs(float(row["base_angvel_body_y_radps"])) for row in stop_rows
+        ]
         if percentile(stop_speed, 95.0) > 0.10:
             failures.append(f"stop_speed_p95={percentile(stop_speed, 95.0):.4f}>0.1000")
-        if percentile(stop_roll_rate, 95.0) > 0.60 or percentile(stop_pitch_rate, 95.0) > 0.60:
+        if (
+            percentile(stop_roll_rate, 95.0) > 0.60
+            or percentile(stop_pitch_rate, 95.0) > 0.60
+        ):
             failures.append("stop_body_rate_p95>0.60")
 
     print(f"stage2_window_s={stage2_start:.3f}..{stage2_end:.3f}")

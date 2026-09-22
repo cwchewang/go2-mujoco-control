@@ -32,9 +32,7 @@ def main() -> int:
 
     required = {"time_s", "step_index"}
     for leg in LEGS:
-        required.update(
-            f"{leg}_sensor_force_world_{axis}_N" for axis in AXES
-        )
+        required.update(f"{leg}_sensor_force_world_{axis}_N" for axis in AXES)
         required.update(f"{leg}_contact_grf_world_{axis}_N" for axis in AXES)
         required.update(f"{leg}_pos_world_{axis}_m" for axis in AXES)
         required.add(f"{leg}_touch_N")
@@ -68,8 +66,7 @@ def main() -> int:
             errors.append(f"row {row_number}: time is not strictly increasing")
         if steps and step_index != steps[-1] + 1:
             errors.append(
-                f"row {row_number}: step index jump "
-                f"{steps[-1]}->{step_index}"
+                f"row {row_number}: step index jump {steps[-1]}->{step_index}"
             )
         times.append(time_s)
         steps.append(step_index)
@@ -78,15 +75,11 @@ def main() -> int:
             contact_grf_values = {}
             try:
                 for axis in AXES:
-                    raw = float(
-                        row[f"{leg}_sensor_force_world_{axis}_N"]
-                    )
+                    raw = float(row[f"{leg}_sensor_force_world_{axis}_N"])
                     contact_grf = float(row[f"{leg}_contact_grf_world_{axis}_N"])
                     contact_grf_values[axis] = contact_grf
                     if not math.isfinite(raw) or not math.isfinite(contact_grf):
-                        errors.append(
-                            f"row {row_number} {leg}: non-finite force"
-                        )
+                        errors.append(f"row {row_number} {leg}: non-finite force")
                 touch = float(row[f"{leg}_touch_N"])
                 if all(math.isfinite(contact_grf_values[axis]) for axis in AXES):
                     max_contact_grf_norm = max(

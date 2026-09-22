@@ -35,15 +35,9 @@ def main() -> int:
         return 2
 
     required = {"time_s", "step_index", "total_mass_kg"}
-    required.update(
-        f"subtree_linvel_world_{axis}_mps" for axis in AXES
-    )
-    required.update(
-        f"gravity_world_{axis}_mps2" for axis in AXES
-    )
-    required.update(
-        f"total_contact_grf_world_{axis}_N" for axis in AXES
-    )
+    required.update(f"subtree_linvel_world_{axis}_mps" for axis in AXES)
+    required.update(f"gravity_world_{axis}_mps2" for axis in AXES)
+    required.update(f"total_contact_grf_world_{axis}_N" for axis in AXES)
 
     missing = sorted(required.difference(reader.fieldnames))
     if missing:
@@ -70,16 +64,11 @@ def main() -> int:
             step_index = int(row["step_index"])
             mass = float(row["total_mass_kg"])
             velocity = {
-                axis: float(row[f"subtree_linvel_world_{axis}_mps"])
-                for axis in AXES
+                axis: float(row[f"subtree_linvel_world_{axis}_mps"]) for axis in AXES
             }
-            gravity = {
-                axis: float(row[f"gravity_world_{axis}_mps2"])
-                for axis in AXES
-            }
+            gravity = {axis: float(row[f"gravity_world_{axis}_mps2"]) for axis in AXES}
             grf = {
-                axis: float(row[f"total_contact_grf_world_{axis}_N"])
-                for axis in AXES
+                axis: float(row[f"total_contact_grf_world_{axis}_N"]) for axis in AXES
             }
         except (KeyError, TypeError, ValueError) as exc:
             errors.append(f"row {row_number}: invalid dynamics sample: {exc}")
@@ -101,8 +90,7 @@ def main() -> int:
             errors.append(f"row {row_number}: time is not strictly increasing")
         if steps and step_index != steps[-1] + 1:
             errors.append(
-                f"row {row_number}: step index jump "
-                f"{steps[-1]}->{step_index}"
+                f"row {row_number}: step index jump {steps[-1]}->{step_index}"
             )
 
         times.append(time_s)
@@ -132,49 +120,36 @@ def main() -> int:
             print("validation=FAIL: non-positive forward-difference interval")
             return 1
         acceleration = {
-            axis: (
-                velocities[index + 1][axis] - velocities[index][axis]
-            ) / dt
+            axis: (velocities[index + 1][axis] - velocities[index][axis]) / dt
             for axis in AXES
         }
         expected_grf = {
-            axis: masses[index] * (
-                acceleration[axis] - gravity_samples[index][axis]
-            )
+            axis: masses[index] * (acceleration[axis] - gravity_samples[index][axis])
             for axis in AXES
         }
         residual = {
-            axis: force_samples[index][axis] - expected_grf[axis]
-            for axis in AXES
+            axis: force_samples[index][axis] - expected_grf[axis] for axis in AXES
         }
         residuals.append((times[index], residual))
-        residual_norms.append(
-            math.sqrt(sum(residual[axis] ** 2 for axis in AXES))
-        )
+        residual_norms.append(math.sqrt(sum(residual[axis] ** 2 for axis in AXES)))
 
     dts = [right - left for left, right in zip(times, times[1:])]
     median_dt = statistics.median(dts) if dts else 0.0
     sorted_norms = sorted(residual_norms)
     p95_index = int(0.95 * (len(sorted_norms) - 1))
     p95_residual_n = sorted_norms[p95_index]
-    max_index = max(
-        range(len(residual_norms)), key=residual_norms.__getitem__
-    )
+    max_index = max(range(len(residual_norms)), key=residual_norms.__getitem__)
     max_residual_norm_n = residual_norms[max_index]
     max_residual_time_s, max_residual_components = residuals[max_index]
     max_abs_residual_n = max(
-        abs(value)
-        for _, residual in residuals
-        for value in residual.values()
+        abs(value) for _, residual in residuals for value in residual.values()
     )
     rms_residual_n = math.sqrt(
-        sum(value ** 2 for value in residual_norms) / len(residual_norms)
+        sum(value**2 for value in residual_norms) / len(residual_norms)
     )
     gravity = gravity_samples[0]
     gravity_drift = max(
-        abs(sample[axis] - gravity[axis])
-        for sample in gravity_samples
-        for axis in AXES
+        abs(sample[axis] - gravity[axis]) for sample in gravity_samples for axis in AXES
     )
     balance_pass = p95_residual_n <= args.balance_tolerance_n
 
@@ -184,10 +159,7 @@ def main() -> int:
     print(f"median_dt_s={median_dt:.9g}")
     print(f"total_mass_min_kg={min(masses):.9g}")
     print(f"total_mass_max_kg={max(masses):.9g}")
-    print(
-        "gravity_world_mps2="
-        + ",".join(f"{gravity[axis]:.9g}" for axis in AXES)
-    )
+    print("gravity_world_mps2=" + ",".join(f"{gravity[axis]:.9g}" for axis in AXES))
     print(f"gravity_drift_mps2={gravity_drift:.9g}")
     print(f"p95_force_balance_residual_N={p95_residual_n:.9g}")
     print(f"rms_force_balance_residual_N={rms_residual_n:.9g}")
@@ -196,9 +168,7 @@ def main() -> int:
     print(f"max_residual_time_s={max_residual_time_s:.9g}")
     print(
         "max_residual_components_N="
-        + ",".join(
-            f"{max_residual_components[axis]:.9g}" for axis in AXES
-        )
+        + ",".join(f"{max_residual_components[axis]:.9g}" for axis in AXES)
     )
     print(f"force_balance_tolerance_N={args.balance_tolerance_n:.9g}")
     print(f"force_balance_validation={'PASS' if balance_pass else 'FAIL'}")

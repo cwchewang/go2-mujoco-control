@@ -83,7 +83,9 @@ def _api(
         detail = ""
         if isinstance(exc, HTTPError):
             detail = exc.read().decode("utf-8", errors="replace")[:500]
-        raise GitHubError(f"GitHub API {method} {path} failed: {detail or exc}") from exc
+        raise GitHubError(
+            f"GitHub API {method} {path} failed: {detail or exc}"
+        ) from exc
     return json.loads(raw) if raw else None
 
 
@@ -146,7 +148,11 @@ def list_open_atlas_tasks(full_name: str, token: str) -> list[dict[str, Any]]:
         for issue in batch:
             if not isinstance(issue, dict) or "pull_request" in issue:
                 continue
-            if issue.get("author_association") not in {"OWNER", "MEMBER", "COLLABORATOR"}:
+            if issue.get("author_association") not in {
+                "OWNER",
+                "MEMBER",
+                "COLLABORATOR",
+            }:
                 continue
             labels = _label_names(issue)
             if "atlas-complete" in labels or "atlas-failed" in labels:

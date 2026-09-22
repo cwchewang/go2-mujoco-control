@@ -13,7 +13,6 @@ import csv
 import math
 import pathlib
 import re
-import statistics
 import sys
 
 
@@ -115,9 +114,7 @@ def main() -> int:
     log_text = controller_log_path.read_text(errors="replace")
     cycle_count = len(re.findall(r"Trot cycle .* health:", log_text))
     if cycle_count < args.min_cycle_count:
-        failures.append(
-            f"cycle_health_count={cycle_count}<{args.min_cycle_count}"
-        )
+        failures.append(f"cycle_health_count={cycle_count}<{args.min_cycle_count}")
     if "Trot pre-stop brake: reducing gait reference" not in log_text:
         failures.append("pre_stop_brake_not_recorded")
     if "Trot stopping; returning to stand" not in log_text:
@@ -168,18 +165,17 @@ def main() -> int:
     stage2_end = max(value(row, "state_tick_s") for row in stage2)
     cruise_start = stage2_start + args.cruise_trim_start_s
     cruise_end = stage2_end - args.cruise_trim_end_s
-    cruise = [
-        row for row in truth if cruise_start <= value(row, "time_s") < cruise_end
-    ]
+    cruise = [row for row in truth if cruise_start <= value(row, "time_s") < cruise_end]
     if len(cruise) < 100:
         failures.append(f"cruise_samples={len(cruise)}<100")
-        cruise = [row for row in truth if stage2_start <= value(row, "time_s") <= stage2_end]
+        cruise = [
+            row for row in truth if stage2_start <= value(row, "time_s") <= stage2_end
+        ]
 
     speed = [value(row, "base_qvel_world_x_mps") for row in cruise]
     base_z = [value(row, "base_pos_world_z_m") for row in cruise]
     foot_z = {
-        leg: [value(row, f"{leg}_pos_world_z_m") for row in cruise]
-        for leg in LEGS
+        leg: [value(row, f"{leg}_pos_world_z_m") for row in cruise] for leg in LEGS
     }
     roll_deg = []
     pitch_deg = []
@@ -204,26 +200,23 @@ def main() -> int:
     ) / max(1, len(cruise))
 
     contacts = {
-        leg: [value(row, f"{leg}_touch_N") > 5.0 for row in cruise]
-        for leg in LEGS
+        leg: [value(row, f"{leg}_touch_N") > 5.0 for row in cruise] for leg in LEGS
     }
     diagonal_sync = [
-        sum(a == b for a, b in zip(contacts[first], contacts[second])) /
-        max(1, len(cruise))
+        sum(a == b for a, b in zip(contacts[first], contacts[second]))
+        / max(1, len(cruise))
         for first, second in DIAGONALS
     ]
     cross_anti = [
-        sum(a != b for a, b in zip(contacts[first], contacts[second])) /
-        max(1, len(cruise))
+        sum(a != b for a, b in zip(contacts[first], contacts[second]))
+        / max(1, len(cruise))
         for first, second in CROSS_PAIRS
     ]
 
     if not math.isfinite(speed_p50) or speed_p50 < args.min_cruise_speed:
         failures.append(f"speed_median={speed_p50:.4f}<{args.min_cruise_speed:.4f}")
     if not math.isfinite(speed_p05) or speed_p05 < args.min_speed_p05:
-        failures.append(
-            f"speed_p05={speed_p05:.4f}<{args.min_speed_p05:.4f}"
-        )
+        failures.append(f"speed_p05={speed_p05:.4f}<{args.min_speed_p05:.4f}")
     if not math.isfinite(speed_p95) or speed_p95 > 1.35:
         failures.append(f"speed_p95={speed_p95:.4f}>1.3500")
     if not (0.33 <= base_z_p01 and base_z_p99 <= 0.40):
@@ -247,11 +240,18 @@ def main() -> int:
         failures.append(f"stop_tail_samples={len(stop_rows)}<100")
     else:
         stop_speed = [abs(value(row, "base_qvel_world_x_mps")) for row in stop_rows]
-        stop_roll_rate = [abs(value(row, "base_angvel_body_x_radps")) for row in stop_rows]
-        stop_pitch_rate = [abs(value(row, "base_angvel_body_y_radps")) for row in stop_rows]
+        stop_roll_rate = [
+            abs(value(row, "base_angvel_body_x_radps")) for row in stop_rows
+        ]
+        stop_pitch_rate = [
+            abs(value(row, "base_angvel_body_y_radps")) for row in stop_rows
+        ]
         if percentile(stop_speed, 95.0) > 0.10:
             failures.append(f"stop_speed_p95={percentile(stop_speed, 95.0):.4f}>0.1000")
-        if percentile(stop_roll_rate, 95.0) > 0.60 or percentile(stop_pitch_rate, 95.0) > 0.60:
+        if (
+            percentile(stop_roll_rate, 95.0) > 0.60
+            or percentile(stop_pitch_rate, 95.0) > 0.60
+        ):
             failures.append("stop_body_rate_p95>0.60")
 
     print(f"stage2_window_s={stage2_start:.3f}..{stage2_end:.3f}")
@@ -267,7 +267,10 @@ def main() -> int:
     print("foot_z_p95_m=" + ",".join(f"{leg}:{foot_p95[leg]:.6f}" for leg in LEGS))
     print("foot_z_p99_m=" + ",".join(f"{leg}:{foot_p99[leg]:.6f}" for leg in LEGS))
     print(f"all_feet_low_fraction={all_feet_low_fraction:.6f}")
-    print("diagonal_contact_sync=" + ",".join(f"{a}+{b}:{s:.6f}" for (a, b), s in zip(DIAGONALS, diagonal_sync)))
+    print(
+        "diagonal_contact_sync="
+        + ",".join(f"{a}+{b}:{s:.6f}" for (a, b), s in zip(DIAGONALS, diagonal_sync))
+    )
     print(f"cross_diagonal_contact_anti_min={min(cross_anti):.6f}")
     print(f"stop_tail_samples={len(stop_rows)}")
     if failures:

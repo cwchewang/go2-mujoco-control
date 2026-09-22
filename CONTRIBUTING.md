@@ -1,29 +1,37 @@
 # Contributing
 
-Contributions are welcome. Because this repository doubles as a research record, changes that alter experimental meaning need explicit provenance.
-
-Before any Phase 2 work, read [`CURRENT.md`](CURRENT.md) and [`AGENTS.md`](AGENTS.md).
-`CURRENT.md` is the sole route/status/plan authority; architecture, history,
-experiments, issues, commits, and agent handoffs cannot override it.
+Read [AGENTS.md](AGENTS.md), [PROJECT_RECORD](docs/PROJECT_RECORD.md) and
+[CURRENT.md](CURRENT.md) first. Scientific state, active execution and code
+navigation have different owners; old experiments cannot override the active
+task and [SOP](docs/research/SOP.md).
 
 ## Development
 
-- Keep commits small and scoped.
-- Follow the build/test instructions in `example/cpp/README.md` for the C++ control stack.
-- Do not commit machine-specific absolute paths, credentials, raw bulk logs, or generated build products. Never modify or commit ignored `example/cpp/experiments/_runs/` evidence.
-- Preserve upstream attribution and licensing when modifying inherited simulator/runtime code.
+Use the isolated development environment and quality recipe in [README](README.md).
+Ruff is pinned with a wheel hash. Format maintained Python with
+`.substrate/dev-venv/bin/python -m ruff format`; configuration selects `tools/`
+and `example/cpp/tools/`. Do not mass-format upstream/vendor sources, robot
+assets, frozen protocols or retained evidence.
 
-## Research-semantic changes
+Prefer one module per responsibility and explicit imports. Reuse named packets,
+evidence primitives and launcher guards instead of alternate launch paths.
+Test behavior: malformed inputs, state/cadence, process termination, evidence
+identity and old/new equivalence. Avoid tests that just restate implementation.
 
-Call out any change that can alter controller behavior, evaluation semantics, experiment protocol, acceptance criteria, or a scientific claim. Such PRs should state:
+Run affected tests, then native qualification for runtime/evaluator/preflight
+changes. It owns the shared lock; do not wrap it in another flock. Use existing
+CTest targets for legacy C++ changes. Formatting and compilation are not
+performance evidence. Routine scans read Git-tracked source only.
 
-1. what semantic behavior changes;
-2. what validation was run;
-3. which experiment/config/data/evaluator version supports the result;
-4. whether prior results are superseded, invalidated, or remain comparable.
+Historical filenames are part of provenance. Versioned Atlas adapters are a
+dependency chain, not interchangeable old copies. Preserve upstream attribution.
 
-Do not rewrite a failed experiment out of the record when it matters to the evidence trail. Do not change a frozen protocol or acceptance gate in place after observing results.
+## Research semantics and reviews
 
-## Pull requests
+Call out changes to trajectories, protocol, analyzer meaning or claims. Follow
+SOP review rules and bind approval to the final SHA. Prior preparation becomes
+stale after a source or HEAD change: qualify and prepare new output, never edit
+an old bundle. User permission to start formal experiments remains separate.
 
-Use the pull-request template to separate repository maintenance from research-semantic changes. Documentation-only cleanup should not modify algorithms, experiment artifacts, or result files.
+PRs should explain the concrete behavior/change, validation and historical
+comparison boundary. Failed experiments remain in the evidence record.

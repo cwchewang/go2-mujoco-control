@@ -1,43 +1,33 @@
-# Documentation
+# Documentation map
 
-For Phase 2, the authority chain is deliberately small. Start at
-[`CURRENT.md`](../CURRENT.md); every other document is subordinate context,
-implementation guidance, or history.
+Read [PROJECT_RECORD](PROJECT_RECORD.md) for scientific status and
+[TOPIC_AUDIT](TOPIC_AUDIT.md) for research direction. Then follow
+[CURRENT.md](../CURRENT.md) to the exact branch, task and result. Repository
+[AGENTS.md](../AGENTS.md) and the [SOP](research/SOP.md) govern execution.
+A historical protocol applies only when the active task adopts it explicitly.
 
-## Current authority
+## Current development and preparation
 
-| Order | Document | Purpose |
-|---:|---|---|
-| 1 | [`CURRENT.md`](../CURRENT.md) | only current route, status, plan, and handoff |
-| 2 | [`AGENTS.md`](../AGENTS.md) | hard execution boundaries |
-| 2 | [`research/PHASE2_ACCEPTANCE.md`](research/PHASE2_ACCEPTANCE.md) | Phase 2 acceptance contract |
-| 3 | [`research/PHASE2_HOLDOUT_MANIFEST.json`](research/PHASE2_HOLDOUT_MANIFEST.json) | frozen profiles, domains, and holdouts |
-| 4 | [`research/evidence/`](research/evidence/), [`../example/cpp/tools/`](../example/cpp/tools/) | curated raw evidence and protocol analyzers |
-
-Evidence, Git history, issues, experiment notes, and agent prose never override
-this order.
-
-## Implementation and operation
-
-| Document | Purpose |
+| Need | Entry |
 |---|---|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | simulator/controller data flow and module boundaries |
-| [`CODE_GUIDE.md`](CODE_GUIDE.md) | smallest source entrypoint for a change |
-| [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) | build, test, experiment lock, and evidence rules |
-| [`WBC_MPC.md`](WBC_MPC.md) | Phase 1 ID-WBC and SRBD-MPC implementation |
-| [`../example/cpp/README.md`](../example/cpp/README.md) | C++ build and runtime entrypoints |
-| [`../example/cpp/scripts/README.md`](../example/cpp/scripts/README.md) | runner lifecycle and Phase 2-safe entrypoints |
-| [`../example/cpp/tools/analysis/INDEX.md`](../example/cpp/tools/analysis/INDEX.md) | analyzer lifecycle and scope |
+| Build, isolate dependencies, qualify and verify | [Substrate guide](../tools/substrate/README.md) |
+| Frozen first-capture definitions and stop boundary | [First capture](research/SUBSTRATE_FIRST_CAPTURE.md) |
+| Runtime and evidence data flow | [Architecture](ARCHITECTURE.md) |
+| Find the smallest source area to change | [Code guide](CODE_GUIDE.md) |
+| Quality checks, ownership and compatibility adapters | [Tooling](../tools/README.md) |
+| Locks, environments and immutable evidence | [Reproducibility](REPRODUCIBILITY.md) |
+| Contribution and review rules | [Contributing](../CONTRIBUTING.md) |
 
-## Claims and history
+## Retained references
 
-| Location | Meaning |
+| Area | Meaning |
 |---|---|
-| [`RESEARCH_INDEX.md`](RESEARCH_INDEX.md) | accepted repository claims and boundaries |
-| [`RESEARCH_HISTORY.md`](RESEARCH_HISTORY.md) | milestone history, including rejected work |
-| [`validation/`](validation/) | accepted Phase 1 protocols and revalidations |
-| [`../example/cpp/experiments/CATALOG.md`](../example/cpp/experiments/CATALOG.md) | retained historical experiment artifacts |
-| [`upstream/`](upstream/) | preserved upstream documentation |
+| [RESEARCH_INDEX](RESEARCH_INDEX.md), [RESEARCH_HISTORY](RESEARCH_HISTORY.md) | historical claims, milestones and rejected work |
+| [validation](validation) / [research evidence](research/evidence) | dated result packages; preserve contents and paths |
+| [Phase 2 acceptance](research/PHASE2_ACCEPTANCE.md) / [holdout manifest](research/PHASE2_HOLDOUT_MANIFEST.json) | frozen legacy contracts, not current defaults |
+| [C++ guide](../example/cpp/README.md) / [WBC and MPC](WBC_MPC.md) | retained hierarchical controller |
+| [runners](../example/cpp/scripts/README.md) / [analyzers](../example/cpp/tools/analysis/INDEX.md) | exact historical entrypoints |
+| [experiments catalog](../example/cpp/experiments/CATALOG.md) | retained artifacts |
+| [upstream](upstream) | upstream documentation preserved verbatim |
 
-Dated protocol/delivery files in `docs/` are historical Phase 1 records unless
-`CURRENT.md` explicitly adopts them. They cannot define Phase 2 work.
+Dated delivery files are historical unless adopted by CURRENT.

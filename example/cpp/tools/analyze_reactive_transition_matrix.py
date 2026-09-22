@@ -13,8 +13,15 @@ from pathlib import Path
 
 
 EVENT_NAMES = {
-    0: "none", 1: "emergency_stop", 2: "obstacle_left", 3: "obstacle_right",
-    4: "turn_left", 5: "turn_right", 6: "slip", 7: "low_friction", 8: "impact",
+    0: "none",
+    1: "emergency_stop",
+    2: "obstacle_left",
+    3: "obstacle_right",
+    4: "turn_left",
+    5: "turn_right",
+    6: "slip",
+    7: "low_friction",
+    8: "impact",
 }
 
 
@@ -64,7 +71,9 @@ def read_rows(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(stream))
 
 
-def ground_truth_support(path: Path, start: float, end: float) -> tuple[int, float, float, int]:
+def ground_truth_support(
+    path: Path, start: float, end: float
+) -> tuple[int, float, float, int]:
     csv_path = path / "contact_ground_truth.csv"
     if not csv_path.exists():
         return 0, math.nan, math.nan, 0
@@ -97,7 +106,9 @@ def ground_truth_support(path: Path, start: float, end: float) -> tuple[int, flo
     )
 
 
-def slice_rows(rows: list[dict[str, str]], start: float, end: float) -> list[dict[str, str]]:
+def slice_rows(
+    rows: list[dict[str, str]], start: float, end: float
+) -> list[dict[str, str]]:
     return [row for row in rows if start <= number(row, "cmd_time_s") <= end]
 
 
@@ -107,11 +118,13 @@ def transition_sequence(rows: list[dict[str, str]]) -> list[dict[str, object]]:
     for row in rows:
         event = int(number(row, "event_type", 0.0))
         if event != previous:
-            result.append({
-                "time_s": round(number(row, "cmd_time_s", 0.0), 4),
-                "type": EVENT_NAMES.get(event, f"unknown_{event}"),
-                "priority": int(number(row, "event_priority", 0.0)),
-            })
+            result.append(
+                {
+                    "time_s": round(number(row, "cmd_time_s", 0.0), 4),
+                    "type": EVENT_NAMES.get(event, f"unknown_{event}"),
+                    "priority": int(number(row, "event_priority", 0.0)),
+                }
+            )
             previous = event
     return result
 
@@ -125,8 +138,9 @@ def gait_start(rows: list[dict[str, str]]) -> float:
     return min(data) if data else math.nan
 
 
-def max_reference_rate(rows: list[dict[str, str]], key: str,
-                       start: float, end: float) -> float:
+def max_reference_rate(
+    rows: list[dict[str, str]], key: str, start: float, end: float
+) -> float:
     selected = [row for row in rows if start <= number(row, "cmd_time_s") <= end]
     maximum = 0.0
     previous: tuple[float, float] | None = None
@@ -161,8 +175,9 @@ def max_velocity_jump(rows: list[dict[str, str]], start: float, end: float) -> f
     return maximum
 
 
-def signed_window_delta(rows: list[dict[str, str]], key: str,
-                        start: float, end: float) -> float:
+def signed_window_delta(
+    rows: list[dict[str, str]], key: str, start: float, end: float
+) -> float:
     selected = slice_rows(rows, start, end)
     if len(selected) < 4:
         return math.nan
@@ -170,8 +185,9 @@ def signed_window_delta(rows: list[dict[str, str]], key: str,
     return median(selected[-edge:], key) - median(selected[:edge], key)
 
 
-def signed_tail_median(rows: list[dict[str, str]], key: str,
-                       start: float, end: float) -> float:
+def signed_tail_median(
+    rows: list[dict[str, str]], key: str, start: float, end: float
+) -> float:
     selected = slice_rows(rows, start, end)
     if len(selected) < 4:
         return math.nan
@@ -200,29 +216,37 @@ def expected_target_ok(event: str, event_rows: list[dict[str, str]]) -> bool:
     return False
 
 
-def actual_event_response_ok(event: str, rows: list[dict[str, str]],
-                            start: float, end: float) -> bool:
+def actual_event_response_ok(
+    event: str, rows: list[dict[str, str]], start: float, end: float
+) -> bool:
     if event in {"turn_left", "turn_right"}:
         delta = signed_window_delta(rows, "imu_yaw_rad", start, end)
         tail_rate = signed_tail_median(rows, "imu_gyro_z_radps", start, end)
         sign = 1.0 if event == "turn_left" else -1.0
-        return (math.isfinite(delta) and math.isfinite(tail_rate)
-                and sign * delta >= 0.02 and sign * tail_rate >= 0.02)
+        return (
+            math.isfinite(delta)
+            and math.isfinite(tail_rate)
+            and sign * delta >= 0.02
+            and sign * tail_rate >= 0.02
+        )
     if event in {"obstacle_left", "obstacle_right"}:
         delta_y = signed_window_delta(rows, "world_base_y_m", start, end)
         tail_velocity = signed_tail_median(rows, "world_velocity_y_mps", start, end)
         sign = 1.0 if event == "obstacle_left" else -1.0
-        return (math.isfinite(delta_y) and math.isfinite(tail_velocity)
-                and (sign * delta_y >= 0.005
-                     or sign * tail_velocity >= 0.005))
+        return (
+            math.isfinite(delta_y)
+            and math.isfinite(tail_velocity)
+            and (sign * delta_y >= 0.005 or sign * tail_velocity >= 0.005)
+        )
     if event == "emergency_stop":
         hold = [int(number(row, "event_hold_stance", 0.0)) for row in rows]
         return bool(hold) and max(hold) == 1
     return True
 
 
-def analyze_run(root: Path, manifest_path: Path,
-                protocol: dict[str, object]) -> dict[str, object]:
+def analyze_run(
+    root: Path, manifest_path: Path, protocol: dict[str, object]
+) -> dict[str, object]:
     manifest = read_json(manifest_path)
     run_dir = Path(str(manifest["run_directory"]))
     source = str(manifest["source_event"])
@@ -230,7 +254,8 @@ def analyze_run(root: Path, manifest_path: Path,
     result: dict[str, object] = {
         "pair_index": manifest.get("pair_index"),
         "run_id": manifest.get("run_id"),
-        "source_event": source, "target_event": target,
+        "source_event": source,
+        "target_event": target,
         "run_directory": str(run_dir),
         "controller_config_fingerprint": manifest.get("controller_config_fingerprint"),
     }
@@ -242,8 +267,12 @@ def analyze_run(root: Path, manifest_path: Path,
     statuses = {
         key: int(metadata.get(key, -1))
         for key in (
-            "controller_status", "safety_status", "quality_status",
-            "analysis_status", "ground_truth_status", "dynamics_status",
+            "controller_status",
+            "safety_status",
+            "quality_status",
+            "analysis_status",
+            "ground_truth_status",
+            "dynamics_status",
             "completion_status",
         )
     }
@@ -261,9 +290,12 @@ def analyze_run(root: Path, manifest_path: Path,
     first_rows = slice_rows(rows, first_start, first_end)
     second_rows = slice_rows(rows, second_start, second_end)
     transition_rows = slice_rows(rows, first_start, post_end)
-    (ground_truth_rows, min_ground_truth_contact_z,
-     min_positive_ground_truth_contact_z, max_ground_truth_zero_run) = ground_truth_support(
-        run_dir, first_start, post_end)
+    (
+        ground_truth_rows,
+        min_ground_truth_contact_z,
+        min_positive_ground_truth_contact_z,
+        max_ground_truth_zero_run,
+    ) = ground_truth_support(run_dir, first_start, post_end)
     observed = transition_sequence(rows)
     observed_types = [item["type"] for item in observed]
     expected_types = ["none", source, target]
@@ -271,7 +303,9 @@ def analyze_run(root: Path, manifest_path: Path,
         expected_types.append("none")
     if target == "emergency_stop":
         log_text = (run_dir / "controller.log").read_text(errors="replace")
-        terminal_hold_ok = "Emergency stop hold complete; ending in WBC stance" in log_text
+        terminal_hold_ok = (
+            "Emergency stop hold complete; ending in WBC stance" in log_text
+        )
     else:
         terminal_hold_ok = True
     expected_sequence_ok = observed_types == expected_types
@@ -279,11 +313,19 @@ def analyze_run(root: Path, manifest_path: Path,
     stage_stable = bool(stage_values) and set(stage_values) == {2}
     limits = dict(protocol["reference_rate_limits"])
     ref_rates = {
-        "vx_mps_per_s": max_reference_rate(rows, "event_ref_vx_mps", first_start, post_end),
-        "vy_mps_per_s": max_reference_rate(rows, "event_ref_vy_mps", first_start, post_end),
-        "yaw_rate_radps_per_s": max_reference_rate(rows, "event_ref_yaw_rate_radps", first_start, post_end),
+        "vx_mps_per_s": max_reference_rate(
+            rows, "event_ref_vx_mps", first_start, post_end
+        ),
+        "vy_mps_per_s": max_reference_rate(
+            rows, "event_ref_vy_mps", first_start, post_end
+        ),
+        "yaw_rate_radps_per_s": max_reference_rate(
+            rows, "event_ref_yaw_rate_radps", first_start, post_end
+        ),
     }
-    rate_ok = all(ref_rates[key] <= float(limit) + 0.10 for key, limit in limits.items())
+    rate_ok = all(
+        ref_rates[key] <= float(limit) + 0.10 for key, limit in limits.items()
+    )
     velocity_jump = max_velocity_jump(rows, first_start, post_end)
     roll = max_abs(transition_rows, "imu_roll_rad")
     pitch = max_abs(transition_rows, "imu_pitch_rad")
@@ -294,15 +336,21 @@ def analyze_run(root: Path, manifest_path: Path,
         math.isfinite(number(row, key))
         for row in transition_rows
         for key in (
-            "event_ref_vx_mps", "event_ref_vy_mps", "event_ref_yaw_rate_radps",
-            "world_velocity_x_mps", "world_velocity_y_mps", "imu_roll_rad",
+            "event_ref_vx_mps",
+            "event_ref_vy_mps",
+            "event_ref_yaw_rate_radps",
+            "world_velocity_x_mps",
+            "world_velocity_y_mps",
+            "imu_roll_rad",
             "imu_pitch_rad",
         )
     )
     first_target_ok = expected_target_ok(source, first_rows)
     second_target_ok = expected_target_ok(target, second_rows)
     first_response_ok = actual_event_response_ok(source, rows, first_start, first_end)
-    second_response_ok = actual_event_response_ok(target, rows, second_start, second_end)
+    second_response_ok = actual_event_response_ok(
+        target, rows, second_start, second_end
+    )
     if target == "emergency_stop":
         hold_tail = [
             int(number(row, "event_hold_stance", 0.0))
@@ -312,13 +360,17 @@ def analyze_run(root: Path, manifest_path: Path,
         second_response_ok = bool(hold_tail) and max(hold_tail) == 1
     status_ok = bool(rows) and all(value == 0 for value in statuses.values())
     csv_ok = (
-        len(rows) >= 4000 and math.isfinite(start_gait) and len(positive_dt) >= 100
+        len(rows) >= 4000
+        and math.isfinite(start_gait)
+        and len(positive_dt) >= 100
         and all(b + 1.0e-6 >= a for a, b in zip(times, times[1:]))
-        and len(first_rows) >= 300 and len(second_rows) >= 300
+        and len(first_rows) >= 300
+        and len(second_rows) >= 300
     )
     acceptance_limits = dict(protocol["acceptance_limits"])
     posture_ok = (
-        math.isfinite(roll) and math.isfinite(pitch)
+        math.isfinite(roll)
+        and math.isfinite(pitch)
         and roll <= float(acceptance_limits["max_abs_roll_rad"])
         and pitch <= float(acceptance_limits["max_abs_pitch_rad"])
     )
@@ -332,60 +384,88 @@ def analyze_run(root: Path, manifest_path: Path,
         and math.isfinite(solver_residual)
         and solver_residual <= float(acceptance_limits["max_solver_residual"])
     )
-    result.update({
-        "rows": len(rows), "max_time_s": max(times, default=math.nan),
-        "duplicate_time_rows": duplicate_rows, "statuses": statuses,
-        "gait_start_s": start_gait, "expected_sequence": expected_types,
-        "observed_sequence": observed, "expected_sequence_ok": expected_sequence_ok,
-        "stage_stable": stage_stable, "terminal_hold_ok": terminal_hold_ok,
-        "reference_rates": ref_rates, "reference_rate_limits": limits,
-        "reference_rate_ok": rate_ok,
-        "max_actual_velocity_jump_mps": velocity_jump,
-        "max_abs_roll_rad": roll, "max_abs_pitch_rad": pitch,
-        "min_contact_count": min(contact_values, default=math.nan),
-        "ground_truth_support_rows": ground_truth_rows,
-        "min_ground_truth_contact_grf_z_N": min_ground_truth_contact_z,
-        "min_positive_ground_truth_contact_grf_z_N": min_positive_ground_truth_contact_z,
-        "max_ground_truth_zero_run": max_ground_truth_zero_run,
-        "ground_truth_support_ok": (
-            ground_truth_rows >= 100
-            and math.isfinite(min_positive_ground_truth_contact_z)
-            and min_positive_ground_truth_contact_z >= 1.0
-            and max_ground_truth_zero_run <= 5
-        ),
-        "max_wbc_full_eq_residual": solver_residual,
-        "finite_required_columns": finite_required,
-        "first_event_rows": len(first_rows), "second_event_rows": len(second_rows),
-        "first_target_ok": first_target_ok, "second_target_ok": second_target_ok,
-        "first_response_ok": first_response_ok, "second_response_ok": second_response_ok,
-        "status_ok": status_ok, "csv_ok": csv_ok, "posture_ok": posture_ok,
-        "dynamic_ok": dynamic_ok,
-        "strict_pass": bool(
-            status_ok and csv_ok and expected_sequence_ok and stage_stable
-            and terminal_hold_ok and finite_required and first_target_ok
-            and second_target_ok and first_response_ok and second_response_ok
-            and posture_ok and dynamic_ok
-        ),
-    })
+    result.update(
+        {
+            "rows": len(rows),
+            "max_time_s": max(times, default=math.nan),
+            "duplicate_time_rows": duplicate_rows,
+            "statuses": statuses,
+            "gait_start_s": start_gait,
+            "expected_sequence": expected_types,
+            "observed_sequence": observed,
+            "expected_sequence_ok": expected_sequence_ok,
+            "stage_stable": stage_stable,
+            "terminal_hold_ok": terminal_hold_ok,
+            "reference_rates": ref_rates,
+            "reference_rate_limits": limits,
+            "reference_rate_ok": rate_ok,
+            "max_actual_velocity_jump_mps": velocity_jump,
+            "max_abs_roll_rad": roll,
+            "max_abs_pitch_rad": pitch,
+            "min_contact_count": min(contact_values, default=math.nan),
+            "ground_truth_support_rows": ground_truth_rows,
+            "min_ground_truth_contact_grf_z_N": min_ground_truth_contact_z,
+            "min_positive_ground_truth_contact_grf_z_N": min_positive_ground_truth_contact_z,
+            "max_ground_truth_zero_run": max_ground_truth_zero_run,
+            "ground_truth_support_ok": (
+                ground_truth_rows >= 100
+                and math.isfinite(min_positive_ground_truth_contact_z)
+                and min_positive_ground_truth_contact_z >= 1.0
+                and max_ground_truth_zero_run <= 5
+            ),
+            "max_wbc_full_eq_residual": solver_residual,
+            "finite_required_columns": finite_required,
+            "first_event_rows": len(first_rows),
+            "second_event_rows": len(second_rows),
+            "first_target_ok": first_target_ok,
+            "second_target_ok": second_target_ok,
+            "first_response_ok": first_response_ok,
+            "second_response_ok": second_response_ok,
+            "status_ok": status_ok,
+            "csv_ok": csv_ok,
+            "posture_ok": posture_ok,
+            "dynamic_ok": dynamic_ok,
+            "strict_pass": bool(
+                status_ok
+                and csv_ok
+                and expected_sequence_ok
+                and stage_stable
+                and terminal_hold_ok
+                and finite_required
+                and first_target_ok
+                and second_target_ok
+                and first_response_ok
+                and second_response_ok
+                and posture_ok
+                and dynamic_ok
+            ),
+        }
+    )
     return result
 
 
-def write_report(root: Path, protocol: dict[str, object], results: list[dict[str, object]]) -> None:
+def write_report(
+    root: Path, protocol: dict[str, object], results: list[dict[str, object]]
+) -> None:
     report_dir = root / "reports"
     report_dir.mkdir(parents=True, exist_ok=True)
     passed = sum(bool(item.get("strict_pass")) for item in results)
     fingerprints = {str(item.get("controller_config_fingerprint")) for item in results}
     summary = {
-        "generated_at": now(), "protocol": protocol,
+        "generated_at": now(),
+        "protocol": protocol,
         "expected_pairs": len(protocol.get("pair_specs", [])),
-        "analyzed_pairs": len(results), "passed_pairs": passed,
+        "analyzed_pairs": len(results),
+        "passed_pairs": passed,
         "failed_pairs": len(results) - passed,
         "coverage_fraction": passed / len(protocol.get("pair_specs", []))
-        if protocol.get("pair_specs") else 0.0,
+        if protocol.get("pair_specs")
+        else 0.0,
         "unique_controller_config_fingerprints": sorted(fingerprints),
         "pair_specific_tuning_detected": len(fingerprints) > 1,
         "overall_strict_pass": bool(
-            results and len(results) == len(protocol.get("selected_pairs", []))
+            results
+            and len(results) == len(protocol.get("selected_pairs", []))
             and passed == len(results)
         ),
         "results": results,
@@ -394,14 +474,29 @@ def write_report(root: Path, protocol: dict[str, object], results: list[dict[str
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     fields = [
-        "pair_index", "run_id", "source_event", "target_event", "strict_pass",
-        "expected_sequence_ok", "stage_stable", "reference_rate_ok",
-        "first_target_ok", "second_target_ok", "first_response_ok",
-        "second_response_ok", "posture_ok", "dynamic_ok", "max_abs_roll_rad",
-        "max_abs_pitch_rad", "max_actual_velocity_jump_mps",
-        "max_wbc_full_eq_residual", "duplicate_time_rows",
+        "pair_index",
+        "run_id",
+        "source_event",
+        "target_event",
+        "strict_pass",
+        "expected_sequence_ok",
+        "stage_stable",
+        "reference_rate_ok",
+        "first_target_ok",
+        "second_target_ok",
+        "first_response_ok",
+        "second_response_ok",
+        "posture_ok",
+        "dynamic_ok",
+        "max_abs_roll_rad",
+        "max_abs_pitch_rad",
+        "max_actual_velocity_jump_mps",
+        "max_wbc_full_eq_residual",
+        "duplicate_time_rows",
     ]
-    with (report_dir / "transition_matrix_metrics.csv").open("w", newline="", encoding="utf-8") as stream:
+    with (report_dir / "transition_matrix_metrics.csv").open(
+        "w", newline="", encoding="utf-8"
+    ) as stream:
         writer = csv.DictWriter(
             stream, fieldnames=fields, extrasaction="ignore", lineterminator="\n"
         )
@@ -409,21 +504,34 @@ def write_report(root: Path, protocol: dict[str, object], results: list[dict[str
         for item in results:
             writer.writerow(item)
     lines = [
-        "# Reactive transition matrix — validation report", "",
-        f"Generated: {summary['generated_at']}", "", "## Overall assessment", "",
-        ("**Ready to share** — all analyzed directed transitions passed the same-controller "
-         "acceptance gates." if summary["overall_strict_pass"] else
-         "**Needs revision** — one or more transitions or quality gates failed."), "",
+        "# Reactive transition matrix — validation report",
+        "",
+        f"Generated: {summary['generated_at']}",
+        "",
+        "## Overall assessment",
+        "",
+        (
+            "**Ready to share** — all analyzed directed transitions passed the same-controller "
+            "acceptance gates."
+            if summary["overall_strict_pass"]
+            else "**Needs revision** — one or more transitions or quality gates failed."
+        ),
+        "",
         f"Coverage: {passed}/{len(results)} analyzed pairs passed; protocol matrix contains "
         f"{len(protocol.get('pair_specs', []))} pairs.",
         f"Unique controller configuration fingerprints: {len(fingerprints)} "
-        f"(pair-specific tuning detected: {summary['pair_specific_tuning_detected']}).", "",
-        "## Question tested", "",
+        f"(pair-specific tuning detected: {summary['pair_specific_tuning_detected']}).",
+        "",
+        "## Question tested",
+        "",
         "Can one bounded continuous-reference transition layer and one WBC/MPC plant "
         "handle directed event changes without hand-written pairwise action stitching? "
         "Each nonterminal run contains `none -> A -> B -> none`; an emergency target "
         "ends in the absorbing WBC stance hold. Only the two-line event script changes "
-        "between runs.", "", "## Protocol", "",
+        "between runs.",
+        "",
+        "## Protocol",
+        "",
         f"- Events: {', '.join(protocol['events'])}",
         f"- Sources: {', '.join(protocol['source_events'])}",
         f"- Event windows: start={protocol['event_start_s']} s, duration={protocol['event_duration_s']} s, adjacent A→B",
@@ -431,14 +539,18 @@ def write_report(root: Path, protocol: dict[str, object], results: list[dict[str
         f"- Event source: scheduled scripts only (automatic sensor events enabled: {protocol.get('sensor_events_enabled', False)})",
         f"- Infrastructure policy: up to {protocol.get('max_attempts', 1)} attempts with {protocol.get('retry_delay_s', 0)} s cooldown and alternate DDS domains",
         "- Safety policy: `emergency_stop` is absorbing; incoming transitions are tested, outgoing transitions are intentionally not required.",
-        "", "## Gates", "",
+        "",
+        "## Gates",
+        "",
         "1. CSV completeness and monotonic time; both event windows contain data.",
         "2. Observed event sequence exactly matches `none -> A -> B -> none`.",
         "3. WBC/MPC remains in gait stage 2 during both events; no controller reset.",
         "4. Reference rates stay within shared limits; target jumps are not mistaken for reference discontinuities.",
         "5. Solver/status gates, Ground Truth contact support, velocity jumps, roll and pitch pass; up to 5 consecutive 2 ms contact-unloading samples are tolerated.",
         "6. Event-specific target signs and response checks pass; emergency includes the terminal WBC stance-hold marker.",
-        "", "## Pair results", "",
+        "",
+        "## Pair results",
+        "",
         "| pair | pass | ref-rate | posture | dynamic | sequence |",
         "|---|---:|---:|---:|---:|---:|",
     ]
@@ -463,23 +575,37 @@ def write_report(root: Path, protocol: dict[str, object], results: list[dict[str
             )
     else:
         lines.append("None.")
-    lines.extend([
-        "", "## Scope and caveats", "",
-        "This matrix demonstrates the shared reference/transition/WBC-MPC path under "
-        "scripted events. It does not prove autonomous perception, local obstacle planning, "
-        "or every possible physical disturbance. The physical obstacle acceptance run "
-        "remains a separate scene-level test.", "",
-        "Raw CSV, simulator/controller logs, per-pair event scripts, and manifests are "
-        "retained under this experiment directory for reproduction. Duplicate CSV "
-        "timestamps are preserved; rate gates use positive time intervals only.", "",
-    ])
-    (report_dir / "transition_matrix_report.md").write_text("\n".join(lines), encoding="utf-8")
+    lines.extend(
+        [
+            "",
+            "## Scope and caveats",
+            "",
+            "This matrix demonstrates the shared reference/transition/WBC-MPC path under "
+            "scripted events. It does not prove autonomous perception, local obstacle planning, "
+            "or every possible physical disturbance. The physical obstacle acceptance run "
+            "remains a separate scene-level test.",
+            "",
+            "Raw CSV, simulator/controller logs, per-pair event scripts, and manifests are "
+            "retained under this experiment directory for reproduction. Duplicate CSV "
+            "timestamps are preserved; rate gates use positive time intervals only.",
+            "",
+        ]
+    )
+    (report_dir / "transition_matrix_report.md").write_text(
+        "\n".join(lines), encoding="utf-8"
+    )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("root", type=Path, nargs="?", default=Path(
-        "example/cpp/experiments/go2_reactive_transition_matrix_2026-08-20"))
+    parser.add_argument(
+        "root",
+        type=Path,
+        nargs="?",
+        default=Path(
+            "example/cpp/experiments/go2_reactive_transition_matrix_2026-08-20"
+        ),
+    )
     parser.add_argument("--json", action="store_true")
     return parser.parse_args()
 
@@ -491,17 +617,25 @@ def main() -> int:
     if not manifest_path.exists():
         raise SystemExit(f"missing {manifest_path}")
     protocol = read_json(manifest_path)
-    results = [analyze_run(root, path, protocol)
-               for path in sorted((root / "manifests").glob("*.json"))]
+    results = [
+        analyze_run(root, path, protocol)
+        for path in sorted((root / "manifests").glob("*.json"))
+    ]
     write_report(root, protocol, results)
     passed = sum(bool(item.get("strict_pass")) for item in results)
     failed = len(results) - passed
     summary = {
-        "root": str(root), "analyzed": len(results), "passed": passed,
-        "failed": failed, "report": str(root / "reports/transition_matrix_report.md"),
+        "root": str(root),
+        "analyzed": len(results),
+        "passed": passed,
+        "failed": failed,
+        "report": str(root / "reports/transition_matrix_report.md"),
     }
-    print(json.dumps(summary, ensure_ascii=False, indent=2) if args.json else
-          f"transition-matrix: {passed}/{len(results)} PASS; report={summary['report']}")
+    print(
+        json.dumps(summary, ensure_ascii=False, indent=2)
+        if args.json
+        else f"transition-matrix: {passed}/{len(results)} PASS; report={summary['report']}"
+    )
     return 0 if failed == 0 else 1
 
 

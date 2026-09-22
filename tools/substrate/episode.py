@@ -26,7 +26,10 @@ def safety(row, protocol):
         return "nonfoot_contact"
     t = protocol["thresholds"]
     tilt = math.acos(float(np.clip(1 - 2 * (qpos[4] ** 2 + qpos[5] ** 2), -1, 1)))
-    if not t["height_min_m"] <= qpos[2] <= t["height_max_m"] or tilt > t["tilt_max_rad"]:
+    if (
+        not t["height_min_m"] <= qpos[2] <= t["height_max_m"]
+        or tilt > t["tilt_max_rad"]
+    ):
         return "posture"
     if abs(qpos[1] - row["initial_y"]) > t["lateral_max_m"]:
         return "lateral"
@@ -36,12 +39,15 @@ def safety(row, protocol):
 class MujocoPlant:
     def __init__(self, scene):
         import mujoco
+
         self.mj = mujoco
         self.model = mujoco.MjModel.from_xml_path(str(scene))
         self.data = mujoco.MjData(self.model)
         self.names, self.qadr, self.vadr = joint_layout(self.model)
         self.lower, self.upper = self.model.actuator_ctrlrange.T.copy()
-        self.floor = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "phase2_floor")
+        self.floor = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_GEOM, "phase2_floor"
+        )
         self.feet = {
             mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, n): n
             for n in ("FR", "FL", "RR", "RL")
@@ -63,7 +69,9 @@ class MujocoPlant:
 
     def observe(self):
         d = self.data
-        return Proprioception(self.names, d.qpos[self.qadr], d.qvel[self.vadr], d.qpos[3:7], d.qvel[3:6])
+        return Proprioception(
+            self.names, d.qpos[self.qadr], d.qvel[self.vadr], d.qpos[3:7], d.qvel[3:6]
+        )
 
     def snapshot(self, tick):
         d = self.data
@@ -78,12 +86,17 @@ class MujocoPlant:
                     supports.add(self.feet[other])
                 else:
                     forbidden.append(sorted(pair))
-            elif pair & set(self.feet) or any(self.model.geom_bodyid[g] != 0 for g in pair):
+            elif pair & set(self.feet) or any(
+                self.model.geom_bodyid[g] != 0 for g in pair
+            ):
                 forbidden.append(sorted(pair))
         return {
-            "tick": tick, "sim_time_s": float(d.time),
-            "qpos": d.qpos.tolist(), "qvel": d.qvel.tolist(),
-            "initial_y": self.initial_y, "supports": sorted(supports),
+            "tick": tick,
+            "sim_time_s": float(d.time),
+            "qpos": d.qpos.tolist(),
+            "qvel": d.qvel.tolist(),
+            "initial_y": self.initial_y,
+            "supports": sorted(supports),
             "forbidden_contacts": forbidden,
             "warning_count": int(sum(w.number for w in d.warning)),
         }
@@ -122,7 +135,11 @@ def episode(plant, policy, protocol, emit, consume, *, monotonic=time.monotonic)
         if tick == protocol["horizon_ticks"] or row["failure"]:
             row["terminal_reason"] = row["failure"] or "horizon"
             emit(row)
-            return {"terminal_reason": row["terminal_reason"], "steps": tick, "attempt_consumed": consumed}
+            return {
+                "terminal_reason": row["terminal_reason"],
+                "steps": tick,
+                "attempt_consumed": consumed,
+            }
         obs = plant.observe()
         if update:
             before = monotonic()
@@ -132,7 +149,16 @@ def episode(plant, policy, protocol, emit, consume, *, monotonic=time.monotonic)
         row["action"] = {k: v.tolist() for k, v in action.items()}
         row["target"] = {
             "joint_names": list(target.joint_names),
-            **{k: getattr(target, k).tolist() for k in ("feedforward", "position_target", "velocity_target", "kp", "kd")},
+            **{
+                k: getattr(target, k).tolist()
+                for k in (
+                    "feedforward",
+                    "position_target",
+                    "velocity_target",
+                    "kp",
+                    "kd",
+                )
+            },
         }
         row["terminal_reason"] = None
         if not consumed:

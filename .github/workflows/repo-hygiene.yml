@@ -12,27 +12,16 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - name: Check shell syntax
-        run: |
-          find example/cpp/scripts scripts -type f \( -name '*.sh' -o -name 'go2sim' \) -print0 |
-            xargs -0 -r -n1 bash -n
-      - name: Check Python syntax
-        run: |
-          find . -type f -name '*.py' -not -path './.git/*' -print0 |
-            xargs -0 -r -n1 python3 -m py_compile
+      - name: Install pinned quality tooling
+        run: python3 -m pip install --require-hashes -r tools/requirements-dev-linux-x86_64.txt
+      - name: Check tracked-source syntax, formatting, lint and links
+        run: python3 -m tools.check_quality --style
       - name: Install substrate contract test dependency
         run: python3 -m pip install numpy==2.2.6
       - name: Run portable substrate contract tests
         run: python3 -m unittest tools.substrate.test_substrate tools.substrate.test_reliability tools.substrate.test_clock tools.substrate.test_launch tools.research.test_preflight tools.research.test_preflight_integration -v
-      - name: Run Atlas dispatcher contract tests
-        run: python3 -m unittest discover -s tools/tests -p 'test_atlas_*.py'
-      - name: Run repository hygiene checker
-        run: python3 tools/check_repo_hygiene.py
-      - name: Check internal references
-        run: |
-          test -f docs/REPOSITORY_GOVERNANCE.md
-          test -f example/cpp/tools/analysis/INDEX.md
-          test -f docs/RESEARCH_INDEX.md
+      - name: Run repository and Atlas contract tests
+        run: python3 -m unittest discover -s tools/tests -p 'test_*.py'
 
 # Hosted CI intentionally does not claim MuJoCo, Unitree SDK, simulator, or
 # sim-to-real integration. Those require the documented WSL environment.

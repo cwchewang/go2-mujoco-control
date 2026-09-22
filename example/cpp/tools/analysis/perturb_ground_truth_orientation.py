@@ -78,7 +78,9 @@ def main() -> int:
 
     angle_rad = tuple(angle * math.pi / 180.0 for angle in angles_deg)
     q_delta = quaternion_multiply(
-        quaternion_multiply(axis_quaternion("z", angle_rad[2]), axis_quaternion("y", angle_rad[1])),
+        quaternion_multiply(
+            axis_quaternion("z", angle_rad[2]), axis_quaternion("y", angle_rad[1])
+        ),
         axis_quaternion("x", angle_rad[0]),
     )
     quaternion_columns = tuple(
@@ -103,15 +105,21 @@ def main() -> int:
         if args.start_time_s is not None:
             raw_time = row.get(args.time_column, "")
             if raw_time == "":
-                raise SystemExit("empty " + args.time_column + " in time-window perturbation")
+                raise SystemExit(
+                    "empty " + args.time_column + " in time-window perturbation"
+                )
             time_s = float(raw_time)
             if not math.isfinite(time_s):
-                raise SystemExit("non-finite " + args.time_column + " in time-window perturbation")
+                raise SystemExit(
+                    "non-finite " + args.time_column + " in time-window perturbation"
+                )
             if not (args.start_time_s <= time_s <= args.end_time_s):
                 continue
         selected_rows += 1
         try:
-            quaternion = normalize(tuple(float(row[column]) for column in quaternion_columns))
+            quaternion = normalize(
+                tuple(float(row[column]) for column in quaternion_columns)
+            )
         except (KeyError, ValueError) as error:
             raise SystemExit("invalid quaternion row: " + str(error))
         biased = normalize(quaternion_multiply(q_delta, quaternion))

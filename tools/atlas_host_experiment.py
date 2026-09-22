@@ -9,7 +9,6 @@ import json
 import os
 import re
 import subprocess
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -76,7 +75,9 @@ def extract_manifest(task_text: str) -> dict[str, Any] | None:
     if not matches:
         return None
     if len(matches) != 1:
-        raise HostExperimentError("task must contain at most one ATLAS_HOST_EXPERIMENT block")
+        raise HostExperimentError(
+            "task must contain at most one ATLAS_HOST_EXPERIMENT block"
+        )
     try:
         manifest = json.loads(matches[0])
     except json.JSONDecodeError as exc:
@@ -97,7 +98,9 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     }
     unknown = sorted(set(manifest) - allowed)
     if unknown:
-        raise HostExperimentError(f"unsupported host manifest fields: {', '.join(unknown)}")
+        raise HostExperimentError(
+            f"unsupported host manifest fields: {', '.join(unknown)}"
+        )
     if manifest.get("schema_version") != 1:
         raise HostExperimentError("host manifest schema_version must be 1")
 
@@ -107,34 +110,52 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         or len(command) < 2
         or not all(isinstance(item, str) and item for item in command)
     ):
-        raise HostExperimentError("command must be an argv array with at least two strings")
+        raise HostExperimentError(
+            "command must be an argv array with at least two strings"
+        )
     if any("\x00" in item for item in command):
         raise HostExperimentError("command contains NUL")
 
     executable = command[0]
     if executable in {"bash", "python3"}:
         if command[1].startswith("-"):
-            raise HostExperimentError("shell/interpreter options are not allowed before the runner path")
+            raise HostExperimentError(
+                "shell/interpreter options are not allowed before the runner path"
+            )
         runner = _normalized_relative(command[1], field="command runner")
         if not any(_under(runner, prefix) for prefix in ALLOWED_SCRIPT_PREFIXES):
-            raise HostExperimentError("runner must live under example/cpp/scripts or example/cpp/tools")
+            raise HostExperimentError(
+                "runner must live under example/cpp/scripts or example/cpp/tools"
+            )
     else:
         direct = _normalized_relative(executable, field="command executable")
         if not any(_under(direct, prefix) for prefix in ALLOWED_DIRECT_PREFIXES):
-            raise HostExperimentError("direct executable must live under an approved build directory")
+            raise HostExperimentError(
+                "direct executable must live under an approved build directory"
+            )
 
     domain_id = manifest.get("domain_id")
-    if not isinstance(domain_id, int) or isinstance(domain_id, bool) or not (0 <= domain_id <= 232):
+    if (
+        not isinstance(domain_id, int)
+        or isinstance(domain_id, bool)
+        or not (0 <= domain_id <= 232)
+    ):
         raise HostExperimentError("domain_id must be an integer in [0, 232]")
     if "--domain-id" not in command:
-        raise HostExperimentError("command must carry the explicit --domain-id from the manifest")
+        raise HostExperimentError(
+            "command must carry the explicit --domain-id from the manifest"
+        )
     domain_index = command.index("--domain-id")
     if domain_index + 1 >= len(command) or command[domain_index + 1] != str(domain_id):
-        raise HostExperimentError("command --domain-id does not match manifest domain_id")
+        raise HostExperimentError(
+            "command --domain-id does not match manifest domain_id"
+        )
 
     run_dir = _normalized_relative(str(manifest.get("run_dir", "")), field="run_dir")
     if not _under(run_dir, RUN_PREFIX):
-        raise HostExperimentError("run_dir must live under example/cpp/experiments/_runs")
+        raise HostExperimentError(
+            "run_dir must live under example/cpp/experiments/_runs"
+        )
 
     if executable in {"bash", "python3"} and runner.name in {
         "run_trot.sh",
@@ -159,7 +180,11 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
             )
 
     timeout_s = manifest.get("timeout_s", 1800)
-    if not isinstance(timeout_s, int) or isinstance(timeout_s, bool) or not (1 <= timeout_s <= 7200):
+    if (
+        not isinstance(timeout_s, int)
+        or isinstance(timeout_s, bool)
+        or not (1 <= timeout_s <= 7200)
+    ):
         raise HostExperimentError("timeout_s must be an integer in [1, 7200]")
 
     environment = manifest.get("environment", {})
@@ -171,7 +196,9 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
             raise HostExperimentError("environment keys and values must be strings")
         upper = key.upper()
         if any(fragment in upper for fragment in SECRET_KEY_FRAGMENTS):
-            raise HostExperimentError(f"secret-bearing environment key is not allowed: {key}")
+            raise HostExperimentError(
+                f"secret-bearing environment key is not allowed: {key}"
+            )
         if key not in ENV_EXACT and not key.startswith(ENV_PREFIXES):
             raise HostExperimentError(f"unsupported host environment key: {key}")
         clean_env[key] = value
@@ -210,7 +237,9 @@ def snapshot_tree(root: Path) -> list[dict[str, Any]]:
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root).as_posix()
         if path.is_symlink():
-            records.append({"path": relative, "type": "symlink", "target": os.readlink(path)})
+            records.append(
+                {"path": relative, "type": "symlink", "target": os.readlink(path)}
+            )
         elif path.is_file():
             records.append(
                 {
@@ -263,7 +292,9 @@ def execute_manifest(
         text=True,
     ).stdout.strip()
     if head != candidate_commit:
-        raise HostExperimentError("candidate worktree HEAD does not match candidate_commit")
+        raise HostExperimentError(
+            "candidate worktree HEAD does not match candidate_commit"
+        )
     dirty = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
         cwd=worktree,
@@ -272,7 +303,9 @@ def execute_manifest(
         text=True,
     ).stdout.strip()
     if dirty:
-        raise HostExperimentError("candidate worktree has tracked changes before host execution")
+        raise HostExperimentError(
+            "candidate worktree has tracked changes before host execution"
+        )
 
     run_dir_rel = Path(manifest["run_dir"])
     run_dir = worktree / run_dir_rel
@@ -295,7 +328,9 @@ def execute_manifest(
         "task_path": task_path,
         "candidate_commit": candidate_commit,
         "manifest_sha256": _sha256_bytes(
-            (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            (
+                json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n"
+            ).encode()
         ),
         "command": command,
         "domain_id": manifest["domain_id"],
@@ -326,9 +361,10 @@ def execute_manifest(
             record["started_at"] = _utc_now()
             record["launched"] = True
             try:
-                with stdout_path.open("w", encoding="utf-8") as stdout_file, stderr_path.open(
-                    "w", encoding="utf-8"
-                ) as stderr_file:
+                with (
+                    stdout_path.open("w", encoding="utf-8") as stdout_file,
+                    stderr_path.open("w", encoding="utf-8") as stderr_file,
+                ):
                     completed = subprocess.run(
                         command,
                         cwd=worktree,
@@ -354,9 +390,18 @@ def execute_manifest(
         record["stderr_sha256"] = _sha256_file(stderr_path)
     record["evidence"] = snapshot_tree(run_dir)
 
-    tracked_record = worktree / "docs" / "research" / "evidence" / "atlas_host" / f"{task_commit}.json"
+    tracked_record = (
+        worktree
+        / "docs"
+        / "research"
+        / "evidence"
+        / "atlas_host"
+        / f"{task_commit}.json"
+    )
     tracked_record.parent.mkdir(parents=True, exist_ok=True)
-    tracked_record.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    tracked_record.write_text(
+        json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     record["tracked_record"] = tracked_record.relative_to(worktree).as_posix()
     record["tracked_record_sha256"] = _sha256_file(tracked_record)
 

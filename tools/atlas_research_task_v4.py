@@ -35,7 +35,9 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _task_manifest(repo: Path, task_commit: str, task_path: str) -> dict[str, Any] | None:
+def _task_manifest(
+    repo: Path, task_commit: str, task_path: str
+) -> dict[str, Any] | None:
     try:
         return host.load_manifest_from_task_commit(repo, task_commit, task_path)
     except host.HostExperimentError as exc:
@@ -89,8 +91,8 @@ Candidate commit actually presented to the host: {candidate_commit}
 Trusted host execution record: {tracked}
 Raw run directory: {run_dir}
 Host launched: {launched}
-Host return code: {host_record.get('returncode')}
-Host error: {host_record.get('error')}
+Host return code: {host_record.get("returncode")}
+Host error: {host_record.get("error")}
 
 Re-read {task_path}, the trusted host record, and the raw evidence it indexes.
 Now perform deterministic analysis and write the task-required closeout.
@@ -147,13 +149,18 @@ def _run_codex_phase(
     for key in ("GITHUB_TOKEN", "GH_TOKEN", "ACTIONS_RUNTIME_TOKEN"):
         child_env.pop(key, None)
     child_env["GO2_REFERENCE_WORKTREE"] = str(
-        Path(os.environ.get("GO2_ATLAS_REPO", Path.home() / "dev" / "go2-workspace" / "current"))
+        Path(
+            os.environ.get(
+                "GO2_ATLAS_REPO", Path.home() / "dev" / "go2-workspace" / "current"
+            )
+        )
     )
 
     command = _codex_command(codex_bin, thread_id, prompt)
-    with stdout_path.open("a", encoding="utf-8") as stdout_file, stderr_path.open(
-        "a", encoding="utf-8"
-    ) as stderr_file:
+    with (
+        stdout_path.open("a", encoding="utf-8") as stdout_file,
+        stderr_path.open("a", encoding="utf-8") as stderr_file,
+    ):
         process = subprocess.Popen(
             command,
             cwd=worktree,
@@ -191,7 +198,9 @@ def _normalize_closeout_text(worktree: Path) -> None:
         path = worktree / relative
         if not path.is_file():
             continue
-        lines = [line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()]
+        lines = [
+            line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()
+        ]
         while lines and not lines[-1]:
             lines.pop()
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -210,7 +219,9 @@ def _trusted_commit_if_dirty(worktree: Path, task_path: str, *, phase: str) -> s
     base._git(worktree, "diff", "--cached", "--check")
     staged = [
         line
-        for line in base._git(worktree, "diff", "--cached", "--name-only", "--").splitlines()
+        for line in base._git(
+            worktree, "diff", "--cached", "--name-only", "--"
+        ).splitlines()
         if line
     ]
     v2._validate_paths(staged)
@@ -240,7 +251,9 @@ def _tracked_diff_paths(worktree: Path, base_commit: str) -> list[str]:
     return [line for line in text.splitlines() if line]
 
 
-def _validate_post_host_scope(worktree: Path, candidate_commit: str, host_record_path: str) -> None:
+def _validate_post_host_scope(
+    worktree: Path, candidate_commit: str, host_record_path: str
+) -> None:
     for path in v2._working_tree_paths(worktree):
         if path == host_record_path:
             continue
@@ -257,12 +270,16 @@ def _validate_post_host_scope(worktree: Path, candidate_commit: str, host_record
             )
 
 
-def _load_record_from_state(worktree: Path, state: dict[str, Any]) -> dict[str, Any] | None:
+def _load_record_from_state(
+    worktree: Path, state: dict[str, Any]
+) -> dict[str, Any] | None:
     record = state.get("host_record")
     if not isinstance(record, dict):
         return None
     if not host.verify_host_record(worktree, record):
-        raise base.ResearchTaskError("trusted host record/raw evidence changed after host execution")
+        raise base.ResearchTaskError(
+            "trusted host record/raw evidence changed after host execution"
+        )
     return record
 
 
@@ -279,7 +296,9 @@ def _run_host_task(args: Any) -> int:
         try:
             fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise base.ResearchTaskError("another Atlas research worker is already running") from exc
+            raise base.ResearchTaskError(
+                "another Atlas research worker is already running"
+            ) from exc
 
         base._verify_remote_task(
             repo,
@@ -382,7 +401,9 @@ def _run_host_task(args: Any) -> int:
             raise base.ResearchTaskError("host record missing after host phase")
 
         if not host.verify_host_record(worktree, host_record):
-            raise base.ResearchTaskError("host facts/raw evidence failed integrity verification")
+            raise base.ResearchTaskError(
+                "host facts/raw evidence failed integrity verification"
+            )
 
         state["status"] = "analyzing"
         base._write_state(state_path, state)
@@ -406,12 +427,16 @@ def _run_host_task(args: Any) -> int:
             )
 
         if not host.verify_host_record(worktree, host_record):
-            raise base.ResearchTaskError("Luna modified trusted host facts or raw evidence")
+            raise base.ResearchTaskError(
+                "Luna modified trusted host facts or raw evidence"
+            )
         _validate_post_host_scope(
             worktree, candidate_commit, str(host_record.get("tracked_record", ""))
         )
 
-        result_commit = _trusted_commit_if_dirty(worktree, args.task_path, phase="final")
+        result_commit = _trusted_commit_if_dirty(
+            worktree, args.task_path, phase="final"
+        )
         if result_commit == candidate_commit:
             raise base.ResearchTaskError("analysis phase produced no closeout changes")
         validated_commit, changed = base._validate_closeout(worktree, args.task_commit)

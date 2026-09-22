@@ -1,10 +1,30 @@
 # Code guide
 
-This guide points contributors to the smallest relevant source area for common changes. The primary research implementation is under `example/cpp/`.
-For current Phase 2 work, read [`../CURRENT.md`](../CURRENT.md) first; this file
-only maps code and cannot define the route.
+Start with [CURRENT.md](../CURRENT.md), then the active task. This map does not
+choose a research route. Current substrate code is in `tools/substrate`; the
+legacy controller remains under `example/cpp`.
 
-## Entry points
+## Current source ownership
+
+| Change | Smallest source area in tools/substrate unless indicated |
+|---|---|
+| Packet shape, joint order, torque resolution | `contracts.py` |
+| Policy observation/history/reset | `rl.py` |
+| Model closure, physics identity, layout | `model.py` |
+| Cadence and immediate stop checks | `clock.py`, `episode.py` |
+| Preparation and campaign orchestration | `launch.py` |
+| Review/start record validation | `readiness.py` |
+| Zero-step and native-call guards | `guards.py`, `watchdog.py` |
+| Frame/action checks and primary metrics | `analyze_capture.py` |
+| Independent formal bundle replay | `verify_capture.py` |
+| Sealing, hashes, process cleanup | `integrity.py` |
+| Dependency/build identity | `environment.py`, `build_identity.py`, `bootstrap.py` |
+| Full native qualification | `qualify.py` |
+| Exact-head SOP preflight | `tools/research/preflight.py` |
+| Repository quality | `tools/check_quality.py`, `tools/check_repo_hygiene.py`, `pyproject.toml` |
+| Atlas/Praxis adapter | `.atlas/project.json`, `tools/atlas_research_task_v6.py`; [tooling map](../tools/README.md) |
+
+## Retained C++ entrypoints
 
 | Task | Start here |
 |---|---|

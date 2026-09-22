@@ -21,7 +21,7 @@ python3 -m tools.substrate.bootstrap --install --build
 
 Every output must be new. Qualify holds `/tmp/go2_mujoco_experiment.lock` for the
 whole process, rebuilds the controller in `.substrate/controller-reliable`, runs
-the 34 CTests, 76 substrate tests, 24 preflight tests and 25 dispatcher tests,
+all registered CTests, substrate, preflight and repository/dispatcher tests,
 checks hygiene and diff, then runs actual RL/MJPC offline admission. A clean HEAD
 is required by default. `--development` explicitly records a dirty engineering
 iteration; it cannot stand for clean-head final qualification. The native
@@ -127,5 +127,7 @@ goals, thresholds, horizon/repeats, support semantics, runner and attempt bounda
 A future start must still validate the exact reviewed HEAD and explicit start record.
 No scientific thresholds, legacy evidence or method rankings change here.
 
-Hosted CI runs 118 dependency-light tests including the dispatcher; native
-qualification runs 159 in total. CI does not certify a robot capability.
+Hosted CI runs dependency-light tests, pinned lint/format, tracked-source syntax
+and portable documentation checks. Native qualification adds controller CTests,
+actual Torch/model fixtures and backend admission. Exact counts belong to each
+qualification report, not this guide. CI does not certify a robot capability.

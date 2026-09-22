@@ -52,8 +52,12 @@ def font() -> ImageFont.ImageFont:
     return ImageFont.load_default()
 
 
-def set_state(model: mujoco.MjModel, data: mujoco.MjData,
-              row: dict[str, str], ground_row: dict[str, str]) -> None:
+def set_state(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    row: dict[str, str],
+    ground_row: dict[str, str],
+) -> None:
     data.qpos[:3] = [
         float(row["world_base_x_m"]),
         float(row["world_base_y_m"]),
@@ -83,14 +87,25 @@ def main() -> int:
     parser.add_argument("--camera-distance", type=float, default=1.8)
     parser.add_argument("--camera-azimuth", type=float, default=90.0)
     parser.add_argument("--camera-elevation", type=float, default=-18.0)
-    parser.add_argument("--ffmpeg", type=Path,
-                        default=Path(os.environ.get("FFMPEG_BIN") or shutil.which("ffmpeg") or "ffmpeg"))
+    parser.add_argument(
+        "--ffmpeg",
+        type=Path,
+        default=Path(
+            os.environ.get("FFMPEG_BIN") or shutil.which("ffmpeg") or "ffmpeg"
+        ),
+    )
     args = parser.parse_args()
 
     data_times, data_rows = load_rows(args.run_dir / "data.csv", "cmd_time_s")
-    truth_times, truth_rows = load_rows(args.run_dir / "contact_ground_truth.csv", "time_s")
+    truth_times, truth_rows = load_rows(
+        args.run_dir / "contact_ground_truth.csv", "time_s"
+    )
     start = max(args.start, data_times[0])
-    end = data_times[-1] if args.duration is None else min(data_times[-1], start + args.duration)
+    end = (
+        data_times[-1]
+        if args.duration is None
+        else min(data_times[-1], start + args.duration)
+    )
     if end <= start:
         raise ValueError("replay interval is empty")
 
@@ -112,13 +127,37 @@ def main() -> int:
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = [
-        str(args.ffmpeg), "-y", "-f", "rawvideo", "-pixel_format", "rgb24",
-        "-video_size", f"{args.width}x{args.height}", "-framerate", str(args.fps),
-        "-i", "-", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
-        "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(args.output),
+        str(args.ffmpeg),
+        "-y",
+        "-f",
+        "rawvideo",
+        "-pixel_format",
+        "rgb24",
+        "-video_size",
+        f"{args.width}x{args.height}",
+        "-framerate",
+        str(args.fps),
+        "-i",
+        "-",
+        "-an",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        str(args.output),
     ]
-    encoder = subprocess.Popen(command, stdin=subprocess.PIPE,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    encoder = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+    )
     frame_count = 0
     frame_period = 1.0 / args.fps
     try:
@@ -127,9 +166,11 @@ def main() -> int:
             row = data_rows[nearest_index(data_times, t)]
             truth = truth_rows[nearest_index(truth_times, t)]
             set_state(model, data, row, truth)
-            camera.lookat[:] = [float(row["world_base_x_m"]),
-                                float(row["world_base_y_m"]),
-                                float(row["world_base_z_m"])]
+            camera.lookat[:] = [
+                float(row["world_base_x_m"]),
+                float(row["world_base_y_m"]),
+                float(row["world_base_z_m"]),
+            ]
             renderer.update_scene(data, camera)
             image = Image.fromarray(renderer.render(), mode="RGB")
             overlay = ImageDraw.Draw(image, "RGBA")
@@ -137,10 +178,13 @@ def main() -> int:
             roll = math.degrees(float(row["imu_roll_rad"]))
             pitch = math.degrees(float(row["imu_pitch_rad"]))
             stage = row.get("motion_stage", "?")
-            text = (f"Go2 sustained sprint replay  t={t:5.2f}s  "
-                    f"v={speed:4.2f} m/s  roll={roll:+4.1f}°  pitch={pitch:+4.1f}°  stage={stage}")
-            overlay.rounded_rectangle((18, 16, min(args.width - 18, 930), 54),
-                                      radius=8, fill=(8, 20, 34, 205))
+            text = (
+                f"Go2 sustained sprint replay  t={t:5.2f}s  "
+                f"v={speed:4.2f} m/s  roll={roll:+4.1f}°  pitch={pitch:+4.1f}°  stage={stage}"
+            )
+            overlay.rounded_rectangle(
+                (18, 16, min(args.width - 18, 930), 54), radius=8, fill=(8, 20, 34, 205)
+            )
             overlay.text((32, 25), text, font=draw_font, fill=(240, 248, 255, 255))
             encoder.stdin.write(np.asarray(image, dtype=np.uint8).tobytes())
             frame_count += 1

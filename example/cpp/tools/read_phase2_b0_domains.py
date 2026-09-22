@@ -24,9 +24,7 @@ def main() -> None:
         if args.repeat not in (1, 2, 3):
             parser.error("holdout repeat must be 1..3")
         key = "repeats" if args.kind == "profiles" else "fixed_3mps_repeats"
-        domains = next(
-            item for item in b0[key] if item["repeat"] == args.repeat
-        )
+        domains = next(item for item in b0[key] if item["repeat"] == args.repeat)
     print(domains["baseline_domain"], domains["terrain_domain"])
 
 

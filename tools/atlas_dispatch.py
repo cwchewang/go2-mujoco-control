@@ -191,7 +191,10 @@ def _research_task(
         push_data = json.loads(push_request.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise TaskError(f"research push request is invalid: {exc}") from exc
-    if not isinstance(push_data, dict) or push_data.get("result_commit") != result_commit:
+    if (
+        not isinstance(push_data, dict)
+        or push_data.get("result_commit") != result_commit
+    ):
         raise TaskError("research push request does not match worker result")
     return {
         "branch": parameters["branch"],

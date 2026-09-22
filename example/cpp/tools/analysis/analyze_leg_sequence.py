@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -102,12 +103,8 @@ def analyze_step(data, step, start_mask, target_start_x, target_start_y, last_st
             continue
         support_x = f"{support_leg}_foot_world_x_m"
         support_y = f"{support_leg}_foot_world_y_m"
-        drift_x = mean(data, support_x, end_tail) - mean(
-            data, support_x, shift_tail
-        )
-        drift_y = mean(data, support_y, end_tail) - mean(
-            data, support_y, shift_tail
-        )
+        drift_x = mean(data, support_x, end_tail) - mean(data, support_x, shift_tail)
+        drift_y = mean(data, support_y, end_tail) - mean(data, support_y, shift_tail)
         support_drifts.append(1000.0 * math.hypot(drift_x, drift_y))
 
     q_error_columns = [
@@ -138,29 +135,19 @@ def analyze_step(data, step, start_mask, target_start_x, target_start_y, last_st
         "actual_swing_y_m": end_foot_y - start_foot_y,
         "body_displacement_x_m": end_body_x - start_body_x,
         "body_displacement_y_m": end_body_y - start_body_y,
-        "swing_clearance_mean_mm": 1000.0
-        * mean(data, foot_clearance, swing),
-        "swing_clearance_max_mm": 1000.0
-        * float(np.max(data[foot_clearance][swing])),
+        "swing_clearance_mean_mm": 1000.0 * mean(data, foot_clearance, swing),
+        "swing_clearance_max_mm": 1000.0 * float(np.max(data[foot_clearance][swing])),
         "swing_force_mean": mean(data, foot_force, swing),
         "swing_force_max": float(np.max(data[foot_force][swing])),
-        "swing_zero_force_fraction": float(
-            np.mean(data[foot_force][swing] == 0.0)
-        ),
+        "swing_zero_force_fraction": float(np.mean(data[foot_force][swing] == 0.0)),
         "landing_force_mean": mean(data, foot_force, landing),
-        "max_abs_roll_deg": math.degrees(
-            max_abs(data, "imu_roll_rad", motion)
-        ),
-        "max_abs_pitch_deg": math.degrees(
-            max_abs(data, "imu_pitch_rad", motion)
-        ),
+        "max_abs_roll_deg": math.degrees(max_abs(data, "imu_roll_rad", motion)),
+        "max_abs_pitch_deg": math.degrees(max_abs(data, "imu_pitch_rad", motion)),
         "max_support_drift_mm": max(support_drifts),
         "max_abs_q_error_rad": max(
             max_abs(data, column, motion) for column in q_error_columns
         ),
-        "max_abs_tau_est": max(
-            max_abs(data, column, motion) for column in tau_columns
-        ),
+        "max_abs_tau_est": max(max_abs(data, column, motion) for column in tau_columns),
         "time_start_s": float(np.min(time[step_rows])),
         "time_end_s": float(np.max(time[step_rows])),
         "_end_tail": end_tail,
@@ -175,10 +162,7 @@ def analyze(path):
     cycle = data["cycle_index"]
     time = data["cmd_time_s"]
     startup = require(stage == 1, "stand settle")
-    step_numbers = sorted(
-        int(round(value))
-        for value in np.unique(cycle[cycle > 0])
-    )
+    step_numbers = sorted(int(round(value)) for value in np.unique(cycle[cycle > 0]))
     if not step_numbers:
         raise SystemExit("CSV has no completed step numbers")
 
@@ -227,9 +211,7 @@ def write_summary(results, path):
         "max_abs_tau_est",
     ]
     with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(
-            handle, fieldnames=fields, lineterminator="\n"
-        )
+        writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         for result in results:
             writer.writerow({field: result[field] for field in fields})
@@ -239,9 +221,7 @@ def plot(data, results, path, title):
     time = data["cmd_time_s"]
     startup = data["motion_stage"] == 1
     initial_body_x = mean(data, "base_world_x_m", startup)
-    figure, axes = plt.subplots(
-        2, 2, figsize=(12, 8), constrained_layout=True
-    )
+    figure, axes = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
     body_axis, clearance_axis = axes[0]
     force_axis, attitude_axis = axes[1]
 

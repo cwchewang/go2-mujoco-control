@@ -101,9 +101,7 @@ def main() -> int:
             fields = set(reader.fieldnames or [])
             missing = sorted(REQUIRED_FIELDS - fields)
             if missing:
-                raise ValueError(
-                    "replay CSV missing fields: " + ",".join(missing)
-                )
+                raise ValueError("replay CSV missing fields: " + ",".join(missing))
             rows = list(reader)
     except (OSError, ValueError) as exc:
         print(f"validation=FAIL: {exc}")
@@ -137,19 +135,14 @@ def main() -> int:
             friction_ratio = finite(row, "max_radial_friction_ratio")
             min_normal = finite(row, "min_contact_normal_force")
             target = tuple(finite(row, name) for name in TARGET_FIELDS)
-            achieved = tuple(
-                finite(row, name) for name in ACHIEVED_FIELDS
-            )
-            residual = tuple(
-                finite(row, name) for name in RESIDUAL_FIELDS
-            )
+            achieved = tuple(finite(row, name) for name in ACHIEVED_FIELDS)
+            residual = tuple(finite(row, name) for name in RESIDUAL_FIELDS)
         except (KeyError, ValueError, OverflowError):
             invalid_rows += 1
             continue
 
         arithmetic_residual = tuple(
-            achieved[index] - target[index]
-            for index in range(len(target))
+            achieved[index] - target[index] for index in range(len(target))
         )
         max_arithmetic_error = max(
             abs(arithmetic_residual[index] - residual[index])
@@ -210,7 +203,6 @@ def main() -> int:
         grouped[(contacts, record["phase_bin"])].append(record)
         failed_rows.append(record)
 
-
     detail_fields = [
         "row_number",
         "cmd_time_s",
@@ -251,24 +243,16 @@ def main() -> int:
         "all_wrench_residual_component_p95_abs:",
     ]
     for name in COMPONENT_NAMES:
-        lines.append(
-            f"  {name}={percentile_abs(all_residuals[name]):.9g}"
-        )
+        lines.append(f"  {name}={percentile_abs(all_residuals[name]):.9g}")
     lines.append("all_wrench_residual_component_max_abs:")
     for name in COMPONENT_NAMES:
-        lines.append(
-            f"  {name}={maximum_abs(all_residuals[name]):.9g}"
-        )
+        lines.append(f"  {name}={maximum_abs(all_residuals[name]):.9g}")
     lines.append("task_residual_component_p95_abs:")
     for name in COMPONENT_NAMES:
-        lines.append(
-            f"  {name}={percentile_abs(failed_task_residuals[name]):.9g}"
-        )
+        lines.append(f"  {name}={percentile_abs(failed_task_residuals[name]):.9g}")
     lines.append("task_residual_component_max_abs:")
     for name in COMPONENT_NAMES:
-        lines.append(
-            f"  {name}={maximum_abs(failed_task_residuals[name]):.9g}"
-        )
+        lines.append(f"  {name}={maximum_abs(failed_task_residuals[name]):.9g}")
     lines.append("dominant_residual_component_counts:")
     for name in COMPONENT_NAMES:
         lines.append(f"  {name}={dominant_components[name]}")
@@ -285,8 +269,7 @@ def main() -> int:
     task_feasibility_pass = task_unsatisfied_rows == 0
     arithmetic_pass = (
         invalid_rows == 0
-        and maximum_abs(wrench_norm_consistency_errors)
-        <= args.consistency_tolerance
+        and maximum_abs(wrench_norm_consistency_errors) <= args.consistency_tolerance
     )
     lines.extend(
         [

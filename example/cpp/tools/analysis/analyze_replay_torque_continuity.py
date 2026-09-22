@@ -88,9 +88,7 @@ def main() -> int:
                         "row_number": int(float(raw["row_number"])),
                         "time_s": finite(raw, "cmd_time_s"),
                         "phase": finite(raw, "phase"),
-                        "contacts": int(
-                            round(finite(raw, "selected_contact_count"))
-                        ),
+                        "contacts": int(round(finite(raw, "selected_contact_count"))),
                         "tau": tuple(finite(raw, name) for name in candidate_fields),
                     }
                 except (KeyError, ValueError, OverflowError):
@@ -128,9 +126,7 @@ def main() -> int:
 
         deltas = [
             abs(current_value - previous_value)
-            for current_value, previous_value in zip(
-                current["tau"], previous["tau"]
-            )
+            for current_value, previous_value in zip(current["tau"], previous["tau"])
         ]
         max_index = max(range(len(deltas)), key=deltas.__getitem__)
         delta_nm = deltas[max_index]
@@ -146,9 +142,7 @@ def main() -> int:
             "joint": candidate_fields[max_index],
             "delta_nm": delta_nm,
             "dt_s": dt_s,
-            "rate_nm_s": (
-                delta_nm / dt_s if dt_s > TIME_EPSILON_S else float("nan")
-            ),
+            "rate_nm_s": (delta_nm / dt_s if dt_s > TIME_EPSILON_S else float("nan")),
         }
 
         if dt_s <= TIME_EPSILON_S:

@@ -67,8 +67,10 @@ def main() -> int:
     missing_fullbody = sorted(fullbody_required - set(fullbody_fields))
     if missing_replay or missing_fullbody:
         raise SystemExit(
-            "missing fields: replay=" + ",".join(missing_replay)
-            + " fullbody=" + ",".join(missing_fullbody)
+            "missing fields: replay="
+            + ",".join(missing_replay)
+            + " fullbody="
+            + ",".join(missing_fullbody)
         )
     if len(replay_rows) != len(fullbody_rows):
         raise SystemExit(

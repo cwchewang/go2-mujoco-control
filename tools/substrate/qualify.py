@@ -85,7 +85,7 @@ def main():
                     120,
                 ),
                 (
-                    "dispatcher_tests",
+                    "tooling_tests",
                     [
                         sys.executable,
                         "-m",
@@ -94,11 +94,11 @@ def main():
                         "-s",
                         "tools/tests",
                         "-p",
-                        "test_atlas_*.py",
+                        "test_*.py",
                     ],
                     120,
                 ),
-                ("hygiene", [sys.executable, "tools/check_repo_hygiene.py"], 120),
+                ("quality", [sys.executable, "-m", "tools.check_quality"], 120),
                 ("diff_check", ["git", "diff", "--check"], 30),
             ]
             run.result["qualification_checks"] = {}

@@ -69,6 +69,12 @@ REQUIRED_FILES = (
     "AGENTS.md",
     "CURRENT.md",
     "README.md",
+    "pyproject.toml",
+    "tools/README.md",
+    "tools/check_quality.py",
+    "tools/substrate/README.md",
+    "docs/PROJECT_RECORD.md",
+    "docs/research/SUBSTRATE_FIRST_CAPTURE.md",
     "docs/REPOSITORY_GOVERNANCE.md",
     "docs/research/PHASE2_ACCEPTANCE.md",
     "docs/research/PHASE2_HOLDOUT_MANIFEST.json",
@@ -139,18 +145,42 @@ def tracked_files(root: Path) -> list[str]:
     return [item.decode() for item in result.stdout.split(b"\0") if item]
 
 
-def check_markdown_links(root: Path, rel: str, text: str, problems: list[str]) -> None:
+def check_markdown_links(
+    root: Path,
+    rel: str,
+    text: str,
+    problems: list[str],
+    tracked: set[str] | None = None,
+) -> None:
+    tracked = set(tracked_files(root)) if tracked is None else tracked
     source = root / rel
     for raw_target in MARKDOWN_LINK_RE.findall(text):
-        target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
+        target = raw_target.strip()
+        if target.startswith("<"):
+            target = target[1:].split(">", 1)[0]
+        elif target:
+            target = target.split(maxsplit=1)[0]
         if not target or target.startswith(("http://", "https://", "mailto:", "#")):
             continue
         target = unquote(target.split("#", 1)[0])
         if not target:
             continue
-        candidate = (root / target.lstrip("/")) if target.startswith("/") else (source.parent / target)
-        if not candidate.exists():
+        candidate = (
+            (root / target.lstrip("/"))
+            if target.startswith("/")
+            else (source.parent / target)
+        )
+        candidate = candidate.resolve()
+        if not candidate.is_relative_to(root.resolve()):
+            problems.append(f"outside-checkout markdown link in {rel}: {raw_target}")
+        elif not candidate.exists():
             problems.append(f"broken local markdown link in {rel}: {raw_target}")
+        else:
+            name = candidate.relative_to(root.resolve()).as_posix()
+            if name not in tracked and not any(
+                path.startswith(name + "/") for path in tracked
+            ):
+                problems.append(f"untracked local markdown link in {rel}: {raw_target}")
 
 
 def main() -> int:
@@ -171,13 +201,15 @@ def main() -> int:
             if marker not in text:
                 problems.append(f"missing required guidance in {rel}: {marker}")
 
-    for rel in tracked_files(root):
+    tracked = set(tracked_files(root))
+    for rel in sorted(tracked):
         path = root / rel
         parts = set(Path(rel).parts)
         name = path.name
 
         if rel.startswith(FORBIDDEN_TRACKED_PREFIXES):
             problems.append(f"tracked runtime evidence path: {rel}")
+            continue
 
         if parts & FORBIDDEN_PARTS:
             problems.append(f"forbidden generated/private path: {rel}")
@@ -193,12 +225,15 @@ def main() -> int:
                 text = path.read_text(encoding="utf-8")
             except UnicodeDecodeError:
                 continue
-            portable_text = rel.startswith(MACHINE_PORTABLE_PREFIXES) and not \
-                rel.startswith(EVIDENCE_PREFIXES)
+            portable_text = rel.startswith(
+                MACHINE_PORTABLE_PREFIXES
+            ) and not rel.startswith(EVIDENCE_PREFIXES)
             if rel != SELF_PATH and portable_text:
                 for marker in MACHINE_LOCAL_MARKERS:
                     if marker in text:
-                        problems.append(f"machine-local absolute path in {rel}: {marker}")
+                        problems.append(
+                            f"machine-local absolute path in {rel}: {marker}"
+                        )
             if rel.startswith(PHASE2_SOURCE_PREFIXES):
                 for token in FORBIDDEN_PHASE2_SOURCE_TOKENS:
                     if token in text:
@@ -207,9 +242,10 @@ def main() -> int:
                         )
             # Upstream READMEs are kept verbatim and may reference assets that were not
             # copied into this research fork; validate links only for maintained docs.
-            if path.suffix == ".md" and \
-                    not rel.startswith((UPSTREAM_DOC_PREFIX,) + EVIDENCE_PREFIXES):
-                check_markdown_links(root, rel, text, problems)
+            if path.suffix == ".md" and not rel.startswith(
+                (UPSTREAM_DOC_PREFIX,) + EVIDENCE_PREFIXES
+            ):
+                check_markdown_links(root, rel, text, problems, tracked)
 
     if problems:
         print("Repository hygiene check failed:")

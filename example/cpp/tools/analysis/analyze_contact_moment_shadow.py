@@ -70,10 +70,13 @@ def correlation(left: list[float], right: list[float]) -> float:
     )
     if denominator <= 1e-15:
         return 0.0
-    return sum(
-        (left_value - left_mean) * (right_value - right_mean)
-        for left_value, right_value in zip(left, right)
-    ) / denominator
+    return (
+        sum(
+            (left_value - left_mean) * (right_value - right_mean)
+            for left_value, right_value in zip(left, right)
+        )
+        / denominator
+    )
 
 
 def main() -> int:
@@ -101,16 +104,11 @@ def main() -> int:
                 "base_quat_y",
                 "base_quat_z",
             }
-            required.update(
-                f"base_angacc_body_{axis}_radps2" for axis in AXES
-            )
+            required.update(f"base_angacc_body_{axis}_radps2" for axis in AXES)
             for leg in LEGS:
+                required.update(f"{leg}_pos_world_{axis}_m" for axis in AXES)
                 required.update(
-                    f"{leg}_pos_world_{axis}_m" for axis in AXES
-                )
-                required.update(
-                    f"{leg}_foot_contact_grf_world_{axis}_N"
-                    for axis in AXES
+                    f"{leg}_foot_contact_grf_world_{axis}_N" for axis in AXES
                 )
             missing = sorted(required - fields)
             if missing:
@@ -134,25 +132,18 @@ def main() -> int:
         for row_number, row in enumerate(rows, start=2):
             time_s = finite(row, "time_s")
             if time_s <= previous_time:
-                raise ValueError(
-                    f"row {row_number}: time is not strictly increasing"
-                )
+                raise ValueError(f"row {row_number}: time is not strictly increasing")
             previous_time = time_s
 
-            com = tuple(
-                finite(row, f"subtree_com_world_{axis}_m")
-                for axis in AXES
-            )
+            com = tuple(finite(row, f"subtree_com_world_{axis}_m") for axis in AXES)
             quaternion = tuple(
-                finite(row, f"base_quat_{axis}")
-                for axis in ("w", "x", "y", "z")
+                finite(row, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
             )
             moment_world = [0.0, 0.0, 0.0]
             contact_count = 0
             for leg in LEGS:
                 foot_position = tuple(
-                    finite(row, f"{leg}_pos_world_{axis}_m")
-                    for axis in AXES
+                    finite(row, f"{leg}_pos_world_{axis}_m") for axis in AXES
                 )
                 force_world = tuple(
                     finite(
@@ -163,32 +154,18 @@ def main() -> int:
                 )
                 if vector_norm(force_world) >= args.contact_force_threshold_n:
                     contact_count += 1
-                lever = tuple(
-                    foot_position[index] - com[index] for index in range(3)
-                )
-                moment_world[0] += (
-                    lever[1] * force_world[2]
-                    - lever[2] * force_world[1]
-                )
-                moment_world[1] += (
-                    lever[2] * force_world[0]
-                    - lever[0] * force_world[2]
-                )
-                moment_world[2] += (
-                    lever[0] * force_world[1]
-                    - lever[1] * force_world[0]
-                )
+                lever = tuple(foot_position[index] - com[index] for index in range(3))
+                moment_world[0] += lever[1] * force_world[2] - lever[2] * force_world[1]
+                moment_world[1] += lever[2] * force_world[0] - lever[0] * force_world[2]
+                moment_world[2] += lever[0] * force_world[1] - lever[1] * force_world[0]
 
             moment_body = world_to_body(quaternion, tuple(moment_world))
             angular_acceleration = tuple(
-                finite(row, f"base_angacc_body_{axis}_radps2")
-                for axis in AXES
+                finite(row, f"base_angacc_body_{axis}_radps2") for axis in AXES
             )
             for index in range(3):
                 moments[index].append(moment_body[index])
-                angular_accelerations[index].append(
-                    angular_acceleration[index]
-                )
+                angular_accelerations[index].append(angular_acceleration[index])
             moment_norms.append(vector_norm(moment_body))
             contact_histogram[contact_count] += 1
     except (KeyError, ValueError) as exc:

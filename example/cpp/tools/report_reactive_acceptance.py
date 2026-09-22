@@ -40,20 +40,31 @@ def profile(experiment: str) -> dict[str, object]:
         "rows": len(rows),
         "duration_s": result.get("max_time_s", math.nan),
         "finite_time_rows": len(finite_times),
-        "nonmonotonic_time": any(current < previous for previous, current in zip(finite_times, finite_times[1:])),
+        "nonmonotonic_time": any(
+            current < previous
+            for previous, current in zip(finite_times, finite_times[1:])
+        ),
         "duplicate_time_rows": len(finite_times) - len(set(finite_times)),
         "dt_min_s": min(positive_dt) if positive_dt else math.nan,
         "dt_max_s": max(positive_dt) if positive_dt else math.nan,
-        "transition_types": " -> ".join(item["type"] for item in result.get("event_transitions", [])),
+        "transition_types": " -> ".join(
+            item["type"] for item in result.get("event_transitions", [])
+        ),
         "yaw_change_rad": metrics.get("yaw_change_rad", math.nan),
         "braking_drop_mps": metrics.get("braking_drop_mps", math.nan),
         "max_velocity_jump_mps": metrics.get("max_velocity_jump_mps", math.nan),
         "event_rows": metrics.get("event_rows", math.nan),
         "post_rows": metrics.get("post_rows", math.nan),
-        "obstacle_scene_physical_ok": metrics.get("obstacle_scene_physical_ok", math.nan),
+        "obstacle_scene_physical_ok": metrics.get(
+            "obstacle_scene_physical_ok", math.nan
+        ),
         "obstacle_contact_ok": metrics.get("obstacle_contact_ok", math.nan),
-        "obstacle_contact_max_force_N": metrics.get("obstacle_contact_max_force_N", math.nan),
-        "obstacle_contact_max_count": metrics.get("obstacle_contact_max_count", math.nan),
+        "obstacle_contact_max_force_N": metrics.get(
+            "obstacle_contact_max_force_N", math.nan
+        ),
+        "obstacle_contact_max_count": metrics.get(
+            "obstacle_contact_max_count", math.nan
+        ),
         "reference_yaw_rate_radps": metrics.get("reference_yaw_rate_radps", math.nan),
     }
 
@@ -89,18 +100,33 @@ def main() -> None:
         encoding="utf-8",
     )
     fields = [
-        "experiment", "event_type", "event_source", "strict_pass", "status_ok",
-        "rows", "duration_s", "yaw_change_rad", "braking_drop_mps",
-        "max_velocity_jump_mps", "event_rows", "post_rows",
-        "obstacle_contact_max_force_N", "obstacle_contact_max_count",
-        "obstacle_scene_physical_ok", "obstacle_contact_ok",
+        "experiment",
+        "event_type",
+        "event_source",
+        "strict_pass",
+        "status_ok",
+        "rows",
+        "duration_s",
+        "yaw_change_rad",
+        "braking_drop_mps",
+        "max_velocity_jump_mps",
+        "event_rows",
+        "post_rows",
+        "obstacle_contact_max_force_N",
+        "obstacle_contact_max_count",
+        "obstacle_scene_physical_ok",
+        "obstacle_contact_ok",
         "transition_types",
         "git_head",
     ]
-    with (output_dir / "acceptance_metrics.csv").open("w", newline="", encoding="utf-8") as stream:
+    with (output_dir / "acceptance_metrics.csv").open(
+        "w", newline="", encoding="utf-8"
+    ) as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
-        writer.writerows({field: record.get(field, "") for field in fields} for record in records)
+        writer.writerows(
+            {field: record.get(field, "") for field in fields} for record in records
+        )
 
     lines = [
         "# Reactive acceptance — verified evidence",
@@ -116,7 +142,11 @@ def main() -> None:
     for record in records:
         source = str(record["event_source"])
         event_label = f"{record['event_type']} / {source}"
-        gate = "REF" if record["event_type"] == "nominal" else ("PASS" if record["strict_pass"] else "CHECK")
+        gate = (
+            "REF"
+            if record["event_type"] == "nominal"
+            else ("PASS" if record["strict_pass"] else "CHECK")
+        )
         lines.append(
             f"| `{record['experiment']}` | {event_label} | **{gate}** | "
             f"{fmt(record['duration_s'])} | {fmt(record['yaw_change_rad'])} | "

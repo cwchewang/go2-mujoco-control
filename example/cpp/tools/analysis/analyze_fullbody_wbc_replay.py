@@ -33,9 +33,7 @@ BASE_REPORT_LABELS = (
 LEGS = ("FR", "FL", "RR", "RL")
 JOINTS = ("hip", "thigh", "calf")
 JOINT_LABELS = tuple(
-    f"{leg}_{joint}_joint"
-    for leg in ("FL", "FR", "RL", "RR")
-    for joint in JOINTS
+    f"{leg}_{joint}_joint" for leg in ("FL", "FR", "RL", "RR") for joint in JOINTS
 )
 MASS_KG = 15.206408
 GRAVITY_MPS2 = 9.81
@@ -87,18 +85,14 @@ def read_truth(path: Path) -> tuple[list[dict[str, str]], list[str]]:
             raise ValueError("ground-truth CSV has duplicate fields")
         rows = list(reader)
     labels = [
-        field[len(MASS_PREFIX):]
-        for field in fields
-        if field.startswith(MASS_PREFIX)
+        field[len(MASS_PREFIX) :] for field in fields if field.startswith(MASS_PREFIX)
     ]
     if not labels:
         raise ValueError("ground-truth CSV has no full mass fields")
     if len(labels) != len(set(labels)):
         raise ValueError("ground-truth CSV has duplicate dof labels")
     required = {"time_s", "base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z"}
-    required.update(
-        f"base_qacc_world_{axis}_mps2" for axis in ("x", "y", "z")
-    )
+    required.update(f"base_qacc_world_{axis}_mps2" for axis in ("x", "y", "z"))
     for label in labels:
         required.update(
             prefix + label
@@ -248,8 +242,7 @@ def main() -> int:
         try:
             truth = truth_rows[truth_index]
             quaternion = tuple(
-                finite(truth, f"base_quat_{axis}")
-                for axis in ("w", "x", "y", "z")
+                finite(truth, f"base_quat_{axis}") for axis in ("w", "x", "y", "z")
             )
             if has_target_wrench:
                 target_body_wrench = (
@@ -293,12 +286,10 @@ def main() -> int:
                 for label in BASE_LABELS
             )
             base_gap = tuple(
-                actual_base[index] - target_base[index]
-                for index in range(6)
+                actual_base[index] - target_base[index] for index in range(6)
             )
             base_gap_minus_mass_qacc = tuple(
-                base_gap[index]
-                - finite(truth, MASS_PREFIX + BASE_LABELS[index])
+                base_gap[index] - finite(truth, MASS_PREFIX + BASE_LABELS[index])
                 for index in range(3)
             )
             base_qacc_world = tuple(
@@ -324,9 +315,7 @@ def main() -> int:
                         ACTUATOR_PREFIX + label,
                     )
                     required_actuator = mass - smooth - candidate
-                    hold_error = (
-                        mass - smooth - candidate - required_actuator
-                    )
+                    hold_error = mass - smooth - candidate - required_actuator
                     joint_values[label] = {
                         "candidate": candidate,
                         "actual_constraint": actual_constraint,
@@ -336,7 +325,7 @@ def main() -> int:
                         "actuator_delta": required_actuator - actual_actuator,
                         "hold_error": hold_error,
                     }
-        except (KeyError, ValueError) as exc:
+        except (KeyError, ValueError):
             invalid_rows += 1
             continue
 
@@ -402,15 +391,9 @@ def main() -> int:
             all_actuator_delta[label].append(values["actuator_delta"])
             all_candidate_torque[label].append(values["candidate"])
             if feasible:
-                feasible_joint_contact_gap[label].append(
-                    values["contact_gap"]
-                )
-                feasible_actuator_delta[label].append(
-                    values["actuator_delta"]
-                )
-                feasible_candidate_torque[label].append(
-                    values["candidate"]
-                )
+                feasible_joint_contact_gap[label].append(values["contact_gap"])
+                feasible_actuator_delta[label].append(values["actuator_delta"])
+                feasible_candidate_torque[label].append(values["candidate"])
             hold_closure_errors.append(values["hold_error"])
             for metric, value in values.items():
                 detail[f"{label}_{metric}"] = value
@@ -430,8 +413,7 @@ def main() -> int:
     arithmetic_pass = (
         match_failures == 0
         and invalid_rows == 0
-        and maximum_abs(hold_closure_errors)
-        <= args.hold_closure_tolerance
+        and maximum_abs(hold_closure_errors) <= args.hold_closure_tolerance
     )
     task_feasibility_pass = (
         task_gate_failures == 0
@@ -457,7 +439,9 @@ def main() -> int:
         f"contact_mask_mismatch_rows={contact_mask_mismatch_rows}",
         "max_time_error_s=%.9g" % max(time_errors),
         "target_wrench_source="
-        + ("replay_csv_body_wrench" if has_target_wrench else "static_gravity_fallback"),
+        + (
+            "replay_csv_body_wrench" if has_target_wrench else "static_gravity_fallback"
+        ),
         "coordinate_note=body_task_force_rotated_to_world_free_joint_translation_qcoord",
         "candidate_note=contact_torque_replay_values_are_J_transpose_f_candidates",
         "required_actuator_note=hold_measured_qacc_using_candidate_contact_qforce",
@@ -466,8 +450,7 @@ def main() -> int:
         "joint_gap_equation=actual_joint_qfrc_constraint_minus_candidate_contact_qforce",
         "required_actuator_equation=full_M_qacc_minus_full_qfrc_smooth_minus_candidate_contact_qforce",
         "hold_closure_tolerance=%.9g" % args.hold_closure_tolerance,
-        "hold_joint_closure_max_abs=%.9g"
-        % maximum_abs(hold_closure_errors),
+        "hold_joint_closure_max_abs=%.9g" % maximum_abs(hold_closure_errors),
     ]
     for label in BASE_REPORT_LABELS:
         lines.extend(

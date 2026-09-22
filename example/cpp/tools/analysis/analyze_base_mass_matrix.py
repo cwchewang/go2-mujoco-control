@@ -40,9 +40,7 @@ def symmetrize(matrix: list[list[float]]) -> list[list[float]]:
     ]
 
 
-def max_abs_difference(
-    left: list[list[float]], right: list[list[float]]
-) -> float:
+def max_abs_difference(left: list[list[float]], right: list[list[float]]) -> float:
     return max(
         abs(left[row][column] - right[row][column])
         for row in range(len(left))
@@ -75,23 +73,25 @@ def inverse_3x3(matrix: list[list[float]]) -> list[list[float]]:
     a, b, c = matrix[0]
     d, e, f = matrix[1]
     g, h, i = matrix[2]
-    determinant = (
-        a * (e * i - f * h)
-        - b * (d * i - f * g)
-        + c * (d * h - e * g)
-    )
+    determinant = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
     if abs(determinant) <= 1e-12:
         raise ValueError("translation block is singular")
     return [
-        [(e * i - f * h) / determinant,
-         (c * h - b * i) / determinant,
-         (b * f - c * e) / determinant],
-        [(f * g - d * i) / determinant,
-         (a * i - c * g) / determinant,
-         (c * d - a * f) / determinant],
-        [(d * h - e * g) / determinant,
-         (b * g - a * h) / determinant,
-         (a * e - b * d) / determinant],
+        [
+            (e * i - f * h) / determinant,
+            (c * h - b * i) / determinant,
+            (b * f - c * e) / determinant,
+        ],
+        [
+            (f * g - d * i) / determinant,
+            (a * i - c * g) / determinant,
+            (c * d - a * f) / determinant,
+        ],
+        [
+            (d * h - e * g) / determinant,
+            (b * g - a * h) / determinant,
+            (a * e - b * d) / determinant,
+        ],
     ]
 
 
@@ -111,10 +111,7 @@ def jacobi_eigenvalues(matrix: list[list[float]]) -> list[float]:
         magnitude, row, column = pivot
         if magnitude <= 1e-12:
             break
-        tau = (
-            (work[column][column] - work[row][row])
-            / (2.0 * work[row][column])
-        )
+        tau = (work[column][column] - work[row][row]) / (2.0 * work[row][column])
         tangent = (
             1.0 / (abs(tau) + math.sqrt(1.0 + tau * tau))
             if tau >= 0.0
@@ -173,9 +170,7 @@ def main() -> int:
     matrices: list[list[list[float]]] = []
     previous_time = -math.inf
     try:
-        with args.ground_truth_csv.open(
-            newline="", encoding="utf-8"
-        ) as handle:
+        with args.ground_truth_csv.open(newline="", encoding="utf-8") as handle:
             reader = csv.DictReader(handle)
             fields = reader.fieldnames or []
             if len(fields) != len(set(fields)):
@@ -221,21 +216,11 @@ def main() -> int:
             symmetric = symmetrize(matrix)
             symmetry_errors.append(max_abs_difference(matrix, symmetric))
             full_eigenvalues.append(jacobi_eigenvalues(symmetric))
-            translation = [
-                row[:BLOCK_SIZE] for row in symmetric[:BLOCK_SIZE]
-            ]
-            rotation = [
-                row[BLOCK_SIZE:] for row in symmetric[BLOCK_SIZE:]
-            ]
-            cross_tr = [
-                row[BLOCK_SIZE:] for row in symmetric[:BLOCK_SIZE]
-            ]
-            cross_rt = [
-                row[:BLOCK_SIZE] for row in symmetric[BLOCK_SIZE:]
-            ]
-            translation_eigenvalues.append(
-                jacobi_eigenvalues(translation)
-            )
+            translation = [row[:BLOCK_SIZE] for row in symmetric[:BLOCK_SIZE]]
+            rotation = [row[BLOCK_SIZE:] for row in symmetric[BLOCK_SIZE:]]
+            cross_tr = [row[BLOCK_SIZE:] for row in symmetric[:BLOCK_SIZE]]
+            cross_rt = [row[:BLOCK_SIZE] for row in symmetric[BLOCK_SIZE:]]
+            translation_eigenvalues.append(jacobi_eigenvalues(translation))
             rotation_eigenvalues.append(jacobi_eigenvalues(rotation))
             schur = matrix_subtract(
                 rotation,
@@ -271,16 +256,13 @@ def main() -> int:
         "matrix_dimension=6",
         "q_coordinate_note=free_joint_translation_then_rotation",
         "symmetry_tolerance=%.9g" % args.symmetry_tolerance,
-        "positive_definite_tolerance=%.9g"
-        % args.positive_definite_tolerance,
+        "positive_definite_tolerance=%.9g" % args.positive_definite_tolerance,
         "symmetry_max_abs=%.9g" % max(symmetry_errors),
         "symmetry_p95_abs=%.9g" % percentile(symmetry_errors, 0.95),
         "full_mass_eig_min=%.9g" % minimum(full_eigenvalues),
         "full_mass_eig_max=%.9g" % maximum(full_eigenvalues),
-        "translation_block_eig_min=%.9g"
-        % minimum(translation_eigenvalues),
-        "translation_block_eig_max=%.9g"
-        % maximum(translation_eigenvalues),
+        "translation_block_eig_min=%.9g" % minimum(translation_eigenvalues),
+        "translation_block_eig_max=%.9g" % maximum(translation_eigenvalues),
         "rotation_block_eig_min=%.9g" % minimum(rotation_eigenvalues),
         "rotation_block_eig_max=%.9g" % maximum(rotation_eigenvalues),
         "rotation_schur_eig_min=%.9g" % minimum(schur_eigenvalues),

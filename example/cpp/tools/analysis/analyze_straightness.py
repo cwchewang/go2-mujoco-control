@@ -26,7 +26,10 @@ def f(row: dict[str, str], key: str) -> float:
 
 
 def yaw(row: dict[str, str]) -> float:
-    w, x, y, z = (f(row, key) for key in ("base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z"))
+    w, x, y, z = (
+        f(row, key)
+        for key in ("base_quat_w", "base_quat_x", "base_quat_y", "base_quat_z")
+    )
     return math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
 
 
@@ -78,7 +81,9 @@ def main() -> int:
     for row in cruise:
         dx = f(row, "base_pos_world_x_m") - x0
         dy = f(row, "base_pos_world_y_m") - y0
-        cross_track.append(-math.sin(reference_heading) * dx + math.cos(reference_heading) * dy)
+        cross_track.append(
+            -math.sin(reference_heading) * dx + math.cos(reference_heading) * dy
+        )
         heading.append(math.degrees(unwrap_delta(yaw(row) - reference_heading)))
         lateral_speed.append(abs(f(row, "base_qvel_world_y_mps")))
     cross_p95 = percentile([abs(v) for v in cross_track], 95.0)
@@ -87,17 +92,27 @@ def main() -> int:
     lateral_p95 = percentile(lateral_speed, 95.0)
     failures = []
     if cross_p95 > args.max_cross_track_p95_m:
-        failures.append(f"cross_track_p95_m={cross_p95:.4f}>{args.max_cross_track_p95_m:.4f}")
+        failures.append(
+            f"cross_track_p95_m={cross_p95:.4f}>{args.max_cross_track_p95_m:.4f}"
+        )
     if cross_end > args.max_end_cross_track_m:
-        failures.append(f"cross_track_end_m={cross_end:.4f}>{args.max_end_cross_track_m:.4f}")
+        failures.append(
+            f"cross_track_end_m={cross_end:.4f}>{args.max_end_cross_track_m:.4f}"
+        )
     if heading_p95 > args.max_heading_drift_deg:
-        failures.append(f"heading_drift_p95_deg={heading_p95:.4f}>{args.max_heading_drift_deg:.4f}")
+        failures.append(
+            f"heading_drift_p95_deg={heading_p95:.4f}>{args.max_heading_drift_deg:.4f}"
+        )
     if lateral_p95 > args.max_lateral_speed_p95_mps:
-        failures.append(f"lateral_speed_p95_mps={lateral_p95:.4f}>{args.max_lateral_speed_p95_mps:.4f}")
+        failures.append(
+            f"lateral_speed_p95_mps={lateral_p95:.4f}>{args.max_lateral_speed_p95_mps:.4f}"
+        )
     print(f"cruise_window_s={start:.3f}..{end:.3f}")
     print(f"reference_heading_deg={args.reference_heading_deg:.3f}")
     print(f"path_start_xy_m={x0:.6f},{y0:.6f}")
-    print(f"path_end_xy_m={f(cruise[-1], 'base_pos_world_x_m'):.6f},{f(cruise[-1], 'base_pos_world_y_m'):.6f}")
+    print(
+        f"path_end_xy_m={f(cruise[-1], 'base_pos_world_x_m'):.6f},{f(cruise[-1], 'base_pos_world_y_m'):.6f}"
+    )
     print(f"cross_track_p95_m={cross_p95:.6f}")
     print(f"cross_track_end_m={cross_end:.6f}")
     print(f"heading_drift_p95_deg={heading_p95:.6f}")

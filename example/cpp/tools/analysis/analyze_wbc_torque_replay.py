@@ -91,23 +91,31 @@ def main() -> int:
         required_state = {
             "motion_stage",
             "cycle_index",
-            *(f"{motor}_{suffix}" for motor in MOTORS for suffix in (
-                "q_target",
-                "dq_target",
-                "kp",
-                "kd",
-                "tau_ff",
-                "q_state",
-                "dq_state",
-                "tau_est",
-            )),
+            *(
+                f"{motor}_{suffix}"
+                for motor in MOTORS
+                for suffix in (
+                    "q_target",
+                    "dq_target",
+                    "kp",
+                    "kd",
+                    "tau_ff",
+                    "q_state",
+                    "dq_state",
+                    "tau_est",
+                )
+            ),
         }
         required_replay = {
             "row_number",
             *(f"{motor}_tau_ff_candidate" for motor in MOTORS),
         }
-        missing_state = sorted(required_state.difference(state_rows[0] if state_rows else {}))
-        missing_replay = sorted(required_replay.difference(replay_rows[0] if replay_rows else {}))
+        missing_state = sorted(
+            required_state.difference(state_rows[0] if state_rows else {})
+        )
+        missing_replay = sorted(
+            required_replay.difference(replay_rows[0] if replay_rows else {})
+        )
         if missing_state:
             raise ValueError("state CSV missing columns: " + ",".join(missing_state))
         if missing_replay:
@@ -144,9 +152,7 @@ def main() -> int:
                         - finite(state_row, f"{motor}_dq_state")
                     )
                 )
-                candidate_torque.append(
-                    finite(replay_row, f"{motor}_tau_ff_candidate")
-                )
+                candidate_torque.append(finite(replay_row, f"{motor}_tau_ff_candidate"))
                 estimated_torque.append(finite(state_row, f"{motor}_tau_est"))
             joined.append(
                 {
@@ -169,7 +175,6 @@ def main() -> int:
 
     candidate_rows = [row["candidate"] for row in joined]
     pd_rows = [row["pd"] for row in joined]
-    estimated_rows = [row["estimated"] for row in joined]
     walking = [row for row in joined if row["walking"]]
     lines = [
         "wbc torque replay audit",
@@ -212,8 +217,7 @@ def main() -> int:
             ]
             combined_abs = [abs(value) for row in combined for value in row]
             rows_over_limit = sum(
-                max(abs(value) for value in row) > args.joint_limit
-                for row in combined
+                max(abs(value) for value in row) > args.joint_limit for row in combined
             )
             delta_abs = [
                 abs(sign * scale * candidate)
@@ -234,12 +238,8 @@ def main() -> int:
 
     for index, motor in enumerate(MOTORS):
         values = [abs(row["candidate"][index]) for row in joined]
-        lines.append(
-            f"candidate_{motor}_max_abs={max(values):.6f}"
-        )
-        lines.append(
-            f"candidate_{motor}_p95_abs={percentile(values, 0.95):.6f}"
-        )
+        lines.append(f"candidate_{motor}_max_abs={max(values):.6f}")
+        lines.append(f"candidate_{motor}_p95_abs={percentile(values, 0.95):.6f}")
 
     lines.append("validation=PASS")
     report = "\n".join(lines) + "\n"

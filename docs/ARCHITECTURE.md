@@ -1,9 +1,42 @@
 # Architecture
 
-This document maps the code; it does not define research status or the next
-task. For Phase 2, read [`CURRENT.md`](../CURRENT.md) first.
+[PROJECT_RECORD](PROJECT_RECORD.md) owns scientific direction;
+[CURRENT.md](../CURRENT.md) owns the execution frontier. This page maps code.
 
-## Runtime data flow
+## Current substrate
+
+```text
+locked inputs + isolated runtime + exact-head independent reviews
+                         |
+                  launch prepare (zero steps)
+                         |
+                  explicit future start record
+                         |
+locked preflight -> episode -> named observation -> policy target (50 Hz)
+                       |                                 |
+                       +---- per-tick FF + PD (500 Hz) <--+
+                       |
+                 bounded motor torque -> MuJoCo
+                       |
+             aligned state/contact/action raw rows
+                       |
+       manifest + attempt claims -> independent capture verification
+```
+
+`readiness.py` validates review/start records without importing the launcher.
+`guards.py` owns zero-step and native-call timeout guards. `launch.py` coordinates
+preparation/campaigns; `episode.py` owns the clock, policy/plant interaction and
+immediate stop conditions. `analyze_capture.py` validates frame/action contracts,
+then computes metrics and a streaming canonical trace hash. `verify_capture.py`
+checks sealed evidence and recomputes verdicts. `integrity.py` owns exclusive
+output, manifests and subprocess cleanup.
+
+RL is a pinned public checkpoint behind immutable named packets. MJPC remains
+a separate static offline admission with shared physics, not a locomotion
+competitor admitted by the first flat RL protocol. Environment/build identity
+and scientific protocol are separate concerns.
+
+## Retained C++ / DDS data flow
 
 The MuJoCo process and 500 Hz C++ controller communicate through the Unitree
 SDK2 DDS interface.
@@ -29,7 +62,7 @@ a plan from lidar. On the current line it may be logged and analyzed, but it
 does not alter gait, MPC, WBC, contact policy, or velocity. There is no
 production terrain-actuation path.
 
-## Active modules
+## Retained C++ modules
 
 | Area | Primary files | Responsibility |
 |---|---|---|
@@ -46,9 +79,9 @@ production terrain-actuation path.
 | Canonical DDS runtime | `example/cpp/scripts/dds_runtime.sh`, `run_trot.sh`, `run_trot_exact_source.sh` | tracked support artifact, fail-closed cleanup, exact-source launch plumbing |
 | Tests and analysis | `example/cpp/tests/`, `example/cpp/tools/` | unit/integration checks and protocol analyzers |
 
-## Target Phase 2 planner
+## Historical Phase 2 target (not the current roadmap)
 
-The active Stage C target adds `TerrainBelief` for estimated state, measured
+The historical Stage C design proposed `TerrainBelief` for estimated state, measured
 contact, terrain freshness, and uncertainty. `TerrainFeasibility` remains the
 hard-filter/candidate layer. A receding-horizon `TerrainPlanner` then jointly
 optimizes future footholds, body/CoM references, touchdown/contact timing, and
@@ -57,10 +90,10 @@ consumed by gait, SRBD-MPC, and ID-WBC.
 
 The first implementation stays in running-trot topology and runs in
 shadow/replay before actuation. The existing per-leg scorer is not the target
-planner, and archived Stage-C code is not a design source. `CURRENT.md` owns
-the ordered implementation and acceptance sequence.
+planner. Its original historical task and acceptance records own that sequence;
+it is not today's roadmap. PROJECT_RECORD and CURRENT own the current direction.
 
-## Phase 2 invariants
+## Legacy Phase 2 invariants
 
 The Phase 1 shaper remains the only velocity authority. Planned contact and
 force-supported measured contact remain separate. A future terrain execution

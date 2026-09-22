@@ -167,7 +167,9 @@ class ReadinessFixtures(unittest.TestCase):
             p.find_processes(("fixture",))
 
     def inprocess_fixture(self):
-        (self.root / "runner.py").write_text('TRANSPORT = "inprocess"\nraise RuntimeError("runner must never execute")\n')
+        (self.root / "runner.py").write_text(
+            'TRANSPORT = "inprocess"\nraise RuntimeError("runner must never execute")\n'
+        )
         self.git("add", ".")
         self.git("commit", "-m", "inprocess fixture")
         self.head = self.git("rev-parse", "HEAD")
@@ -181,7 +183,9 @@ class ReadinessFixtures(unittest.TestCase):
 
     def test_inprocess_rejects_fictitious_dds_domain(self):
         self.inprocess_fixture()
-        code, result = self.call("--transport", "inprocess", "--runner", "runner.py", "--domain", "230")
+        code, result = self.call(
+            "--transport", "inprocess", "--runner", "runner.py", "--domain", "230"
+        )
         self.assertEqual(code, 2)
 
     def test_inprocess_requires_declared_transport(self):

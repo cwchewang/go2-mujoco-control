@@ -44,10 +44,7 @@ def main():
         "-",
         "-an",
         "-vf",
-        (
-            f"scale={args.output_width}:{args.output_height}:"
-            "flags=lanczos"
-        ),
+        (f"scale={args.output_width}:{args.output_height}:flags=lanczos"),
         "-c:v",
         "libx264",
         "-preset",
@@ -73,11 +70,7 @@ def main():
         window = capture.find_window(args.title)
         period = 1.0 / args.fps
         next_frame = time.monotonic()
-        deadline = (
-            next_frame + args.duration
-            if args.duration is not None
-            else None
-        )
+        deadline = next_frame + args.duration if args.duration is not None else None
         stop_seen_at = None
         crop_box = (
             args.crop_x,
