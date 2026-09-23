@@ -20,6 +20,11 @@
     "docs/research/SOP.md"
   ],
   "project_max_workers": 4,
+  "resource_roots": {
+    "substrate": "ATLAS_RESOURCE_ROOT_SUBSTRATE"
+  },
+  "preflight_python_env": "ATLAS_PREFLIGHT_PYTHON",
+  "require_resource_manifest": true,
   "worker": {
     "kind": "adapter",
     "model": "gpt-6-luna",

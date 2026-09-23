@@ -26,7 +26,7 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       ATLAS_MACHINE_MAX_WORKERS: "4"
-      PRAXIS_CORE_REF: e3ecfe9363dd9ed1b5d11ee670a673253be85206
+      PRAXIS_CORE_REF: 1f96be3939b8ec4d267c4107741f0d636a4a053f
       GO2_CANONICAL_REPO: https://github.com/cwchewang/go2-mujoco-control.git
       GO2_PRAXIS_ANCHOR_REL: dev/go2-workspace/praxis-anchor
       GO2_PRAXIS_TASKS_REL: dev/go2-praxis/tasks
@@ -61,6 +61,8 @@ jobs:
             echo "GO2_PRAXIS_TASKS=$tasks"
             echo "GO2_PRAXIS_STATE=$state"
             echo "GO2_SUBSTRATE_RESOURCE_ROOT=$resources"
+            echo "ATLAS_RESOURCE_ROOT_SUBSTRATE=$resources"
+            echo "ATLAS_PREFLIGHT_PYTHON=$resources/venv-reliable/bin/python"
           } >> "$GITHUB_ENV"
 
           if [[ -e "$anchor" ]]; then
