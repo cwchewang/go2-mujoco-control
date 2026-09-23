@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
+import subprocess
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -101,6 +103,95 @@ def _task_lock_path(state_root: Path, task_commit: str) -> Path:
     return state_root / "locks" / f"{task_commit}.lock"
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _link_readonly_resource(worktree: Path, relative: str, source: Path) -> None:
+    destination = worktree / ".substrate" / relative
+    source = source.resolve()
+    if not source.exists():
+        raise base.ResearchTaskError(f"required substrate resource is missing: {relative}")
+    if destination.is_symlink():
+        if destination.resolve() != source:
+            raise base.ResearchTaskError(
+                f"substrate resource link points at the wrong source: {relative}"
+            )
+        return
+    if destination.exists():
+        raise base.ResearchTaskError(
+            f"task worktree already contains unmanaged substrate resource: {relative}"
+        )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.symlink_to(source, target_is_directory=source.is_dir())
+
+
+def _provision_substrate_resources(worktree: Path) -> None:
+    raw = os.environ.get("GO2_SUBSTRATE_RESOURCE_ROOT")
+    if not raw:
+        return
+    resource_root = Path(raw).expanduser().resolve()
+    if not resource_root.is_dir():
+        raise base.ResearchTaskError("GO2 substrate resource root is missing")
+
+    sources_lock = json.loads(
+        (worktree / "tools/substrate/sources.lock.json").read_text(encoding="utf-8")
+    )
+    checkpoint = resource_root / "rl/policy.pt"
+    expected_checkpoint = sources_lock["rl"]["sha256"]
+    if not checkpoint.is_file() or _sha256_file(checkpoint) != expected_checkpoint:
+        raise base.ResearchTaskError("canonical CTS checkpoint failed SHA-256 verification")
+
+    reference_lock = json.loads(
+        (worktree / "tools/substrate/rl_reference.lock.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    upstream = resource_root / "upstream-go2-30e74dc5"
+    for name, expected in reference_lock["files"].items():
+        path = upstream / name
+        if not path.is_file() or _sha256_file(path) != expected:
+            raise base.ResearchTaskError(
+                f"canonical upstream source failed lock verification: {name}"
+            )
+
+    runtime = resource_root / "venv-reliable"
+    python = runtime / "bin/python"
+    if not python.is_file():
+        raise base.ResearchTaskError("canonical reliable substrate Python is missing")
+    probe = subprocess.run(
+        [
+            str(python),
+            "-c",
+            (
+                "import torch,mujoco,numpy;"
+                "assert torch.__version__.startswith('2.6.0');"
+                "assert mujoco.__version__=='3.3.6';"
+                "assert numpy.__version__=='2.2.6'"
+            ),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    if probe.returncode:
+        raise base.ResearchTaskError("canonical reliable substrate Python failed import/version probe")
+
+    headless = resource_root / "headless-reliable"
+    if not (headless / "go2_mjpc_admit").is_file():
+        raise base.ResearchTaskError("canonical MJPC admission binary is missing")
+
+    _link_readonly_resource(worktree, "rl/policy.pt", checkpoint)
+    _link_readonly_resource(worktree, "upstream-go2-30e74dc5", upstream)
+    _link_readonly_resource(worktree, "venv-reliable", runtime)
+    _link_readonly_resource(worktree, "headless-reliable", headless)
+
+
 def _verify_remote_task(
     repo: Path,
     *,
@@ -183,7 +274,8 @@ def _run_offline_task(
         task_commit=args.task_commit,
     )
     with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
-        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
+        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit, branch=args.branch)
+    _provision_substrate_resources(worktree)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
 
@@ -307,7 +399,8 @@ def _run_host_task(
         task_commit=args.task_commit,
     )
     with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
-        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit)
+        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit, branch=args.branch)
+    _provision_substrate_resources(worktree)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
 
