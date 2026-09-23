@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "role": "execution",
+  "reviewer": "gpt6-luna-max-execution-review-v2-20260923",
+  "target_head": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "verdict": "VETO",
+  "summary": "VETO. The campaign ledger is created only after validation and preflight, so a failed preclaim invocation can reuse the same START record; ledger file contents are fsynced without syncing the ledger directory entries. The 300-second watchdog covers episode execution but not model/policy initialization or analysis. Offline verification replays substantial trace evidence but reuses the capture analyzer for most performance gates.",
+  "checks": [
+    "Detached Praxis identity fails closed for repository, logical branch, exact commit, complete five-value environment, and clean worktree. (tools/research/identity.py:19-75; tools/substrate/launch.py:46-63; tools/research/preflight.py:434-475)",
+    "Task metadata pins the tracked task, protocol path and SHA-256; baseline input collection checks source/checkpoint/model hashes, and the isolated runtime verifier checks locked package payloads. (tools/substrate/task.py:10-54; tools/substrate/baseline.py:39-100; tools/substrate/environment.py:17-80)",
+    "Qualification records a clean HEAD and unchanged sources/resources around required engineering checks; admission is a synthetic static-state policy/MJPC gate and is not a campaign attempt. (tools/substrate/qualify.py:26-162; tools/substrate/admit.py:103-210; tools/substrate/native/admit.cc)",
+    "Preparation runs under the zero-step guard, does not call the episode integration loop, and binds exact HEAD, source files, task, review, qualification, protocol, and copied inputs while reporting physics_steps=0. (tools/substrate/baseline.py:124-205; tools/substrate/guards.py:11-27)",
+    "START validation binds action, HEAD, protocol SHA-256, prepared manifest SHA-256, and integer max_attempts; it requires the user marker and a nonempty instruction, while provenance remains procedural. (tools/substrate/readiness.py:20-45; tools/substrate/baseline.py:208-230)",
+    "VETO: the one-use campaign claim is absent through identity/resource validation and fresh preflight, and is created only at baseline.py:265-272; a valid START file can be reused after an earlier invocation fails before that point. write_new fsyncs file contents but does not fsync parent directories, so external ledger names are not guaranteed crash-durable. (tools/substrate/baseline.py:208-272; tools/substrate/integrity.py:39-48)",
+    "First-nonpass stopping and repeat ordering match the protocol: combined_2 requires combined_1, non-PASS stops progression, and the repeated trajectory digest is compared before completion. (tools/substrate/protocols/rl_shared_transfer_combination_v1.json:1-66; tools/substrate/baseline_episode.py:241-259; tools/substrate/baseline.py:274-351)",
+    "VETO: the watchdog bounds only episode(); model and policy setup before it and analysis after it have no enclosing capture deadline, despite occurring after the campaign claim. Safety checks run before each control/step, and a global nonblocking lock prevents concurrent formal runs. (tools/substrate/baseline.py:284-350; tools/substrate/guards.py:30-59; tools/substrate/watchdog.py:1-40; tools/substrate/baseline_episode.py:261-326)",
+    "Offline baseline verify checks authorization, prepared/capture manifests, preflight, external claims, row cadence, replayed policy/PD, safety labels, and exact repeat with zero physics steps. Its performance verdict mostly calls the same analyze() used by capture; the independent scalar oracle checks MAE, not all mean/lateral/yaw gates. (tools/substrate/baseline.py:388-402; tools/substrate/baseline_verify.py:75-199,202-345)",
+    "Tracked closeout is explicitly deferred until capture and verification finish, preserving the frozen capture identity; this review writes no runtime, protocol, task, or threshold changes. (docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md:275-304)"
+  ],
+  "limitations": [
+    "This review is source-only: no qualification, preparation, capture, verification, tests, policy inference, MuJoCo stepping, remote review-tip fetch, or live resource check was performed.",
+    "The user START instruction is stored as an authorization string, not cryptographically authenticated; the formal task's explicit user authorization and execution procedure provide its provenance.",
+    "The separate generic tools/substrate/verify_capture.py path is not the formal task's prescribed verifier; baseline CLI routes verify to tools/substrate/baseline_verify.py."
+  ]
+}
