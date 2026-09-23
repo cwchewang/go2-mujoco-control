@@ -1,0 +1,18 @@
+# Praxis v2 live concurrency acceptance — Go2 B
+
+## Frozen identity
+
+- Repository: `cwchewang/go2-mujoco-control`
+- Issue: `#160`
+- Branch: `research/praxis-v2-live-concurrency-go2-b-20260923`
+- Starting commit: `2e75826b414f051d24573aa163e9738c4238ba05`
+- Task document: `docs/research/TASK_PRAXIS_V2_LIVE_CONCURRENCY_GO2_B_20260923.md`
+- Worktree: `/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-160`
+
+## Live overlap interval
+
+- Start: `2026-09-23T14:24:55.581991Z`
+- End: `2026-09-23T14:27:35.992436Z`
+- Midpoint process snapshot: `raw/process-snapshot.txt` in the supplied Praxis evidence directory
+
+No physics, simulator, controller, GPU, training, dataset, or scientific work ran. This was a zero-physics infrastructure acceptance capture.
