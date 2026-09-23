@@ -1,0 +1,13 @@
+{
+  "capability_status": "NOT_RUN",
+  "capture_manifest_sha256": "16ce1c6294a7d32292ea9e05bc83293b372ed0cb1f2512188e22b9c77c62b516",
+  "consumed": 10,
+  "errors": [],
+  "external_ledger_checked": true,
+  "live_runs": 0,
+  "physics_steps": 0,
+  "prepared_manifest_sha256": "6be303f1cc75c9df02740c71bad13378a71569dfd725492aef63f93eb087a748",
+  "scope": "offline_engineering_admission",
+  "status": "ENGINEERING_ADMITTED",
+  "verification": "VERIFIED"
+}

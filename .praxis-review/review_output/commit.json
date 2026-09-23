@@ -1,0 +1,12 @@
+{
+  "repository": "cwchewang/go2-mujoco-control",
+  "issue_number": "162",
+  "task_branch": "research/review-shared-transfer-science-v2-20260923",
+  "target_head": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "review_commit": "8d35726f133d208021cba027130b96096fadc5ca",
+  "review_path": "docs/validation/shared_transfer_formal_v2_20260923/science_review.json",
+  "review_sha256": "f829d3f3a93e680c531243465e5c1719959fdae55c02337cb11b88fc6c71d5fd",
+  "detached_head": true,
+  "tracked_worktree_clean": true,
+  "pushed": false
+}

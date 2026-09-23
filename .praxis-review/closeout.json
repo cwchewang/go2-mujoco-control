@@ -1,0 +1,333 @@
+{
+  "status": "complete",
+  "summary": "Completed the exact-head independent science review and approved the frozen experiment to run within scope; the review JSON is committed, and the sealed prior raw capture plus offline verification bundle are preserved for challenge. [E1, E2, E11, E13, E15, E35]",
+  "completed": [
+    "Read the frozen review task, protocol, task binding, prospective design, sealed source baseline/history, and baseline/analyzer/verifier implementation paths.",
+    "Checked prior sealed capture and offline verification artifacts and preserved their raw successes, failures, manifests, and audit outputs in this evidence directory.",
+    "Wrote docs/validation/shared_transfer_formal_v2_20260923/science_review.json with reviewer identity gpt6-luna-max-science-review-v2-20260923 and target head a31fe64afd6b7669765fa83137d70ab6dad11c75.",
+    "Committed only the review JSON as 8d35726f133d208021cba027130b96096fadc5ca; left the worktree detached and clean and did not push."
+  ],
+  "not_completed": [
+    "No combined-condition qualification, preparation, capture, policy inference, or MuJoCo stepping was performed; these are outside this review-only task scope."
+  ],
+  "observations": [
+    {
+      "text": "The sealed source 1.0 m/s reference, its repeat, and the shared-adapter case are all PASS with the same recorded trace digest; the reported mean body-forward speed is 0.938050 m/s.",
+      "evidence_ids": [
+        "E8",
+        "E12",
+        "E13",
+        "E17",
+        "E18",
+        "E19"
+      ]
+    },
+    {
+      "text": "The prior model-only and shared-home-only 1.0 m/s cases are both PASS under the frozen source gates.",
+      "evidence_ids": [
+        "E8",
+        "E13",
+        "E20",
+        "E21"
+      ]
+    },
+    {
+      "text": "Relevant counterevidence remains sealed: first-inference-only at 1.0 m/s failed the lateral gate; 0.15 and 0.30 m/s cases failed performance gates; the stairs case stopped on base contact.",
+      "evidence_ids": [
+        "E8",
+        "E22",
+        "E23",
+        "E24",
+        "E26"
+      ]
+    },
+    {
+      "text": "The copied source capture and verification bundles match their sealed manifests; offline verification reports ten attempts, no errors, and zero physics steps.",
+      "evidence_ids": [
+        "E10",
+        "E11",
+        "E13",
+        "E14",
+        "E15",
+        "E35"
+      ]
+    },
+    {
+      "text": "The combination protocol binds two attempts, an exact repeat of combined_1 as combined_2, a first-pass dependency, no retries, and first-nonpass stopping.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E6",
+        "E27",
+        "E28"
+      ]
+    },
+    {
+      "text": "The new protocol uses the same reference, tracking, lateral, yaw, and safety gate values as the sealed source protocol, and the task binds its exact protocol hash.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5",
+        "E16"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The full shared-model, shared-home, and adapter interaction is the minimal unresolved deployment question because the source reference and each relevant single-factor condition are already characterized, while the combination is absent from prior cases.",
+      "evidence_ids": [
+        "E3",
+        "E7",
+        "E8",
+        "E17",
+        "E19",
+        "E20",
+        "E21"
+      ]
+    },
+    {
+      "text": "The thresholds are prospective for this campaign: they match the pre-existing source gates, are frozen in the task-bound protocol, and no combined-condition outcome was used to set them.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E16"
+      ]
+    },
+    {
+      "text": "The second case is appropriate for bounded deterministic repeatability checking, but two identical traces cannot estimate independent success probability.",
+      "evidence_ids": [
+        "E3",
+        "E6",
+        "E27",
+        "E28",
+        "E29"
+      ]
+    },
+    {
+      "text": "Changing model, home, and adapter together prevents component-level causal attribution; because the target is the complete pinned deployment and the task disclaims such attribution, this is not a vetoing confound.",
+      "evidence_ids": [
+        "E3",
+        "E6",
+        "E7",
+        "E8"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The frozen experiment is scientifically valid to run within its stated scope; the science review verdict is APPROVED for target head a31fe64afd6b7669765fa83137d70ab6dad11c75.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E3",
+        "E6"
+      ]
+    },
+    {
+      "text": "Any later interpretation must remain limited to the complete pinned combination under the deterministic flat 1.0 m/s setup; this review does not report an empirical combined-condition result or independently authorize execution.",
+      "evidence_ids": [
+        "E1",
+        "E6",
+        "E7"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "No empirical outcome for the combined condition was generated in this review-only task; whether that condition meets the frozen gates remains unknown.",
+      "evidence_ids": [
+        "E1",
+        "E3",
+        "E6"
+      ]
+    },
+    {
+      "text": "The repeat requirement does not establish a success probability, statistical reliability, causal attribution, low-speed behavior, terrain robustness, hardware transfer, or other-checkpoint performance.",
+      "evidence_ids": [
+        "E3",
+        "E6",
+        "E7",
+        "E8"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "review_output/science_review.json",
+      "description": "Committed independent science review output, including verdict and frozen target head."
+    },
+    {
+      "id": "E2",
+      "path": "review_output/commit.json",
+      "description": "Commit identity, clean detached worktree state, output hash, and no-push record."
+    },
+    {
+      "id": "E3",
+      "path": "review_inputs/tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "description": "Frozen two-case combination protocol reviewed for condition, thresholds, attempt count, and repeat semantics."
+    },
+    {
+      "id": "E4",
+      "path": "review_inputs/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "description": "Task binding the protocol path and SHA-256."
+    },
+    {
+      "id": "E5",
+      "path": "review_inputs/tools/substrate/protocols/rl_source_v1.json",
+      "description": "Sealed source protocol used to compare gate values and prior cases."
+    },
+    {
+      "id": "E6",
+      "path": "review_inputs/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "description": "Frozen formal task contract and narrow interpretation boundary."
+    },
+    {
+      "id": "E7",
+      "path": "review_inputs/docs/research/SHARED_TRANSFER_COMBINATION_V1.md",
+      "description": "Prospective rationale, combined-condition definition, gates, and stated limitations."
+    },
+    {
+      "id": "E8",
+      "path": "review_inputs/docs/validation/rl_baseline_20260923/RESULTS.md",
+      "description": "Sealed source baseline results and bounded prior claims."
+    },
+    {
+      "id": "E9",
+      "path": "review_inputs/docs/research/TASK_RL_BASELINE_20260923.md",
+      "description": "Prior source baseline prospective task and repeat/stop semantics."
+    },
+    {
+      "id": "E10",
+      "path": "review_inputs/docs/validation/rl_baseline_20260923/provenance.csv",
+      "description": "Tracked mapping from sealed result artifacts to raw evidence hashes."
+    },
+    {
+      "id": "E11",
+      "path": "prior_rl_baseline/capture_01/manifest.json",
+      "description": "Original sealed capture manifest for all prior baseline attempt files."
+    },
+    {
+      "id": "E12",
+      "path": "prior_rl_baseline/capture_01/admission.json",
+      "description": "Prior capture admission with statuses for all ten source baseline cases."
+    },
+    {
+      "id": "E13",
+      "path": "prior_rl_baseline/verification_01/analysis.json",
+      "description": "Independent offline verification outcome and case recomputations."
+    },
+    {
+      "id": "E14",
+      "path": "prior_rl_baseline/verification_01/audits.json",
+      "description": "Per-case offline policy replay, contact reconstruction, and zero-step audit results."
+    },
+    {
+      "id": "E15",
+      "path": "prior_rl_baseline/verification_01/admission.json",
+      "description": "Sealed verifier admission: verified, no errors, and zero physics steps."
+    },
+    {
+      "id": "E16",
+      "path": "review_audit.json",
+      "description": "Read-only manifest/hash, raw trace digest, protocol gate, and task-binding checks performed for this review."
+    },
+    {
+      "id": "E17",
+      "path": "prior_rl_baseline/capture_01/source_1.jsonl",
+      "description": "Raw 1.0 m/s source reference trace."
+    },
+    {
+      "id": "E18",
+      "path": "prior_rl_baseline/capture_01/source_repeat.jsonl",
+      "description": "Raw exact-repeat trace for the 1.0 m/s source reference."
+    },
+    {
+      "id": "E19",
+      "path": "prior_rl_baseline/capture_01/shared_adapter.jsonl",
+      "description": "Raw source-condition shared-adapter trace."
+    },
+    {
+      "id": "E20",
+      "path": "prior_rl_baseline/capture_01/reset_only.jsonl",
+      "description": "Raw shared-home-only control trace."
+    },
+    {
+      "id": "E21",
+      "path": "prior_rl_baseline/capture_01/model_only.jsonl",
+      "description": "Raw shared-model-only control trace."
+    },
+    {
+      "id": "E22",
+      "path": "prior_rl_baseline/capture_01/first_inference_only.jsonl",
+      "description": "Raw 1.0 m/s case changing only first inference timing; retained performance-failure counterevidence."
+    },
+    {
+      "id": "E23",
+      "path": "prior_rl_baseline/capture_01/source_015.jsonl",
+      "description": "Raw 0.15 m/s performance-failure trace retained as scope counterevidence."
+    },
+    {
+      "id": "E24",
+      "path": "prior_rl_baseline/capture_01/source_03.jsonl",
+      "description": "Raw 0.30 m/s performance-failure trace retained as scope counterevidence."
+    },
+    {
+      "id": "E25",
+      "path": "prior_rl_baseline/capture_01/source_variable.jsonl",
+      "description": "Raw variable-speed performance-failure trace retained as scope counterevidence."
+    },
+    {
+      "id": "E26",
+      "path": "prior_rl_baseline/capture_01/source_stairs.jsonl",
+      "description": "Raw stairs base-contact safety-stop trace retained as counterevidence."
+    },
+    {
+      "id": "E27",
+      "path": "review_inputs/tools/substrate/baseline.py",
+      "description": "Capture orchestration: repeat comparison and first-nonpass stopping implementation."
+    },
+    {
+      "id": "E28",
+      "path": "review_inputs/tools/substrate/baseline_episode.py",
+      "description": "Episode, gate, safety, and repeat-digest analyzer used by the baseline runner."
+    },
+    {
+      "id": "E29",
+      "path": "review_inputs/tools/substrate/baseline_verify.py",
+      "description": "Independent offline trace and attempt-ledger verifier implementation."
+    },
+    {
+      "id": "E30",
+      "path": "review_inputs/tools/substrate/episode.py",
+      "description": "Shared episode-level command and safety helper implementation."
+    },
+    {
+      "id": "E31",
+      "path": "review_inputs/tools/substrate/contracts.py",
+      "description": "State and torque contracts inspected alongside the analyzer."
+    },
+    {
+      "id": "E32",
+      "path": "review_inputs/docs/validation/shared_transfer_combination_design_20260923/RESULTS.md",
+      "description": "Prior prospective design and implementation closeout."
+    },
+    {
+      "id": "E33",
+      "path": "review_inputs/docs/PROJECT_RECORD.md",
+      "description": "Canonical project state defining what the prior baseline does and does not establish."
+    },
+    {
+      "id": "E34",
+      "path": "review_inputs/docs/TOPIC_AUDIT.md",
+      "description": "Canonical topic boundary: capability map and no broader terrain claim."
+    },
+    {
+      "id": "E35",
+      "path": "review_source_sha256sums.txt",
+      "description": "SHA-256 inventory for copied review inputs and the complete prior sealed capture and verification bundles."
+    }
+  ]
+}

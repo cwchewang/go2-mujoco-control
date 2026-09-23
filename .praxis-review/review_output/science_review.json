@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "role": "science",
+  "reviewer": "gpt6-luna-max-science-review-v2-20260923",
+  "target_head": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "verdict": "APPROVED",
+  "summary": "The frozen experiment addresses the remaining 1.0 m/s flat deployment question: source-condition repetition and adapter, model-only, and shared-home-only controls are sealed, but the combined model, home, and adapter condition is untested. Its gates and stop semantics are prospective, the two-attempt exact-repeat design is bounded, and the interpretation is limited to this pinned deterministic setup.",
+  "checks": [
+    "Minimal unresolved comparison: sealed evidence shows the source 1.0 m/s reference and adapter traces match exactly, and the model-only and shared-home-only cases pass; no prior case combines the shared model, shared home, and adapter.",
+    "Prospective gates: the combination protocol reuses the source protocol's mean-speed minimum, tracking tolerances, lateral and yaw limits, and safety limits; its SHA-256 is bound by the task configuration.",
+    "Bounded repeat: max_attempts is 2, combined_2 is an exact repeat dependent on combined_1 passing, trace mismatch is an integrity stop, progression stops at the first non-pass, and retry is none.",
+    "Narrow outcome semantics: performance failure means at least one frozen gate was missed; safety and integrity stops remain bounded stops; a pass is limited to the complete pinned combination under this deterministic setup and does not estimate a success probability.",
+    "No vetoing confound: the model, home, and adapter change together because the target is the full deployment combination. This prevents component-level causal attribution, which the protocol explicitly disclaims, but does not invalidate the stated system-level question."
+  ],
+  "limitations": [
+    "The bundled model, home, and adapter changes cannot identify which component or interaction caused an outcome.",
+    "Two identical deterministic traces assess repeatability, not independent replication or statistical success probability.",
+    "The result cannot establish low-speed tracking, terrain robustness, lateral or yaw command capability, hardware transfer, other-checkpoint behavior, general robustness, or a paper claim.",
+    "The review approves the scientific validity of running the frozen experiment; it is not an empirical outcome or execution authorization."
+  ]
+}

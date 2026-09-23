@@ -1,0 +1,62 @@
+{
+  "source_capture_manifest_sha256": "16ce1c6294a7d32292ea9e05bc83293b372ed0cb1f2512188e22b9c77c62b516",
+  "source_capture_manifest_entries_verified": 39,
+  "source_verification_manifest_sha256": "d6d49a471dff710acd677f0126607578c65cc0e1269ef04b57185cd666241f8d",
+  "source_verification_manifest_entries_verified": 4,
+  "source_trace_digests_recomputed": {
+    "source_1": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441",
+    "source_repeat": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441",
+    "shared_adapter": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441"
+  },
+  "source_and_shared_protocol_gates_equal": true,
+  "combination_protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "task_bound_protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "combination_protocol_sha_matches_task": true,
+  "combination_attempt_count": 2,
+  "combination_progression": "first_nonpass_stop",
+  "combination_cases": [
+    {
+      "id": "combined_1",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1.0
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000,
+      "reference_gate": true
+    },
+    {
+      "id": "combined_2",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1.0
+        ]
+      ],
+      "requires": [
+        "combined_1"
+      ],
+      "measurement_delay_ticks": 1000,
+      "reference_gate": true,
+      "repeat_of": "combined_1"
+    }
+  ],
+  "source_capture_status": "CAPTURE_COMPLETE",
+  "source_capture_attempts": 10,
+  "source_verification_status": "ENGINEERING_ADMITTED",
+  "source_verification_result": "VERIFIED",
+  "source_verification_errors": [],
+  "source_verification_physics_steps": 0
+}

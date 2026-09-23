@@ -1,0 +1,240 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E2",
+    "E20",
+    "E21",
+    "E22",
+    "E23",
+    "E24",
+    "E26",
+    "E27",
+    "E28",
+    "E29",
+    "E3",
+    "E35",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8"
+  ],
+  "issue_number": 162,
+  "local_full_evidence_retained": true,
+  "omitted": [
+    {
+      "evidence_id": "E17",
+      "path": "prior_rl_baseline/capture_01/source_1.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "227a9cb13997b80a8da4cdd18cc15e6e9acaeaa46e7d1fde2c847ccba9407062",
+      "size": 13951796
+    },
+    {
+      "evidence_id": "E18",
+      "path": "prior_rl_baseline/capture_01/source_repeat.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "4b6182fde86e381de66b2698d5110062313475aaad106c989f6067f559a9770d",
+      "size": 13951799
+    },
+    {
+      "evidence_id": "E19",
+      "path": "prior_rl_baseline/capture_01/shared_adapter.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "cdc05e08cd42c5a85a85b7eb9fdc4b79ee250119273b87f66cc84ac6c8a334f1",
+      "size": 13951759
+    },
+    {
+      "evidence_id": "E20",
+      "path": "prior_rl_baseline/capture_01/reset_only.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "cfc86e5e8e5c1a77b951557cc2525623a648c6729ce67a1c4e6cd667282942ee",
+      "size": 13959980
+    },
+    {
+      "evidence_id": "E21",
+      "path": "prior_rl_baseline/capture_01/model_only.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "21da718e2147af8d62c4e96ad4dce6952eebc15ce176932d1876e07042b944e1",
+      "size": 13968583
+    },
+    {
+      "evidence_id": "E22",
+      "path": "prior_rl_baseline/capture_01/first_inference_only.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "eb7d6a4245cd1a0315125bc2ad07f6d11a510e190afa744423453dd5e682b894",
+      "size": 13927127
+    },
+    {
+      "evidence_id": "E23",
+      "path": "prior_rl_baseline/capture_01/source_015.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "e58782adac2fd765209294c95707889cc6a678e948d8941e85623634ca9bc131",
+      "size": 14278771
+    },
+    {
+      "evidence_id": "E24",
+      "path": "prior_rl_baseline/capture_01/source_03.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "40d9ddbd7f01b0f9cb39dadf11e0372515896f9dbc535283c7d087d3a02b5085",
+      "size": 14095228
+    }
+  ],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "4ef6daaf89780f2bdff1b16c35611f236f07529e16c961e6d8272366bccdc746",
+      "size": 12351
+    },
+    {
+      "path": "index.json",
+      "sha256": "b7d5bf150512d248d1c6e9dd69abbcc400ac079c532aedae31c65ee8d9c367f3",
+      "size": 15857
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "43d9cf160448c8199f0cc46c6f6ae66b227fe08e43609a2def482201be2d7a02",
+      "size": 510
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_output/science_review.json",
+      "sha256": "f829d3f3a93e680c531243465e5c1719959fdae55c02337cb11b88fc6c71d5fd",
+      "size": 2435
+    },
+    {
+      "evidence_id": "E10",
+      "path": "review_inputs/docs/validation/rl_baseline_20260923/provenance.csv",
+      "sha256": "2151ea0cb78097988a50b933acf53569a5698063077d6ee2144a118b804d9707",
+      "size": 2179
+    },
+    {
+      "evidence_id": "E11",
+      "path": "prior_rl_baseline/capture_01/manifest.json",
+      "sha256": "16ce1c6294a7d32292ea9e05bc83293b372ed0cb1f2512188e22b9c77c62b516",
+      "size": 3713
+    },
+    {
+      "evidence_id": "E12",
+      "path": "prior_rl_baseline/capture_01/admission.json",
+      "sha256": "5d0674cc8df8d30b7183eefc2a09a0e603a29962fb6da423c3089bde2c6c4171",
+      "size": 10805
+    },
+    {
+      "evidence_id": "E13",
+      "path": "prior_rl_baseline/verification_01/analysis.json",
+      "sha256": "ee22dec8861da09c4c33b0f3f4d508d1801bb8a7ae5a13fd64d8636763255ce3",
+      "size": 8175
+    },
+    {
+      "evidence_id": "E14",
+      "path": "prior_rl_baseline/verification_01/audits.json",
+      "sha256": "dfdc9be6aff947e0ae6d6df201fa2c53f06e7fafab3fe8ea5c802444b6a32b78",
+      "size": 1496
+    },
+    {
+      "evidence_id": "E15",
+      "path": "prior_rl_baseline/verification_01/admission.json",
+      "sha256": "0553d7d952a51aef77ef0ff9128d3ea0c7f7e6990c9079e81d81a3645f9d788a",
+      "size": 451
+    },
+    {
+      "evidence_id": "E16",
+      "path": "review_audit.json",
+      "sha256": "4e48664d4a5aa500e10cf5b2b4dc99f73fd911e1be9569eb3e9f8779420011ef",
+      "size": 2107
+    },
+    {
+      "evidence_id": "E2",
+      "path": "review_output/commit.json",
+      "sha256": "a1efc83290cc13f9ca7c2970ba2bb309230e3cb7c64af25f6396b65f50b6d50f",
+      "size": 528
+    },
+    {
+      "evidence_id": "E26",
+      "path": "prior_rl_baseline/capture_01/source_stairs.jsonl",
+      "sha256": "a8dc2d4ae39816c01e70489e9f23ff2109c3c4075122c67c4c72c0719bc63e31",
+      "size": 2911330
+    },
+    {
+      "evidence_id": "E27",
+      "path": "review_inputs/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "size": 16238
+    },
+    {
+      "evidence_id": "E28",
+      "path": "review_inputs/tools/substrate/baseline_episode.py",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317",
+      "size": 16267
+    },
+    {
+      "evidence_id": "E29",
+      "path": "review_inputs/tools/substrate/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3",
+      "size": 12829
+    },
+    {
+      "evidence_id": "E3",
+      "path": "review_inputs/tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E35",
+      "path": "review_source_sha256sums.txt",
+      "sha256": "4275b7931f56058979f292abb8e56d2b789586844e9d8df0d40564ad8ba10b3e",
+      "size": 17233
+    },
+    {
+      "evidence_id": "E4",
+      "path": "review_inputs/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "sha256": "33b2e758d303a88f914e13233a4f10517a0c9f054fa01935f04a6e17be1d0c72",
+      "size": 307
+    },
+    {
+      "evidence_id": "E5",
+      "path": "review_inputs/tools/substrate/protocols/rl_source_v1.json",
+      "sha256": "62f241d3bf191f13d2a49c95e5430c8bc7122e1ff856db5793465775349e2585",
+      "size": 4664
+    },
+    {
+      "evidence_id": "E6",
+      "path": "review_inputs/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "sha256": "c2a695d7cc7ea04cc9c00b603a71c6a0a153c216388159f576e580ef8bf09cd2",
+      "size": 10621
+    },
+    {
+      "evidence_id": "E7",
+      "path": "review_inputs/docs/research/SHARED_TRANSFER_COMBINATION_V1.md",
+      "sha256": "c5cbb1da28bf516abca23c2633d984770cf9ac6b4964f69d4a1a16fbe39931ed",
+      "size": 4360
+    },
+    {
+      "evidence_id": "E8",
+      "path": "review_inputs/docs/validation/rl_baseline_20260923/RESULTS.md",
+      "sha256": "1d065f73c29b3a9c1a78eec5c309489dfbae6e0027a7d0499750aa47e157bba3",
+      "size": 6854
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "8d35726f133d208021cba027130b96096fadc5ca",
+  "schema_version": 1,
+  "source_index_sha256": "b7d5bf150512d248d1c6e9dd69abbcc400ac079c532aedae31c65ee8d9c367f3",
+  "task_branch": "research/review-shared-transfer-science-v2-20260923",
+  "task_commit": "a31fe64afd6b7669765fa83137d70ab6dad11c75"
+}
