@@ -58,6 +58,22 @@ The worker stores the Codex thread ID by task commit. If a workflow is
 interrupted and retried for the same task, the same task session can be
 resumed. A new task commit creates a new session.
 
+Atlas also binds the canonical persistent substrate resource root from the
+normal Go2 workspace into each isolated task worktree. The trusted worker
+verifies the CTS checkpoint SHA-256, all files in `rl_reference.lock.json`,
+the reliable Python/Torch/MuJoCo/NumPy runtime, and the native MJPC admission
+binary before exposing them under the ignored `.substrate/` namespace. Luna
+does not download or install these dependencies.
+
+Praxis v6 attaches the isolated worktree to the frozen logical
+`research/*` branch while still verifying the exact task commit. This keeps
+scientific preflight branch identity meaningful without using the user's normal
+worktree. If a task both changes tracked experiment code and requires a final
+clean exact-HEAD qualification/preparation, split it at the trusted commit:
+first freeze the implementation candidate, then run qualification/preparation
+as a follow-up task on that committed HEAD. Do not try to satisfy an exact-HEAD
+gate from a dirty pre-commit Luna worktree.
+
 Luna may modify the task worktree but receives no GitHub write token and is
 explicitly forbidden from changing `.github/**` or `tools/atlas_*`. Luna
 commits its closeout locally and never pushes.
