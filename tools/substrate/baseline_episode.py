@@ -238,6 +238,26 @@ def command_at(case, tick):
     ]
 
 
+def repeat_reference(case):
+    if "repeat_of" in case:
+        return case["repeat_of"]
+    # Preserve the sealed v1 comparison semantics without changing its protocol.
+    if case["id"] in ("source_repeat", "shared_adapter"):
+        return "source_1"
+    return None
+
+
+def stop_after(protocol, verdict):
+    if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
+        return True
+    progression = protocol["progression"]
+    if progression == "first_nonpass_stop":
+        return verdict != "PASS"
+    if progression == "performance_continue_safety_integrity_stop":
+        return False
+    raise ValueError("unknown campaign progression: " + str(progression))
+
+
 def safety(row, protocol):
     q = row["qpos"]
     if not np.isfinite(q + row["qvel"]).all():
@@ -372,21 +392,26 @@ def analyze(rows, case, protocol):
         and lateral <= protocol["flat_lateral_max"]
         and max(map(abs, yaw)) <= protocol["flat_yaw_max"]
     )
-    if case["id"] in ("source_1", "source_repeat", "shared_adapter"):
+    if case.get(
+        "reference_gate",
+        case["id"] in ("source_1", "source_repeat", "shared_adapter"),
+    ):
         usable = usable and windows[0]["mean_vx"] >= protocol["reference_mean_min"]
-    hold = maximum_hold = 0
-    goal = protocol["stairs_goal"]
-    for row in rows:
-        reached = (
-            row["qpos"][0] >= goal["base_x"]
-            and abs(row["qpos"][1]) <= goal["lateral_max"]
-            and min(f[0] for f in row["feet"]) >= goal["foot_x"]
-        )
-        hold = hold + 1 if reached else 0
-        maximum_hold = max(maximum_hold, hold)
-    goal_pass = maximum_hold > goal["hold_ticks"]
-    if case["id"] == "source_stairs":
-        usable = complete and goal_pass
+    goal_pass = None
+    if "stairs_goal" in protocol:
+        hold = maximum_hold = 0
+        goal = protocol["stairs_goal"]
+        for row in rows:
+            reached = (
+                row["qpos"][0] >= goal["base_x"]
+                and abs(row["qpos"][1]) <= goal["lateral_max"]
+                and min(f[0] for f in row["feet"]) >= goal["foot_x"]
+            )
+            hold = hold + 1 if reached else 0
+            maximum_hold = max(maximum_hold, hold)
+        goal_pass = maximum_hold > goal["hold_ticks"]
+        if case["id"] == "source_stairs":
+            usable = complete and goal_pass
     latency = [r["policy_wall_s"] for r in rows if r["policy_wall_s"] is not None]
     return dict(
         verdict="SAFETY_STOP"

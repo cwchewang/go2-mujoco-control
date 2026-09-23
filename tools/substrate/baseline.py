@@ -7,7 +7,15 @@ from pathlib import Path
 import time
 
 from .admit import ROOT
-from .baseline_episode import Plant, analyze, episode, make_policy, reference_inputs
+from .baseline_episode import (
+    Plant,
+    analyze,
+    episode,
+    make_policy,
+    reference_inputs,
+    repeat_reference,
+    stop_after,
+)
 from .environment import verify_environment
 from .guards import wall_deadline, zero_step_guard
 from .integrity import (
@@ -28,8 +36,37 @@ TASK = ROOT / "tools/substrate/tasks/rl_source_v1.json"
 TRANSPORT = "inprocess"
 
 
+def validate_source_identity(protocol, reference_lock, source_lock):
+    identity = protocol.get("source_identity")
+    if identity is None:
+        return
+    locked_source = source_lock["rl"]
+    expected = {
+        "commit": reference_lock["commit"],
+        "checkpoint": locked_source["checkpoint"],
+        "checkpoint_sha256": locked_source["sha256"],
+    }
+    if identity != expected:
+        raise ValueError("protocol source identity differs from source locks")
+
+
+def campaign_characterized(attempts, protocol):
+    statuses = [item["status"] for item in attempts]
+    if all(status in ("PASS", "PERFORMANCE_FAIL") for status in statuses):
+        return True
+    if protocol["progression"] == "first_nonpass_stop":
+        for index, status in enumerate(statuses):
+            if status == "PERFORMANCE_FAIL":
+                return all(later == "NOT_RUN" for later in statuses[index + 1 :])
+            if status != "PASS":
+                return False
+    return False
+
+
 def inputs(protocol):
     reference, lock = reference_inputs(ROOT)
+    source_lock = strict_json((ROOT / "tools/substrate/sources.lock.json").read_text())
+    validate_source_identity(protocol, lock, source_lock)
     result = {
         (reference / n).relative_to(ROOT).as_posix(): sha
         for n, sha in lock["files"].items()
@@ -42,15 +79,25 @@ def inputs(protocol):
         "tools/substrate/sources.lock.json",
     ):
         result[name] = digest(ROOT / name)
-    expected = strict_json((ROOT / "tools/substrate/sources.lock.json").read_text())[
-        "rl"
-    ]["sha256"]
+    locked_source = source_lock["rl"]
+    expected = locked_source["sha256"]
     if digest(CHECKPOINT) != expected:
         raise ValueError("checkpoint not source locked")
     if len(protocol["cases"]) != protocol["max_attempts"] or len(
         {c["id"] for c in protocol["cases"]}
     ) != len(protocol["cases"]):
         raise ValueError("case budget/identity mismatch")
+    seen = set()
+    for case in protocol["cases"]:
+        reference_case = repeat_reference(case)
+        if reference_case is not None and reference_case not in seen:
+            raise ValueError("repeat reference must name a preceding case")
+        seen.add(case["id"])
+    if protocol["progression"] not in (
+        "first_nonpass_stop",
+        "performance_continue_safety_integrity_stop",
+    ):
+        raise ValueError("unknown campaign progression")
     return result
 
 
@@ -74,13 +121,13 @@ def validate_snapshot(path, expected_manifest):
         raise ValueError("prepared snapshot changed")
 
 
-def prepare(output, review_path, qualification_path):
+def prepare(output, review_path, qualification_path, task_path=TASK):
     with (
         experiment_lock() as lock,
         zero_step_guard(),
         EvidenceRun(output, {"operation": "baseline_prepare_zero_step"}) as run,
     ):
-        task = load_task(TASK)
+        task = load_task(task_path)
         head, sources = current_identity(task)
         protocol_path = ROOT / task["configuration"]["protocol"]
         protocol = strict_json(protocol_path.read_text())
@@ -131,7 +178,7 @@ def prepare(output, review_path, qualification_path):
         if (
             inputs(protocol) != source_inputs
             or (head, sources) != current_identity(task)
-            or task != load_task(TASK)
+            or task != load_task(task_path)
         ):
             raise ValueError("inputs changed during prepare")
         validate_reference(qualification)
@@ -158,10 +205,10 @@ def prepare(output, review_path, qualification_path):
     return {"status": "READY_AWAITING_START", "head": head, "physics_steps": 0}
 
 
-def capture(prepared_path, authorization_path, output):
+def capture(prepared_path, authorization_path, output, task_path=TASK):
     with experiment_lock() as lock:
         prepared = verify_bundle(prepared_path)
-        task = load_task(TASK)
+        task = load_task(task_path)
         head, sources = current_identity(task)
         protocol_path = ROOT / task["configuration"]["protocol"]
         protocol = strict_json(protocol_path.read_text())
@@ -285,10 +332,11 @@ def capture(prepared_path, authorization_path, output):
                     rows = [strict_json(line) for line in raw.read_text().splitlines()]
                     result = analyze(rows, case, protocol)
                     result["elapsed_s"] = time.monotonic() - started
+                    reference_case = repeat_reference(case)
                     if (
-                        case["id"] in ("source_repeat", "shared_adapter")
+                        reference_case is not None
                         and result["trace_sha256"]
-                        != completed["source_1"]["trace_sha256"]
+                        != (completed[reference_case]["trace_sha256"])
                     ):
                         result["verdict"] = "INTEGRITY_STOP"
                         result["failure"] = "trajectory_mismatch"
@@ -299,7 +347,7 @@ def capture(prepared_path, authorization_path, output):
                         prepared_path, prepared["prepared_manifest_sha256"]
                     )
                     print(json.dumps({"case": case["id"], **result}), flush=True)
-                    if result["verdict"] in ("SAFETY_STOP", "INTEGRITY_STOP"):
+                    if stop_after(protocol, result["verdict"]):
                         break
                 except BaseException as exc:
                     item.update(
@@ -314,7 +362,7 @@ def capture(prepared_path, authorization_path, output):
             run.result.update(
                 status="CAPTURE_COMPLETE",
                 capability_status="CHARACTERIZED"
-                if all(i["status"] in ("PASS", "PERFORMANCE_FAIL") for i in attempts)
+                if campaign_characterized(attempts, protocol)
                 else "PARTIAL",
             )
     return {
@@ -327,10 +375,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="operation", required=True)
     prep = sub.add_parser("prepare")
+    prep.add_argument("--task", type=Path, default=TASK)
     prep.add_argument("--output", required=True, type=Path)
     prep.add_argument("--review", required=True, type=Path)
     prep.add_argument("--qualification", required=True, type=Path)
     cap = sub.add_parser("capture")
+    cap.add_argument("--task", type=Path, default=TASK)
     cap.add_argument("--prepared", required=True, type=Path)
     cap.add_argument("--authorization", required=True, type=Path)
     cap.add_argument("--output", required=True, type=Path)
@@ -341,9 +391,9 @@ def main():
     args = parser.parse_args()
     try:
         if args.operation == "prepare":
-            result = prepare(args.output, args.review, args.qualification)
+            result = prepare(args.output, args.review, args.qualification, args.task)
         elif args.operation == "capture":
-            result = capture(args.prepared, args.authorization, args.output)
+            result = capture(args.prepared, args.authorization, args.output, args.task)
         else:
             from .baseline_verify import verify
 

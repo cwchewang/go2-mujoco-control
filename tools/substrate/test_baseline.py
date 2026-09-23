@@ -7,14 +7,21 @@ import numpy as np
 
 from .baseline_episode import Plant, SourcePolicy, analyze, command_at, episode, safety
 from .contracts import POLICY_JOINTS, Proprioception
+from .baseline import campaign_characterized, validate_source_identity
+from .baseline_episode import repeat_reference, stop_after
+from .baseline_verify import audit_preflight, trace_consumed, independent_body_vx
 from .guards import zero_step_guard
 from .integrity import strict_json
 from .rl import FrozenPolicy, observation45
-from .baseline_verify import audit_preflight, trace_consumed, independent_body_vx
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = strict_json(
     (ROOT / "tools/substrate/protocols/rl_source_v1.json").read_text()
+)
+COMBINED_PROTOCOL = strict_json(
+    (
+        ROOT / "tools/substrate/protocols/rl_shared_transfer_combination_v1.json"
+    ).read_text()
 )
 
 
@@ -59,6 +66,111 @@ class FakePolicy:
 
 
 class BaselineContractTests(unittest.TestCase):
+    def test_combination_protocol_freezes_the_minimal_full_transfer(self):
+        self.assertEqual(COMBINED_PROTOCOL["id"], "rl-shared-transfer-combination-v1")
+        self.assertEqual(COMBINED_PROTOCOL["mode"], "confirmatory")
+        self.assertEqual(COMBINED_PROTOCOL["max_attempts"], 2)
+        self.assertEqual(COMBINED_PROTOCOL["seed"], 0)
+        self.assertEqual(
+            COMBINED_PROTOCOL["source_identity"],
+            {
+                "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+                "checkpoint": (
+                    "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt"
+                ),
+                "checkpoint_sha256": (
+                    "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
+                ),
+            },
+        )
+        first, repeat = COMBINED_PROTOCOL["cases"]
+        for case in (first, repeat):
+            self.assertEqual(case["scene"], "unitree_robots/go2/phase2_flat.xml")
+            self.assertTrue(case["adapter"])
+            self.assertEqual(case["reset"], "shared_home")
+            self.assertEqual(case["first_inference_tick"], 10)
+            self.assertEqual(case["horizon_ticks"], 6000)
+            self.assertEqual(case["commands"], [[0, 1.0]])
+            self.assertEqual(case["measurement_delay_ticks"], 1000)
+            self.assertTrue(case["reference_gate"])
+        self.assertEqual(repeat["repeat_of"], first["id"])
+        self.assertEqual(repeat["requires"], [first["id"]])
+        self.assertEqual(COMBINED_PROTOCOL["progression"], "first_nonpass_stop")
+        self.assertEqual(COMBINED_PROTOCOL["reference_mean_min"], 0.8)
+        self.assertEqual(COMBINED_PROTOCOL["tracking_absolute_tolerance"], 0.05)
+        self.assertEqual(COMBINED_PROTOCOL["tracking_relative_tolerance"], 0.2)
+        self.assertEqual(COMBINED_PROTOCOL["flat_lateral_max"], 0.3)
+        self.assertEqual(COMBINED_PROTOCOL["flat_yaw_max"], 0.3)
+
+    def test_protocol_source_identity_is_bound_to_existing_locks(self):
+        reference_lock = strict_json(
+            (ROOT / "tools/substrate/rl_reference.lock.json").read_text()
+        )
+        source_lock = strict_json(
+            (ROOT / "tools/substrate/sources.lock.json").read_text()
+        )
+        validate_source_identity(COMBINED_PROTOCOL, reference_lock, source_lock)
+        altered_lock = {**source_lock, "rl": {**source_lock["rl"], "sha256": "0" * 64}}
+        with self.assertRaisesRegex(ValueError, "source identity"):
+            validate_source_identity(COMBINED_PROTOCOL, reference_lock, altered_lock)
+
+    def test_combination_uses_declared_repeat_and_first_nonpass(self):
+        self.assertEqual(repeat_reference(COMBINED_PROTOCOL["cases"][1]), "combined_1")
+        self.assertEqual(repeat_reference(PROTOCOL["cases"][1]), "source_1")
+        self.assertFalse(stop_after(COMBINED_PROTOCOL, "PASS"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "PERFORMANCE_FAIL"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "SAFETY_STOP"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "INTEGRITY_STOP"))
+        self.assertFalse(stop_after(PROTOCOL, "PERFORMANCE_FAIL"))
+        self.assertTrue(
+            campaign_characterized(
+                [{"status": "PERFORMANCE_FAIL"}, {"status": "NOT_RUN"}],
+                COMBINED_PROTOCOL,
+            )
+        )
+        self.assertFalse(
+            campaign_characterized(
+                [{"status": "SAFETY_STOP"}, {"status": "NOT_RUN"}],
+                COMBINED_PROTOCOL,
+            )
+        )
+
+    def test_combination_startup_cadence_runs_synthetically(self):
+        case = {
+            **COMBINED_PROTOCOL["cases"][0],
+            "adapter": False,
+            "horizon_ticks": 21,
+        }
+        plant, rows = FakePlant(), []
+        episode(plant, FakePolicy(), case, COMBINED_PROTOCOL, rows.append, lambda: None)
+        self.assertEqual(
+            [r["tick"] for r in rows if r["observation"] is not None], [10, 20]
+        )
+        self.assertEqual(plant.steps, 21)
+
+    def test_combination_analyzer_applies_reference_mean_gate(self):
+        case = {
+            **COMBINED_PROTOCOL["cases"][0],
+            "horizon_ticks": 2,
+            "measurement_delay_ticks": 0,
+        }
+        rows = []
+        for tick in range(3):
+            row = sample(tick)
+            row.update(
+                target=[0] * 12,
+                applied=[0] * 12,
+                failure=None,
+                policy_wall_s=None,
+            )
+            rows.append(row)
+        result = analyze(rows, case, COMBINED_PROTOCOL)
+        self.assertEqual(result["verdict"], "PASS")
+        stricter = {**COMBINED_PROTOCOL, "reference_mean_min": 1.01}
+        result = analyze(rows, case, stricter)
+        self.assertEqual(result["windows"][0]["mae"], 0)
+        self.assertEqual(result["verdict"], "PERFORMANCE_FAIL")
+
     def test_nonunit_terminal_orientation_preserves_metric_polynomial(self):
         self.assertEqual(independent_body_vx([2, 0, 0, 0], [1, 0, 0]), 1)
 

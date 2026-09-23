@@ -4,7 +4,14 @@ import math
 import numpy as np
 
 from .admit import ROOT
-from .baseline_episode import Plant, SourcePolicy, analyze, safety
+from .baseline_episode import (
+    Plant,
+    SourcePolicy,
+    analyze,
+    repeat_reference,
+    safety,
+    stop_after,
+)
 from .guards import zero_step_guard
 from .integrity import (
     EvidenceRun,
@@ -300,9 +307,11 @@ def verify(capture, prepared_path, output):
                 prepared["source_inputs"][".substrate/rl/policy.pt"],
             )
             result, audit = audit_rows(rows, plant, policy, case, protocol)
+            reference_case = repeat_reference(case)
             if (
-                case["id"] in ("source_repeat", "shared_adapter")
-                and result["trace_sha256"] != completed["source_1"]["trace_sha256"]
+                reference_case is not None
+                and result["trace_sha256"]
+                != (completed[reference_case]["trace_sha256"])
             ):
                 result.update(verdict="INTEGRITY_STOP", failure="trajectory_mismatch")
             stored = strict_json(
@@ -316,7 +325,7 @@ def verify(capture, prepared_path, output):
             )
             completed[case["id"]] = result
             audits[case["id"]] = audit
-            stopped = result["verdict"] in ("SAFETY_STOP", "INTEGRITY_STOP")
+            stopped = stop_after(protocol, result["verdict"])
         require(
             {p.name for p in ledger.iterdir()} == consumed | {"campaign.json"},
             "external claim set mismatch",
