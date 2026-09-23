@@ -88,9 +88,7 @@ def main() -> int:
     args = parser.parse_args()
 
     run_root = (ROOT / args.run_dir).resolve()
-    if not run_root.is_relative_to(
-        (ROOT / "example/cpp/experiments/_runs").resolve()
-    ):
+    if not run_root.is_relative_to((ROOT / "example/cpp/experiments/_runs").resolve()):
         raise RuntimeError("run directory is outside the approved raw evidence root")
     if run_root.exists():
         raise RuntimeError("formal run directory already exists")
@@ -273,9 +271,7 @@ def main() -> int:
         "live_runs": capture_manifest.get("live_runs"),
         "verification": verification_manifest.get("verification"),
         "verification_consumed": verification_manifest.get("consumed"),
-        "external_ledger_checked": verification_manifest.get(
-            "external_ledger_checked"
-        ),
+        "external_ledger_checked": verification_manifest.get("external_ledger_checked"),
     }
     (run_root / "formal-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
