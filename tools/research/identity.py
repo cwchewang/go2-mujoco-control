@@ -32,8 +32,7 @@ def validate_execution_identity(
     exact current HEAD.
     """
     values = {
-        key: (environment.get(key) or "").strip()
-        for key in PRAXIS_ENVIRONMENT_KEYS
+        key: (environment.get(key) or "").strip() for key in PRAXIS_ENVIRONMENT_KEYS
     }
     present = any(values.values())
     missing = [key for key, value in values.items() if not value]

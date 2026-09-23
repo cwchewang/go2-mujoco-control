@@ -140,9 +140,7 @@ class CurrentIdentityTests(unittest.TestCase):
         self.git("checkout", "--detach", "HEAD")
 
     def test_named_expected_branch_still_passes(self):
-        self.assertEqual(
-            self.current_identity(), (self.head, {"fixture": "source"})
-        )
+        self.assertEqual(self.current_identity(), (self.head, {"fixture": "source"}))
 
     def test_detached_head_with_exact_praxis_binding_passes(self):
         self.detach_head()
@@ -160,9 +158,7 @@ class CurrentIdentityTests(unittest.TestCase):
         self.detach_head()
         with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
             self.current_identity(
-                self.praxis_binding(
-                    PRAXIS_REPOSITORY="someone-else/go2-mujoco-control"
-                )
+                self.praxis_binding(PRAXIS_REPOSITORY="someone-else/go2-mujoco-control")
             )
 
     def test_detached_head_with_wrong_praxis_branch_fails(self):
