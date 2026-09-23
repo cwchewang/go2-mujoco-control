@@ -1,0 +1,2 @@
+command=python3 -m json.tool docs/validation/shared_transfer_formal_v2_execution_r2_20260924/review.json
+exit=0

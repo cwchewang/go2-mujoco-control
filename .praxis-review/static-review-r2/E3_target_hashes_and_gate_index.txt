@@ -1,0 +1,52 @@
+protocol_sha256_from_target_blob=2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32
+protocol_sha256_declared_in_task_json=  "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+protocol_sha256_declared_in_task_document=20:- protocol SHA-256:
+21-  `2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32`
+praxis_identity_and_runtime_gate_hits_begin
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:9:PRAXIS_REPOSITORY = "cwchewang/go2-mujoco-control"
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:10:PRAXIS_ENVIRONMENT_KEYS = (
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:11:    "PRAXIS_REPOSITORY",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:12:    "PRAXIS_ISSUE_NUMBER",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:13:    "PRAXIS_TASK_BRANCH",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:14:    "PRAXIS_TASK_COMMIT",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:15:    "PRAXIS_TASK_PATH",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:37:        key: (environment.get(key) or "").strip() for key in PRAXIS_ENVIRONMENT_KEYS
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:46:        "PRAXIS_REPOSITORY": PRAXIS_REPOSITORY,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:47:        "PRAXIS_TASK_BRANCH": expected_branch,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:48:        "PRAXIS_TASK_COMMIT": expected_head,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:51:        expected_values["PRAXIS_ISSUE_NUMBER"] = expected_issue
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/identity.py:53:        expected_values["PRAXIS_TASK_PATH"] = expected_path
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/preflight.py:359:    ap.add_argument("--expected-praxis-issue-number")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/preflight.py:360:    ap.add_argument("--expected-praxis-task-path")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/preflight.py:474:        "worktree_clean_before_tests",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/research/preflight.py:725:        "worktree_clean_after_tests",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:57:    if protocol["progression"] == "first_nonpass_stop":
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:97:        "first_nonpass_stop",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:187:            raise ValueError("campaign already claimed")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:202:            physics_steps=0,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:205:    return {"status": "READY_AWAITING_START", "head": head, "physics_steps": 0}
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:224:        prepared["prepared_manifest_sha256"] = digest(prepared_path / "manifest.json")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:233:            raise ValueError("campaign already claimed; no retry")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:262:                    manifest_sha256=prepared["prepared_manifest_sha256"],
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:283:                validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:347:                        prepared_path, prepared["prepared_manifest_sha256"]
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline.py:357:            validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_episode.py:229:        self.mj.mj_step(self.model, self.data)
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_episode.py:254:    if progression == "first_nonpass_stop":
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_verify.py:198:        "physics_steps": 0,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_verify.py:222:        prepared["prepared_manifest_sha256"] = reference["manifest_sha256"]
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_verify.py:341:            physics_steps=0,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_verify.py:343:            prepared_manifest_sha256=digest(prepared_path / "manifest.json"),
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/baseline_verify.py:345:    return {"status": "VERIFIED", "consumed": len(consumed), "physics_steps": 0}
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/guards.py:19:        name: getattr(mujoco, name) for name in ("mj_step", "mj_step1", "mj_step2")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:115:                "--expected-praxis-issue-number",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:117:                "--expected-praxis-task-path",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:231:                    "physics_steps": 0,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:246:        "physics_steps": 0,
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:270:        prepared["prepared_manifest_sha256"] = digest(prepared_dir / "manifest.json")
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:290:                "campaign already claimed; inspect preserved evidence, no autonomous retry"
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/launch.py:319:                    "manifest_sha256": prepared["prepared_manifest_sha256"],
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/protocols/rl_shared_transfer_combination_v1.json:64:  "retry": "none",
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/protocols/rl_shared_transfer_combination_v1.json:65:  "progression": "first_nonpass_stop"
+c53806f6c984228fc7661ccea9ac742d24cd0194:tools/substrate/readiness.py:33:        "prepared_manifest_sha256": prepared["prepared_manifest_sha256"],
+praxis_identity_and_runtime_gate_hits_end

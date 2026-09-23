@@ -1,0 +1,161 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 171,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "95e47223a7500d5f61f790327fe3b628e80a7ac2993d3d64fadf6b2c402da0b0",
+      "size": 8578
+    },
+    {
+      "path": "index.json",
+      "sha256": "9e6e758429feec9ad3e4e69efcd5a68db777145f906341af29d55c52b90468c5",
+      "size": 5410
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "1c3c1e53489ab020a3dd7a22251dfe1694d0c2d1f1b3d7de8e5e54fd4df469ad",
+      "size": 525
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "static-review-r2/E1_target_identity_and_scope.txt",
+      "sha256": "761e6facd882ac992961b9aca02b4060a6d3219f1cd9775ad2e573a24b229133",
+      "size": 3135
+    },
+    {
+      "evidence_id": "E10",
+      "path": "static-review-r2/E9_failed_json_validation_attempt.txt",
+      "sha256": "969fd28f85093cea3d76396f0db12f641544a2777af6e7f2a9f7dd8fc7ee797e",
+      "size": 166
+    },
+    {
+      "evidence_id": "E11",
+      "path": "static-review-r2/E10_review_json_validation.txt",
+      "sha256": "c1630aa55d6a7f0cc31681b062512c4711294ba96821913f150ddffc808e4451",
+      "size": 112
+    },
+    {
+      "evidence_id": "E12",
+      "path": "static-review-r2/E11_commit_verification.txt",
+      "sha256": "9fdffd1e0ffb8c9aa12f1add70c2713f03acaf3207bfdb5ba35bdbf4b7aafae9",
+      "size": 627
+    },
+    {
+      "evidence_id": "E13",
+      "path": "static-review-r2/source/tools/research/preflight.py",
+      "sha256": "3c4df8c7806069dbc317a195390e8d40e06c4730ef6cc93254b3a0bc98ceb7d1",
+      "size": 29213
+    },
+    {
+      "evidence_id": "E14",
+      "path": "static-review-r2/source/tools/substrate/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3",
+      "size": 12829
+    },
+    {
+      "evidence_id": "E15",
+      "path": "static-review-r2/source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "sha256": "bc0043a342d8d4e02738afc03f9b735b01750f9d35fce46c89b6cdd43e19d01e",
+      "size": 7490
+    },
+    {
+      "evidence_id": "E16",
+      "path": "static-review-r2/source/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "size": 1506
+    },
+    {
+      "evidence_id": "E17",
+      "path": "static-review-r2/source/tools/substrate/launch.py",
+      "sha256": "135407d9dd6aae9579f3e41cc9ba47e843bcd5342fafee5bd43f06be99a9eb9b",
+      "size": 18018
+    },
+    {
+      "evidence_id": "E18",
+      "path": "static-review-r2/source/tools/substrate/native/admit.cc",
+      "sha256": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+      "size": 4092
+    },
+    {
+      "evidence_id": "E2",
+      "path": "static-review-r2/E2_source_blob_manifest.tsv",
+      "sha256": "0dd498777b75f78fba025811db5b0cfc2394d982df5ee6201ff3de7ae15820b2",
+      "size": 2527
+    },
+    {
+      "evidence_id": "E3",
+      "path": "static-review-r2/source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "size": 433
+    },
+    {
+      "evidence_id": "E4",
+      "path": "static-review-r2/source/tools/substrate/task.py",
+      "sha256": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+      "size": 3716
+    },
+    {
+      "evidence_id": "E5",
+      "path": "static-review-r2/source/tools/research/identity.py",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "size": 3419
+    },
+    {
+      "evidence_id": "E6",
+      "path": "static-review-r2/source/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "size": 16238
+    },
+    {
+      "evidence_id": "E7",
+      "path": "static-review-r2/source/tools/substrate/readiness.py",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+      "size": 1971
+    },
+    {
+      "evidence_id": "E8",
+      "path": "static-review-r2/source/tools/substrate/qualify.py",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+      "size": 6403
+    },
+    {
+      "evidence_id": "E9",
+      "path": "static-review-r2/E3_target_hashes_and_gate_index.txt",
+      "sha256": "cd266cd6dcf366503f654f48cb61ee9dcbabf501ce892b6a5cf5a7edba8d0bef",
+      "size": 6365
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "a6ea02fa6108e9fe08d2f5cb4e882c65eb2f4667",
+  "schema_version": 1,
+  "source_index_sha256": "9e6e758429feec9ad3e4e69efcd5a68db777145f906341af29d55c52b90468c5",
+  "task_branch": "review/shared-transfer-formal-v2-execution-r2-20260924",
+  "task_commit": "42401cb782143a42752ad05eeaa90483c5e9622b"
+}

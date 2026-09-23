@@ -1,0 +1,21 @@
+{
+  "git": {
+    "command": [
+      "git",
+      "--version"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "git version 2.34.1\n"
+  },
+  "gpu": {
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=name,uuid,driver_version",
+      "--format=csv,noheader"
+    ],
+    "error": "[Errno 2] No such file or directory: 'nvidia-smi'"
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+}

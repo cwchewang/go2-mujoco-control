@@ -1,0 +1,152 @@
+{
+  "files": [
+    {
+      "path": "closeout.json",
+      "sha256": "95e47223a7500d5f61f790327fe3b628e80a7ac2993d3d64fadf6b2c402da0b0",
+      "size": 8578
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "78f61cd04d9fbe7af1f74751575de292e22872ba59bff417e1308ad9dac3611e",
+      "size": 293599
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "1c3c1e53489ab020a3dd7a22251dfe1694d0c2d1f1b3d7de8e5e54fd4df469ad",
+      "size": 525
+    },
+    {
+      "path": "static-review-r2/E10_review_json_validation.txt",
+      "sha256": "c1630aa55d6a7f0cc31681b062512c4711294ba96821913f150ddffc808e4451",
+      "size": 112
+    },
+    {
+      "path": "static-review-r2/E11_commit_verification.txt",
+      "sha256": "9fdffd1e0ffb8c9aa12f1add70c2713f03acaf3207bfdb5ba35bdbf4b7aafae9",
+      "size": 627
+    },
+    {
+      "path": "static-review-r2/E1_target_identity_and_scope.txt",
+      "sha256": "761e6facd882ac992961b9aca02b4060a6d3219f1cd9775ad2e573a24b229133",
+      "size": 3135
+    },
+    {
+      "path": "static-review-r2/E2_source_blob_manifest.tsv",
+      "sha256": "0dd498777b75f78fba025811db5b0cfc2394d982df5ee6201ff3de7ae15820b2",
+      "size": 2527
+    },
+    {
+      "path": "static-review-r2/E3_target_hashes_and_gate_index.txt",
+      "sha256": "cd266cd6dcf366503f654f48cb61ee9dcbabf501ce892b6a5cf5a7edba8d0bef",
+      "size": 6365
+    },
+    {
+      "path": "static-review-r2/E9_failed_json_validation_attempt.txt",
+      "sha256": "969fd28f85093cea3d76396f0db12f641544a2777af6e7f2a9f7dd8fc7ee797e",
+      "size": 166
+    },
+    {
+      "path": "static-review-r2/source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "sha256": "bc0043a342d8d4e02738afc03f9b735b01750f9d35fce46c89b6cdd43e19d01e",
+      "size": 7490
+    },
+    {
+      "path": "static-review-r2/source/tools/research/identity.py",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "size": 3419
+    },
+    {
+      "path": "static-review-r2/source/tools/research/preflight.py",
+      "sha256": "3c4df8c7806069dbc317a195390e8d40e06c4730ef6cc93254b3a0bc98ceb7d1",
+      "size": 29213
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/admit.py",
+      "sha256": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad",
+      "size": 10233
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "size": 16238
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/baseline_episode.py",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317",
+      "size": 16267
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3",
+      "size": 12829
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "size": 1506
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/integrity.py",
+      "sha256": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+      "size": 6431
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/launch.py",
+      "sha256": "135407d9dd6aae9579f3e41cc9ba47e843bcd5342fafee5bd43f06be99a9eb9b",
+      "size": 18018
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/native/admit.cc",
+      "sha256": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+      "size": 4092
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "size": 1590
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/qualification.py",
+      "sha256": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009",
+      "size": 6547
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/qualify.py",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+      "size": 6403
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/readiness.py",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+      "size": 1971
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/task.py",
+      "sha256": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+      "size": 3716
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "size": 433
+    },
+    {
+      "path": "static-review-r2/source/tools/substrate/test_launch.py",
+      "sha256": "6004ed183f829e925cf6e8c4095ab78f05dfe10818e7bbe205602b9aabfdd594",
+      "size": 24372
+    }
+  ],
+  "result_commit": "a6ea02fa6108e9fe08d2f5cb4e882c65eb2f4667",
+  "schema_version": 1,
+  "status": "complete"
+}
