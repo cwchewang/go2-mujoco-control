@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "role": "science",
+  "target_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "reviewer": "OpenAI Codex (GPT-6)",
+  "verdict": "APPROVED",
+  "summary": "Approved: target changes only prospective r3 review references; the frozen scientific design and interpretation remain unchanged. Proceed to independent execution review; capture remains gated on both exact-head approvals and distinct reviewer identities.",
+  "evidence": [
+    "E1: The target commit's sole changed path is the formal capture task; its full patch replaces only the science/execution branch names and result paths. The target task is byte-identical to its parent after restoring those four prior reference strings.",
+    "E2: The task configuration and protocol are byte-identical between target and parent. The protocol SHA-256 remains 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32, as pinned in the task.",
+    "E3: The unchanged protocol retains checkpoint SHA-256 9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d, source commit 30e74dc507bec7a642a8c98be26081f2c6f0822d, two attempts, no retry, first-nonpass stop, shared_home reset, adapter enabled, and the frozen gates and interpretation documented in the evidence package.",
+    "E4: The target formal task references the r3 science and execution branches and matching result-path names. Its review gate still requires APPROVED results bound to PRAXIS_TASK_COMMIT, nonempty distinct reviewer identities, and a BLOCKED stop if either review is absent, stale, vetoed, or ambiguous. The science result path matches this review task's required output path.",
+    "E5: A read-only origin ref query found both named r3 review branches at review time; exact returned tips are preserved in the evidence package. The target points to branch names and result paths, so reviews can be committed on those branches without editing the target.",
+    "E6: The target's validate_review parser accepts the constructed downstream review only with APPROVED verdicts, nonempty reviewer and evidence strings, and different science/execution reviewer identities; the formal task preserves those requirements."
+  ],
+  "concerns": []
+}
