@@ -1,0 +1,14 @@
+{
+  "branch_after_commit": "",
+  "committed_paths": [
+    "docs/validation/shared_transfer_formal_v2_20260923/execution_review.json"
+  ],
+  "frozen_review_target_head": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "result_commit": "b7f2be12ed3289cea7b7bdaf1e7a64236cd4e5c6",
+  "result_commit_parent": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "source_snapshot_count": 29,
+  "source_snapshot_hashes_verified": true,
+  "tracked_review_sha256": "ecea9c8fa6556388e20bdf4dac4146fdc61256eb479896ff4eebc171cfbf3a79",
+  "tracked_worktree_clean": true,
+  "worktree_status_after_commit": ""
+}

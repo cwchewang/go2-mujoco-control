@@ -1,0 +1,105 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 163,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "1f9460521c9746eaf892b981a2c8b143ef5197b8d80c83f933d2429eaa2d8d49",
+      "size": 6275
+    },
+    {
+      "path": "index.json",
+      "sha256": "7725e4fd638692d0b70a6e7fc030a157c2ce735b12272308a95ea04c3d2f46be",
+      "size": 7011
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "627ba8f745fab2644f24494440019f3d5ff1e42cad28893203ca55597da7cd11",
+      "size": 514
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_session.json",
+      "sha256": "4e30e1abd1e3df3000667351ab1036a58a955316f258e6c5bfca4e783255889a",
+      "size": 701
+    },
+    {
+      "evidence_id": "E10",
+      "path": "commit_state.json",
+      "sha256": "f68309d4bb7a8c15ad6cc56723dcbbfc72c7f6f2f460523d13309748624e5300",
+      "size": 588
+    },
+    {
+      "evidence_id": "E2",
+      "path": "reviewed_sources_manifest.json",
+      "sha256": "0d31ebe7c06393fe0899615a14a42a10f779e2055db815edb9ac8e0570286a83",
+      "size": 8914
+    },
+    {
+      "evidence_id": "E3",
+      "path": "reviewed_sources/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "size": 16238
+    },
+    {
+      "evidence_id": "E4",
+      "path": "reviewed_sources/tools/substrate/integrity.py",
+      "sha256": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+      "size": 6431
+    },
+    {
+      "evidence_id": "E5",
+      "path": "reviewed_sources/tools/substrate/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3",
+      "size": 12829
+    },
+    {
+      "evidence_id": "E6",
+      "path": "reviewed_sources/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "size": 1506
+    },
+    {
+      "evidence_id": "E7",
+      "path": "reviewed_sources/tools/substrate/watchdog.py",
+      "sha256": "190befd476f2bfd5d3a6682b9edafa319a11ef533e45a74412783edb408ae855",
+      "size": 1094
+    },
+    {
+      "evidence_id": "E8",
+      "path": "review_basis.md",
+      "sha256": "06fefd03329809a8fd5383afcfd4fd79cc95c7a34b4cf4a880a7be84b4ac56ff",
+      "size": 3447
+    },
+    {
+      "evidence_id": "E9",
+      "path": "review_result.json",
+      "sha256": "ecea9c8fa6556388e20bdf4dac4146fdc61256eb479896ff4eebc171cfbf3a79",
+      "size": 4607
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "b7f2be12ed3289cea7b7bdaf1e7a64236cd4e5c6",
+  "schema_version": 1,
+  "source_index_sha256": "7725e4fd638692d0b70a6e7fc030a157c2ce735b12272308a95ea04c3d2f46be",
+  "task_branch": "research/review-shared-transfer-execution-v2-20260923",
+  "task_commit": "a31fe64afd6b7669765fa83137d70ab6dad11c75"
+}

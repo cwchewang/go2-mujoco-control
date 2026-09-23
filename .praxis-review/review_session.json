@@ -1,0 +1,12 @@
+{
+  "branch_at_review_start": "",
+  "evidence_dir": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-163/20260923T152223Z-a31fe64afd6b",
+  "head_at_review_start": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "issue_number": "163",
+  "repository": "cwchewang/go2-mujoco-control",
+  "scope": "static execution review; no qualification, preparation, capture, verification, tests, MuJoCo stepping, or policy inference invoked",
+  "status_at_review_start": "",
+  "task_branch": "research/review-shared-transfer-execution-v2-20260923",
+  "task_commit": "a31fe64afd6b7669765fa83137d70ab6dad11c75",
+  "task_path": "docs/research/TASK_SHARED_TRANSFER_EXECUTION_REVIEW_V2_20260923.md"
+}

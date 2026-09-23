@@ -1,0 +1,208 @@
+{
+  "sources": [
+    {
+      "bytes": 2825,
+      "git_blob": "636296005cbd27c8e6fa3164260866d6552e34be",
+      "git_path": "docs/research/TASK_SHARED_TRANSFER_EXECUTION_REVIEW_V2_20260923.md",
+      "path": "reviewed_sources/docs/research/TASK_SHARED_TRANSFER_EXECUTION_REVIEW_V2_20260923.md",
+      "sha256": "790e7a4d210da6488387187c3c315caafa7c6a1bdbca17eca83be60c574e2dce"
+    },
+    {
+      "bytes": 10621,
+      "git_blob": "8aa55a4ba9bb6e2b82244fd536a20778b72a8b16",
+      "git_path": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "path": "reviewed_sources/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "sha256": "c2a695d7cc7ea04cc9c00b603a71c6a0a153c216388159f576e580ef8bf09cd2"
+    },
+    {
+      "bytes": 307,
+      "git_blob": "1df4697d751b540e076e1accf24d4767dae16a13",
+      "git_path": "tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "path": "reviewed_sources/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "sha256": "33b2e758d303a88f914e13233a4f10517a0c9f054fa01935f04a6e17be1d0c72"
+    },
+    {
+      "bytes": 1590,
+      "git_blob": "7c901e93d2f027680a8000525b0c15d090662188",
+      "git_path": "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "path": "reviewed_sources/tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32"
+    },
+    {
+      "bytes": 16238,
+      "git_blob": "4516f7723d27cd05f3b1bf22083ed92333ff79eb",
+      "git_path": "tools/substrate/baseline.py",
+      "path": "reviewed_sources/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392"
+    },
+    {
+      "bytes": 12829,
+      "git_blob": "36d9ea11618ea5b30f2ed5687866dbaefdb7c9e7",
+      "git_path": "tools/substrate/baseline_verify.py",
+      "path": "reviewed_sources/tools/substrate/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3"
+    },
+    {
+      "bytes": 16267,
+      "git_blob": "0792d94711f6939ac8684e8e1801c53d4b738e51",
+      "git_path": "tools/substrate/baseline_episode.py",
+      "path": "reviewed_sources/tools/substrate/baseline_episode.py",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317"
+    },
+    {
+      "bytes": 1971,
+      "git_blob": "3bd0e8eccb8a66eef8d3588b1331b037e90fcd52",
+      "git_path": "tools/substrate/readiness.py",
+      "path": "reviewed_sources/tools/substrate/readiness.py",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7"
+    },
+    {
+      "bytes": 6547,
+      "git_blob": "f1cdfab73832daf221b3889352b23abb72b9b57f",
+      "git_path": "tools/substrate/qualification.py",
+      "path": "reviewed_sources/tools/substrate/qualification.py",
+      "sha256": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009"
+    },
+    {
+      "bytes": 6403,
+      "git_blob": "e4e8178d36b249af62f4202cb5c69c348471875b",
+      "git_path": "tools/substrate/qualify.py",
+      "path": "reviewed_sources/tools/substrate/qualify.py",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f"
+    },
+    {
+      "bytes": 10233,
+      "git_blob": "c9cf4a37f2921c509d4094b87a158062cde240f6",
+      "git_path": "tools/substrate/admit.py",
+      "path": "reviewed_sources/tools/substrate/admit.py",
+      "sha256": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad"
+    },
+    {
+      "bytes": 3959,
+      "git_blob": "4afc2be11b8c4974ab8051260e1921ce25a4c5d8",
+      "git_path": "tools/substrate/environment.py",
+      "path": "reviewed_sources/tools/substrate/environment.py",
+      "sha256": "2f60733f004edadc01a95db2e93e3a05dd9925497ee72d5f7b03fc11203e512a"
+    },
+    {
+      "bytes": 6431,
+      "git_blob": "35a91338b24285ecbaaed9af0303b40bb0234d4a",
+      "git_path": "tools/substrate/integrity.py",
+      "path": "reviewed_sources/tools/substrate/integrity.py",
+      "sha256": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e"
+    },
+    {
+      "bytes": 1506,
+      "git_blob": "c44152dddcde4464f5f0000b8745929a7a5b10ae",
+      "git_path": "tools/substrate/guards.py",
+      "path": "reviewed_sources/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210"
+    },
+    {
+      "bytes": 1094,
+      "git_blob": "b2571c07950ba777348c7ed554c2886ef61e4566",
+      "git_path": "tools/substrate/watchdog.py",
+      "path": "reviewed_sources/tools/substrate/watchdog.py",
+      "sha256": "190befd476f2bfd5d3a6682b9edafa319a11ef533e45a74412783edb408ae855"
+    },
+    {
+      "bytes": 17525,
+      "git_blob": "c9bb45f64fdba1e615b8057f8750a1f256d863f5",
+      "git_path": "tools/substrate/launch.py",
+      "path": "reviewed_sources/tools/substrate/launch.py",
+      "sha256": "622f89ea9e67c2236b6dfbcfe1ad7beea79a2c28fe5349373ec8ce7f6d373f0d"
+    },
+    {
+      "bytes": 2431,
+      "git_blob": "841880be4e29ca25cb232c2447e9a52307b6d7e7",
+      "git_path": "tools/substrate/task.py",
+      "path": "reviewed_sources/tools/substrate/task.py",
+      "sha256": "439d2d8011969700a90c9e9022a7887fe091c6eec39ff0974d172eb08fe23eda"
+    },
+    {
+      "bytes": 7178,
+      "git_blob": "7fefb91a49002f505dea8d2d99a08b81760044b0",
+      "git_path": "tools/substrate/model.py",
+      "path": "reviewed_sources/tools/substrate/model.py",
+      "sha256": "3dfd63472e55bb9f89cde1975418a5225ad5a94049b6ef001e63d8ac0c130dbb"
+    },
+    {
+      "bytes": 3427,
+      "git_blob": "d5abd7ff84d57073b151524e20036ecbbee0c15b",
+      "git_path": "tools/substrate/rl.py",
+      "path": "reviewed_sources/tools/substrate/rl.py",
+      "sha256": "2182d643e5a26d5038f52359634f777223d875a2ed81fc84c4a97eff05d4a09c"
+    },
+    {
+      "bytes": 3621,
+      "git_blob": "b7813e2e9869c886f8b50b22787ed25c69a2b9d6",
+      "git_path": "tools/substrate/build_identity.py",
+      "path": "reviewed_sources/tools/substrate/build_identity.py",
+      "sha256": "3e87e53258f3204efbc9624cc5ff9426610bb42d8dc3629cada50da1ced1e224"
+    },
+    {
+      "bytes": 4092,
+      "git_blob": "e4c100af6eeab5f5a5b24ca5a4a0a70a3a833dfc",
+      "git_path": "tools/substrate/native/admit.cc",
+      "path": "reviewed_sources/tools/substrate/native/admit.cc",
+      "sha256": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452"
+    },
+    {
+      "bytes": 7692,
+      "git_blob": "a39e6e823f0d760511863c4e0f80746407b6acf9",
+      "git_path": "tools/substrate/verify_capture.py",
+      "path": "reviewed_sources/tools/substrate/verify_capture.py",
+      "sha256": "95ff478deba5ae8bf4a62627d2cbe4c8c3064f12eafa719e074f45513518dade"
+    },
+    {
+      "bytes": 13065,
+      "git_blob": "2e624baa59271fad798909a1ec70f9caa296b069",
+      "git_path": "tools/substrate/test_baseline.py",
+      "path": "reviewed_sources/tools/substrate/test_baseline.py",
+      "sha256": "9f8c3c7555f601547c40a5757c97226164f2fff19bbe63ceeb3e1a306e2f83dc"
+    },
+    {
+      "bytes": 7607,
+      "git_blob": "2895618f05cd0ac3ce0d7f6d91743db53c46615c",
+      "git_path": "tools/substrate/test_qualification.py",
+      "path": "reviewed_sources/tools/substrate/test_qualification.py",
+      "sha256": "ddf366284104171b463f9339854530e7a7c8f62194cccd25abe5819d24a71d9c"
+    },
+    {
+      "bytes": 28984,
+      "git_blob": "155e1e3e300391b96547c6bb258b33e9f5fa32eb",
+      "git_path": "tools/research/preflight.py",
+      "path": "reviewed_sources/tools/research/preflight.py",
+      "sha256": "7e6ad26da2bbf9111610455cb012ce907b293085cd10a4621254f2ff948754fd"
+    },
+    {
+      "bytes": 2674,
+      "git_blob": "acdb8afc41446e98c73b523af178b3837300eac1",
+      "git_path": "tools/research/identity.py",
+      "path": "reviewed_sources/tools/research/identity.py",
+      "sha256": "54a530839e32f2dfb4353e98559ce962c87608213afdced2b2c0c21d2f52c5ff"
+    },
+    {
+      "bytes": 5841,
+      "git_blob": "9d03af3e8db87f5b3954cc1f26eff8e462c657cc",
+      "git_path": "tools/substrate/rl_reference.lock.json",
+      "path": "reviewed_sources/tools/substrate/rl_reference.lock.json",
+      "sha256": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b"
+    },
+    {
+      "bytes": 885,
+      "git_blob": "97361771918c6bc64af509e67c16e152137e4bce",
+      "git_path": "tools/substrate/sources.lock.json",
+      "path": "reviewed_sources/tools/substrate/sources.lock.json",
+      "sha256": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0"
+    },
+    {
+      "bytes": 12136,
+      "git_blob": "c18587115177bb51830e28a15c63b2e7bf297350",
+      "git_path": "tools/substrate/requirements-linux-py310.lock",
+      "path": "reviewed_sources/tools/substrate/requirements-linux-py310.lock",
+      "sha256": "02f170cc1b64df7d21839a961bfb2f1b33ecaddd1755740272954df5e2d68d88"
+    }
+  ],
+  "target_head": "a31fe64afd6b7669765fa83137d70ab6dad11c75"
+}

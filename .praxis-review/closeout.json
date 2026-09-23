@@ -1,0 +1,167 @@
+{
+  "status": "complete",
+  "summary": "Completed the source-only execution review for frozen HEAD a31fe64afd6b7669765fa83137d70ab6dad11c75; the required review JSON was committed as b7f2be12ed3289cea7b7bdaf1e7a64236cd4e5c6 with verdict VETO.",
+  "completed": [
+    "Inspected the frozen formal task, task/protocol bindings, identity, qualification, preparation, capture, verification, integrity, watchdog, and ledger paths.",
+    "Preserved exact frozen-commit source snapshots and SHA-256/Git blob identities for independent challenge.",
+    "Wrote the required execution_review.json with reviewer identity and target_head bound to the frozen starting commit.",
+    "Committed only the required review JSON and verified the resulting commit and clean worktree."
+  ],
+  "not_completed": [
+    "Qualification, preparation, capture, and scientific execution were not run because this task is review-only and zero-physics.",
+    "Remote review-tip and live canonical resource checks were not performed; they are runtime gates for the separate formal campaign task."
+  ],
+  "observations": [
+    {
+      "text": "At review entry, the detached checkout HEAD matched PRAXIS_TASK_COMMIT and the worktree was clean; the Praxis repository, issue, branch, and task path were present.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "text": "The capture code creates the protocol ledger after identity/resource validation and fresh preflight; a campaign claim and attempt claims are then written under the ledger.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E8"
+      ]
+    },
+    {
+      "text": "write_new flushes and fsyncs claim file contents, while the ledger creation/write path has no directory fsync; EvidenceRun syncs the capture output directory separately.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    },
+    {
+      "text": "The per-case deadline wraps episode execution; model/policy setup precedes it and analysis follows it. The offline verifier checks prepared/capture references, authorization, preflight, ledger claims, trace replay, and repeat semantics.",
+      "evidence_ids": [
+        "E3",
+        "E5",
+        "E6",
+        "E7",
+        "E8"
+      ]
+    },
+    {
+      "text": "The review JSON targets the frozen starting commit and is the only path in the result commit; the worktree is clean after commit.",
+      "evidence_ids": [
+        "E9",
+        "E10"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "Because the START record is not consumed before preflight and ledger creation, an invocation that fails earlier can be re-entered with the same authorization and later consume campaign attempts, contrary to the exact-once task rule.",
+      "evidence_ids": [
+        "E3",
+        "E8"
+      ]
+    },
+    {
+      "text": "Without syncing ledger directory entries, a host/filesystem crash can leave claim contents fsynced but remove the names used to block a replacement campaign.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    },
+    {
+      "text": "A stall in capture setup or post-episode analysis is outside the 300-second watchdog and can leave a claimed campaign without a bounded terminal result.",
+      "evidence_ids": [
+        "E3",
+        "E6",
+        "E7",
+        "E8"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The execution review verdict is VETO because exact-once/replacement-run prevention and crash-durable external claims are not sufficiently enforced; watchdog coverage also excludes capture setup and analysis.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E6",
+        "E7",
+        "E9"
+      ]
+    },
+    {
+      "text": "No formal campaign result or scientific conclusion was produced by this review task.",
+      "evidence_ids": [
+        "E1",
+        "E8",
+        "E9"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Whether an unsynced directory entry is lost depends on filesystem and crash timing; this review made no crash-injection run, and the source does not guarantee persistence with directory fsync.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    },
+    {
+      "text": "Offline performance verification recomputes most gate metrics through the capture analyzer and separately checks MAE only; common-mode mean-speed, lateral, and yaw calculation defects could pass that verifier.",
+      "evidence_ids": [
+        "E5",
+        "E8"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "review_session.json",
+      "description": "Praxis identity and exact checkout state recorded at review entry."
+    },
+    {
+      "id": "E2",
+      "path": "reviewed_sources_manifest.json",
+      "description": "Frozen-commit Git blob IDs and SHA-256 hashes for the inspected source snapshots."
+    },
+    {
+      "id": "E3",
+      "path": "reviewed_sources/tools/substrate/baseline.py",
+      "description": "Exact frozen capture, preparation, claim, timeout scope, and verifier dispatch implementation."
+    },
+    {
+      "id": "E4",
+      "path": "reviewed_sources/tools/substrate/integrity.py",
+      "description": "Exact frozen exclusive write, file fsync, sealed evidence, and directory sync implementation."
+    },
+    {
+      "id": "E5",
+      "path": "reviewed_sources/tools/substrate/baseline_verify.py",
+      "description": "Exact frozen zero-step offline audit and metric replay implementation."
+    },
+    {
+      "id": "E6",
+      "path": "reviewed_sources/tools/substrate/guards.py",
+      "description": "Exact frozen zero-step guard and wall deadline scope."
+    },
+    {
+      "id": "E7",
+      "path": "reviewed_sources/tools/substrate/watchdog.py",
+      "description": "Exact frozen independent timeout watchdog implementation."
+    },
+    {
+      "id": "E8",
+      "path": "review_basis.md",
+      "description": "Line-referenced review reasoning, veto findings, and scope boundary."
+    },
+    {
+      "id": "E9",
+      "path": "review_result.json",
+      "description": "Byte-identical copy of the committed execution review JSON."
+    },
+    {
+      "id": "E10",
+      "path": "commit_state.json",
+      "description": "Verified result commit parent, committed paths, hashes, and final clean worktree state."
+    }
+  ]
+}
