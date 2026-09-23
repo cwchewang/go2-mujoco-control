@@ -166,9 +166,7 @@ def _provision_substrate_resources(worktree: Path) -> None:
     runtime = resource_root / "venv-reliable"
     python = runtime / "bin/python"
     if not python.is_file():
-        raise base.ResearchTaskError(
-            "canonical reliable substrate Python is missing"
-        )
+        raise base.ResearchTaskError("canonical reliable substrate Python is missing")
     probe = subprocess.run(
         [
             str(python),
