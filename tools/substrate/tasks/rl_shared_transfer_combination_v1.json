@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "branch": "research/shared-transfer-combination-design-20260923",
+  "branch": "research/shared-transfer-combination-final-20260923",
   "protocol": "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
   "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
-  "diff_base": "ac88062a60514f96a2fdeec884f26ab276e41d47"
+  "diff_base": "80804fe2a5bfb5182ac695c18fd8fa68932d561c"
 }
