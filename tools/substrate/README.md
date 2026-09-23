@@ -102,9 +102,11 @@ does not make these information conditions equivalent.
 ## Formal experiment boundary
 
 The SOP preflight entry `tools/research/preflight.py` is restored from historical
-source and hardened. It checks exact branch/HEAD, clean state, runner/domain,
-all reserved participant ports, current UDP occupancy, global/domain locks,
-process inspection, files/hashes, changed surfaces, required review and tests.
+source and hardened. It checks exact HEAD, the expected logical branch identity
+(named branch or a complete exact Praxis v2 binding for detached worktrees), a
+clean state, runner/domain, all reserved participant ports, current UDP
+occupancy, global/domain locks, process inspection, files/hashes, changed
+surfaces, required review and tests.
 Existing output is protected, and tests are skipped after an early hard failure.
 Standalone preflight is a readiness snapshot. The substrate launcher now passes
 its held lock descriptor to preflight and retains it through capture, with explicit
@@ -116,7 +118,9 @@ The concrete first-run protocol is now `protocols/rl_flat_v1.json`; see
 `docs/research/SUBSTRATE_FIRST_CAPTURE.md` for its prospective rationale and exact
 historical commands. Under SOP v0.3, `launch prepare` additionally requires
 `--qualification QUALIFIED_BUNDLE --task TRACKED_TASK_JSON`. Task metadata owns
-branch/accepted-parent/protocol identity; no branch edit in launch.py is needed.
+expected branch/accepted-parent/protocol identity. Project-level execution
+checks accept a named expected branch for manual runs or a detached Praxis v2
+worktree bound to the exact repository, logical branch and frozen commit.
 Qualification must be sealed, clean, non-development and match current
 runtime/test/model/dependency inputs. Matching inputs reuse offline tests; fresh
 lock/process/input checks and exact-head review/start identity remain mandatory.

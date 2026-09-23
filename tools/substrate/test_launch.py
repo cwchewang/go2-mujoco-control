@@ -2,6 +2,7 @@
 
 import copy
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -14,6 +15,8 @@ from .contracts import MOTOR_JOINTS, TorqueCommand, Proprioception
 from .episode import episode, command_at
 from .analyze_capture import analyze, trace_digest
 from .integrity import strict_json
+from . import launch as launch_module
+from ..research.identity import PRAXIS_ENVIRONMENT_KEYS
 from .launch import (
     PROTOCOL,
     validate_review,
@@ -86,6 +89,102 @@ class FakePolicy:
             np.ones(12),
             np.zeros(12),
         )
+
+
+class CurrentIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.git("init", "-b", "fixture")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("config", "user.name", "Fixture")
+        (self.root / "tracked.txt").write_text("fixture\n")
+        self.git("add", "tracked.txt")
+        self.git("commit", "-m", "fixture")
+        self.head = self.git("rev-parse", "HEAD")
+        self.task = {"configuration": {"branch": "fixture"}}
+
+    def git(self, *args):
+        return subprocess.check_output(
+            ["git", *args], cwd=self.root, text=True, stderr=subprocess.DEVNULL
+        ).strip()
+
+    def praxis_binding(self, **overrides):
+        values = {
+            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+            "PRAXIS_ISSUE_NUMBER": "158",
+            "PRAXIS_TASK_BRANCH": "fixture",
+            "PRAXIS_TASK_COMMIT": self.head,
+            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
+        }
+        values.update(overrides)
+        return values
+
+    def current_identity(self, praxis_environment=None):
+        environment = dict.fromkeys(PRAXIS_ENVIRONMENT_KEYS, "")
+        if praxis_environment is not None:
+            environment.update(praxis_environment)
+        with (
+            patch.object(launch_module, "ROOT", self.root),
+            patch.object(
+                launch_module,
+                "source_manifest",
+                return_value={"fixture": "source"},
+            ),
+            patch.dict(os.environ, environment),
+        ):
+            return launch_module.current_identity(self.task)
+
+    def detach_head(self):
+        self.git("checkout", "--detach", "HEAD")
+
+    def test_named_expected_branch_still_passes(self):
+        self.assertEqual(self.current_identity(), (self.head, {"fixture": "source"}))
+
+    def test_detached_head_with_exact_praxis_binding_passes(self):
+        self.detach_head()
+        self.assertEqual(
+            self.current_identity(self.praxis_binding()),
+            (self.head, {"fixture": "source"}),
+        )
+
+    def test_detached_head_without_praxis_binding_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity()
+
+    def test_detached_head_with_wrong_praxis_repository_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(
+                self.praxis_binding(PRAXIS_REPOSITORY="someone-else/go2-mujoco-control")
+            )
+
+    def test_detached_head_with_wrong_praxis_branch_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(
+                self.praxis_binding(PRAXIS_TASK_BRANCH="research/other-task")
+            )
+
+    def test_detached_head_with_wrong_praxis_commit_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40))
+
+    def test_detached_head_with_incomplete_binding_fails(self):
+        self.detach_head()
+        binding = self.praxis_binding()
+        binding.pop("PRAXIS_TASK_PATH")
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(binding)
+
+    def test_detached_head_still_requires_clean_worktree(self):
+        self.detach_head()
+        (self.root / "untracked.txt").write_text("dirty\n")
+        with self.assertRaisesRegex(ValueError, "clean worktree"):
+            self.current_identity(self.praxis_binding())
 
 
 class LaunchTests(unittest.TestCase):

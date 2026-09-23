@@ -65,14 +65,17 @@ the reliable Python/Torch/MuJoCo/NumPy runtime, and the native MJPC admission
 binary before exposing them under the ignored `.substrate/` namespace. Luna
 does not download or install these dependencies.
 
-Praxis v6 attaches the isolated worktree to the frozen logical
-`research/*` branch while still verifying the exact task commit. This keeps
-scientific preflight branch identity meaningful without using the user's normal
-worktree. If a task both changes tracked experiment code and requires a final
-clean exact-HEAD qualification/preparation, split it at the trusted commit:
-first freeze the implementation candidate, then run qualification/preparation
-as a follow-up task on that committed HEAD. Do not try to satisfy an exact-HEAD
-gate from a dirty pre-commit Luna worktree.
+The Atlas-backed Praxis v6 path attaches its isolated worktree to the frozen
+logical `research/*` branch while verifying the exact task commit. Praxis v2
+can keep the task worktree detached: current Go2 scientific checks accept that
+only when the complete five-value Praxis identity is present, its repository,
+logical branch and frozen commit match the operation, current HEAD equals that
+commit, and the worktree is clean. Named-branch manual execution remains valid.
+Neither path uses the user's normal worktree. If a task both changes tracked
+experiment code and requires a final clean exact-HEAD qualification/preparation,
+split it at the trusted commit: first freeze the implementation candidate, then
+run qualification/preparation as a follow-up task on that committed HEAD. Do
+not try to satisfy an exact-HEAD gate from a dirty pre-commit Luna worktree.
 
 Luna may modify the task worktree but receives no GitHub write token and is
 explicitly forbidden from changing `.github/**` or `tools/atlas_*`. Luna

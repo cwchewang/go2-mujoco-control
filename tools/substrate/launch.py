@@ -32,6 +32,7 @@ from .readiness import (
 from .guards import zero_step_guard as zero_step_guard, wall_deadline as wall_deadline
 from .task import DEFAULT_TASK, load_task
 from .qualification import validate as validate_qualification, validate_reference
+from ..research.identity import validate_execution_identity
 
 TRANSPORT = "inprocess"
 PROTOCOL = ROOT / "tools/substrate/protocols/rl_flat_v1.json"
@@ -45,8 +46,20 @@ def git(*args):
 def current_identity(task=None):
     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
     task = task or load_task(DEFAULT_TASK)
-    if branch != task["configuration"]["branch"] or git("status", "--porcelain"):
-        raise ValueError("launch preparation requires the clean reserved branch")
+    identity = validate_execution_identity(
+        branch,
+        task["configuration"]["branch"],
+        head,
+        head,
+        os.environ,
+    )
+    if not identity["pass"]:
+        raise ValueError(
+            "launch preparation requires the expected named branch or an exact "
+            "Praxis-bound detached HEAD"
+        )
+    if git("status", "--porcelain"):
+        raise ValueError("launch preparation requires a clean worktree")
     return head, source_manifest()
 
 
