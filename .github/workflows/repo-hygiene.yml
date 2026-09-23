@@ -14,11 +14,6 @@ jobs:
           fetch-depth: 0
       - name: Install pinned quality tooling
         run: python3 -m pip install --require-hashes -r tools/requirements-dev-linux-x86_64.txt
-      - name: TEMP emit exact Ruff formatter patch
-        run: |
-          python3 -m ruff format tools/atlas_research_task_v2.py tools/atlas_research_task_v6.py tools/tests/test_atlas_dispatch_vnext.py
-          git diff -- tools/atlas_research_task_v2.py tools/atlas_research_task_v6.py tools/tests/test_atlas_dispatch_vnext.py
-          exit 1
       - name: Check tracked-source syntax, formatting, lint and links
         run: python3 -m tools.check_quality --style
       - name: Check generated frontier navigation
