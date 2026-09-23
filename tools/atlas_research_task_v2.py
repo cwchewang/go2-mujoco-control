@@ -193,7 +193,9 @@ def _normalize_closeout_markdown(worktree: Path, paths: list[str]) -> None:
         path = worktree / relative
         if not path.is_file():
             continue
-        lines = [line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()]
+        lines = [
+            line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()
+        ]
         while lines and not lines[-1]:
             lines.pop()
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
