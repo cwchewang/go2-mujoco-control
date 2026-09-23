@@ -34,13 +34,13 @@ Do not tune, weaken, reinterpret or replace any gate after seeing a result.
 Before qualification or any physics, retrieve and validate both review results:
 
 - science task branch:
-  `review/shared-transfer-formal-v2-science-20260923`
+  `review/shared-transfer-formal-v2-science-r3-20260924`
 - science result:
-  `docs/validation/shared_transfer_formal_v2_science_20260923/review.json`
+  `docs/validation/shared_transfer_formal_v2_science_r3_20260924/review.json`
 - execution task branch:
-  `review/shared-transfer-formal-v2-execution-20260923`
+  `review/shared-transfer-formal-v2-execution-r3-20260924`
 - execution result:
-  `docs/validation/shared_transfer_formal_v2_execution_20260923/review.json`
+  `docs/validation/shared_transfer_formal_v2_execution_r3_20260924/review.json`
 
 Each result must state `verdict=APPROVED`, must bind
 `target_head == PRAXIS_TASK_COMMIT`, and must have a non-empty reviewer
