@@ -168,11 +168,7 @@ class ResourceProvisioningTest(unittest.TestCase):
 
                 (worktree / "tools/substrate/sources.lock.json").write_text(
                     json.dumps(
-                        {
-                            "rl": {
-                                "sha256": hashlib.sha256(b"policy").hexdigest()
-                            }
-                        }
+                        {"rl": {"sha256": hashlib.sha256(b"policy").hexdigest()}}
                     ),
                     encoding="utf-8",
                 )
@@ -191,9 +187,7 @@ class ResourceProvisioningTest(unittest.TestCase):
                 python = resources / "venv-reliable/bin/python"
                 python.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
                 python.chmod(0o755)
-                (resources / "headless-reliable/go2_mjpc_admit").write_bytes(
-                    b"elf"
-                )
+                (resources / "headless-reliable/go2_mjpc_admit").write_bytes(b"elf")
 
                 os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = str(resources)
                 worker_v6._provision_substrate_resources(worktree)
