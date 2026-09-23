@@ -50,6 +50,18 @@ Current task, review, exact execution HEAD and user authorization are not cached
 
 ## Fresh preflight
 
+The Go2 Praxis dispatcher requires a canonical TaskSpec resource manifest on
+new queued tasks. Declare the `substrate` root for the CTS checkpoint with the
+SHA-256 from `tools/substrate/sources.lock.json`, and declare the runtime modules
+and exact distribution versions required by that task. The host binds
+`substrate` to its trusted `.substrate` directory and probes those modules with
+the reliable substrate Python. A missing or mismatched declared resource stops
+before Luna starts and consumes no scientific attempt. The worker's own
+provisioning and the scientific preparation checks still verify the complete
+source lock, model loading, and execution semantics. Older task documents
+without a manifest must be reissued under the new contract before dispatch;
+do not silently relax this gate to replay them.
+
 Before capture, the runner continuously holds the experiment lock through
 preflight and the whole campaign. Check exact HEAD/branch and clean worktree,
 current inputs, fresh output, no stale runtime processes, and transport-specific
