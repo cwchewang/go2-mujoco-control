@@ -32,6 +32,7 @@ jobs:
       GO2_PRAXIS_TASKS_REL: dev/go2-praxis/tasks
       GO2_PRAXIS_STATE_REL: .local/state/praxis-go2-worker
       GO2_SUBSTRATE_RESOURCE_REL: dev/go2-workspace/current/.substrate
+      GO2_MUJOCO_SDK_REL: .mujoco/mujoco-3.3.6
     steps:
       - name: Materialize pinned private Praxis core
         shell: bash
@@ -55,6 +56,7 @@ jobs:
           tasks="$HOME/$GO2_PRAXIS_TASKS_REL"
           state="$HOME/$GO2_PRAXIS_STATE_REL"
           resources="$HOME/$GO2_SUBSTRATE_RESOURCE_REL"
+          mujoco_sdk="$HOME/$GO2_MUJOCO_SDK_REL"
           mkdir -p "$(dirname "$anchor")" "$tasks" "$state"
           {
             echo "GO2_PRAXIS_ANCHOR=$anchor"
@@ -62,6 +64,7 @@ jobs:
             echo "GO2_PRAXIS_STATE=$state"
             echo "GO2_SUBSTRATE_RESOURCE_ROOT=$resources"
             echo "ATLAS_RESOURCE_ROOT_SUBSTRATE=$resources"
+            echo "ATLAS_RESOURCE_ROOT_MUJOCO_SDK=$mujoco_sdk"
             echo "ATLAS_PREFLIGHT_PYTHON=$resources/venv-reliable/bin/python"
           } >> "$GITHUB_ENV"
 
