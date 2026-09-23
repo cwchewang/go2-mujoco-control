@@ -67,7 +67,7 @@ def _codex_command(codex_bin: str, thread_id: str | None, prompt: str) -> list[s
         "workspace-write",
         "--json",
         "-c",
-        'model_reasoning_effort="xhigh"',
+        'model_reasoning_effort="max"',
     ]
     if thread_id:
         return [

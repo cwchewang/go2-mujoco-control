@@ -50,7 +50,7 @@ to Luna only as a read-only reference location for ignored historical raw
 evidence that is not present in Git.
 
 Atlas launches a fresh non-interactive Codex session with the fixed model
-`gpt-5.6-luna`, `workspace-write` sandboxing, and the task worktree as the
+`gpt-6-luna` at `max` reasoning effort, `workspace-write` sandboxing, and the task worktree as the
 workspace. The bootstrap prompt contains only repository protocol and task
 identity. Scientific instructions remain in the committed task document.
 

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-MODEL = "gpt-5.6-luna"
+MODEL = "gpt-6-luna"
 BRANCH_RE = re.compile(r"^research/[A-Za-z0-9._/-]+$")
 TASK_RE = re.compile(r"^docs/research/TASK_[A-Za-z0-9_.-]+\.md$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -240,7 +240,7 @@ def _codex_command(codex_bin: str, thread_id: str | None) -> list[str]:
         "workspace-write",
         "--json",
         "-c",
-        'model_reasoning_effort="xhigh"',
+        'model_reasoning_effort="max"',
     ]
     if thread_id:
         return [
