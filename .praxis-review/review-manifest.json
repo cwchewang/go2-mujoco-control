@@ -1,0 +1,70 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5"
+  ],
+  "issue_number": 160,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "21fd6b2d67eaf9f6fcf04d073c069b137a959995d2e3cd1b6fa31bef8645707a",
+      "size": 4516
+    },
+    {
+      "path": "index.json",
+      "sha256": "f4d880ad4f6375a18f69d2fdf1b6ac2227dd82c8f44f89babcf455166ca2ac69",
+      "size": 1723
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "b166cdeaffa6e686c7e9c92fc5405258d7edf17a256cf34faa73df26e5faf861",
+      "size": 508
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "raw/recovered_previous/live-start.txt",
+      "sha256": "1f5eb3974fb87035ac475ab39ce4a43ea9de0fceeb826b5cc4175cc0de81f76f",
+      "size": 324
+    },
+    {
+      "evidence_id": "E2",
+      "path": "raw/recovered_previous/process-snapshot.txt",
+      "sha256": "dbd433145f44ef1f5682d8adb17a2bee071d75abe6e047c73e96cffc3d04483f",
+      "size": 460
+    },
+    {
+      "evidence_id": "E3",
+      "path": "raw/recovered_previous/live-end.txt",
+      "sha256": "bf33e5a462e8a41487048f8a0c2af45aa5afbc8d5b6a2c0d56c7b10f3c1e5dfe",
+      "size": 42
+    },
+    {
+      "evidence_id": "E4",
+      "path": "raw/recovery-git-validation.txt",
+      "sha256": "09cebc4a8cd2ef90ab683c44e5e038d79147e45af102d680495651df172696f6",
+      "size": 380
+    },
+    {
+      "evidence_id": "E5",
+      "path": "raw/recovered_previous/committed-result.patch",
+      "sha256": "7f7eea296b1bfb1b5fef1c84d45020c57429360c0387796459a8dda8308910f6",
+      "size": 1088
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "cabe65103dfb6a2765845cb6c4f4514dfec8554b",
+  "schema_version": 1,
+  "source_index_sha256": "f4d880ad4f6375a18f69d2fdf1b6ac2227dd82c8f44f89babcf455166ca2ac69",
+  "task_branch": "research/praxis-v2-live-concurrency-go2-b-20260923",
+  "task_commit": "2e75826b414f051d24573aa163e9738c4238ba05"
+}

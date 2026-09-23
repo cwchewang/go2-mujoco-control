@@ -1,0 +1,9 @@
+validation_time_utc=2026-09-23T14:54:29.660524427Z
+head=cabe65103dfb6a2765845cb6c4f4514dfec8554b
+parent=2e75826b414f051d24573aa163e9738c4238ba05
+subject=docs: record Praxis v2 Go2 B live concurrency
+frozen_start_is_ancestor=PASS
+worktree_status=CLEAN
+tracked_paths_from_frozen_start:
+A	docs/validation/praxis_v2_live_concurrency_20260923/GO2_B_RESULT.md
+committed_diff_check=PASS

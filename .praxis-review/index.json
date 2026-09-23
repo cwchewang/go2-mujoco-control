@@ -1,0 +1,57 @@
+{
+  "files": [
+    {
+      "path": "closeout.json",
+      "sha256": "21fd6b2d67eaf9f6fcf04d073c069b137a959995d2e3cd1b6fa31bef8645707a",
+      "size": 4516
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "8227f3bd14a66175b34548a4446e2919f6e19253ad0910a06a36ea95bd4d5bf3",
+      "size": 31060
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "b166cdeaffa6e686c7e9c92fc5405258d7edf17a256cf34faa73df26e5faf861",
+      "size": 508
+    },
+    {
+      "path": "raw/recovered_previous/committed-result.patch",
+      "sha256": "7f7eea296b1bfb1b5fef1c84d45020c57429360c0387796459a8dda8308910f6",
+      "size": 1088
+    },
+    {
+      "path": "raw/recovered_previous/live-end.txt",
+      "sha256": "bf33e5a462e8a41487048f8a0c2af45aa5afbc8d5b6a2c0d56c7b10f3c1e5dfe",
+      "size": 42
+    },
+    {
+      "path": "raw/recovered_previous/live-start.txt",
+      "sha256": "1f5eb3974fb87035ac475ab39ce4a43ea9de0fceeb826b5cc4175cc0de81f76f",
+      "size": 324
+    },
+    {
+      "path": "raw/recovered_previous/process-snapshot.txt",
+      "sha256": "dbd433145f44ef1f5682d8adb17a2bee071d75abe6e047c73e96cffc3d04483f",
+      "size": 460
+    },
+    {
+      "path": "raw/recovery-git-validation.txt",
+      "sha256": "09cebc4a8cd2ef90ab683c44e5e038d79147e45af102d680495651df172696f6",
+      "size": 380
+    }
+  ],
+  "result_commit": "cabe65103dfb6a2765845cb6c4f4514dfec8554b",
+  "schema_version": 1,
+  "status": "complete"
+}

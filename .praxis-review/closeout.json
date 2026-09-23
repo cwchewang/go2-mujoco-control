@@ -1,0 +1,81 @@
+{
+  "status": "complete",
+  "summary": "Recovered and validated the existing Go2 B live-concurrency result commit. The required execution interval, bounded process snapshot, committed result, and clean Git validation are preserved in this evidence package.",
+  "completed": [
+    "Preserved the prior execution start, process snapshot, and end records in the current evidence package with their source provenance.",
+    "Validated that HEAD cabe65103dfb6a2765845cb6c4f4514dfec8554b is a clean child of frozen commit 2e75826b414f051d24573aa163e9738c4238ba05, contains only the intended result document, and passes git diff --check.",
+    "Preserved the committed result patch and wrote this recovery closeout without rerunning the live-overlap procedure."
+  ],
+  "not_completed": [],
+  "observations": [
+    {
+      "text": "The prior capture records start time 2026-09-23T14:24:55.581991Z and all five frozen PRAXIS identity values.",
+      "evidence_ids": ["E1"]
+    },
+    {
+      "text": "The bounded process snapshot at 2026-09-23T14:26:21.527396Z lists three praxis_v2.cli run processes and three codex exec processes; command lines and environments were omitted.",
+      "evidence_ids": ["E2"]
+    },
+    {
+      "text": "The prior capture records end time 2026-09-23T14:27:35.992436Z.",
+      "evidence_ids": ["E3"]
+    },
+    {
+      "text": "Recovery validation records HEAD cabe65103dfb6a2765845cb6c4f4514dfec8554b with frozen start as its parent, a clean worktree, only the intended result document in the committed diff, and a passing committed diff check.",
+      "evidence_ids": ["E4"]
+    },
+    {
+      "text": "The committed result document records the frozen identity, worktree path, interval, process-snapshot location, and the explicit statement that no physics, simulator, controller, GPU, training, dataset, or scientific work ran.",
+      "evidence_ids": ["E5"]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The process snapshot falls between the recorded start and end. The timestamps are about 85.9 seconds from start to snapshot and 74.5 seconds from snapshot to end, so the recorded interval accommodates the task's required 20-second and 25-second waits.",
+      "evidence_ids": ["E1", "E2", "E3"]
+    },
+    {
+      "text": "At the sampled instant, multiple Praxis run processes and Codex executions coexisted; this supports an individual overlap observation but does not identify which frozen task owned each process.",
+      "evidence_ids": ["E2"]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The individual Go2 B task result is committed and its recorded live-overlap artifacts and Git state satisfy the task's bounded individual acceptance. This does not decide the later global comparison across the three independent tasks.",
+      "evidence_ids": ["E1", "E2", "E3", "E4", "E5"]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "The timestamp records establish ordering and elapsed intervals but do not independently show the exact sleep commands. The process snapshot omits command lines and task identifiers, so the listed processes cannot be assigned to specific tasks from this evidence alone; global concurrency remains for the cross-task comparison.",
+      "evidence_ids": ["E1", "E2", "E3"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "raw/recovered_previous/live-start.txt",
+      "description": "Copied from prior execution evidence 20260923T144511Z-2e75826b414f/raw/live-start.txt; preserves its original UTC timestamp and five PRAXIS identity values."
+    },
+    {
+      "id": "E2",
+      "path": "raw/recovered_previous/process-snapshot.txt",
+      "description": "Copied from prior execution evidence 20260923T144511Z-2e75826b414f/raw/process-snapshot.txt; bounded process table with command lines and environments omitted."
+    },
+    {
+      "id": "E3",
+      "path": "raw/recovered_previous/live-end.txt",
+      "description": "Copied from prior execution evidence 20260923T144511Z-2e75826b414f/raw/live-end.txt; preserves its original UTC timestamp."
+    },
+    {
+      "id": "E4",
+      "path": "raw/recovery-git-validation.txt",
+      "description": "Current recovery validation of HEAD ancestry, clean worktree, committed paths, and committed diff check."
+    },
+    {
+      "id": "E5",
+      "path": "raw/recovered_previous/committed-result.patch",
+      "description": "Copied from prior execution evidence 20260923T144511Z-2e75826b414f/raw/committed-result.patch; contains the committed result document content."
+    }
+  ]
+}

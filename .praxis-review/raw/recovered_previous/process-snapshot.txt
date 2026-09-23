@@ -1,0 +1,10 @@
+snapshot_time_utc=2026-09-23T14:26:21.527396Z
+source=/proc process table; scan capped at 4096 PIDs and 4096 cmdline bytes per PID
+filter=codex exec and praxis_v2.cli run only; full command lines and environment omitted
+columns=PID PPID ELAPSED_SECONDS PROCESS_TYPE
+216157 215827 373 praxis_v2.cli run
+216159 215827 373 praxis_v2.cli run
+216161 215827 373 praxis_v2.cli run
+216269 216159 370 codex exec
+216306 216157 369 codex exec
+216502 216161 367 codex exec
