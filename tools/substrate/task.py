@@ -69,7 +69,10 @@ def load_task(path, root=ROOT):
 
     praxis = value.get("praxis")
     if praxis is not None:
-        if not isinstance(praxis, dict) or set(praxis) != {"issue_number", "task_path"}:
+        if not isinstance(praxis, dict) or set(praxis) != {
+            "issue_number",
+            "task_path",
+        }:
             raise ValueError("invalid Praxis task identity binding")
         issue_number = praxis["issue_number"]
         task_path = praxis["task_path"]
@@ -85,7 +88,12 @@ def load_task(path, root=ROOT):
         ):
             raise ValueError("Praxis task path is invalid")
         subprocess.run(
-            ["git", "ls-files", "--error-unmatch", candidate.relative_to(root).as_posix()],
+            [
+                "git",
+                "ls-files",
+                "--error-unmatch",
+                candidate.relative_to(root).as_posix(),
+            ],
             cwd=root,
             check=True,
             capture_output=True,
