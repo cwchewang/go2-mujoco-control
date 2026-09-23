@@ -1,0 +1,13 @@
+{
+  "result_commit": "c79d5db164241e38992d4ab00e91e57fba5f5b97",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "review/shared-transfer-formal-v2-science-20260923",
+    "issue_number": 164,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "63efa1f0e413740aa9184ac6d4301c98c414b044",
+    "task_path": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_SCIENCE_REVIEW_20260923.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-164"
+}

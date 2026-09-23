@@ -1,0 +1,309 @@
+===== tools/substrate/baseline.py:240-360 =====
+240:                 status="FAILED",
+241:                 capability_status="INCOMPLETE",
+242:                 head=head,
+243:                 attempts=attempts,
+244:                 live_runs=0,
+245:             )
+246:             fresh_preflight(
+247:                 lock,
+248:                 head,
+249:                 prepared["review"],
+250:                 run.path / "preflight.json",
+251:                 ledger,
+252:                 task,
+253:                 qualification,
+254:                 protocol,
+255:             )
+256:             write_new(run.path / "authorization.json", auth)
+257:             write_new(run.path / "protocol.json", protocol)
+258:             write_new(
+259:                 run.path / "preparation-reference.json",
+260:                 dict(
+261:                     path=str(prepared_path.resolve()),
+262:                     manifest_sha256=prepared["prepared_manifest_sha256"],
+263:                 ),
+264:             )
+265:             ledger.mkdir(parents=True, exist_ok=False)
+266:             claim = dict(
+267:                 head=head,
+268:                 output=str(run.path.resolve()),
+269:                 protocol_sha256=prepared["protocol_sha256"],
+270:             )
+271:             write_new(ledger / "campaign.json", claim)
+272:             write_new(run.path / "campaign-claim.json", claim)
+273:             completed = {}
+274:             for item, case in zip(attempts, protocol["cases"]):
+275:                 if any(
+276:                     completed.get(name, {}).get("verdict") != "PASS"
+277:                     for name in case["requires"]
+278:                 ):
+279:                     item["reason"] = "reference_dependency_failed"
+280:                     continue
+281:                 if (head, sources) != current_identity(task):
+282:                     raise ValueError("source changed")
+283:                 validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+284:                 plant = Plant(
+285:                     prepared_path / "inputs" / case["scene"],
+286:                     case,
+287:                     protocol["physics_period_s"],
+288:                 )
+289:                 if (
+290:                     physical_fingerprint(plant.model)
+291:                     != prepared["models"][case["id"]]["physical_sha256"]
+292:                 ):
+293:                     raise ValueError("plant changed")
+294:                 policy = make_policy(
+295:                     prepared_path / "inputs",
+296:                     case,
+297:                     prepared["source_inputs"][".substrate/rl/policy.pt"],
+298:                 )
+299:                 raw = run.path / (case["id"] + ".jsonl")
+300:                 item["status"] = "BOOTING"
+301: 
+302:                 def consume():
+303:                     claim = dict(
+304:                         index=item["index"],
+305:                         case=case["id"],
+306:                         head=head,
+307:                         raw=str(raw.resolve()),
+308:                         boundary="first_post_handoff_state_control_sample",
+309:                     )
+310:                     write_new(ledger / (case["id"] + ".json"), claim)
+311:                     write_new(run.path / (case["id"] + "_claim.json"), claim)
+312:                     run.result["live_runs"] += 1
+313:                     item["status"] = "CAPTURING"
+314: 
+315:                 started = time.monotonic()
+316:                 try:
+317:                     with raw.open("x") as stream:
+318: 
+319:                         def emit(row):
+320:                             stream.write(
+321:                                 json.dumps(row, separators=(",", ":"), allow_nan=False)
+322:                                 + "\n"
+323:                             )
+324:                             stream.flush()
+325: 
+326:                         try:
+327:                             with wall_deadline(protocol["wall_timeout_s"]):
+328:                                 episode(plant, policy, case, protocol, emit, consume)
+329:                         finally:
+330:                             stream.flush()
+331:                             os.fsync(stream.fileno())
+332:                     rows = [strict_json(line) for line in raw.read_text().splitlines()]
+333:                     result = analyze(rows, case, protocol)
+334:                     result["elapsed_s"] = time.monotonic() - started
+335:                     reference_case = repeat_reference(case)
+336:                     if (
+337:                         reference_case is not None
+338:                         and result["trace_sha256"]
+339:                         != (completed[reference_case]["trace_sha256"])
+340:                     ):
+341:                         result["verdict"] = "INTEGRITY_STOP"
+342:                         result["failure"] = "trajectory_mismatch"
+343:                     write_new(run.path / (case["id"] + "_analysis.json"), result)
+344:                     item.update(status=result["verdict"], analysis=result)
+345:                     completed[case["id"]] = result
+346:                     validate_snapshot(
+347:                         prepared_path, prepared["prepared_manifest_sha256"]
+348:                     )
+349:                     print(json.dumps({"case": case["id"], **result}), flush=True)
+350:                     if stop_after(protocol, result["verdict"]):
+351:                         break
+352:                 except BaseException as exc:
+353:                     item.update(
+354:                         status="ERROR", reason=type(exc).__name__ + ": " + str(exc)
+355:                     )
+356:                     raise
+357:             validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+358:             if (head, sources) != current_identity(task) or inputs(
+359:                 protocol
+360:             ) != prepared["source_inputs"]:
+
+===== tools/substrate/baseline_verify.py:245-333 =====
+245:         )
+246:         require(
+247:             len(admission["attempts"]) == protocol["max_attempts"],
+248:             "attempt budget mismatch",
+249:         )
+250:         completed = {}
+251:         audits = {}
+252:         consumed = set()
+253:         stopped = False
+254:         for index, (case, item) in enumerate(
+255:             zip(protocol["cases"], admission["attempts"])
+256:         ):
+257:             require(
+258:                 item["case"] == case["id"] and item["index"] == index + 1,
+259:                 "case identity mismatch",
+260:             )
+261:             raw = capture / (case["id"] + ".jsonl")
+262:             dependency_failed = any(
+263:                 completed.get(n, {}).get("verdict") != "PASS" for n in case["requires"]
+264:             )
+265:             if stopped or dependency_failed:
+266:                 require(
+267:                     item["status"] == "NOT_RUN" and not raw.exists(),
+268:                     "run after stop/failed dependency",
+269:                 )
+270:                 continue
+271:             require(
+272:                 item["status"] != "NOT_RUN" and raw.exists(), "missing prescribed case"
+273:             )
+274:             rows = [strict_json(line) for line in raw.read_text().splitlines()]
+275:             if trace_consumed(rows):
+276:                 require(
+277:                     strict_json((capture / (case["id"] + "_claim.json")).read_text())
+278:                     == strict_json((ledger / (case["id"] + ".json")).read_text())
+279:                     == dict(
+280:                         index=index + 1,
+281:                         case=case["id"],
+282:                         head=prepared["head"],
+283:                         raw=str(raw.resolve()),
+284:                         boundary="first_post_handoff_state_control_sample",
+285:                     ),
+286:                     "external attempt mismatch",
+287:                 )
+288:                 consumed.add(case["id"] + ".json")
+289:             else:
+290:                 require(
+291:                     len(rows) == 1 and rows[0]["failure"] is not None,
+292:                     "unconsumed trace is not initial safety stop",
+293:                 )
+294:                 require(
+295:                     not (capture / (case["id"] + "_claim.json")).exists()
+296:                     and not (ledger / (case["id"] + ".json")).exists(),
+297:                     "claim without control sample",
+298:                 )
+299:             plant = Plant(
+300:                 prepared_path / "inputs" / case["scene"],
+301:                 case,
+302:                 protocol["physics_period_s"],
+303:             )
+304:             policy = SourcePolicy(
+305:                 prepared_path / "inputs/.substrate/upstream-go2-30e74dc5",
+306:                 prepared_path / "inputs/.substrate/rl/policy.pt",
+307:                 prepared["source_inputs"][".substrate/rl/policy.pt"],
+308:             )
+309:             result, audit = audit_rows(rows, plant, policy, case, protocol)
+310:             reference_case = repeat_reference(case)
+311:             if (
+312:                 reference_case is not None
+313:                 and result["trace_sha256"]
+314:                 != (completed[reference_case]["trace_sha256"])
+315:             ):
+316:                 result.update(verdict="INTEGRITY_STOP", failure="trajectory_mismatch")
+317:             stored = strict_json(
+318:                 (capture / (case["id"] + "_analysis.json")).read_text()
+319:             )
+320:             require(
+321:                 all(stored[k] == v for k, v in result.items())
+322:                 and stored == item["analysis"]
+323:                 and stored["verdict"] == item["status"],
+324:                 "analysis mismatch",
+325:             )
+326:             completed[case["id"]] = result
+327:             audits[case["id"]] = audit
+328:             stopped = stop_after(protocol, result["verdict"])
+329:         require(
+330:             {p.name for p in ledger.iterdir()} == consumed | {"campaign.json"},
+331:             "external claim set mismatch",
+332:         )
+333:         require(admission["live_runs"] == len(consumed), "consumed count mismatch")
+
+===== tools/substrate/test_baseline.py:75-130 =====
+75:             COMBINED_PROTOCOL["source_identity"],
+76:             {
+77:                 "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+78:                 "checkpoint": (
+79:                     "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt"
+80:                 ),
+81:                 "checkpoint_sha256": (
+82:                     "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
+83:                 ),
+84:             },
+85:         )
+86:         first, repeat = COMBINED_PROTOCOL["cases"]
+87:         for case in (first, repeat):
+88:             self.assertEqual(case["scene"], "unitree_robots/go2/phase2_flat.xml")
+89:             self.assertTrue(case["adapter"])
+90:             self.assertEqual(case["reset"], "shared_home")
+91:             self.assertEqual(case["first_inference_tick"], 10)
+92:             self.assertEqual(case["horizon_ticks"], 6000)
+93:             self.assertEqual(case["commands"], [[0, 1.0]])
+94:             self.assertEqual(case["measurement_delay_ticks"], 1000)
+95:             self.assertTrue(case["reference_gate"])
+96:         self.assertEqual(repeat["repeat_of"], first["id"])
+97:         self.assertEqual(repeat["requires"], [first["id"]])
+98:         self.assertEqual(COMBINED_PROTOCOL["progression"], "first_nonpass_stop")
+99:         self.assertEqual(COMBINED_PROTOCOL["reference_mean_min"], 0.8)
+100:         self.assertEqual(COMBINED_PROTOCOL["tracking_absolute_tolerance"], 0.05)
+101:         self.assertEqual(COMBINED_PROTOCOL["tracking_relative_tolerance"], 0.2)
+102:         self.assertEqual(COMBINED_PROTOCOL["flat_lateral_max"], 0.3)
+103:         self.assertEqual(COMBINED_PROTOCOL["flat_yaw_max"], 0.3)
+104: 
+105:     def test_protocol_source_identity_is_bound_to_existing_locks(self):
+106:         reference_lock = strict_json(
+107:             (ROOT / "tools/substrate/rl_reference.lock.json").read_text()
+108:         )
+109:         source_lock = strict_json(
+110:             (ROOT / "tools/substrate/sources.lock.json").read_text()
+111:         )
+112:         validate_source_identity(COMBINED_PROTOCOL, reference_lock, source_lock)
+113:         altered_lock = {**source_lock, "rl": {**source_lock["rl"], "sha256": "0" * 64}}
+114:         with self.assertRaisesRegex(ValueError, "source identity"):
+115:             validate_source_identity(COMBINED_PROTOCOL, reference_lock, altered_lock)
+116: 
+117:     def test_combination_uses_declared_repeat_and_first_nonpass(self):
+118:         self.assertEqual(repeat_reference(COMBINED_PROTOCOL["cases"][1]), "combined_1")
+119:         self.assertEqual(repeat_reference(PROTOCOL["cases"][1]), "source_1")
+120:         self.assertFalse(stop_after(COMBINED_PROTOCOL, "PASS"))
+121:         self.assertTrue(stop_after(COMBINED_PROTOCOL, "PERFORMANCE_FAIL"))
+122:         self.assertTrue(stop_after(COMBINED_PROTOCOL, "SAFETY_STOP"))
+123:         self.assertTrue(stop_after(COMBINED_PROTOCOL, "INTEGRITY_STOP"))
+124:         self.assertFalse(stop_after(PROTOCOL, "PERFORMANCE_FAIL"))
+125:         self.assertTrue(
+126:             campaign_characterized(
+127:                 [{"status": "PERFORMANCE_FAIL"}, {"status": "NOT_RUN"}],
+128:                 COMBINED_PROTOCOL,
+129:             )
+130:         )
+
+===== tools/substrate/baseline_episode.py:235-270 =====
+235:         next(speed for start, speed in reversed(case["commands"]) if tick >= start),
+236:         0.0,
+237:         0.0,
+238:     ]
+239: 
+240: 
+241: def repeat_reference(case):
+242:     if "repeat_of" in case:
+243:         return case["repeat_of"]
+244:     # Preserve the sealed v1 comparison semantics without changing its protocol.
+245:     if case["id"] in ("source_repeat", "shared_adapter"):
+246:         return "source_1"
+247:     return None
+248: 
+249: 
+250: def stop_after(protocol, verdict):
+251:     if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
+252:         return True
+253:     progression = protocol["progression"]
+254:     if progression == "first_nonpass_stop":
+255:         return verdict != "PASS"
+256:     if progression == "performance_continue_safety_integrity_stop":
+257:         return False
+258:     raise ValueError("unknown campaign progression: " + str(progression))
+259: 
+260: 
+261: def safety(row, protocol):
+262:     q = row["qpos"]
+263:     if not np.isfinite(q + row["qvel"]).all():
+264:         return "nonfinite"
+265:     if abs(np.linalg.norm(q[3:7]) - 1) > 1e-6:
+266:         return "orientation"
+267:     if row["warnings"]:
+268:         return "physics_warning"
+269:     if row["base_contacts"]:
+270:         return "base_contact"

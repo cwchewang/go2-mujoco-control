@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "id": "rl-source-baseline-v1",
+  "mode": "exploratory",
+  "max_attempts": 10,
+  "physics_period_s": 0.002,
+  "decimation": 10,
+  "wall_timeout_s": 300,
+  "seed": 0,
+  "cases": [
+    {
+      "id": "source_1",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "source_repeat",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "shared_adapter",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": true,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [
+        "source_1",
+        "source_repeat"
+      ],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "source_015",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          0.15
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "source_03",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          0.3
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "source_variable",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 10000,
+      "commands": [
+        [
+          0,
+          1
+        ],
+        [
+          2500,
+          0.5
+        ],
+        [
+          5000,
+          1.5
+        ],
+        [
+          7500,
+          0
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 500
+    },
+    {
+      "id": "first_inference_only",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 0,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [
+        "source_1",
+        "source_repeat"
+      ],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "reset_only",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "adapter": false,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [
+        "source_1",
+        "source_repeat"
+      ],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "model_only",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [
+        "source_1",
+        "source_repeat"
+      ],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "source_stairs",
+      "scene": ".substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_stairs.xml",
+      "adapter": false,
+      "reset": "source",
+      "first_inference_tick": 10,
+      "horizon_ticks": 10000,
+      "commands": [
+        [
+          0,
+          1
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    }
+  ],
+  "reference_mean_min": 0.8,
+  "tracking_absolute_tolerance": 0.05,
+  "tracking_relative_tolerance": 0.2,
+  "flat_lateral_max": 0.3,
+  "flat_yaw_max": 0.3,
+  "safety": {
+    "tilt_max": 1.2,
+    "clearance_min": 0.06,
+    "lateral_max": 1.5
+  },
+  "stairs_goal": {
+    "base_x": 8.7,
+    "foot_x": 8.3,
+    "lateral_max": 1.3,
+    "hold_ticks": 250
+  },
+  "retry": "none",
+  "progression": "performance_continue_safety_integrity_stop"
+}

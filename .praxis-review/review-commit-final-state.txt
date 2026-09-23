@@ -1,0 +1,72 @@
+$ git rev-parse HEAD
+exit_code=0
+stdout:
+c79d5db164241e38992d4ab00e91e57fba5f5b97
+stderr:
+
+
+$ git status --short --branch
+exit_code=0
+stdout:
+## HEAD (no branch)
+stderr:
+
+
+$ git show --format=fuller --stat --no-renames HEAD
+exit_code=0
+stdout:
+commit c79d5db164241e38992d4ab00e91e57fba5f5b97
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 00:02:51 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 00:02:51 2026 +0800
+
+    review: approve shared-transfer formal v2 science design
+
+ .../review.json                                        | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+stderr:
+
+
+$ git diff-tree --no-commit-id --name-only -r HEAD
+exit_code=0
+stdout:
+docs/validation/shared_transfer_formal_v2_science_20260923/review.json
+stderr:
+
+
+$ git show HEAD^..HEAD -- docs/validation/shared_transfer_formal_v2_science_20260923/review.json
+exit_code=0
+stdout:
+commit c79d5db164241e38992d4ab00e91e57fba5f5b97
+Author: Che Wang <237448565+cwchewang@users.noreply.github.com>
+Date:   Thu Sep 24 00:02:51 2026 +0800
+
+    review: approve shared-transfer formal v2 science design
+
+diff --git a/docs/validation/shared_transfer_formal_v2_science_20260923/review.json b/docs/validation/shared_transfer_formal_v2_science_20260923/review.json
+new file mode 100644
+index 0000000..b6e8d21
+--- /dev/null
++++ b/docs/validation/shared_transfer_formal_v2_science_20260923/review.json
+@@ -0,0 +1,18 @@
++{
++  "schema": 1,
++  "role": "science",
++  "target_head": "bab5d56af48a23894c52982ad23b73f2a361e554",
++  "reviewer": "gpt6-luna-max-science-review-v2",
++  "verdict": "APPROVED",
++  "summary": "The frozen formal campaign is scientifically suitable at the specified target HEAD: its prospective 1.0 m/s flat gates match the sealed source baseline, and its two-case procedure tests the complete pinned shared deployment with a repeatability check and bounded interpretation.",
++  "evidence": [
++    "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/protocols/rl_shared_transfer_combination_v1.json and tools/substrate/tasks/rl_shared_transfer_combination_v1.json; recomputed protocol SHA-256 equals the task-bound 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32.",
++    "bab5d56af48a23894c52982ad23b73f2a361e554:docs/research/SHARED_TRANSFER_COMBINATION_V1.md and docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md; frozen factors, two-case semantics, safety rules, and claim boundaries.",
++    "62452cba69666021866c1142c72b7181a413e35b:docs/validation/rl_baseline_20260923/RESULTS.md, analysis.json, and provenance.csv; sealed 1.0 m/s source and repeat PASS, shared-adapter exact trace PASS, shared-home-only PASS, and shared-model-only PASS.",
++    "90588fbfd53a65c42af6cdc237ec7bfd8f823d81 introduced the prospective design after the baseline result; protocol SHA is identical at 90588fb, cc08ea5, and target bab5d56, with no protocol diff from 90588fb to target.",
++    "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/baseline.py, baseline_episode.py, baseline_verify.py, and test_baseline.py; declared repeat comparison, dependency on the first PASS, and first-nonpass progression."
++  ],
++  "concerns": [
++    "The two same-seed episodes assess exact repeatability and gate satisfaction for this setup; they do not estimate success probability or robustness beyond it, as the protocol documentation states."
++  ]
++}
+stderr:
+

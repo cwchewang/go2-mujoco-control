@@ -1,0 +1,48 @@
+$ git show --no-patch --format=%H%n%P%n%aI%n%s 62452cba69666021866c1142c72b7181a413e35b
+exit_code=0
+62452cba69666021866c1142c72b7181a413e35b
+f0eaa4417d384f24dd31ab22c1bd70abfea76b25
+2026-09-23T01:04:40+08:00
+Record verified RL baseline, capability limits and reusable offline tools
+
+$ git show --no-patch --format=%H%n%P%n%aI%n%s 90588fbfd53a65c42af6cdc237ec7bfd8f823d81
+exit_code=0
+90588fbfd53a65c42af6cdc237ec7bfd8f823d81
+ac88062a60514f96a2fdeec884f26ab276e41d47
+2026-09-23T10:25:42+08:00
+research: close unattended TASK_SHARED_TRANSFER_COMBINATION_DESIGN_20260923
+
+$ git show --no-patch --format=%H%n%P%n%aI%n%s cc08ea55f5b0831ce677a93bbe66ed17ce91ed87
+exit_code=0
+cc08ea55f5b0831ce677a93bbe66ed17ce91ed87
+6c607e20c90c915e142a19fcdc8266680ae6e255
+2026-09-23T23:52:30+08:00
+research: bind shared-transfer formal campaign to Praxis v2
+
+$ git show --no-patch --format=%H%n%P%n%aI%n%s bab5d56af48a23894c52982ad23b73f2a361e554
+exit_code=0
+bab5d56af48a23894c52982ad23b73f2a361e554
+cc08ea55f5b0831ce677a93bbe66ed17ce91ed87
+2026-09-23T23:53:40+08:00
+research: freeze Praxis v2 shared-transfer formal task
+
+protocol_at=90588fbfd53a65c42af6cdc237ec7bfd8f823d81
+exit_code=0
+sha256=2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32
+thresholds={"flat_lateral_max": 0.3, "flat_yaw_max": 0.3, "max_attempts": 2, "progression": "first_nonpass_stop", "reference_mean_min": 0.8, "retry": "none", "safety": {"clearance_min": 0.06, "lateral_max": 1.5, "tilt_max": 1.2}, "tracking_absolute_tolerance": 0.05, "tracking_relative_tolerance": 0.2}
+protocol_at=cc08ea55f5b0831ce677a93bbe66ed17ce91ed87
+exit_code=0
+sha256=2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32
+thresholds={"flat_lateral_max": 0.3, "flat_yaw_max": 0.3, "max_attempts": 2, "progression": "first_nonpass_stop", "reference_mean_min": 0.8, "retry": "none", "safety": {"clearance_min": 0.06, "lateral_max": 1.5, "tilt_max": 1.2}, "tracking_absolute_tolerance": 0.05, "tracking_relative_tolerance": 0.2}
+protocol_at=bab5d56af48a23894c52982ad23b73f2a361e554
+exit_code=0
+sha256=2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32
+thresholds={"flat_lateral_max": 0.3, "flat_yaw_max": 0.3, "max_attempts": 2, "progression": "first_nonpass_stop", "reference_mean_min": 0.8, "retry": "none", "safety": {"clearance_min": 0.06, "lateral_max": 1.5, "tilt_max": 1.2}, "tracking_absolute_tolerance": 0.05, "tracking_relative_tolerance": 0.2}
+$ git diff --exit-code 90588fbfd53a65c42af6cdc237ec7bfd8f823d81 bab5d56af48a23894c52982ad23b73f2a361e554 -- tools/substrate/protocols/rl_shared_transfer_combination_v1.json
+exit_code=0
+
+
+$ git merge-base --is-ancestor 62452cba69666021866c1142c72b7181a413e35b bab5d56af48a23894c52982ad23b73f2a361e554
+exit_code=0
+
+

@@ -1,0 +1,85 @@
+{
+  "baseline_capture_head": "f0eaa4417d384f24dd31ab22c1bd70abfea76b25",
+  "baseline_attempts": 10,
+  "source_protocol_sha256": "62f241d3bf191f13d2a49c95e5430c8bc7122e1ff856db5793465775349e2585",
+  "source_gates": {
+    "reference_mean_min": 0.8,
+    "tracking_absolute_tolerance": 0.05,
+    "tracking_relative_tolerance": 0.2,
+    "flat_lateral_max": 0.3,
+    "flat_yaw_max": 0.3,
+    "safety": {
+      "tilt_max": 1.2,
+      "clearance_min": 0.06,
+      "lateral_max": 1.5
+    }
+  },
+  "selected_cases": [
+    {
+      "case": "source_1",
+      "status": "PASS",
+      "steps": 6000,
+      "verdict": "PASS",
+      "mean_vx": 0.9380500954045732,
+      "mae": 0.0620498849475698,
+      "lateral_max_m": 0.2527673014277341,
+      "yaw_max_rad": 0.06827294673255364,
+      "trace_sha256": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441"
+    },
+    {
+      "case": "source_repeat",
+      "status": "PASS",
+      "steps": 6000,
+      "verdict": "PASS",
+      "mean_vx": 0.9380500954045732,
+      "mae": 0.0620498849475698,
+      "lateral_max_m": 0.2527673014277341,
+      "yaw_max_rad": 0.06827294673255364,
+      "trace_sha256": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441"
+    },
+    {
+      "case": "shared_adapter",
+      "status": "PASS",
+      "steps": 6000,
+      "verdict": "PASS",
+      "mean_vx": 0.9380500954045732,
+      "mae": 0.0620498849475698,
+      "lateral_max_m": 0.2527673014277341,
+      "yaw_max_rad": 0.06827294673255364,
+      "trace_sha256": "e9ac1645cf6be7684cb4e4522d7fd0e0ff976f24da23f917b9def2fef24dc441"
+    },
+    {
+      "case": "first_inference_only",
+      "status": "PERFORMANCE_FAIL",
+      "steps": 6000,
+      "verdict": "PERFORMANCE_FAIL",
+      "mean_vx": 0.9374509109535433,
+      "mae": 0.06260769929022252,
+      "lateral_max_m": 0.7073119070245013,
+      "yaw_max_rad": 0.10825113593894828,
+      "trace_sha256": "5a85b36ce0769df162b463194d6350f83c2ec0ec0b3c2746c9d04b8a1963bc82"
+    },
+    {
+      "case": "reset_only",
+      "status": "PASS",
+      "steps": 6000,
+      "verdict": "PASS",
+      "mean_vx": 0.9376490266556804,
+      "mae": 0.06239882333344722,
+      "lateral_max_m": 0.1866225203607058,
+      "yaw_max_rad": 0.06199742084222254,
+      "trace_sha256": "8f4c3ef54254d0e97f67597c190f26ea23470d8379b1dae80a032f4f226ad998"
+    },
+    {
+      "case": "model_only",
+      "status": "PASS",
+      "steps": 6000,
+      "verdict": "PASS",
+      "mean_vx": 0.886329508376754,
+      "mae": 0.11367049162324608,
+      "lateral_max_m": 0.07837982303293953,
+      "yaw_max_rad": 0.04049071864669541,
+      "trace_sha256": "d09c817bddb0b79033919988c42e4ff0f6125d9766cf3fc9fda7361a8bd503ba"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+cwd=/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-164
+evidence_dir=/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-164/20260923T155532Z-63efa1f0e413
+expected_start=63efa1f0e413740aa9184ac6d4301c98c414b044
+task_target= bab5d56af48a23894c52982ad23b73f2a361e554
+
+$ git rev-parse HEAD
+exit_code=0
+stdout:
+63efa1f0e413740aa9184ac6d4301c98c414b044
+stderr:
+
+
+$ git status --short --branch
+exit_code=0
+stdout:
+## HEAD (no branch)
+stderr:
+
+
+$ git log -4 --oneline --decorate
+exit_code=0
+stdout:
+63efa1f (HEAD, origin/review/shared-transfer-formal-v2-science-20260923) review: freeze shared-transfer v2 science review
+bab5d56 research: freeze Praxis v2 shared-transfer formal task
+cc08ea5 research: bind shared-transfer formal campaign to Praxis v2
+6c607e2 infra: accept exact Praxis v2 detached execution identity
+stderr:
+
+
+$ git cat-file -t bab5d56af48a23894c52982ad23b73f2a361e554
+exit_code=0
+stdout:
+commit
+stderr:
+
+PRAXIS_EVIDENCE_DIR=/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-164/20260923T155532Z-63efa1f0e413
+PRAXIS_ISSUE_NUMBER=164
+PRAXIS_REPOSITORY=cwchewang/go2-mujoco-control
+PRAXIS_TASK_BRANCH=review/shared-transfer-formal-v2-science-20260923
+PRAXIS_TASK_COMMIT=63efa1f0e413740aa9184ac6d4301c98c414b044
+PRAXIS_TASK_PATH=docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_SCIENCE_REVIEW_20260923.md

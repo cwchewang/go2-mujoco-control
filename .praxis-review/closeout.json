@@ -1,0 +1,226 @@
+{
+  "status": "complete",
+  "summary": "Science review APPROVED for target HEAD bab5d56af48a23894c52982ad23b73f2a361e554. Review result committed as c79d5db164241e38992d4ab00e91e57fba5f5b97; no campaign physics was run.",
+  "completed": [
+    "Read the frozen review task first and reviewed the exact target protocol, task config, formal task, and tracked source-baseline/design evidence.",
+    "Verified the protocol SHA, prospective gate equality and history, the unresolved combined-condition question, repeat/stop semantics, and interpretation boundaries.",
+    "Created and schema-validated docs/validation/shared_transfer_formal_v2_science_20260923/review.json with verdict APPROVED.",
+    "Committed only review.json; confirmed the prepared worktree is clean and remains detached."
+  ],
+  "not_completed": [
+    "Formal campaign execution was not performed because this task authorizes only a static science review."
+  ],
+  "observations": [
+    {
+      "text": "The prepared worktree began clean at 63efa1f0e413740aa9184ac6d4301c98c414b044, detached, with the specified target commit present as its direct parent.",
+      "evidence_ids": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "text": "The target protocol SHA-256 is 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32 and matches the task config binding.",
+      "evidence_ids": [
+        "E4",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "All tracking, lateral, yaw, and safety gate fields equal the sealed source protocol values; the threshold history shows the combination protocol was introduced after the baseline result and its SHA remained unchanged through the target.",
+      "evidence_ids": [
+        "E6",
+        "E7",
+        "E8"
+      ]
+    },
+    {
+      "text": "Tracked baseline results show source_1, its exact repeat, and shared_adapter passed with the same trajectory digest; reset_only and model_only also passed their 1.0 m/s flat gates.",
+      "evidence_ids": [
+        "E9",
+        "E10",
+        "E11",
+        "E12"
+      ]
+    },
+    {
+      "text": "The two protocol cases use identical frozen conditions; combined_2 requires and repeats combined_1, with two attempts, no retry, and first-nonpass progression.",
+      "evidence_ids": [
+        "E4",
+        "E6",
+        "E15"
+      ]
+    },
+    {
+      "text": "The campaign documents restrict interpretation to this pinned flat 1.0 m/s setup and disclaim low-speed, terrain, hardware, general-robustness, and causal claims.",
+      "evidence_ids": [
+        "E14",
+        "E15",
+        "E16"
+      ]
+    },
+    {
+      "text": "The review result is the sole tracked change in commit c79d5db164241e38992d4ab00e91e57fba5f5b97; the detached worktree is clean.",
+      "evidence_ids": [
+        "E18",
+        "E19"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "Given the sealed source reference and individually passing adapter, shared-home, and shared-model evidence, the full pinned combination remains the smallest experiment that answers whether this deployment package preserves the established 1.0 m/s flat capability.",
+      "evidence_ids": [
+        "E9",
+        "E10",
+        "E12",
+        "E14",
+        "E15"
+      ]
+    },
+    {
+      "text": "The repeat rule is coherent for a confirmatory campaign: a second case is run only after the first passes, an exact trace mismatch is an integrity stop, and a first non-pass stops without spending the remaining attempt on a known failed gate.",
+      "evidence_ids": [
+        "E4",
+        "E15",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "The prospective design does not select gates from a result of the new combination; it reuses the already sealed source gates and preserves explicit limits on what either verdict can establish.",
+      "evidence_ids": [
+        "E6",
+        "E7",
+        "E9",
+        "E14",
+        "E15"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "APPROVED: target HEAD bab5d56af48a23894c52982ad23b73f2a361e554 is scientifically suitable for the frozen formal campaign. No material prospective-design problem was found.",
+      "evidence_ids": [
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E12",
+        "E14",
+        "E15",
+        "E16",
+        "E17"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Two same-seed identical episodes test gate satisfaction and trace repeatability; they do not estimate success probability or robustness beyond the exact setup. This review evaluates the design and produces no campaign outcome.",
+      "evidence_ids": [
+        "E1",
+        "E14",
+        "E15",
+        "E16",
+        "E18"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "review-task.md",
+      "description": "Frozen science-review scope and required checks."
+    },
+    {
+      "id": "E2",
+      "path": "review-context.txt",
+      "description": "Prepared worktree identity, clean starting state, target availability, and Praxis bindings."
+    },
+    {
+      "id": "E3",
+      "path": "target-commit.txt",
+      "description": "Metadata for the exact target commit bab5d56af48a23894c52982ad23b73f2a361e554."
+    },
+    {
+      "id": "E4",
+      "path": "protocol-target.json",
+      "description": "Byte-exact target protocol inspected for frozen conditions, gates, cases, and attempt policy."
+    },
+    {
+      "id": "E5",
+      "path": "task-target.json",
+      "description": "Byte-exact task config binding the protocol SHA."
+    },
+    {
+      "id": "E6",
+      "path": "gate-and-case-comparison.json",
+      "description": "Static SHA, source-gate equality, and two-case structure comparison."
+    },
+    {
+      "id": "E7",
+      "path": "threshold-history.txt",
+      "description": "Baseline/design/target commit chronology, protocol hashes, unchanged diff, and ancestry checks."
+    },
+    {
+      "id": "E8",
+      "path": "source-protocol-target.json",
+      "description": "Byte-exact sealed source protocol used to compare established gates."
+    },
+    {
+      "id": "E9",
+      "path": "baseline-results-target.md",
+      "description": "Tracked source-baseline closeout with the 1.0 m/s flat result and capability limits."
+    },
+    {
+      "id": "E10",
+      "path": "baseline-analysis-target.json",
+      "description": "Tracked offline analysis of all ten source baseline cases and exact trace digests."
+    },
+    {
+      "id": "E11",
+      "path": "baseline-provenance-target.csv",
+      "description": "Tracked provenance and hashes for the baseline capture artifacts."
+    },
+    {
+      "id": "E12",
+      "path": "baseline-review-summary.json",
+      "description": "Compact extraction of source, repeat, adapter, shared-home, and shared-model results."
+    },
+    {
+      "id": "E13",
+      "path": "design-task-target.md",
+      "description": "Prospective design task defining the unresolved complete-combination question."
+    },
+    {
+      "id": "E14",
+      "path": "design-results-target.md",
+      "description": "Tracked design closeout stating prior results, frozen gates, changed/held factors, and limitations."
+    },
+    {
+      "id": "E15",
+      "path": "combination-description-target.md",
+      "description": "Prospective protocol description including repeat semantics and interpretation boundary."
+    },
+    {
+      "id": "E16",
+      "path": "formal-task-target.md",
+      "description": "Frozen formal execution task and exact campaign scope."
+    },
+    {
+      "id": "E17",
+      "path": "repeat-semantics-code.txt",
+      "description": "Static excerpts from runner, verifier, and regression assertions for repeat and stop behavior."
+    },
+    {
+      "id": "E18",
+      "path": "review-precommit-checks.txt",
+      "description": "Review JSON schema validation, diff check, and single untracked output before staging."
+    },
+    {
+      "id": "E19",
+      "path": "review-commit-final-state.txt",
+      "description": "Commit identity, clean detached worktree, and proof the commit contains only review.json."
+    }
+  ]
+}

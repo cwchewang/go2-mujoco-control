@@ -1,0 +1,51 @@
+{
+  "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "task_bound_protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "sha_matches_task": true,
+  "source_gate_fields": [
+    "reference_mean_min",
+    "tracking_absolute_tolerance",
+    "tracking_relative_tolerance",
+    "flat_lateral_max",
+    "flat_yaw_max",
+    "safety"
+  ],
+  "source_gate_values": {
+    "reference_mean_min": 0.8,
+    "tracking_absolute_tolerance": 0.05,
+    "tracking_relative_tolerance": 0.2,
+    "flat_lateral_max": 0.3,
+    "flat_yaw_max": 0.3,
+    "safety": {
+      "tilt_max": 1.2,
+      "clearance_min": 0.06,
+      "lateral_max": 1.5
+    }
+  },
+  "combination_gate_values": {
+    "reference_mean_min": 0.8,
+    "tracking_absolute_tolerance": 0.05,
+    "tracking_relative_tolerance": 0.2,
+    "flat_lateral_max": 0.3,
+    "flat_yaw_max": 0.3,
+    "safety": {
+      "tilt_max": 1.2,
+      "clearance_min": 0.06,
+      "lateral_max": 1.5
+    }
+  },
+  "gates_equal_source": true,
+  "case_ids": [
+    "combined_1",
+    "combined_2"
+  ],
+  "case_conditions_equal": true,
+  "first_requires": [],
+  "second_requires": [
+    "combined_1"
+  ],
+  "second_repeat_of": "combined_1",
+  "max_attempts": 2,
+  "retry": "none",
+  "progression": "first_nonpass_stop"
+}

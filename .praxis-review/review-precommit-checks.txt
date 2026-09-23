@@ -1,0 +1,26 @@
+$ git status --short
+exit_code=0
+stdout:
+?? docs/validation/shared_transfer_formal_v2_science_20260923/
+stderr:
+
+
+$ git diff --check
+exit_code=0
+stdout:
+stderr:
+
+
+$ git var GIT_AUTHOR_IDENT
+exit_code=0
+stdout:
+Che Wang <237448565+cwchewang@users.noreply.github.com> 1790179352 +0800
+stderr:
+
+
+$ git var GIT_COMMITTER_IDENT
+exit_code=0
+stdout:
+Che Wang <237448565+cwchewang@users.noreply.github.com> 1790179352 +0800
+stderr:
+

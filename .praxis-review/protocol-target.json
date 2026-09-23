@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "rl-shared-transfer-combination-v1",
+  "mode": "confirmatory",
+  "max_attempts": 2,
+  "physics_period_s": 0.002,
+  "decimation": 10,
+  "wall_timeout_s": 300,
+  "seed": 0,
+  "source_identity": {
+    "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+    "checkpoint": "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt",
+    "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
+  },
+  "cases": [
+    {
+      "id": "combined_1",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1.0
+        ]
+      ],
+      "requires": [],
+      "measurement_delay_ticks": 1000,
+      "reference_gate": true
+    },
+    {
+      "id": "combined_2",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [
+        [
+          0,
+          1.0
+        ]
+      ],
+      "requires": [
+        "combined_1"
+      ],
+      "measurement_delay_ticks": 1000,
+      "reference_gate": true,
+      "repeat_of": "combined_1"
+    }
+  ],
+  "reference_mean_min": 0.8,
+  "tracking_absolute_tolerance": 0.05,
+  "tracking_relative_tolerance": 0.2,
+  "flat_lateral_max": 0.3,
+  "flat_yaw_max": 0.3,
+  "safety": {
+    "tilt_max": 1.2,
+    "clearance_min": 0.06,
+    "lateral_max": 1.5
+  },
+  "retry": "none",
+  "progression": "first_nonpass_stop"
+}
