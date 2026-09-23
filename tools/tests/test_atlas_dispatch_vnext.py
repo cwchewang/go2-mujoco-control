@@ -146,7 +146,9 @@ class HostLockTest(unittest.TestCase):
 
 
 class ResourceProvisioningTest(unittest.TestCase):
-    def test_verified_resources_are_linked_into_ignored_substrate_namespace(self) -> None:
+    def test_verified_resources_are_linked_into_ignored_substrate_namespace(
+        self,
+    ) -> None:
         old = os.environ.get("GO2_SUBSTRATE_RESOURCE_ROOT")
         try:
             with tempfile.TemporaryDirectory() as tmp:
@@ -189,7 +191,9 @@ class ResourceProvisioningTest(unittest.TestCase):
                 python = resources / "venv-reliable/bin/python"
                 python.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
                 python.chmod(0o755)
-                (resources / "headless-reliable/go2_mjpc_admit").write_bytes(b"elf")
+                (resources / "headless-reliable/go2_mjpc_admit").write_bytes(
+                    b"elf"
+                )
 
                 os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = str(resources)
                 worker_v6._provision_substrate_resources(worktree)
