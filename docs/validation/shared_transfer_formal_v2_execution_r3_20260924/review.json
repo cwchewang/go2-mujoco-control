@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "role": "execution",
+  "target_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "reviewer": "GPT-6 Codex execution reviewer #173 r3",
+  "verdict": "APPROVED",
+  "summary": "APPROVED. The formal task binds issue #166, logical branch research/shared-transfer-formal-v2-final-20260923, target HEAD 9e82e56ac2a5db63d7834e86ce402d542bf10ae8, and its tracked task path. Its science and execution r3 branch/result references are exact, separate, non-recursive, and satisfiable by the two review tasks. The task still requires both exact-head approvals before qualification or physics. Five-field identity, zero-external-plant-step qualification/preparation, explicit authorization, permanent ledger/no-retry, two-attempt budget, first-nonpass stop, and the frozen protocol hash/thresholds remain enforced. Qualification retains an isolated 21-step MJPC static-state admission with external plant_time_s=0; preparation blocks MuJoCo integration and records physics_steps=0.",
+  "evidence": [
+    "E1: source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md and source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json show the exact review references and issue/branch/task-path binding; tracked-target-paths.txt confirms those task files are in the target tree.",
+    "E2: remote-branch-tips.txt, science-review-task-r3.md, execution-review-task-r3.md, and formal-task-diff.patch show the exact branch tips and that both review tasks directly extend the target while writing their dedicated result paths.",
+    "E3: source/tools/research/identity.py and source/tools/substrate/task.py show all five Praxis identity fields and the tracked Markdown task-path checks; source-snapshots-manifest.json binds the snapshots to target commit blobs.",
+    "E4: source/tools/substrate/qualify.py, admit.py, native/admit.cc, guards.py, and baseline.py show qualification performs isolated 21-step MJPC static-state admission with plant_time_s=0; preparation blocks mj_step calls and records physics_steps=0.",
+    "E5: source/tools/substrate/readiness.py, baseline.py, and baseline_episode.py show exact-head review/start authorization validation, the permanent no-retry campaign ledger, the two-case/max_attempts match, and first-nonpass stop.",
+    "E6: protocol-target.json matches the frozen SHA-256 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32; target diff from the prior approved execution-review head changes only the formal task reference lines. r2-execution-review.json preserves the prior approval context.",
+    "E7: github-issue-166.json confirms the reserved issue identity; science-result-status.txt and command-results.json preserve the current pending science result and the failed unauthenticated REST lookup, while the issue was read through gh."
+  ],
+  "concerns": [
+    "At this review snapshot the exact science-r3 branch has no review.json yet. Issue #166 must remain blocked before qualification or physics until that exact result is committed, APPROVED, bound to the same target head, and its reviewer identity differs from this execution reviewer. The frozen task already enforces this prerequisite; no obsolete review result is needed."
+  ]
+}
