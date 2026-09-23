@@ -76,12 +76,10 @@ class BaselineContractTests(unittest.TestCase):
             {
                 "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
                 "checkpoint": (
-                    "deploy/pre_train/go2/go2_moe_cts_high_slope_"
-                    "thre_164k_0.6715.pt"
+                    "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt"
                 ),
                 "checkpoint_sha256": (
-                    "9d9ad783a1017b6eced5984eb95279cc5b"
-                    "36db8cc84d21e646f46ba2a8023d9d"
+                    "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
                 ),
             },
         )

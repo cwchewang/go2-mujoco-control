@@ -333,8 +333,10 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     result = analyze(rows, case, protocol)
                     result["elapsed_s"] = time.monotonic() - started
                     reference_case = repeat_reference(case)
-                    if reference_case is not None and result["trace_sha256"] != (
-                        completed[reference_case]["trace_sha256"]
+                    if (
+                        reference_case is not None
+                        and result["trace_sha256"]
+                        != (completed[reference_case]["trace_sha256"])
                     ):
                         result["verdict"] = "INTEGRITY_STOP"
                         result["failure"] = "trajectory_mismatch"

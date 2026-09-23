@@ -308,8 +308,10 @@ def verify(capture, prepared_path, output):
             )
             result, audit = audit_rows(rows, plant, policy, case, protocol)
             reference_case = repeat_reference(case)
-            if reference_case is not None and result["trace_sha256"] != (
-                completed[reference_case]["trace_sha256"]
+            if (
+                reference_case is not None
+                and result["trace_sha256"]
+                != (completed[reference_case]["trace_sha256"])
             ):
                 result.update(verdict="INTEGRITY_STOP", failure="trajectory_mismatch")
             stored = strict_json(
