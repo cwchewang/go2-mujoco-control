@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "role": "execution",
+  "target_head": "c53806f6c984228fc7661ccea9ac742d24cd0194",
+  "reviewer": "gpt6-luna-max-execution-review-v2-r2",
+  "verdict": "APPROVED",
+  "summary": "APPROVED. The target freezes Praxis issue 166 and the exact tracked task path; the loader, launcher and preflight compare the complete five-field identity, while detached execution retains exact-HEAD and clean-worktree gates. Qualification performs an isolated 21-step MJPC static-state planning rollout without advancing the external plant (plant_time_s=0); preparation and offline verification forbid plant integration and report zero steps. Explicit authorization binds the exact head, protocol hash, prepared manifest and two-attempt budget. Capture retains one permanent ledger, no retry and first-nonpass stop. The frozen protocol hash matches, preserving its scientific thresholds.",
+  "evidence": [
+    "E1 static-review-r2/E1_target_identity_and_scope.txt: exact target commit, review scope, and tracked task/protocol tree entries.",
+    "E2 static-review-r2/E2_source_blob_manifest.tsv: Git blob IDs and SHA-256 values for all 18 source snapshots extracted from the target commit.",
+    "E3 static-review-r2/source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json and static-review-r2/source/tools/substrate/task.py: tracked metadata binds issue_number=166 and docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md; loader validates positive issue, safe Markdown path and git ls-files trackedness.",
+    "E4 static-review-r2/source/tools/research/identity.py, tools/substrate/launch.py and tools/research/preflight.py: all five Praxis fields are compared; wrong nonempty issue/path values become mismatches; detached mode also requires the exact frozen commit and clean worktree.",
+    "E5 static-review-r2/source/tools/substrate/qualify.py, admit.py, native/admit.cc, baseline.py and guards.py: qualification invokes an isolated 21-step MJPC planning rollout but leaves its external plant time at zero; preparation holds the zero-step guard, checks plant time/steps remain zero, and records physics_steps=0 and scientific_attempts=0.",
+    "E6 static-review-r2/source/tools/substrate/readiness.py, baseline.py, and docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md: authorization checks exact head, protocol_sha256, prepared_manifest_sha256 and max_attempts; a pre-existing permanent protocol ledger blocks capture with no retry, and the task forbids invoking capture again during recovery; progression stops at the first non-pass.",
+    "E7 static-review-r2/source/tools/substrate/baseline_verify.py: offline verification runs under the zero-step guard and audits raw traces, authorization, campaign claims and the external ledger.",
+    "E8 static-review-r2/E3_target_hashes_and_gate_index.txt and source/tools/substrate/protocols/rl_shared_transfer_combination_v1.json: target protocol SHA-256 equals the frozen task SHA-256 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32; the hash covers all frozen thresholds and campaign settings."
+  ],
+  "concerns": []
+}
