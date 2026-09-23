@@ -124,6 +124,7 @@ successful preparation.
 
 Immediately before capture, confirm:
 
+- Praxis issue identity is exactly `#166` and `PRAXIS_TASK_PATH` is exactly `docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md`, matching the tracked task binding;
 - current HEAD is exactly `PRAXIS_TASK_COMMIT`;
 - the complete five-field Praxis v2 identity binding is present and exact;
 - the tracked worktree is clean;
