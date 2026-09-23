@@ -115,7 +115,9 @@ def _link_readonly_resource(worktree: Path, relative: str, source: Path) -> None
     destination = worktree / ".substrate" / relative
     source = source.resolve()
     if not source.exists():
-        raise base.ResearchTaskError(f"required substrate resource is missing: {relative}")
+        raise base.ResearchTaskError(
+            f"required substrate resource is missing: {relative}"
+        )
     if destination.is_symlink():
         if destination.resolve() != source:
             raise base.ResearchTaskError(
@@ -144,7 +146,9 @@ def _provision_substrate_resources(worktree: Path) -> None:
     checkpoint = resource_root / "rl/policy.pt"
     expected_checkpoint = sources_lock["rl"]["sha256"]
     if not checkpoint.is_file() or _sha256_file(checkpoint) != expected_checkpoint:
-        raise base.ResearchTaskError("canonical CTS checkpoint failed SHA-256 verification")
+        raise base.ResearchTaskError(
+            "canonical CTS checkpoint failed SHA-256 verification"
+        )
 
     reference_lock = json.loads(
         (worktree / "tools/substrate/rl_reference.lock.json").read_text(
@@ -162,7 +166,9 @@ def _provision_substrate_resources(worktree: Path) -> None:
     runtime = resource_root / "venv-reliable"
     python = runtime / "bin/python"
     if not python.is_file():
-        raise base.ResearchTaskError("canonical reliable substrate Python is missing")
+        raise base.ResearchTaskError(
+            "canonical reliable substrate Python is missing"
+        )
     probe = subprocess.run(
         [
             str(python),
@@ -180,7 +186,9 @@ def _provision_substrate_resources(worktree: Path) -> None:
         timeout=30,
     )
     if probe.returncode:
-        raise base.ResearchTaskError("canonical reliable substrate Python failed import/version probe")
+        raise base.ResearchTaskError(
+            "canonical reliable substrate Python failed import/version probe"
+        )
 
     headless = resource_root / "headless-reliable"
     if not (headless / "go2_mjpc_admit").is_file():
@@ -274,7 +282,9 @@ def _run_offline_task(
         task_commit=args.task_commit,
     )
     with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
-        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit, branch=args.branch)
+        worktree = base._prepare_worktree(
+            repo, worktree_root, args.task_commit, branch=args.branch
+        )
     _provision_substrate_resources(worktree)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
@@ -399,7 +409,9 @@ def _run_host_task(
         task_commit=args.task_commit,
     )
     with _exclusive_lock(state_root / "repo-admin.lock", blocking=True):
-        worktree = base._prepare_worktree(repo, worktree_root, args.task_commit, branch=args.branch)
+        worktree = base._prepare_worktree(
+            repo, worktree_root, args.task_commit, branch=args.branch
+        )
     _provision_substrate_resources(worktree)
     state_path = base._state_path(state_root, args.task_commit)
     state = base._load_state(state_path)
