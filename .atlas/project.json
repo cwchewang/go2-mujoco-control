@@ -21,6 +21,7 @@
   ],
   "project_max_workers": 4,
   "resource_roots": {
+    "mujoco_sdk": "ATLAS_RESOURCE_ROOT_MUJOCO_SDK",
     "substrate": "ATLAS_RESOURCE_ROOT_SUBSTRATE"
   },
   "preflight_python_env": "ATLAS_PREFLIGHT_PYTHON",
