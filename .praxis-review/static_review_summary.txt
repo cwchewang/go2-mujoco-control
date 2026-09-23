@@ -1,0 +1,14 @@
+Static execution review of target HEAD bab5d56af48a23894c52982ad23b73f2a361e554.
+Prepared worktree was detached at the frozen review-task start commit 0ca98d468bf1a2ac450b9cafab1f6fb2d0572214; the requested target commit is its ancestor.
+Review used exact commit snapshots of the frozen target task, task/protocol configuration, named reviewer files, and the relevant launch, integrity, guard, and episode helpers. No build, unit test, MuJoCo physics, campaign, authorization, or resource provisioning was run.
+
+Decision: VETO. validate_execution_identity compares the repository, task branch, and task commit to expected values. It only checks that PRAXIS_ISSUE_NUMBER and PRAXIS_TASK_PATH are non-empty. current_identity calls it with the checked-out HEAD as expected_head; thus the current commit is compared to PRAXIS_TASK_COMMIT, but there is no trusted expected issue/path comparison. A detached run with wrong but non-empty issue/path values can pass this local identity check, contrary to the requested exact five-field binding.
+
+Static checks supporting the remaining requested mechanisms:
+- .substrate is ignored; baseline inputs checks the locked upstream source file digests and checkpoint digest and snapshots them into the prepared bundle.
+- qualify requires clean status for a final qualification and checks HEAD/source/input stability. It invokes build/tests/admit, not baseline capture. prepare is under zero_step_guard, keeps the plant at step/time zero, and rejects an existing campaign ledger.
+- validate_authorization checks action, exact head, protocol digest, prepared-manifest digest, max_attempts, authorized_by=user, and a non-empty instruction. The frozen task supplies the required order after successful preparation and exact phrase.
+- protocol sets two cases, max_attempts=2, retry=none, first_nonpass_stop. Capture creates one exclusive ledger, rejects any existing ledger, writes per-case claims at first handoff/control sample, and stops on non-PASS.
+- verification is under zero_step_guard and cross-checks raw traces, manifest, prepared bundle, authorization, review, preflight, campaign identity, per-attempt ledger claims, policy replay, and stored analysis.
+- outputs are caller-selected EvidenceRun directories, sealed by manifest; the frozen target task directs them to PRAXIS_EVIDENCE_DIR/formal and requests a post-capture ledger copy. Platform-level retention after task exit is provided outside the target repository and was not independently tested in this static review.
+- baseline exposes prepare/capture/verify directly and declares in-process transport; no v1 Control Plane or trusted-host wrapper is imported by the formal runner.

@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "role": "execution",
+    "target_head": "bab5d56af48a23894c52982ad23b73f2a361e554",
+    "reviewer": "gpt6-luna-max-execution-review-v2",
+    "verdict": "VETO",
+    "summary": "VETO: detached execution validates the exact repository, branch, and commit, but it only requires non-empty issue-number and task-path values. A wrong non-empty issue or path can pass the identity gate, so the required exact five-field Praxis binding is not assured by this target HEAD.",
+    "evidence": [
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/research/identity.py#L34-L60 \u2014 the mismatch map compares PRAXIS_REPOSITORY, PRAXIS_TASK_BRANCH, and PRAXIS_TASK_COMMIT; PRAXIS_ISSUE_NUMBER and PRAXIS_TASK_PATH are only included in the non-empty check.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/launch.py#L46-L62 \u2014 current_identity passes the environment through, compares current HEAD against PRAXIS_TASK_COMMIT, and requires clean git status before prepare/capture.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:.gitignore#L71-L73 and tools/substrate/baseline.py#L66-L101 \u2014 local substrate resources are ignored; preparation inputs are checked against locked source and checkpoint digests and case budget.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/qualify.py#L26-L149, tools/substrate/baseline.py#L124-L205, tools/substrate/guards.py#L11-L28 \u2014 qualification requires clean/stable inputs; prepare is guarded against integration and returns zero physics steps.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/readiness.py#L28-L52 and tools/substrate/baseline.py#L208-L233 \u2014 authorization binds action, head, protocol hash, prepared-manifest hash, attempt limit, user identity, and instruction; capture rejects an existing campaign ledger.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/protocols/rl_shared_transfer_combination_v1.json#L1-L66, tools/substrate/baseline.py#L231-L367, tools/substrate/baseline_episode.py#L250-L258 \u2014 protocol fixes two attempts, no retry, and first-nonpass stop; capture claims one ledger and stops progression after non-PASS.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/baseline_verify.py#L206-L344 \u2014 offline verification uses the zero-step guard and reconciles capture manifest, authorization, raw traces, policy replay, and external campaign/per-attempt ledger claims.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/integrity.py#L39-L150 and docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md#L93-L99,L148-L163 \u2014 EvidenceRun seals caller-selected directories; the frozen task directs them to PRAXIS_EVIDENCE_DIR/formal and requests the ledger copy. Praxis post-exit retention is external to this commit.",
+        "bab5d56af48a23894c52982ad23b73f2a361e554:tools/substrate/baseline.py#L20-L37 and #L374-L402 \u2014 formal prepare/capture/verify are exposed directly with in-process transport, without a v1 Control Plane or trusted-host wrapper."
+    ],
+    "concerns": [
+        "Blocking: validate_execution_identity does not compare PRAXIS_ISSUE_NUMBER or PRAXIS_TASK_PATH with trusted expected values. Detached execution can therefore pass with a complete but wrong issue/path pair; exact repository/issue/branch/commit/path binding is not established."
+    ]
+}

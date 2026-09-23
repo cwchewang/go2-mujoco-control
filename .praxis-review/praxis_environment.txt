@@ -1,0 +1,6 @@
+PRAXIS_EVIDENCE_DIR=/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-165/20260923T155533Z-0ca98d468bf1
+PRAXIS_ISSUE_NUMBER=165
+PRAXIS_REPOSITORY=cwchewang/go2-mujoco-control
+PRAXIS_TASK_BRANCH=review/shared-transfer-formal-v2-execution-20260923
+PRAXIS_TASK_COMMIT=0ca98d468bf1a2ac450b9cafab1f6fb2d0572214
+PRAXIS_TASK_PATH=docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_EXECUTION_REVIEW_20260923.md

@@ -1,0 +1,6 @@
+head=c95c43a1e448f032d92741baca1344ee72a80ee3
+worktree_clean=yes
+commit_paths=docs/validation/shared_transfer_formal_v2_execution_20260923/review.json
+committed_review_matches_worktree=yes
+detached_head=yes
+## HEAD (no branch)

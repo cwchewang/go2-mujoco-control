@@ -1,0 +1,15 @@
+HEAD=c95c43a1e448f032d92741baca1344ee72a80ee3
+STATUS:
+## HEAD (no branch)
+COMMIT:
+commit c95c43a1e448f032d92741baca1344ee72a80ee3
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 00:08:18 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 00:08:18 2026 +0800
+
+    review shared-transfer formal v2 execution
+COMMITTED PATHS:
+A	docs/validation/shared_transfer_formal_v2_execution_20260923/review.json
+TRACKED REVIEW SHA256:
+76f0fadbbcda6fd01866d464585f6b680a01192768f8eeae90aa2033b331ad58  docs/validation/shared_transfer_formal_v2_execution_20260923/review.json
