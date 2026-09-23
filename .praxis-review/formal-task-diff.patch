@@ -1,0 +1,22 @@
+diff --git a/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md b/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+index 47ba4de06f6f1e18bb3e798ad0fceab0c057166b..a62e6fdf63f61151f46576236c1853022afdf258 100644
+--- a/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
++++ b/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+@@ -34,13 +34,13 @@ Do not tune, weaken, reinterpret or replace any gate after seeing a result.
+ Before qualification or any physics, retrieve and validate both review results:
+ 
+ - science task branch:
+-  `review/shared-transfer-formal-v2-science-20260923`
++  `review/shared-transfer-formal-v2-science-r3-20260924`
+ - science result:
+-  `docs/validation/shared_transfer_formal_v2_science_20260923/review.json`
++  `docs/validation/shared_transfer_formal_v2_science_r3_20260924/review.json`
+ - execution task branch:
+-  `review/shared-transfer-formal-v2-execution-20260923`
++  `review/shared-transfer-formal-v2-execution-r3-20260924`
+ - execution result:
+-  `docs/validation/shared_transfer_formal_v2_execution_20260923/review.json`
++  `docs/validation/shared_transfer_formal_v2_execution_r3_20260924/review.json`
+ 
+ Each result must state `verdict=APPROVED`, must bind
+ `target_head == PRAXIS_TASK_COMMIT`, and must have a non-empty reviewer

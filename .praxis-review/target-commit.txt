@@ -1,0 +1,10 @@
+commit 9e82e56ac2a5db63d7834e86ce402d542bf10ae8
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 06:56:33 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 06:56:33 2026 +0800
+
+    fix: bind formal capture to prospective r3 reviews
+9e82e56 fix: bind formal capture to prospective r3 reviews
+ docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)

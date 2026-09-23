@@ -1,0 +1,3 @@
+Query: git ls-remote origin refs/heads/review/shared-transfer-formal-v2-science-r3-20260924 refs/heads/review/shared-transfer-formal-v2-execution-r3-20260924
+47c471842754bf1649db3a0a0bb8f1c722255162	refs/heads/review/shared-transfer-formal-v2-execution-r3-20260924
+b31454ba2f30b53d18e1332fc82029390203c0e4	refs/heads/review/shared-transfer-formal-v2-science-r3-20260924
