@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -99,6 +101,42 @@ class ResearchWorkerValidationTest(unittest.TestCase):
                 "docs/research/TASK_EXAMPLE.md",
                 SHA,
             )
+
+    def test_prepare_worktree_attaches_frozen_logical_branch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            tasks = root / "tasks"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "test@example.invalid"],
+                cwd=repo,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Test"],
+                cwd=repo,
+                check=True,
+            )
+            (repo / "README.md").write_text("x\n", encoding="utf-8")
+            subprocess.run(["git", "add", "README.md"], cwd=repo, check=True)
+            subprocess.run(["git", "commit", "-qm", "init"], cwd=repo, check=True)
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repo, text=True
+            ).strip()
+
+            worktree = atlas_research_task._prepare_worktree(
+                repo, tasks, commit, branch="research/frozen"
+            )
+            actual_branch = subprocess.check_output(
+                ["git", "branch", "--show-current"], cwd=worktree, text=True
+            ).strip()
+            actual_head = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=worktree, text=True
+            ).strip()
+            self.assertEqual(actual_branch, "research/frozen")
+            self.assertEqual(actual_head, commit)
 
     def test_push_payload_validation(self) -> None:
         values = atlas_push_research_result._validate_payload(

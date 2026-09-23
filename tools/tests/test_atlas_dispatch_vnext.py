@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import os
 import sys
 import tempfile
 import threading
@@ -12,6 +15,7 @@ sys.path.insert(0, str(TOOLS))
 
 import atlas_dispatch_v2 as dispatch  # noqa: E402
 import atlas_issue_state as issue_state  # noqa: E402
+import atlas_research_task_v2 as worker_v2  # noqa: E402
 import atlas_research_task_v6 as worker_v6  # noqa: E402
 
 
@@ -139,6 +143,114 @@ class HostLockTest(unittest.TestCase):
             self.assertEqual(len(intervals), 2)
             intervals.sort()
             self.assertLessEqual(intervals[0][1], intervals[1][0])
+
+
+class ResourceProvisioningTest(unittest.TestCase):
+    def test_verified_resources_are_linked_into_ignored_substrate_namespace(
+        self,
+    ) -> None:
+        old = os.environ.get("GO2_SUBSTRATE_RESOURCE_ROOT")
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                worktree = root / "task"
+                resources = root / "resources"
+                (worktree / "tools/substrate").mkdir(parents=True)
+                (resources / "rl").mkdir(parents=True)
+                (resources / "upstream-go2-30e74dc5/deploy").mkdir(parents=True)
+                (resources / "venv-reliable/bin").mkdir(parents=True)
+                (resources / "headless-reliable").mkdir(parents=True)
+
+                policy = resources / "rl/policy.pt"
+                policy.write_bytes(b"policy")
+                source = resources / "upstream-go2-30e74dc5/deploy/source.py"
+                source.write_bytes(b"source")
+
+                (worktree / "tools/substrate/sources.lock.json").write_text(
+                    json.dumps(
+                        {"rl": {"sha256": hashlib.sha256(b"policy").hexdigest()}}
+                    ),
+                    encoding="utf-8",
+                )
+                (worktree / "tools/substrate/rl_reference.lock.json").write_text(
+                    json.dumps(
+                        {
+                            "files": {
+                                "deploy/source.py": hashlib.sha256(
+                                    b"source"
+                                ).hexdigest()
+                            }
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                python = resources / "venv-reliable/bin/python"
+                python.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+                python.chmod(0o755)
+                (resources / "headless-reliable/go2_mjpc_admit").write_bytes(b"elf")
+
+                os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = str(resources)
+                worker_v6._provision_substrate_resources(worktree)
+
+                self.assertEqual(
+                    (worktree / ".substrate/rl/policy.pt").resolve(),
+                    policy.resolve(),
+                )
+                self.assertEqual(
+                    (worktree / ".substrate/upstream-go2-30e74dc5").resolve(),
+                    (resources / "upstream-go2-30e74dc5").resolve(),
+                )
+                self.assertEqual(
+                    (worktree / ".substrate/venv-reliable").resolve(),
+                    (resources / "venv-reliable").resolve(),
+                )
+                self.assertEqual(
+                    (worktree / ".substrate/headless-reliable").resolve(),
+                    (resources / "headless-reliable").resolve(),
+                )
+        finally:
+            if old is None:
+                os.environ.pop("GO2_SUBSTRATE_RESOURCE_ROOT", None)
+            else:
+                os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = old
+
+    def test_checkpoint_hash_mismatch_fails_closed(self) -> None:
+        old = os.environ.get("GO2_SUBSTRATE_RESOURCE_ROOT")
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                worktree = root / "task"
+                resources = root / "resources"
+                (worktree / "tools/substrate").mkdir(parents=True)
+                (resources / "rl").mkdir(parents=True)
+                (resources / "rl/policy.pt").write_bytes(b"wrong")
+                (worktree / "tools/substrate/sources.lock.json").write_text(
+                    json.dumps({"rl": {"sha256": "0" * 64}}), encoding="utf-8"
+                )
+                (worktree / "tools/substrate/rl_reference.lock.json").write_text(
+                    json.dumps({"files": {}}), encoding="utf-8"
+                )
+                os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = str(resources)
+                with self.assertRaises(Exception):
+                    worker_v6._provision_substrate_resources(worktree)
+        finally:
+            if old is None:
+                os.environ.pop("GO2_SUBSTRATE_RESOURCE_ROOT", None)
+            else:
+                os.environ["GO2_SUBSTRATE_RESOURCE_ROOT"] = old
+
+
+class CloseoutNormalizationTest(unittest.TestCase):
+    def test_validation_markdown_trailing_whitespace_is_removed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "docs/validation/example/RESULTS.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("# Result  \nline\t\n\n", encoding="utf-8")
+            worker_v2._normalize_closeout_markdown(
+                root, ["docs/validation/example/RESULTS.md"]
+            )
+            self.assertEqual(path.read_text(encoding="utf-8"), "# Result\nline\n")
 
 
 class ProgressTest(unittest.TestCase):

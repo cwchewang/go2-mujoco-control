@@ -186,7 +186,25 @@ def _validate_paths(paths: list[str]) -> None:
             )
 
 
+def _normalize_closeout_markdown(worktree: Path, paths: list[str]) -> None:
+    for relative in paths:
+        if not relative.startswith("docs/validation/") or not relative.endswith(".md"):
+            continue
+        path = worktree / relative
+        if not path.is_file():
+            continue
+        lines = [
+            line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()
+        ]
+        while lines and not lines[-1]:
+            lines.pop()
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _trusted_commit(worktree: Path, task_path: str) -> tuple[str, list[str]]:
+    paths = _working_tree_paths(worktree)
+    _validate_paths(paths)
+    _normalize_closeout_markdown(worktree, paths)
     paths = _working_tree_paths(worktree)
     _validate_paths(paths)
 
