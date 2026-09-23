@@ -1,0 +1,209 @@
+diff --git a/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md b/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+index 91f5ad3..47ba4de 100644
+--- a/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
++++ b/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+@@ -124,6 +124,7 @@ successful preparation.
+ 
+ Immediately before capture, confirm:
+ 
++- Praxis issue identity is exactly `#166` and `PRAXIS_TASK_PATH` is exactly `docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md`, matching the tracked task binding;
+ - current HEAD is exactly `PRAXIS_TASK_COMMIT`;
+ - the complete five-field Praxis v2 identity binding is present and exact;
+ - the tracked worktree is clean;
+diff --git a/tools/research/identity.py b/tools/research/identity.py
+index acdb8af..ac93d2d 100644
+--- a/tools/research/identity.py
++++ b/tools/research/identity.py
+@@ -22,31 +22,49 @@ def validate_execution_identity(
+     actual_head: str,
+     expected_head: str,
+     environment: Mapping[str, str | None],
++    *,
++    expected_issue_number: int | str | None = None,
++    expected_task_path: str | None = None,
+ ) -> dict[str, Any]:
+-    """Accept named branches or an exact, complete Praxis-bound detached HEAD.
++    """Accept named branches or an exact five-field Praxis-bound detached HEAD.
+ 
+     Named-branch manual execution keeps its existing path when no Praxis
+-    identity is supplied. If any Praxis value is supplied, the whole binding
+-    must be present and the repository, logical branch, and frozen commit must
+-    agree. Detached execution always requires that complete binding and an
+-    exact current HEAD.
++    identity is supplied. If any Praxis value is supplied, all five values must
++    be present. Detached execution additionally requires trusted expected
++    issue-number and task-path values supplied by tracked task metadata.
+     """
+     values = {
+         key: (environment.get(key) or "").strip() for key in PRAXIS_ENVIRONMENT_KEYS
+     }
+     present = any(values.values())
+     missing = [key for key, value in values.items() if not value]
++    expected_issue = (
++        str(expected_issue_number) if expected_issue_number is not None else None
++    )
++    expected_path = expected_task_path.strip() if expected_task_path else None
+     expected_values = {
+         "PRAXIS_REPOSITORY": PRAXIS_REPOSITORY,
+         "PRAXIS_TASK_BRANCH": expected_branch,
+         "PRAXIS_TASK_COMMIT": expected_head,
+     }
++    if expected_issue is not None:
++        expected_values["PRAXIS_ISSUE_NUMBER"] = expected_issue
++    if expected_path is not None:
++        expected_values["PRAXIS_TASK_PATH"] = expected_path
+     mismatches = {
+         key: {"actual": values[key], "expected": expected}
+         for key, expected in expected_values.items()
+         if values[key] and values[key] != expected
+     }
+-    binding_valid = present and not missing and not mismatches
++    expected_transport_identity_complete = (
++        expected_issue is not None and expected_path is not None
++    )
++    binding_valid = (
++        present
++        and not missing
++        and not mismatches
++        and expected_transport_identity_complete
++    )
+     head_matches = bool(re.fullmatch(r"[0-9a-f]{40}", expected_head)) and (
+         actual_head == expected_head
+     )
+@@ -71,6 +89,7 @@ def validate_execution_identity(
+         "praxis_binding": {
+             "present": present,
+             "complete": not missing,
++            "expected_transport_identity_complete": expected_transport_identity_complete,
+             "valid": binding_valid,
+             "check_pass": binding_check_pass,
+             "missing": missing,
+diff --git a/tools/research/preflight.py b/tools/research/preflight.py
+index 155e1e3..45b30f9 100644
+--- a/tools/research/preflight.py
++++ b/tools/research/preflight.py
+@@ -356,6 +356,8 @@ def _main() -> int:
+         required=True,
+         help="exact HEAD prepared and reviewed for this checkpoint",
+     )
++    ap.add_argument("--expected-praxis-issue-number")
++    ap.add_argument("--expected-praxis-task-path")
+     ap.add_argument("--runner", type=Path, required=True)
+     ap.add_argument("--run-dir", type=Path, required=True)
+     ap.add_argument("--domain", type=int)
+@@ -440,6 +442,8 @@ def _main() -> int:
+         head if git_rc == 0 else "",
+         args.expected_head,
+         os.environ,
++        expected_issue_number=args.expected_praxis_issue_number,
++        expected_task_path=args.expected_praxis_task_path,
+     )
+     report["identity"] = identity
+     add_check(
+diff --git a/tools/substrate/launch.py b/tools/substrate/launch.py
+index c9bb45f..a7feeff 100644
+--- a/tools/substrate/launch.py
++++ b/tools/substrate/launch.py
+@@ -46,12 +46,15 @@ def git(*args):
+ def current_identity(task=None):
+     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
+     task = task or load_task(DEFAULT_TASK)
++    praxis = task["configuration"].get("praxis")
+     identity = validate_execution_identity(
+         branch,
+         task["configuration"]["branch"],
+         head,
+         head,
+         os.environ,
++        expected_issue_number=praxis["issue_number"] if praxis else None,
++        expected_task_path=praxis["task_path"] if praxis else None,
+     )
+     if not identity["pass"]:
+         raise ValueError(
+@@ -105,6 +108,16 @@ def preflight(
+         "--output",
+         str(report),
+     ]
++    praxis = task["configuration"].get("praxis")
++    if praxis:
++        argv.extend(
++            [
++                "--expected-praxis-issue-number",
++                str(praxis["issue_number"]),
++                "--expected-praxis-task-path",
++                praxis["task_path"],
++            ]
++        )
+     # More than the one inner test's 120s limit; TERM is handled by preflight
+     # so its independent test process group is reaped before the wrapper exits.
+     run_logged(
+diff --git a/tools/substrate/task.py b/tools/substrate/task.py
+index 841880b..065b056 100644
+--- a/tools/substrate/task.py
++++ b/tools/substrate/task.py
+@@ -21,8 +21,11 @@ def load_task(path, root=ROOT):
+         capture_output=True,
+     )
+     value = strict_json(path.read_text())
++    required = {"schema", "branch", "protocol", "protocol_sha256", "diff_base"}
++    allowed = required | {"praxis"}
+     if (
+-        set(value) != {"schema", "branch", "protocol", "protocol_sha256", "diff_base"}
++        not required.issubset(value)
++        or set(value) - allowed
+         or type(value["schema"]) is not int
+         or value["schema"] != 1
+     ):
+@@ -63,4 +66,37 @@ def load_task(path, root=ROOT):
+         check=True,
+         capture_output=True,
+     )
++
++    praxis = value.get("praxis")
++    if praxis is not None:
++        if not isinstance(praxis, dict) or set(praxis) != {
++            "issue_number",
++            "task_path",
++        }:
++            raise ValueError("invalid Praxis task identity binding")
++        issue_number = praxis["issue_number"]
++        task_path = praxis["task_path"]
++        if type(issue_number) is not int or issue_number < 1:
++            raise ValueError("Praxis issue number must be a positive integer")
++        if not isinstance(task_path, str) or not task_path.endswith(".md"):
++            raise ValueError("Praxis task path must be a tracked Markdown path")
++        candidate = (root / task_path).resolve()
++        if (
++            not candidate.is_relative_to(root)
++            or not candidate.is_file()
++            or ".." in Path(task_path).parts
++        ):
++            raise ValueError("Praxis task path is invalid")
++        subprocess.run(
++            [
++                "git",
++                "ls-files",
++                "--error-unmatch",
++                candidate.relative_to(root).as_posix(),
++            ],
++            cwd=root,
++            check=True,
++            capture_output=True,
++        )
++
+     return {"path": relative, "sha256": digest(path), "configuration": value}
+diff --git a/tools/substrate/tasks/rl_shared_transfer_combination_v1.json b/tools/substrate/tasks/rl_shared_transfer_combination_v1.json
+index de24f03..996312b 100644
+--- a/tools/substrate/tasks/rl_shared_transfer_combination_v1.json
++++ b/tools/substrate/tasks/rl_shared_transfer_combination_v1.json
+@@ -3,5 +3,9 @@
+   "branch": "research/shared-transfer-formal-v2-final-20260923",
+   "protocol": "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+   "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+-  "diff_base": "6c607e20c90c915e142a19fcdc8266680ae6e255"
++  "diff_base": "6c607e20c90c915e142a19fcdc8266680ae6e255",
++  "praxis": {
++    "issue_number": 166,
++    "task_path": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md"
++  }
+ }

@@ -1,0 +1,126 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 170,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "dc57c5989cb17aeb70561b50e8bb34717695f396c99168388dc8773840a2eec2",
+      "size": 7308
+    },
+    {
+      "path": "index.json",
+      "sha256": "76334263fa43e81c6d7d5f127ce28c61b47e4fc18f757106db04f39fcd43a6a9",
+      "size": 3445
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "5ed8c72c92a9b446eed2cdad32f97099fd6a514b111fb970f4ebcebb69ab893f",
+      "size": 521
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "science_review_r2/scope_and_hashes.txt",
+      "sha256": "a0e17d0a501d9d5ad68aee19721aae7dfd485dfac948cf70cc26eb294439f92f",
+      "size": 1981
+    },
+    {
+      "evidence_id": "E10",
+      "path": "science_review_r2/task_loader.py",
+      "sha256": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+      "size": 3716
+    },
+    {
+      "evidence_id": "E11",
+      "path": "science_review_r2/identity_acceptance_results.md",
+      "sha256": "26ae718ccb61a6f0b43ea838be8865a42e44cfd9f90250eb3826a485524a2b2a",
+      "size": 2113
+    },
+    {
+      "evidence_id": "E12",
+      "path": "science_review_r2/final_state.txt",
+      "sha256": "bd8556ce77de8f2965cf4de519470e3ec2619a4f3a7db2353a973cebd5632fd7",
+      "size": 559
+    },
+    {
+      "evidence_id": "E13",
+      "path": "science_review_r2/review.json",
+      "sha256": "d27f148286d36249a39bf88446b3765de07bb34c07586d4cc8c1490e8ea8f823",
+      "size": 2467
+    },
+    {
+      "evidence_id": "E2",
+      "path": "science_review_r2/protocol.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E3",
+      "path": "science_review_r2/task_config.json",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "size": 433
+    },
+    {
+      "evidence_id": "E4",
+      "path": "science_review_r2/formal_task.md",
+      "sha256": "bc0043a342d8d4e02738afc03f9b735b01750f9d35fce46c89b6cdd43e19d01e",
+      "size": 7490
+    },
+    {
+      "evidence_id": "E5",
+      "path": "science_review_r2/design_results.md",
+      "sha256": "6871c3db6021b21f7b612172836644068af664092fa299973a0669e56c204af2",
+      "size": 5569
+    },
+    {
+      "evidence_id": "E6",
+      "path": "science_review_r2/protocol_description.md",
+      "sha256": "c5cbb1da28bf516abca23c2633d984770cf9ac6b4964f69d4a1a16fbe39931ed",
+      "size": 4360
+    },
+    {
+      "evidence_id": "E7",
+      "path": "science_review_r2/source_baseline_results.md",
+      "sha256": "1d065f73c29b3a9c1a78eec5c309489dfbae6e0027a7d0499750aa47e157bba3",
+      "size": 6854
+    },
+    {
+      "evidence_id": "E8",
+      "path": "science_review_r2/identity_hardening.diff",
+      "sha256": "19956492663098a5903f3b9ce2fee7d704837fccf3954aee6980ef6e4fb47e30",
+      "size": 8757
+    },
+    {
+      "evidence_id": "E9",
+      "path": "science_review_r2/identity.py",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "size": 3419
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "fc42e3a42ae5f150b404b970b274ddc88de9a39f",
+  "schema_version": 1,
+  "source_index_sha256": "76334263fa43e81c6d7d5f127ce28c61b47e4fc18f757106db04f39fcd43a6a9",
+  "task_branch": "review/shared-transfer-formal-v2-science-r2-20260924",
+  "task_commit": "f3ccd86c8034859ca0705e795542ec9d4ea6a6c5"
+}

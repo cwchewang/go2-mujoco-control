@@ -1,0 +1,37 @@
+Repository: cwchewang/go2-mujoco-control
+Issue: 170
+Task branch: review/shared-transfer-formal-v2-science-r2-20260924
+Starting commit: f3ccd86c8034859ca0705e795542ec9d4ea6a6c5
+Task path: docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_SCIENCE_REVIEW_R2_20260924.md
+Evidence directory: /home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-170/20260923T162608Z-f3ccd86c8034
+Starting worktree HEAD: f3ccd86c8034859ca0705e795542ec9d4ea6a6c5
+Starting worktree status: Target commit metadata (commit, tree, parents, subject):
+c53806f6c984228fc7661ccea9ac742d24cd0194
+0a00b6d272bd55345f453abd8916b87d219ae430
+4850b82f30ee413fe85d7b16e72f8782e3d5664e 80fff8a044dc5d195d05e939100b314ebcc8e579
+ci: sync current main into shared-transfer formal v2 branch
+Target protocol SHA-256: 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32  /home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-170/20260923T162608Z-f3ccd86c8034/science_review_r2/protocol.json
+Design-freeze protocol SHA-256: 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32  -
+Protocol diff return code: 0
+Target protocol task metadata:
+{
+  "schema": 1,
+  "branch": "research/shared-transfer-formal-v2-final-20260923",
+  "protocol": "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+  "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "diff_base": "6c607e20c90c915e142a19fcdc8266680ae6e255",
+  "praxis": {
+    "issue_number": 166,
+    "task_path": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md"
+  }
+}
+Changed paths from design freeze through target:
+M	.github/workflows/repo-hygiene.yml
+M	docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+M	tools/research/identity.py
+M	tools/research/preflight.py
+M	tools/research/test_preflight_integration.py
+M	tools/substrate/launch.py
+M	tools/substrate/task.py
+M	tools/substrate/tasks/rl_shared_transfer_combination_v1.json
+M	tools/substrate/test_launch.py

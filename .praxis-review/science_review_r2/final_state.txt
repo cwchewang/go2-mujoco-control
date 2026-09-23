@@ -1,0 +1,11 @@
+Review activity: static review of exact target HEAD c53806f6c984228fc7661ccea9ac742d24cd0194.
+No MuJoCo physics, qualification, preparation, authorization, capture, or offline campaign verification was invoked.
+Review artifact JSON parse: valid.
+Commit metadata:
+fc42e3a42ae5f150b404b970b274ddc88de9a39f
+f3ccd86c8034859ca0705e795542ec9d4ea6a6c5
+review: approve shared-transfer formal v2 science
+Commit changed paths:
+docs/validation/shared_transfer_formal_v2_science_r2_20260924/review.json
+Committed artifact diff check:
+Worktree status (empty means clean):
