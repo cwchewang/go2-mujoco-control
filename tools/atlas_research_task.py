@@ -150,9 +150,27 @@ def _prepare_worktree(
     repo: Path,
     worktree_root: Path,
     task_commit: str,
+    *,
+    branch: str | None = None,
 ) -> Path:
     worktree_root.mkdir(parents=True, exist_ok=True)
     worktree = worktree_root / task_commit[:16]
+
+    def ensure_branch() -> None:
+        if branch is None:
+            return
+        current = _git(worktree, "branch", "--show-current")
+        if current == branch:
+            return
+        if _git(worktree, "status", "--porcelain", "--untracked-files=no"):
+            raise ResearchTaskError(
+                "cannot attach trusted task branch to a dirty tracked worktree"
+            )
+        head = _git(worktree, "rev-parse", "HEAD")
+        _run(["git", "switch", "-C", branch, head], cwd=worktree)
+        if _git(worktree, "branch", "--show-current") != branch:
+            raise ResearchTaskError("trusted task worktree branch attachment failed")
+
     if worktree.exists():
         inside = _run(
             ["git", "rev-parse", "--is-inside-work-tree"],
@@ -165,6 +183,7 @@ def _prepare_worktree(
             )
         head = _git(worktree, "rev-parse", "HEAD")
         if head == task_commit:
+            ensure_branch()
             return worktree
         base_ok = _run(
             ["git", "merge-base", "--is-ancestor", task_commit, head],
@@ -172,6 +191,7 @@ def _prepare_worktree(
             check=False,
         )
         if base_ok.returncode == 0:
+            ensure_branch()
             return worktree
         raise ResearchTaskError(
             f"existing task worktree is unrelated to task_commit: {worktree}"
@@ -180,6 +200,7 @@ def _prepare_worktree(
         ["git", "worktree", "add", "--detach", str(worktree), task_commit],
         cwd=repo,
     )
+    ensure_branch()
     return worktree
 
 
