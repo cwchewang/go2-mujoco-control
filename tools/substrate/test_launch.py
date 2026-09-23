@@ -103,7 +103,15 @@ class CurrentIdentityTests(unittest.TestCase):
         self.git("add", "tracked.txt")
         self.git("commit", "-m", "fixture")
         self.head = self.git("rev-parse", "HEAD")
-        self.task = {"configuration": {"branch": "fixture"}}
+        self.task = {
+            "configuration": {
+                "branch": "fixture",
+                "praxis": {
+                    "issue_number": 158,
+                    "task_path": "docs/research/TASK_IDENTITY_FIXTURE.md",
+                },
+            }
+        }
 
     def git(self, *args):
         return subprocess.check_output(
