@@ -48,6 +48,10 @@ class ReadinessFixtures(unittest.TestCase):
             "fixture",
             "--expected-head",
             self.head,
+            "--expected-praxis-issue-number",
+            "158",
+            "--expected-praxis-task-path",
+            "docs/research/TASK_IDENTITY_FIXTURE.md",
             "--runner",
             "runner.sh",
             "--run-dir",
@@ -144,6 +148,30 @@ class ReadinessFixtures(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn(
             "PRAXIS_TASK_COMMIT",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_wrong_praxis_issue_number(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(PRAXIS_ISSUE_NUMBER="999")
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_ISSUE_NUMBER",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_wrong_praxis_task_path(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(
+                PRAXIS_TASK_PATH="docs/research/OTHER.md"
+            )
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_TASK_PATH",
             result["identity"]["praxis_binding"]["mismatches"],
         )
 
