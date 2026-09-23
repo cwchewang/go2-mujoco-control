@@ -1,0 +1,25 @@
+[
+  {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.research.test_preflight",
+      "tools.research.test_preflight_integration",
+      "tools.substrate.test_launch"
+    ],
+    "stdout": "",
+    "stderr": "...................................................................\n----------------------------------------------------------------------\nRan 67 tests in 5.778s\n\nOK\n",
+    "returncode": 0
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "stdout": "",
+    "stderr": "",
+    "returncode": 0
+  }
+]

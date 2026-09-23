@@ -1,0 +1,51 @@
+[
+  {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.research.test_preflight",
+      "tools.research.test_preflight_integration",
+      "tools.substrate.test_launch"
+    ],
+    "stdout": "",
+    "stderr": "...................................................................\n----------------------------------------------------------------------\nRan 67 tests in 5.747s\n\nOK\n",
+    "returncode": 0,
+    "elapsed_seconds": 5.92
+  },
+  {
+    "argv": [
+      "python3",
+      "tools/research/preflight.py",
+      "--help"
+    ],
+    "stdout": "usage: preflight.py [-h] [--repo-root REPO_ROOT] --experiment-id EXPERIMENT_ID\n                    --expected-branch EXPECTED_BRANCH --expected-head\n                    EXPECTED_HEAD --runner RUNNER --run-dir RUN_DIR\n                    [--domain DOMAIN] [--transport {dds,inprocess}]\n                    [--held-lock-fd HELD_LOCK_FD]\n                    [--qualification QUALIFICATION]\n                    [--participants PARTICIPANTS]\n                    [--dds-policy {linux-safe,spec-only}]\n                    [--baseline-runner BASELINE_RUNNER]\n                    [--diff-base DIFF_BASE]\n                    [--changed-surface {analyzer,runner,runtime,scene,schema}]\n                    [--requires-sol-review] [--approved-head APPROVED_HEAD]\n                    [--require-file REQUIRE_FILE] [--hash HASH_REQUIREMENTS]\n                    [--test TEST] [--process-name PROCESS_NAME]\n                    [--output OUTPUT]\n\nFail-closed preflight for expensive Go2 research runs. Checks execution\nintegrity, not scientific merit. Scientific intent remains a human/agent\nreview responsibility under docs/research/SOP.md.\n\noptions:\n  -h, --help            show this help message and exit\n  --repo-root REPO_ROOT\n  --experiment-id EXPERIMENT_ID\n  --expected-branch EXPECTED_BRANCH\n  --expected-head EXPECTED_HEAD\n                        exact HEAD prepared and reviewed for this checkpoint\n  --runner RUNNER\n  --run-dir RUN_DIR\n  --domain DOMAIN\n  --transport {dds,inprocess}\n  --held-lock-fd HELD_LOCK_FD\n  --qualification QUALIFICATION\n                        verified content-bound offline test receipt\n  --participants PARTICIPANTS\n                        reserved participant count (controller and simulator\n                        default)\n  --dds-policy {linux-safe,spec-only}\n  --baseline-runner BASELINE_RUNNER\n  --diff-base DIFF_BASE\n                        accepted parent/baseline ref used to auto-detect\n                        changed execution surfaces\n  --changed-surface {analyzer,runner,runtime,scene,schema}\n                        manual override/addition\n  --requires-sol-review\n                        use when a runner/analyzer/tooling diff changes\n                        trajectory or primary evidence meaning\n  --approved-head APPROVED_HEAD\n  --require-file REQUIRE_FILE\n  --hash HASH_REQUIREMENTS\n  --test TEST           reviewed no-live/build test command\n  --process-name PROCESS_NAME\n  --output OUTPUT       JSON report; stdout or ignored/out-of-repo path\n                        recommended\n",
+    "stderr": "",
+    "returncode": 0,
+    "elapsed_seconds": 0.025
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "stdout": "",
+    "stderr": "",
+    "returncode": 0,
+    "elapsed_seconds": 0.003
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "HEAD^",
+      "HEAD"
+    ],
+    "stdout": "",
+    "stderr": "",
+    "returncode": 0,
+    "elapsed_seconds": 0.003
+  }
+]

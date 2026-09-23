@@ -1,0 +1,98 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 158,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "afbd7c4ab465817d84186abd1692d5b7e39100023d6a1e537e70737bf8efe172",
+      "size": 6622
+    },
+    {
+      "path": "index.json",
+      "sha256": "b854b8efb6c6d5f11e1b39438c58545b028f32415d0aa66977486650001f03bd",
+      "size": 5129
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "c870d22892915a984b4b8c4acfa7603d6207278b50d297c018f4a84f858e34bd",
+      "size": 502
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "identity-start.json",
+      "sha256": "10d0eb3617dc571cc3c07b8a5f575102b74bc3621115eebdbfe91ccd46eda72c",
+      "size": 1103
+    },
+    {
+      "evidence_id": "E2",
+      "path": "repository-state.json",
+      "sha256": "03a3f473bbb01777e930b7aac6f1bf630fea149ee24b392c5d72c9fc0674667a",
+      "size": 3457
+    },
+    {
+      "evidence_id": "E3",
+      "path": "validation-attempt-01.json",
+      "sha256": "f5c0c78cf453d83654b3201d0227c00096363a4f1c0e59eb9fbcfb981dbd336f",
+      "size": 3572
+    },
+    {
+      "evidence_id": "E4",
+      "path": "source-audit.json",
+      "sha256": "6cd0f6a6e58471e26c6e60ce58c85e6a4db6b0ced64ab194aaa5d763cc9a6767",
+      "size": 11025
+    },
+    {
+      "evidence_id": "E5",
+      "path": "implementation.patch",
+      "sha256": "01cdca559a1ac6e7b016452b12ff510813a67934790391c578c616ed08606a20",
+      "size": 24705
+    },
+    {
+      "evidence_id": "E6",
+      "path": "final-state.json",
+      "sha256": "f4feb1a56b2a6fe33ec928983dba7dde59acef4b301998ecacf06b9f95518f1a",
+      "size": 3874
+    },
+    {
+      "evidence_id": "E7",
+      "path": "prior-executor/commit.json",
+      "sha256": "f409b31b8921c7a45607bf6f13264e9eb042c29327927d7dd53cefaf252df96a",
+      "size": 506
+    },
+    {
+      "evidence_id": "E8",
+      "path": "prior-executor/targeted-tests-attempt-01.json",
+      "sha256": "38bd5b627c2f7973498533d681a759d26126bfb2b6d15934af1d576b3198464e",
+      "size": 562
+    },
+    {
+      "evidence_id": "E9",
+      "path": "review-results.md",
+      "sha256": "26ae718ccb61a6f0b43ea838be8865a42e44cfd9f90250eb3826a485524a2b2a",
+      "size": 2113
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "b19cc74ea9fd12d35f664fc68565f64eb589634f",
+  "schema_version": 1,
+  "source_index_sha256": "b854b8efb6c6d5f11e1b39438c58545b028f32415d0aa66977486650001f03bd",
+  "task_branch": "research/praxis-v2-identity-acceptance-20260923",
+  "task_commit": "aa174694ffcee2005983e0d20975f2b8dceb6a0d"
+}

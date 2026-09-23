@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "commit",
+    "-m",
+    "fix: accept exact Praxis v2 detached Go2 identity"
+  ],
+  "stdout": "",
+  "stderr": "Author identity unknown\n\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email \"you@example.com\"\n  git config --global user.name \"Your Name\"\n\nto set your account's default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <che@Atlas.localdomain>) not allowed\n",
+  "returncode": 128
+}

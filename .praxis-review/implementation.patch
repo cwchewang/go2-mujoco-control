@@ -1,0 +1,595 @@
+diff --git a/docs/ATLAS_RUNNER.md b/docs/ATLAS_RUNNER.md
+index b97c3ac..a1b186e 100644
+--- a/docs/ATLAS_RUNNER.md
++++ b/docs/ATLAS_RUNNER.md
+@@ -65,14 +65,17 @@ the reliable Python/Torch/MuJoCo/NumPy runtime, and the native MJPC admission
+ binary before exposing them under the ignored `.substrate/` namespace. Luna
+ does not download or install these dependencies.
+ 
+-Praxis v6 attaches the isolated worktree to the frozen logical
+-`research/*` branch while still verifying the exact task commit. This keeps
+-scientific preflight branch identity meaningful without using the user's normal
+-worktree. If a task both changes tracked experiment code and requires a final
+-clean exact-HEAD qualification/preparation, split it at the trusted commit:
+-first freeze the implementation candidate, then run qualification/preparation
+-as a follow-up task on that committed HEAD. Do not try to satisfy an exact-HEAD
+-gate from a dirty pre-commit Luna worktree.
++The Atlas-backed Praxis v6 path attaches its isolated worktree to the frozen
++logical `research/*` branch while verifying the exact task commit. Praxis v2
++can keep the task worktree detached: current Go2 scientific checks accept that
++only when the complete five-value Praxis identity is present, its repository,
++logical branch and frozen commit match the operation, current HEAD equals that
++commit, and the worktree is clean. Named-branch manual execution remains valid.
++Neither path uses the user's normal worktree. If a task both changes tracked
++experiment code and requires a final clean exact-HEAD qualification/preparation,
++split it at the trusted commit: first freeze the implementation candidate, then
++run qualification/preparation as a follow-up task on that committed HEAD. Do
++not try to satisfy an exact-HEAD gate from a dirty pre-commit Luna worktree.
+ 
+ Luna may modify the task worktree but receives no GitHub write token and is
+ explicitly forbidden from changing `.github/**` or `tools/atlas_*`. Luna
+diff --git a/docs/research/SOP.md b/docs/research/SOP.md
+index 0cfac70..925a1b5 100644
+--- a/docs/research/SOP.md
++++ b/docs/research/SOP.md
+@@ -63,10 +63,13 @@ without a manifest must be reissued under the new contract before dispatch;
+ do not silently relax this gate to replay them.
+ 
+ Before capture, the runner continuously holds the experiment lock through
+-preflight and the whole campaign. Check exact HEAD/branch and clean worktree,
+-current inputs, fresh output, no stale runtime processes, and transport-specific
+-constraints. DDS uses actual domain/port checks; reviewed in-process runners
+-have no fictitious DDS requirement. Never run a real runner as a preflight test.
++preflight and the whole campaign. Check exact HEAD, expected logical branch
++identity, and clean worktree. A named expected branch remains valid for manual
++execution; a detached Praxis v2 worktree requires the complete matching Praxis
++binding and exact frozen commit. Also check current inputs, fresh output, no
++stale runtime processes, and transport-specific constraints. DDS uses actual
++domain/port checks; reviewed in-process runners have no fictitious DDS
++requirement. Never run a real runner as a preflight test.
+ 
+ Use the accepted parent as diff-base. Automatically classify changed runtime,
+ runner, schema, scene and analyzer files; explicit surfaces add to this set.
+diff --git a/docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md b/docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md
+new file mode 100644
+index 0000000..8f48f2e
+--- /dev/null
++++ b/docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md
+@@ -0,0 +1,53 @@
++# Praxis v2 Go2 identity acceptance
++
++Status: complete; zero physics was run.
++
++Frozen task identity: issue `#158`, branch
++`research/praxis-v2-identity-acceptance-20260923`, starting commit
++`aa174694ffcee2005983e0d20975f2b8dceb6a0d`.
++
++## Result
++
++The maintained Go2 scientific path now accepts the existing named expected
++branch for manual execution and accepts a detached worktree only when all five
++Praxis identity values are present, `PRAXIS_REPOSITORY`, `PRAXIS_TASK_BRANCH`,
++and `PRAXIS_TASK_COMMIT` match the operation, current HEAD equals the expected
++frozen commit, and the worktree is clean. Partial or conflicting bindings fail
++closed. The preflight still checks its exact expected HEAD and all existing
++cleanliness, locking, process, input, review, and test invariants.
++
++The shared identity rule is used by `tools/research/preflight.py` and
++`tools/substrate/launch.py::current_identity`. The preflight report records
++whether the route was named or detached and identifies missing or mismatched
++Praxis fields. Current execution documentation distinguishes Praxis v2's
++detached path from the Atlas-backed Praxis v6 named-branch path.
++
++## Regression checks
++
++The tests cover both preflight and launcher identity checks. Named branches
++pass without Praxis variables. Detached HEAD passes with an exact binding and
++fails without one, with an incomplete binding, or with a wrong repository,
++logical branch, or task commit. The launcher also verifies that a detached
++worktree with an otherwise exact binding still fails when dirty.
++
++Command:
++
++```text
++python3 -m unittest tools.research.test_preflight tools.research.test_preflight_integration tools.substrate.test_launch
++```
++
++Result: return code `0`; 67 tests passed.
++
++Command:
++
++```text
++git diff --check
++```
++
++Result: return code `0`; no output.
++
++These tests use temporary Git repositories and synthetic fixtures. No MuJoCo
++plant, simulator/controller process, `launch prepare`, or `launch capture` was
++started. Raw command arguments, stdout, stderr, return codes, and the initial
++Praxis environment snapshot are preserved in the task's Praxis evidence
++directory.
+diff --git a/tools/research/identity.py b/tools/research/identity.py
+new file mode 100644
+index 0000000..6a9cfc9
+--- /dev/null
++++ b/tools/research/identity.py
+@@ -0,0 +1,80 @@
++"""Shared project-level Git identity rules for Go2 scientific execution."""
++
++from __future__ import annotations
++
++import re
++from collections.abc import Mapping
++from typing import Any
++
++PRAXIS_REPOSITORY = "cwchewang/go2-mujoco-control"
++PRAXIS_ENVIRONMENT_KEYS = (
++    "PRAXIS_REPOSITORY",
++    "PRAXIS_ISSUE_NUMBER",
++    "PRAXIS_TASK_BRANCH",
++    "PRAXIS_TASK_COMMIT",
++    "PRAXIS_TASK_PATH",
++)
++
++
++def validate_execution_identity(
++    actual_branch: str,
++    expected_branch: str,
++    actual_head: str,
++    expected_head: str,
++    environment: Mapping[str, str | None],
++) -> dict[str, Any]:
++    """Accept named branches or an exact, complete Praxis-bound detached HEAD.
++
++    Named-branch manual execution keeps its existing path when no Praxis
++    identity is supplied. If any Praxis value is supplied, the whole binding
++    must be present and the repository, logical branch, and frozen commit must
++    agree. Detached execution always requires that complete binding and an
++    exact current HEAD.
++    """
++    values = {
++        key: (environment.get(key) or "").strip()
++        for key in PRAXIS_ENVIRONMENT_KEYS
++    }
++    present = any(values.values())
++    missing = [key for key, value in values.items() if not value]
++    expected_values = {
++        "PRAXIS_REPOSITORY": PRAXIS_REPOSITORY,
++        "PRAXIS_TASK_BRANCH": expected_branch,
++        "PRAXIS_TASK_COMMIT": expected_head,
++    }
++    mismatches = {
++        key: {"actual": values[key], "expected": expected}
++        for key, expected in expected_values.items()
++        if values[key] and values[key] != expected
++    }
++    binding_valid = present and not missing and not mismatches
++    head_matches = bool(re.fullmatch(r"[0-9a-f]{40}", expected_head)) and (
++        actual_head == expected_head
++    )
++    named_branch_matches = bool(actual_branch) and actual_branch == expected_branch
++
++    if actual_branch:
++        binding_check_pass = not present or binding_valid
++        identity_pass = named_branch_matches and binding_check_pass
++    else:
++        binding_check_pass = binding_valid
++        identity_pass = binding_valid and head_matches
++
++    mode = "named" if actual_branch else "detached"
++    return {
++        "mode": mode,
++        "actual_branch": actual_branch,
++        "expected_branch": expected_branch,
++        "actual_head": actual_head,
++        "expected_head": expected_head,
++        "head_matches": head_matches,
++        "pass": identity_pass,
++        "praxis_binding": {
++            "present": present,
++            "complete": not missing,
++            "valid": binding_valid,
++            "check_pass": binding_check_pass,
++            "missing": missing,
++            "mismatches": mismatches,
++        },
++    }
+diff --git a/tools/research/preflight.py b/tools/research/preflight.py
+index 841cff2..155e1e3 100644
+--- a/tools/research/preflight.py
++++ b/tools/research/preflight.py
+@@ -19,6 +19,12 @@ import subprocess
+ import sys
+ from typing import Any
+ 
++if __package__:
++    from .identity import validate_execution_identity
++else:
++    # Direct script execution puts this directory, not the repo root, on sys.path.
++    from identity import validate_execution_identity
++
+ DEFAULT_PROCESS_NAMES = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
+ LINUX_SAFE_DOMAIN_RANGES = ((0, 101), (215, 232))
+ SURFACES = {"runtime", "runner", "schema", "scene", "analyzer"}
+@@ -428,14 +434,28 @@ def _main() -> int:
+     git_rc, head, git_err = command(["git", "rev-parse", "HEAD"], repo)
+     branch_rc, branch, branch_err = command(["git", "branch", "--show-current"], repo)
+     status_rc, status, status_err = command(["git", "status", "--porcelain"], repo)
++    identity = validate_execution_identity(
++        branch if branch_rc == 0 else "",
++        args.expected_branch,
++        head if git_rc == 0 else "",
++        args.expected_head,
++        os.environ,
++    )
++    report["identity"] = identity
+     add_check(
+         checks, "git_head_readable", git_rc == 0, head if git_rc == 0 else git_err
+     )
+     add_check(
+         checks,
+         "expected_branch",
+-        branch_rc == 0 and branch == args.expected_branch,
+-        {"actual": branch, "expected": args.expected_branch, "stderr": branch_err},
++        branch_rc == 0 and identity["pass"],
++        {**identity, "stderr": branch_err},
++    )
++    add_check(
++        checks,
++        "praxis_identity_binding",
++        identity["praxis_binding"]["check_pass"],
++        identity["praxis_binding"],
+     )
+     add_check(
+         checks,
+diff --git a/tools/research/test_preflight.py b/tools/research/test_preflight.py
+index 6144893..73c1bac 100644
+--- a/tools/research/test_preflight.py
++++ b/tools/research/test_preflight.py
+@@ -1,15 +1,8 @@
+ #!/usr/bin/env python3
+ from __future__ import annotations
+ 
+-import importlib.util
+-from pathlib import Path
+ import unittest
+-
+-MODULE_PATH = Path(__file__).with_name("preflight.py")
+-SPEC = importlib.util.spec_from_file_location("research_preflight", MODULE_PATH)
+-assert SPEC is not None and SPEC.loader is not None
+-preflight = importlib.util.module_from_spec(SPEC)
+-SPEC.loader.exec_module(preflight)
++from tools.research import preflight
+ 
+ 
+ class PreflightRegressionTest(unittest.TestCase):
+diff --git a/tools/research/test_preflight_integration.py b/tools/research/test_preflight_integration.py
+index 2b853f4..5bf3e1f 100644
+--- a/tools/research/test_preflight_integration.py
++++ b/tools/research/test_preflight_integration.py
+@@ -3,6 +3,7 @@
+ import contextlib
+ import io
+ import json
++import os
+ import subprocess
+ import sys
+ import tempfile
+@@ -10,6 +11,7 @@ import unittest
+ from pathlib import Path
+ from unittest.mock import patch
+ from tools.research import preflight as p
++from tools.research.identity import PRAXIS_ENVIRONMENT_KEYS
+ 
+ 
+ class ReadinessFixtures(unittest.TestCase):
+@@ -35,7 +37,7 @@ class ReadinessFixtures(unittest.TestCase):
+         git("commit", "-m", "fixture")
+         self.head = git("rev-parse", "HEAD")
+ 
+-    def call(self, *extra):
++    def call(self, *extra, praxis_environment=None):
+         argv = [
+             "preflight",
+             "--repo-root",
+@@ -53,8 +55,12 @@ class ReadinessFixtures(unittest.TestCase):
+             *([] if "inprocess" in extra else ["--domain", "230"]),
+             *extra,
+         ]
++        environment = dict.fromkeys(PRAXIS_ENVIRONMENT_KEYS, "")
++        if praxis_environment is not None:
++            environment.update(praxis_environment)
+         stream = io.StringIO()
+         with (
++            patch.dict(os.environ, environment),
+             patch.object(sys, "argv", argv),
+             patch.object(p, "find_processes", return_value=[]),
+             patch.object(p, "occupied_udp_ports", return_value=set()),
+@@ -64,12 +70,93 @@ class ReadinessFixtures(unittest.TestCase):
+             code = p._main()
+         return code, json.loads(stream.getvalue())
+ 
++    def praxis_binding(self, **overrides):
++        values = {
++            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
++            "PRAXIS_ISSUE_NUMBER": "158",
++            "PRAXIS_TASK_BRANCH": "fixture",
++            "PRAXIS_TASK_COMMIT": self.head,
++            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
++        }
++        values.update(overrides)
++        return values
++
++    def detach_head(self):
++        self.git("checkout", "--detach", "HEAD")
++
+     def test_positive_fixture_does_not_launch_runner(self):
+         code, result = self.call()
+         self.assertEqual(code, 0)
+         self.assertTrue(result["pass"])
+         self.assertFalse((self.root / "out/capture").exists())
+ 
++    def test_named_expected_branch_passes_without_praxis_binding(self):
++        code, result = self.call()
++        self.assertEqual(code, 0)
++        self.assertTrue(result["pass"])
++        self.assertEqual(result["identity"]["mode"], "named")
++
++    def test_detached_head_passes_with_exact_praxis_binding(self):
++        self.detach_head()
++        code, result = self.call(praxis_environment=self.praxis_binding())
++        self.assertEqual(code, 0)
++        self.assertTrue(result["pass"])
++        self.assertEqual(result["identity"]["mode"], "detached")
++
++    def test_detached_head_without_praxis_binding_fails(self):
++        self.detach_head()
++        code, result = self.call()
++        self.assertEqual(code, 2)
++        self.assertFalse(result["pass"])
++        self.assertFalse(result["identity"]["praxis_binding"]["check_pass"])
++
++    def test_detached_head_rejects_wrong_praxis_repository(self):
++        self.detach_head()
++        code, result = self.call(
++            praxis_environment=self.praxis_binding(
++                PRAXIS_REPOSITORY="someone-else/go2-mujoco-control"
++            )
++        )
++        self.assertEqual(code, 2)
++        self.assertIn(
++            "PRAXIS_REPOSITORY",
++            result["identity"]["praxis_binding"]["mismatches"],
++        )
++
++    def test_detached_head_rejects_wrong_praxis_logical_branch(self):
++        self.detach_head()
++        code, result = self.call(
++            praxis_environment=self.praxis_binding(
++                PRAXIS_TASK_BRANCH="research/other-task"
++            )
++        )
++        self.assertEqual(code, 2)
++        self.assertIn(
++            "PRAXIS_TASK_BRANCH",
++            result["identity"]["praxis_binding"]["mismatches"],
++        )
++
++    def test_detached_head_rejects_wrong_praxis_task_commit(self):
++        self.detach_head()
++        code, result = self.call(
++            praxis_environment=self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40)
++        )
++        self.assertEqual(code, 2)
++        self.assertIn(
++            "PRAXIS_TASK_COMMIT",
++            result["identity"]["praxis_binding"]["mismatches"],
++        )
++
++    def test_detached_head_rejects_incomplete_praxis_binding(self):
++        self.detach_head()
++        binding = self.praxis_binding()
++        binding.pop("PRAXIS_TASK_PATH")
++        code, result = self.call(praxis_environment=binding)
++        self.assertEqual(code, 2)
++        self.assertIn(
++            "PRAXIS_TASK_PATH", result["identity"]["praxis_binding"]["missing"]
++        )
++
+     def test_explicit_runner_change_records_diff_for_nonstandard_path(self):
+         base = self.head
+         with (self.root / "runner.sh").open("a") as stream:
+diff --git a/tools/substrate/README.md b/tools/substrate/README.md
+index 4538130..76747d7 100644
+--- a/tools/substrate/README.md
++++ b/tools/substrate/README.md
+@@ -102,9 +102,11 @@ does not make these information conditions equivalent.
+ ## Formal experiment boundary
+ 
+ The SOP preflight entry `tools/research/preflight.py` is restored from historical
+-source and hardened. It checks exact branch/HEAD, clean state, runner/domain,
+-all reserved participant ports, current UDP occupancy, global/domain locks,
+-process inspection, files/hashes, changed surfaces, required review and tests.
++source and hardened. It checks exact HEAD, the expected logical branch identity
++(named branch or a complete exact Praxis v2 binding for detached worktrees), a
++clean state, runner/domain, all reserved participant ports, current UDP
++occupancy, global/domain locks, process inspection, files/hashes, changed
++surfaces, required review and tests.
+ Existing output is protected, and tests are skipped after an early hard failure.
+ Standalone preflight is a readiness snapshot. The substrate launcher now passes
+ its held lock descriptor to preflight and retains it through capture, with explicit
+@@ -116,7 +118,9 @@ The concrete first-run protocol is now `protocols/rl_flat_v1.json`; see
+ `docs/research/SUBSTRATE_FIRST_CAPTURE.md` for its prospective rationale and exact
+ historical commands. Under SOP v0.3, `launch prepare` additionally requires
+ `--qualification QUALIFIED_BUNDLE --task TRACKED_TASK_JSON`. Task metadata owns
+-branch/accepted-parent/protocol identity; no branch edit in launch.py is needed.
++expected branch/accepted-parent/protocol identity. Project-level execution
++checks accept a named expected branch for manual runs or a detached Praxis v2
++worktree bound to the exact repository, logical branch and frozen commit.
+ Qualification must be sealed, clean, non-development and match current
+ runtime/test/model/dependency inputs. Matching inputs reuse offline tests; fresh
+ lock/process/input checks and exact-head review/start identity remain mandatory.
+diff --git a/tools/substrate/launch.py b/tools/substrate/launch.py
+index e38fe30..c9bb45f 100644
+--- a/tools/substrate/launch.py
++++ b/tools/substrate/launch.py
+@@ -32,6 +32,7 @@ from .readiness import (
+ from .guards import zero_step_guard as zero_step_guard, wall_deadline as wall_deadline
+ from .task import DEFAULT_TASK, load_task
+ from .qualification import validate as validate_qualification, validate_reference
++from ..research.identity import validate_execution_identity
+ 
+ TRANSPORT = "inprocess"
+ PROTOCOL = ROOT / "tools/substrate/protocols/rl_flat_v1.json"
+@@ -45,8 +46,20 @@ def git(*args):
+ def current_identity(task=None):
+     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
+     task = task or load_task(DEFAULT_TASK)
+-    if branch != task["configuration"]["branch"] or git("status", "--porcelain"):
+-        raise ValueError("launch preparation requires the clean reserved branch")
++    identity = validate_execution_identity(
++        branch,
++        task["configuration"]["branch"],
++        head,
++        head,
++        os.environ,
++    )
++    if not identity["pass"]:
++        raise ValueError(
++            "launch preparation requires the expected named branch or an exact "
++            "Praxis-bound detached HEAD"
++        )
++    if git("status", "--porcelain"):
++        raise ValueError("launch preparation requires a clean worktree")
+     return head, source_manifest()
+ 
+ 
+diff --git a/tools/substrate/test_launch.py b/tools/substrate/test_launch.py
+index d04bae9..879adcb 100644
+--- a/tools/substrate/test_launch.py
++++ b/tools/substrate/test_launch.py
+@@ -2,6 +2,7 @@
+ 
+ import copy
+ import json
++import os
+ from pathlib import Path
+ import subprocess
+ import sys
+@@ -14,6 +15,8 @@ from .contracts import MOTOR_JOINTS, TorqueCommand, Proprioception
+ from .episode import episode, command_at
+ from .analyze_capture import analyze, trace_digest
+ from .integrity import strict_json
++from . import launch as launch_module
++from ..research.identity import PRAXIS_ENVIRONMENT_KEYS
+ from .launch import (
+     PROTOCOL,
+     validate_review,
+@@ -88,6 +91,106 @@ class FakePolicy:
+         )
+ 
+ 
++class CurrentIdentityTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.git("init", "-b", "fixture")
++        self.git("config", "user.email", "fixture@example.invalid")
++        self.git("config", "user.name", "Fixture")
++        (self.root / "tracked.txt").write_text("fixture\n")
++        self.git("add", "tracked.txt")
++        self.git("commit", "-m", "fixture")
++        self.head = self.git("rev-parse", "HEAD")
++        self.task = {"configuration": {"branch": "fixture"}}
++
++    def git(self, *args):
++        return subprocess.check_output(
++            ["git", *args], cwd=self.root, text=True, stderr=subprocess.DEVNULL
++        ).strip()
++
++    def praxis_binding(self, **overrides):
++        values = {
++            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
++            "PRAXIS_ISSUE_NUMBER": "158",
++            "PRAXIS_TASK_BRANCH": "fixture",
++            "PRAXIS_TASK_COMMIT": self.head,
++            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
++        }
++        values.update(overrides)
++        return values
++
++    def current_identity(self, praxis_environment=None):
++        environment = dict.fromkeys(PRAXIS_ENVIRONMENT_KEYS, "")
++        if praxis_environment is not None:
++            environment.update(praxis_environment)
++        with (
++            patch.object(launch_module, "ROOT", self.root),
++            patch.object(
++                launch_module,
++                "source_manifest",
++                return_value={"fixture": "source"},
++            ),
++            patch.dict(os.environ, environment),
++        ):
++            return launch_module.current_identity(self.task)
++
++    def detach_head(self):
++        self.git("checkout", "--detach", "HEAD")
++
++    def test_named_expected_branch_still_passes(self):
++        self.assertEqual(
++            self.current_identity(), (self.head, {"fixture": "source"})
++        )
++
++    def test_detached_head_with_exact_praxis_binding_passes(self):
++        self.detach_head()
++        self.assertEqual(
++            self.current_identity(self.praxis_binding()),
++            (self.head, {"fixture": "source"}),
++        )
++
++    def test_detached_head_without_praxis_binding_fails(self):
++        self.detach_head()
++        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
++            self.current_identity()
++
++    def test_detached_head_with_wrong_praxis_repository_fails(self):
++        self.detach_head()
++        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
++            self.current_identity(
++                self.praxis_binding(
++                    PRAXIS_REPOSITORY="someone-else/go2-mujoco-control"
++                )
++            )
++
++    def test_detached_head_with_wrong_praxis_branch_fails(self):
++        self.detach_head()
++        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
++            self.current_identity(
++                self.praxis_binding(PRAXIS_TASK_BRANCH="research/other-task")
++            )
++
++    def test_detached_head_with_wrong_praxis_commit_fails(self):
++        self.detach_head()
++        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
++            self.current_identity(self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40))
++
++    def test_detached_head_with_incomplete_binding_fails(self):
++        self.detach_head()
++        binding = self.praxis_binding()
++        binding.pop("PRAXIS_TASK_PATH")
++        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
++            self.current_identity(binding)
++
++    def test_detached_head_still_requires_clean_worktree(self):
++        self.detach_head()
++        (self.root / "untracked.txt").write_text("dirty\n")
++        with self.assertRaisesRegex(ValueError, "clean worktree"):
++            self.current_identity(self.praxis_binding())
++
++
+ class LaunchTests(unittest.TestCase):
+     def test_streaming_digest_matches_frozen_canonical_json_bytes(self):
+         import hashlib

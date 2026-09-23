@@ -1,0 +1,149 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v2",
+        "--branch"
+      ],
+      "stdout": "# branch.oid b19cc74ea9fd12d35f664fc68565f64eb589634f\n# branch.head (detached)\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "stdout": "",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "stdout": "b19cc74ea9fd12d35f664fc68565f64eb589634f\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "stdout": "aa174694ffcee2005983e0d20975f2b8dceb6a0d\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "stdout": "",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "origin/research/praxis-v2-identity-acceptance-20260923"
+      ],
+      "stdout": "aa174694ffcee2005983e0d20975f2b8dceb6a0d\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-list",
+        "--left-right",
+        "--count",
+        "origin/research/praxis-v2-identity-acceptance-20260923...HEAD"
+      ],
+      "stdout": "0\t1\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "--no-patch",
+        "--format=fuller",
+        "HEAD"
+      ],
+      "stdout": "commit b19cc74ea9fd12d35f664fc68565f64eb589634f\nAuthor:     Che Wang <237448565+cwchewang@users.noreply.github.com>\nAuthorDate: Wed Sep 23 21:10:39 2026 +0800\nCommit:     Che Wang <237448565+cwchewang@users.noreply.github.com>\nCommitDate: Wed Sep 23 21:10:39 2026 +0800\n\n    fix: accept exact Praxis v2 detached Go2 identity\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "HEAD"
+      ],
+      "stdout": "docs/ATLAS_RUNNER.md\ndocs/research/SOP.md\ndocs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md\ntools/research/identity.py\ntools/research/preflight.py\ntools/research/test_preflight.py\ntools/research/test_preflight_integration.py\ntools/substrate/README.md\ntools/substrate/launch.py\ntools/substrate/test_launch.py\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD^",
+        "HEAD"
+      ],
+      "stdout": "",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "ls-files",
+        "--error-unmatch",
+        "docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md"
+      ],
+      "stdout": "docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md\n",
+      "stderr": "",
+      "returncode": 0
+    }
+  ],
+  "changed_paths": [
+    "docs/ATLAS_RUNNER.md",
+    "docs/research/SOP.md",
+    "docs/validation/praxis_v2_identity_acceptance_20260923/RESULTS.md",
+    "tools/research/identity.py",
+    "tools/research/preflight.py",
+    "tools/research/test_preflight.py",
+    "tools/research/test_preflight_integration.py",
+    "tools/substrate/README.md",
+    "tools/substrate/launch.py",
+    "tools/substrate/test_launch.py"
+  ],
+  "protected_paths_changed": [],
+  "checks": {
+    "worktree_clean": true,
+    "detached_head": true,
+    "head_parent_is_frozen_start": true,
+    "remote_task_branch_still_at_frozen_start": true,
+    "one_commit_ahead_and_zero_behind": true,
+    "no_protected_paths_changed": true,
+    "review_results_tracked": true,
+    "committed_patch_diff_check_passed": true,
+    "all_state_commands_succeeded": true
+  }
+}

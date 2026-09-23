@@ -1,0 +1,13 @@
+{
+  "result_commit": "b19cc74ea9fd12d35f664fc68565f64eb589634f",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "research/praxis-v2-identity-acceptance-20260923",
+    "issue_number": 158,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "aa174694ffcee2005983e0d20975f2b8dceb6a0d",
+    "task_path": "docs/research/TASK_PRAXIS_V2_IDENTITY_ACCEPTANCE_20260923.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-158"
+}

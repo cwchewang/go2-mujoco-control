@@ -1,0 +1,162 @@
+{
+  "files": [
+    {
+      "path": "closeout.json",
+      "sha256": "afbd7c4ab465817d84186abd1692d5b7e39100023d6a1e537e70737bf8efe172",
+      "size": 6622
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "1740ed783440129dd9d3cea8c06e8720345ac1290f582413196d57855f98653f",
+      "size": 242504
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "evidence-sha256.txt",
+      "sha256": "6e48838a8d376f099121498db7f640395b6c735ca6527b09c57b6311dc153728",
+      "size": 2411
+    },
+    {
+      "path": "final-state.json",
+      "sha256": "f4feb1a56b2a6fe33ec928983dba7dde59acef4b301998ecacf06b9f95518f1a",
+      "size": 3874
+    },
+    {
+      "path": "identity-start.json",
+      "sha256": "10d0eb3617dc571cc3c07b8a5f575102b74bc3621115eebdbfe91ccd46eda72c",
+      "size": 1103
+    },
+    {
+      "path": "implementation.patch",
+      "sha256": "01cdca559a1ac6e7b016452b12ff510813a67934790391c578c616ed08606a20",
+      "size": 24705
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "c870d22892915a984b4b8c4acfa7603d6207278b50d297c018f4a84f858e34bd",
+      "size": 502
+    },
+    {
+      "path": "prior-executor/codex.ndjson",
+      "sha256": "d0ace7e9eb09e92229663886eea788557e85a462970f9eeace23db4937f90617",
+      "size": 310479
+    },
+    {
+      "path": "prior-executor/codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "prior-executor/commit-identity.json",
+      "sha256": "057ffdc062c21ea0776c2a3157c46ded52b0128f6a28e2db24a44ce0406bbfb1",
+      "size": 587
+    },
+    {
+      "path": "prior-executor/commit-retry.json",
+      "sha256": "596c70b89dd4c82286b5967096565553daaaf70bb167c5efc867752db8f35956",
+      "size": 536
+    },
+    {
+      "path": "prior-executor/commit.json",
+      "sha256": "f409b31b8921c7a45607bf6f13264e9eb042c29327927d7dd53cefaf252df96a",
+      "size": 506
+    },
+    {
+      "path": "prior-executor/development-checks.json",
+      "sha256": "1154c9e82282da8b63619b691c19eaf7c836fd88fd2bc5a5a92d07dada25c0c4",
+      "size": 7431
+    },
+    {
+      "path": "prior-executor/environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "prior-executor/final-state.json",
+      "sha256": "ddbdfada413a8c150b2f613c8bffafc1612d8997fb2b16e4e03247333a417610",
+      "size": 3312
+    },
+    {
+      "path": "prior-executor/identity-start.json",
+      "sha256": "5522a866fbb5d66f41005075f70d49c1a667b8f58f9b970829a0e8a73150f732",
+      "size": 998
+    },
+    {
+      "path": "prior-executor/manifest.json",
+      "sha256": "d33b35db468a94a0e591d93ce4e546f8bf44d3d31bf94d9de933e3f6d62721e9",
+      "size": 438
+    },
+    {
+      "path": "prior-executor/postcommit-validation.json",
+      "sha256": "c70d479bf5666fcdd0485c5bf107ca2cc831d88eced6815a556ca4957c1d82f0",
+      "size": 712
+    },
+    {
+      "path": "prior-executor/precommit-state.json",
+      "sha256": "87b5535425b97bf5e9987f06712238bcd3ab01bb550ad549bdb09dcba02e532b",
+      "size": 1923
+    },
+    {
+      "path": "prior-executor/remote-bootstrap.json",
+      "sha256": "351846684ab70d5ff438d21d7c8c58c1f14f1fcc74c09d4db170c81da1782f74",
+      "size": 1508
+    },
+    {
+      "path": "prior-executor/result-commit-patch-command.json",
+      "sha256": "caaac7dd8be77e901f895eb293c4a6b22188648db7ccd4033ffe2d1592bb327e",
+      "size": 167
+    },
+    {
+      "path": "prior-executor/result-commit.patch",
+      "sha256": "c08f88d1fddb7b6fd868d3eccfce3b0114a9f6e58bbee22cc7680b05fad84caf",
+      "size": 25031
+    },
+    {
+      "path": "prior-executor/staged-review.json",
+      "sha256": "2e779164e3ed8589d68aa000dbd9964f63c2de294e04128989daade1f3d00646",
+      "size": 2089
+    },
+    {
+      "path": "prior-executor/targeted-tests-attempt-01.json",
+      "sha256": "38bd5b627c2f7973498533d681a759d26126bfb2b6d15934af1d576b3198464e",
+      "size": 562
+    },
+    {
+      "path": "prior-executor/targeted-tests-attempt-02.json",
+      "sha256": "ed9785015ab91a187553efb6de621713e058b6d2bf3691a6d7a28fb83273cc64",
+      "size": 562
+    },
+    {
+      "path": "repository-state.json",
+      "sha256": "03a3f473bbb01777e930b7aac6f1bf630fea149ee24b392c5d72c9fc0674667a",
+      "size": 3457
+    },
+    {
+      "path": "review-results.md",
+      "sha256": "26ae718ccb61a6f0b43ea838be8865a42e44cfd9f90250eb3826a485524a2b2a",
+      "size": 2113
+    },
+    {
+      "path": "source-audit.json",
+      "sha256": "6cd0f6a6e58471e26c6e60ce58c85e6a4db6b0ced64ab194aaa5d763cc9a6767",
+      "size": 11025
+    },
+    {
+      "path": "validation-attempt-01.json",
+      "sha256": "f5c0c78cf453d83654b3201d0227c00096363a4f1c0e59eb9fbcfb981dbd336f",
+      "size": 3572
+    }
+  ],
+  "result_commit": "b19cc74ea9fd12d35f664fc68565f64eb589634f",
+  "schema_version": 1,
+  "status": "complete"
+}

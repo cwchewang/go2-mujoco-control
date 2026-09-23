@@ -1,0 +1,43 @@
+{
+  "repository_root": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-158",
+  "frozen_task_identity": {
+    "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+    "PRAXIS_ISSUE_NUMBER": "158",
+    "PRAXIS_TASK_BRANCH": "research/praxis-v2-identity-acceptance-20260923",
+    "PRAXIS_TASK_COMMIT": "aa174694ffcee2005983e0d20975f2b8dceb6a0d",
+    "PRAXIS_TASK_PATH": "docs/research/TASK_PRAXIS_V2_IDENTITY_ACCEPTANCE_20260923.md"
+  },
+  "git_commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "return_code": 0,
+      "stdout": "b19cc74ea9fd12d35f664fc68565f64eb589634f\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v2",
+        "--branch"
+      ],
+      "return_code": 0,
+      "stdout": "# branch.oid b19cc74ea9fd12d35f664fc68565f64eb589634f\n# branch.head (detached)\n",
+      "stderr": ""
+    }
+  ]
+}
