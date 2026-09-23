@@ -1,0 +1,6 @@
+commit=16810592cbc342ed29d3ce92f22efe6062516bb5
+parent=47c471842754bf1649db3a0a0bb8f1c722255162
+branch=detached
+worktree_status=clean
+tracked_changes=A	docs/validation/shared_transfer_formal_v2_execution_r3_20260924/review.json
+review_result_sha256=885ddeee3a791405c32babfaa6e861f42550b87181d97a3a06a9ae66f69b0a09

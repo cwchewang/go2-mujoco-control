@@ -1,0 +1,314 @@
+{
+  "status": "complete",
+  "summary": "Approved the execution integrity review for target 9e82e56ac2a5db63d7834e86ce402d542bf10ae8 and committed the sole tracked result as 16810592cbc342ed29d3ce92f22efe6062516bb5. The evidence package preserves target-bound source snapshots, branch tips, prior review context, protocol hash, guard paths, pending science-review state, and final commit verification.",
+  "completed": [
+    "Reviewed the exact frozen target and verified issue #166, logical branch, target commit, and tracked task-path binding.",
+    "Verified the r3 review branch/result references are exact, separate, non-recursive, and satisfiable by the dedicated review tasks.",
+    "Reviewed the five-field identity, zero-external-plant-step qualification/preparation, authorization, ledger/no-retry, two-attempt, first-nonpass, protocol hash, and threshold invariants.",
+    "Committed exactly one tracked result: docs/validation/shared_transfer_formal_v2_execution_r3_20260924/review.json.",
+    "Verified the committed result is the only tracked change and the detached worktree is clean."
+  ],
+  "not_completed": [
+    "Formal qualification, resource admission, preparation, authorization creation, capture, simulation, and plant physics were not run; they are outside this zero-physics execution review and remain subject to the formal task gates.",
+    "The science r3 review result was not yet present at the observed branch tip; issue #166 must remain blocked until that exact review result is committed and validates."
+  ],
+  "observations": [
+    {
+      "text": "The formal logical branch tip is the exact target HEAD 9e82e56ac2a5db63d7834e86ce402d542bf10ae8. The science and execution r3 review branches each point to a task commit whose direct parent is that target.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "text": "The formal task and tracked task configuration bind issue #166, branch research/shared-transfer-formal-v2-final-20260923, target task path docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md, and distinct r3 science/execution result paths.",
+      "evidence_ids": [
+        "E4",
+        "E5",
+        "E20",
+        "E21",
+        "E27"
+      ]
+    },
+    {
+      "text": "The identity validator enumerates all five Praxis environment fields and enforces the expected branch, head, issue number, and task path for detached execution; the loader requires the Markdown task path to be tracked.",
+      "evidence_ids": [
+        "E6",
+        "E7"
+      ]
+    },
+    {
+      "text": "The protocol hash is 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32. The target update from the prior approved review head changes only the formal task review references.",
+      "evidence_ids": [
+        "E8",
+        "E9",
+        "E10",
+        "E19"
+      ]
+    },
+    {
+      "text": "The qualification command runs an isolated 21-step MJPC static-state admission and validates external plant_time_s=0. Preparation forbids MuJoCo integration calls, checks plant steps/time remain zero, and records physics_steps=0.",
+      "evidence_ids": [
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15"
+      ]
+    },
+    {
+      "text": "Authorization binds the prepared head, protocol hash, manifest hash, and attempt budget. The campaign ledger blocks a second capture, the protocol has two cases and max_attempts=2, and progression stops after the first non-pass.",
+      "evidence_ids": [
+        "E4",
+        "E8",
+        "E15",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "Issue #166 is open and reserved. The expected science r3 result is absent at the observed review-branch tip; no qualification, preparation, capture, simulation, or plant physics was run in this execution review.",
+      "evidence_ids": [
+        "E18",
+        "E22",
+        "E23"
+      ]
+    },
+    {
+      "text": "The execution review result is committed as the sole tracked change, with the worktree clean and HEAD detached.",
+      "evidence_ids": [
+        "E25",
+        "E26"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The review dependency graph is non-recursive: the formal task points to two separate exact-head review tasks, and each task writes its own dedicated result path without depending on the other review result. The paths can be satisfied by completing the two review tasks.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E20",
+        "E21"
+      ]
+    },
+    {
+      "text": "The missing science result is an expected prerequisite gate, not a reason to fall back to obsolete r2 results: the formal task explicitly requires BLOCKED before qualification or physics while either exact r3 review is absent.",
+      "evidence_ids": [
+        "E4",
+        "E19",
+        "E20",
+        "E22"
+      ]
+    },
+    {
+      "text": "Because the target commit changes only the review references relative to the previously approved target, the reviewed execution code and frozen campaign settings remain the same while the stale review locations are replaced.",
+      "evidence_ids": [
+        "E1",
+        "E9",
+        "E10",
+        "E19",
+        "E24"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The execution review is APPROVED for exact target 9e82e56ac2a5db63d7834e86ce402d542bf10ae8: no new execution or integrity blocker was found in the task bindings or static execution guards, and the formal task need not use obsolete review results.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E10",
+        "E15",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "The frozen protocol hash and thresholds, two-attempt budget, no-retry ledger rule, explicit authorization, zero-external-plant-step preparation, and first-nonpass stop remain in force.",
+      "evidence_ids": [
+        "E4",
+        "E8",
+        "E9",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "Formal qualification and capture can proceed only after the exact science r3 result is committed and both exact-head reviews are APPROVED with distinct reviewer identities; the target already enforces this stop condition.",
+      "evidence_ids": [
+        "E4",
+        "E16",
+        "E20",
+        "E22"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "The science r3 result and reviewer identity are unknown because that result is not yet published; issue #166 must remain blocked before qualification until the exact-path result approves this same head and the reviewer identities differ.",
+      "evidence_ids": [
+        "E4",
+        "E20",
+        "E22",
+        "E23"
+      ]
+    },
+    {
+      "text": "This task did not run qualification, resource admission, preparation, capture, or plant physics, so actual future host-resource readiness remains for the formal task to establish. Static review confirms the required guards only.",
+      "evidence_ids": [
+        "E4",
+        "E11",
+        "E12",
+        "E14",
+        "E15",
+        "E21"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "review/target-head-and-parent.txt",
+      "description": "Exact formal target commit and parent metadata."
+    },
+    {
+      "id": "E2",
+      "path": "review/remote-branch-tips.txt",
+      "description": "Remote tips for the logical campaign branch and both r3 review branches at audit time."
+    },
+    {
+      "id": "E3",
+      "path": "review/branch-ancestry.txt",
+      "description": "Shows both review-task commits directly extend the exact formal target."
+    },
+    {
+      "id": "E4",
+      "path": "review/source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "description": "Formal task at target commit, including frozen contract and prospective r3 review paths."
+    },
+    {
+      "id": "E5",
+      "path": "review/source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "description": "Tracked task metadata binding issue 166, logical branch, protocol hash, and task path."
+    },
+    {
+      "id": "E6",
+      "path": "review/source/tools/research/identity.py",
+      "description": "Five-field Praxis identity validation and detached exact-head requirements."
+    },
+    {
+      "id": "E7",
+      "path": "review/source/tools/substrate/task.py",
+      "description": "Task loader checks task path containment, Markdown type, trackedness, branch, and protocol hash."
+    },
+    {
+      "id": "E8",
+      "path": "review/protocol-target.json",
+      "description": "Exact protocol JSON extracted from the frozen target commit."
+    },
+    {
+      "id": "E9",
+      "path": "review/protocol-sha256.txt",
+      "description": "Computed protocol SHA-256 at target."
+    },
+    {
+      "id": "E10",
+      "path": "review/formal-task-diff.patch",
+      "description": "Target update diff from its parent, limited to the two review branch and result-path pairs."
+    },
+    {
+      "id": "E11",
+      "path": "review/source/tools/substrate/qualify.py",
+      "description": "Qualification command source and its offline admission calls."
+    },
+    {
+      "id": "E12",
+      "path": "review/source/tools/substrate/admit.py",
+      "description": "Admission source validates offline static-state scope and zero external plant time."
+    },
+    {
+      "id": "E13",
+      "path": "review/source/tools/substrate/native/admit.cc",
+      "description": "Native admission source requires plant time to remain zero."
+    },
+    {
+      "id": "E14",
+      "path": "review/source/tools/substrate/guards.py",
+      "description": "Zero-step guard forbids MuJoCo mj_step, mj_step1, and mj_step2."
+    },
+    {
+      "id": "E15",
+      "path": "review/source/tools/substrate/baseline.py",
+      "description": "Preparation, zero-step assertion, readiness, exact review/auth checks, and permanent ledger gate."
+    },
+    {
+      "id": "E16",
+      "path": "review/source/tools/substrate/readiness.py",
+      "description": "Independent exact-head review and explicit start authorization validation."
+    },
+    {
+      "id": "E17",
+      "path": "review/source/tools/substrate/baseline_episode.py",
+      "description": "First-nonpass progression and safety/integrity stop implementation."
+    },
+    {
+      "id": "E18",
+      "path": "review/github-issue-166.json",
+      "description": "GitHub issue 166 identity and reserved/not-dispatched state."
+    },
+    {
+      "id": "E19",
+      "path": "review/r2-execution-review.json",
+      "description": "Prior r2 exact-target execution approval record and evidence summary."
+    },
+    {
+      "id": "E20",
+      "path": "review/science-review-task-r3.md",
+      "description": "Prospective science review task, exact target, and dedicated result path."
+    },
+    {
+      "id": "E21",
+      "path": "review/execution-review-task-r3.md",
+      "description": "This execution review task, exact target, and dedicated result path."
+    },
+    {
+      "id": "E22",
+      "path": "review/science-result-status.txt",
+      "description": "Science r3 result path is absent at the observed branch tip; formal task stop rule applies."
+    },
+    {
+      "id": "E23",
+      "path": "review/command-results.json",
+      "description": "Raw command return codes, including absent science result and failed unauthenticated REST request."
+    },
+    {
+      "id": "E24",
+      "path": "review/source-snapshots-manifest.json",
+      "description": "Git blob IDs and SHA-256 values for target source snapshots."
+    },
+    {
+      "id": "E25",
+      "path": "review/execution-review-result.json",
+      "description": "Byte-for-byte mirror of committed execution review result."
+    },
+    {
+      "id": "E26",
+      "path": "review/commit-verification.txt",
+      "description": "Committed result hash, parent, detached state, one-file commit, and clean worktree verification."
+    },
+    {
+      "id": "E27",
+      "path": "review/tracked-target-paths.txt",
+      "description": "Target tree confirms task metadata, protocol, and formal task are tracked."
+    }
+  ]
+}

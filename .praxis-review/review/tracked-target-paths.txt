@@ -1,0 +1,3 @@
+docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md
+tools/substrate/protocols/rl_shared_transfer_combination_v1.json
+tools/substrate/tasks/rl_shared_transfer_combination_v1.json

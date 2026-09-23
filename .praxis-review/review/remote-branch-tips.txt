@@ -1,0 +1,6 @@
+logical_branch_tip:
+9e82e56ac2a5db63d7834e86ce402d542bf10ae8	refs/heads/research/shared-transfer-formal-v2-final-20260923
+science_review_tip:
+b31454ba2f30b53d18e1332fc82029390203c0e4	refs/heads/review/shared-transfer-formal-v2-science-r3-20260924
+execution_review_tip:
+47c471842754bf1649db3a0a0bb8f1c722255162	refs/heads/review/shared-transfer-formal-v2-execution-r3-20260924

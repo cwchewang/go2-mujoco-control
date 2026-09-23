@@ -1,0 +1,89 @@
+{
+  "target_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "files": [
+    {
+      "path": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "git_blob": "a62e6fdf63f61151f46576236c1853022afdf258",
+      "sha256": "d020b400f2c049b9de26e8fa1f4e1cf0913720486d0b6fb12a9a0c0c7fb6d672",
+      "evidence_path": "source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md"
+    },
+    {
+      "path": "tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "git_blob": "996312bddfeb892e34e11827be6ff22e271a6180",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "evidence_path": "source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json"
+    },
+    {
+      "path": "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+      "git_blob": "7c901e93d2f027680a8000525b0c15d090662188",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "evidence_path": "source/tools/substrate/protocols/rl_shared_transfer_combination_v1.json"
+    },
+    {
+      "path": "tools/research/identity.py",
+      "git_blob": "ac93d2d4e9dd17e94231064b4a19c8d59a833e56",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "evidence_path": "source/tools/research/identity.py"
+    },
+    {
+      "path": "tools/substrate/task.py",
+      "git_blob": "065b0560520fcf1937d02cb6fa58c58f53303e54",
+      "sha256": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+      "evidence_path": "source/tools/substrate/task.py"
+    },
+    {
+      "path": "tools/substrate/readiness.py",
+      "git_blob": "3bd0e8eccb8a66eef8d3588b1331b037e90fcd52",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+      "evidence_path": "source/tools/substrate/readiness.py"
+    },
+    {
+      "path": "tools/substrate/qualify.py",
+      "git_blob": "e4e8178d36b249af62f4202cb5c69c348471875b",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+      "evidence_path": "source/tools/substrate/qualify.py"
+    },
+    {
+      "path": "tools/substrate/qualification.py",
+      "git_blob": "f1cdfab73832daf221b3889352b23abb72b9b57f",
+      "sha256": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009",
+      "evidence_path": "source/tools/substrate/qualification.py"
+    },
+    {
+      "path": "tools/substrate/admit.py",
+      "git_blob": "c9cf4a37f2921c509d4094b87a158062cde240f6",
+      "sha256": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad",
+      "evidence_path": "source/tools/substrate/admit.py"
+    },
+    {
+      "path": "tools/substrate/native/admit.cc",
+      "git_blob": "e4c100af6eeab5f5a5b24ca5a4a0a70a3a833dfc",
+      "sha256": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+      "evidence_path": "source/tools/substrate/native/admit.cc"
+    },
+    {
+      "path": "tools/substrate/guards.py",
+      "git_blob": "c44152dddcde4464f5f0000b8745929a7a5b10ae",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "evidence_path": "source/tools/substrate/guards.py"
+    },
+    {
+      "path": "tools/substrate/baseline.py",
+      "git_blob": "4516f7723d27cd05f3b1bf22083ed92333ff79eb",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "evidence_path": "source/tools/substrate/baseline.py"
+    },
+    {
+      "path": "tools/substrate/baseline_episode.py",
+      "git_blob": "0792d94711f6939ac8684e8e1801c53d4b738e51",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317",
+      "evidence_path": "source/tools/substrate/baseline_episode.py"
+    },
+    {
+      "path": "tools/substrate/launch.py",
+      "git_blob": "a7feeff0c2ca9f4b528452fc5fe715ee0f54c059",
+      "sha256": "135407d9dd6aae9579f3e41cc9ba47e843bcd5342fafee5bd43f06be99a9eb9b",
+      "evidence_path": "source/tools/substrate/launch.py"
+    }
+  ]
+}

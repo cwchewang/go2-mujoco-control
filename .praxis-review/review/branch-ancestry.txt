@@ -1,0 +1,3 @@
+target branch=research/shared-transfer-formal-v2-final-20260923 commit=9e82e56ac2a5db63d7834e86ce402d542bf10ae8 parent=c53806f6c984228fc7661ccea9ac742d24cd0194
+science_review branch=review/shared-transfer-formal-v2-science-r3-20260924 commit=b31454ba2f30b53d18e1332fc82029390203c0e4 parent=9e82e56ac2a5db63d7834e86ce402d542bf10ae8
+execution_review branch=review/shared-transfer-formal-v2-execution-r3-20260924 commit=47c471842754bf1649db3a0a0bb8f1c722255162 parent=9e82e56ac2a5db63d7834e86ce402d542bf10ae8

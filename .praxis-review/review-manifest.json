@@ -1,0 +1,224 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E2",
+    "E20",
+    "E21",
+    "E22",
+    "E23",
+    "E24",
+    "E25",
+    "E26",
+    "E27",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 173,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "d957ae6ffe902e84473be41e85041b09afc15bac816dc33e87e3e233227f340b",
+      "size": 12175
+    },
+    {
+      "path": "index.json",
+      "sha256": "b9603af95da0927edb8300f4cf97623bb0097dc412d1b49537b259140f298024",
+      "size": 6894
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "e430d3b279b07fec94d10aad1712ed051026956fac44520b7c1f2bc86c9505ef",
+      "size": 525
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review/target-head-and-parent.txt",
+      "sha256": "04fc2cfd6d5b167c3517bcf69bd5ea9fde4976f07519ba1b5a81cd6deec09554",
+      "size": 375
+    },
+    {
+      "evidence_id": "E10",
+      "path": "review/formal-task-diff.patch",
+      "sha256": "e0e2991e0fa833a5907d47af9c060f38a7b600087e2d558a6f2e9813a30a6285",
+      "size": 1227
+    },
+    {
+      "evidence_id": "E11",
+      "path": "review/source/tools/substrate/qualify.py",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+      "size": 6403
+    },
+    {
+      "evidence_id": "E12",
+      "path": "review/source/tools/substrate/admit.py",
+      "sha256": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad",
+      "size": 10233
+    },
+    {
+      "evidence_id": "E13",
+      "path": "review/source/tools/substrate/native/admit.cc",
+      "sha256": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+      "size": 4092
+    },
+    {
+      "evidence_id": "E14",
+      "path": "review/source/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "size": 1506
+    },
+    {
+      "evidence_id": "E15",
+      "path": "review/source/tools/substrate/baseline.py",
+      "sha256": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "size": 16238
+    },
+    {
+      "evidence_id": "E16",
+      "path": "review/source/tools/substrate/readiness.py",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+      "size": 1971
+    },
+    {
+      "evidence_id": "E17",
+      "path": "review/source/tools/substrate/baseline_episode.py",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317",
+      "size": 16267
+    },
+    {
+      "evidence_id": "E18",
+      "path": "review/github-issue-166.json",
+      "sha256": "f82dfb4a81f5638a13bda2280a69b51477e917aba314b5192476640b8fcd7d69",
+      "size": 455
+    },
+    {
+      "evidence_id": "E19",
+      "path": "review/r2-execution-review.json",
+      "sha256": "092c4f5e921e53bfab86cc3fc8e8feeea8980ed9a3f13056807f6d2465723bf4",
+      "size": 3107
+    },
+    {
+      "evidence_id": "E2",
+      "path": "review/remote-branch-tips.txt",
+      "sha256": "fb3f3176f1f6bda361abebafd4ba130056668aa921a706cc9837c60fc530bfd7",
+      "size": 376
+    },
+    {
+      "evidence_id": "E20",
+      "path": "review/science-review-task-r3.md",
+      "sha256": "2e8d07b1d2abed86c882c94fa6ba7c5f7defa98e92be088256c1fcde886895fd",
+      "size": 1338
+    },
+    {
+      "evidence_id": "E21",
+      "path": "review/execution-review-task-r3.md",
+      "sha256": "203894ea24c402b00bb3b739f05cac5af2dc51893433b5df4aa7893b4b59294f",
+      "size": 1462
+    },
+    {
+      "evidence_id": "E22",
+      "path": "review/science-result-status.txt",
+      "sha256": "2ef89d66557020a230e65bd42e541653ae3ec5adf6ce6af9a1d5b47397afca88",
+      "size": 387
+    },
+    {
+      "evidence_id": "E23",
+      "path": "review/command-results.json",
+      "sha256": "8ca7c1a3dfd6d9a501af2d24b4bdb8b9c55d07adadd690b17ce3bb107229d5a1",
+      "size": 1650
+    },
+    {
+      "evidence_id": "E24",
+      "path": "review/source-snapshots-manifest.json",
+      "sha256": "9de2e32c0506273cf14bb049868843192b91d37b96885c0e648abc9841b1749b",
+      "size": 3985
+    },
+    {
+      "evidence_id": "E25",
+      "path": "review/execution-review-result.json",
+      "sha256": "885ddeee3a791405c32babfaa6e861f42550b87181d97a3a06a9ae66f69b0a09",
+      "size": 3211
+    },
+    {
+      "evidence_id": "E26",
+      "path": "review/commit-verification.txt",
+      "sha256": "3ba412f1e42d0f69674056d51ea13017768db7cd5510319dfb6a08cc84c4f1c4",
+      "size": 314
+    },
+    {
+      "evidence_id": "E27",
+      "path": "review/tracked-target-paths.txt",
+      "sha256": "c4f5f5a7bb6f16def197a0a93478dc54fc172bfc66cb92b202323ad2ea20385b",
+      "size": 183
+    },
+    {
+      "evidence_id": "E3",
+      "path": "review/branch-ancestry.txt",
+      "sha256": "c60be861782eab07593b7501dba601223011a49171e1e08b5bd13e168a917bcf",
+      "size": 506
+    },
+    {
+      "evidence_id": "E4",
+      "path": "review/source/docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "sha256": "d020b400f2c049b9de26e8fa1f4e1cf0913720486d0b6fb12a9a0c0c7fb6d672",
+      "size": 7502
+    },
+    {
+      "evidence_id": "E5",
+      "path": "review/source/tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "size": 433
+    },
+    {
+      "evidence_id": "E6",
+      "path": "review/source/tools/research/identity.py",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "size": 3419
+    },
+    {
+      "evidence_id": "E7",
+      "path": "review/source/tools/substrate/task.py",
+      "sha256": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+      "size": 3716
+    },
+    {
+      "evidence_id": "E8",
+      "path": "review/protocol-target.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E9",
+      "path": "review/protocol-sha256.txt",
+      "sha256": "a07f182d710f8be3d26e5dfe8b01acdb016752b63c3b63262a3a35f879f768fd",
+      "size": 87
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "16810592cbc342ed29d3ce92f22efe6062516bb5",
+  "schema_version": 1,
+  "source_index_sha256": "b9603af95da0927edb8300f4cf97623bb0097dc412d1b49537b259140f298024",
+  "task_branch": "review/shared-transfer-formal-v2-execution-r3-20260924",
+  "task_commit": "47c471842754bf1649db3a0a0bb8f1c722255162"
+}
