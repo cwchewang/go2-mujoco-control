@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import importlib.util
-from pathlib import Path
 import unittest
-
-MODULE_PATH = Path(__file__).with_name("preflight.py")
-SPEC = importlib.util.spec_from_file_location("research_preflight", MODULE_PATH)
-assert SPEC is not None and SPEC.loader is not None
-preflight = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(preflight)
+from tools.research import preflight
 
 
 class PreflightRegressionTest(unittest.TestCase):

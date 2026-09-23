@@ -19,6 +19,12 @@ import subprocess
 import sys
 from typing import Any
 
+if __package__:
+    from .identity import validate_execution_identity
+else:
+    # Direct script execution puts this directory, not the repo root, on sys.path.
+    from identity import validate_execution_identity
+
 DEFAULT_PROCESS_NAMES = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
 LINUX_SAFE_DOMAIN_RANGES = ((0, 101), (215, 232))
 SURFACES = {"runtime", "runner", "schema", "scene", "analyzer"}
@@ -428,14 +434,28 @@ def _main() -> int:
     git_rc, head, git_err = command(["git", "rev-parse", "HEAD"], repo)
     branch_rc, branch, branch_err = command(["git", "branch", "--show-current"], repo)
     status_rc, status, status_err = command(["git", "status", "--porcelain"], repo)
+    identity = validate_execution_identity(
+        branch if branch_rc == 0 else "",
+        args.expected_branch,
+        head if git_rc == 0 else "",
+        args.expected_head,
+        os.environ,
+    )
+    report["identity"] = identity
     add_check(
         checks, "git_head_readable", git_rc == 0, head if git_rc == 0 else git_err
     )
     add_check(
         checks,
         "expected_branch",
-        branch_rc == 0 and branch == args.expected_branch,
-        {"actual": branch, "expected": args.expected_branch, "stderr": branch_err},
+        branch_rc == 0 and identity["pass"],
+        {**identity, "stderr": branch_err},
+    )
+    add_check(
+        checks,
+        "praxis_identity_binding",
+        identity["praxis_binding"]["check_pass"],
+        identity["praxis_binding"],
     )
     add_check(
         checks,

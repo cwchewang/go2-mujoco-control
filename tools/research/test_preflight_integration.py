@@ -3,6 +3,7 @@
 import contextlib
 import io
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -10,6 +11,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from tools.research import preflight as p
+from tools.research.identity import PRAXIS_ENVIRONMENT_KEYS
 
 
 class ReadinessFixtures(unittest.TestCase):
@@ -35,7 +37,7 @@ class ReadinessFixtures(unittest.TestCase):
         git("commit", "-m", "fixture")
         self.head = git("rev-parse", "HEAD")
 
-    def call(self, *extra):
+    def call(self, *extra, praxis_environment=None):
         argv = [
             "preflight",
             "--repo-root",
@@ -53,8 +55,12 @@ class ReadinessFixtures(unittest.TestCase):
             *([] if "inprocess" in extra else ["--domain", "230"]),
             *extra,
         ]
+        environment = dict.fromkeys(PRAXIS_ENVIRONMENT_KEYS, "")
+        if praxis_environment is not None:
+            environment.update(praxis_environment)
         stream = io.StringIO()
         with (
+            patch.dict(os.environ, environment),
             patch.object(sys, "argv", argv),
             patch.object(p, "find_processes", return_value=[]),
             patch.object(p, "occupied_udp_ports", return_value=set()),
@@ -64,11 +70,92 @@ class ReadinessFixtures(unittest.TestCase):
             code = p._main()
         return code, json.loads(stream.getvalue())
 
+    def praxis_binding(self, **overrides):
+        values = {
+            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+            "PRAXIS_ISSUE_NUMBER": "158",
+            "PRAXIS_TASK_BRANCH": "fixture",
+            "PRAXIS_TASK_COMMIT": self.head,
+            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
+        }
+        values.update(overrides)
+        return values
+
+    def detach_head(self):
+        self.git("checkout", "--detach", "HEAD")
+
     def test_positive_fixture_does_not_launch_runner(self):
         code, result = self.call()
         self.assertEqual(code, 0)
         self.assertTrue(result["pass"])
         self.assertFalse((self.root / "out/capture").exists())
+
+    def test_named_expected_branch_passes_without_praxis_binding(self):
+        code, result = self.call()
+        self.assertEqual(code, 0)
+        self.assertTrue(result["pass"])
+        self.assertEqual(result["identity"]["mode"], "named")
+
+    def test_detached_head_passes_with_exact_praxis_binding(self):
+        self.detach_head()
+        code, result = self.call(praxis_environment=self.praxis_binding())
+        self.assertEqual(code, 0)
+        self.assertTrue(result["pass"])
+        self.assertEqual(result["identity"]["mode"], "detached")
+
+    def test_detached_head_without_praxis_binding_fails(self):
+        self.detach_head()
+        code, result = self.call()
+        self.assertEqual(code, 2)
+        self.assertFalse(result["pass"])
+        self.assertFalse(result["identity"]["praxis_binding"]["check_pass"])
+
+    def test_detached_head_rejects_wrong_praxis_repository(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(
+                PRAXIS_REPOSITORY="someone-else/go2-mujoco-control"
+            )
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_REPOSITORY",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_wrong_praxis_logical_branch(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(
+                PRAXIS_TASK_BRANCH="research/other-task"
+            )
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_TASK_BRANCH",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_wrong_praxis_task_commit(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40)
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_TASK_COMMIT",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_incomplete_praxis_binding(self):
+        self.detach_head()
+        binding = self.praxis_binding()
+        binding.pop("PRAXIS_TASK_PATH")
+        code, result = self.call(praxis_environment=binding)
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_TASK_PATH", result["identity"]["praxis_binding"]["missing"]
+        )
 
     def test_explicit_runner_change_records_diff_for_nonstandard_path(self):
         base = self.head

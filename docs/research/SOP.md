@@ -63,10 +63,13 @@ without a manifest must be reissued under the new contract before dispatch;
 do not silently relax this gate to replay them.
 
 Before capture, the runner continuously holds the experiment lock through
-preflight and the whole campaign. Check exact HEAD/branch and clean worktree,
-current inputs, fresh output, no stale runtime processes, and transport-specific
-constraints. DDS uses actual domain/port checks; reviewed in-process runners
-have no fictitious DDS requirement. Never run a real runner as a preflight test.
+preflight and the whole campaign. Check exact HEAD, expected logical branch
+identity, and clean worktree. A named expected branch remains valid for manual
+execution; a detached Praxis v2 worktree requires the complete matching Praxis
+binding and exact frozen commit. Also check current inputs, fresh output, no
+stale runtime processes, and transport-specific constraints. DDS uses actual
+domain/port checks; reviewed in-process runners have no fictitious DDS
+requirement. Never run a real runner as a preflight test.
 
 Use the accepted parent as diff-base. Automatically classify changed runtime,
 runner, schema, scene and analyzer files; explicit surfaces add to this set.
