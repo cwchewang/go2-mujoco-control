@@ -1,0 +1,9 @@
+snapshot_utc=2026-09-23T14:22:38.526603Z
+pid ppid comm process_label
+216157 215827 python praxis_v2.cli run
+216159 215827 python praxis_v2.cli run
+216161 215827 python praxis_v2.cli run
+216269 216159 codex codex exec
+216306 216157 codex codex exec
+216502 216161 codex codex exec
+matching_process_count=6

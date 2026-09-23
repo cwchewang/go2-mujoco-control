@@ -1,0 +1,92 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 159,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "ee22322540b23e379ff06d198857929a3965e51b5dfe30a836a42f915b2f64c3",
+      "size": 6008
+    },
+    {
+      "path": "index.json",
+      "sha256": "dc9252241f1c702fb50d0448519a99feabebf5057026c18428ea9cf0a9f8c8c6",
+      "size": 2412
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "46f5a46672aca996f7c2a83910c281e9f5fc63b02ef6056750b3c66e912b6515",
+      "size": 508
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E2",
+      "path": "raw/frozen-task-document.md",
+      "sha256": "011cdffa3342d7f5f5ac362d55193dfad5d22af28501bbb571a6c9d1900022ef",
+      "size": 2137
+    },
+    {
+      "evidence_id": "E3",
+      "path": "raw/live-start.txt",
+      "sha256": "1af3e3668aeab67d03d76144922823d9602554d7ec37ed2236c060c8d7fe3a99",
+      "size": 327
+    },
+    {
+      "evidence_id": "E4",
+      "path": "raw/process-snapshot.txt",
+      "sha256": "a6b0064e6ee0b2e7151d7cade8562a2007ee58d5bd6b92621be3b6a68b453bac",
+      "size": 304
+    },
+    {
+      "evidence_id": "E5",
+      "path": "raw/live-end.txt",
+      "sha256": "a47e991bb16d8ae3dff80f10b62051e1d7879114203746db96d18d45c525dd22",
+      "size": 45
+    },
+    {
+      "evidence_id": "E6",
+      "path": "raw/git-result.txt",
+      "sha256": "b8a16a3f9fad4e968a6c2e83e3b0c395cc490cb779a53eaf2a2d9753f40e0082",
+      "size": 2385
+    },
+    {
+      "evidence_id": "E7",
+      "path": "raw/branch-track-attempt.txt",
+      "sha256": "18082fcc283f6f28e40a8f0e27cd52b628a7eb1a000b19e849c7744ee3298b47",
+      "size": 148
+    },
+    {
+      "evidence_id": "E8",
+      "path": "raw/commit-output.txt",
+      "sha256": "d9571d2c564fcd09ec12c71a7bf51dd552208c924b28bf993d30a5058b2db396",
+      "size": 325
+    },
+    {
+      "evidence_id": "E9",
+      "path": "raw/commit-retry.txt",
+      "sha256": "cac0164dd8501cece62d24ea9a5ef8602a4c97d94c0f0962b2a600f9f7be9d42",
+      "size": 235
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "d8fe945b336e3367fbb879fc494b3d2ea287cda8",
+  "schema_version": 1,
+  "source_index_sha256": "dc9252241f1c702fb50d0448519a99feabebf5057026c18428ea9cf0a9f8c8c6",
+  "task_branch": "research/praxis-v2-live-concurrency-go2-a-20260923",
+  "task_commit": "081f4e123425ac6e5c5f1e642cf5d4c0ffad53f2"
+}

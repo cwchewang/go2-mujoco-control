@@ -1,0 +1,161 @@
+{
+  "status": "complete",
+  "summary": "Completed the Go2 A bounded live-overlap capture and committed the sole authorized tracked result on the frozen task branch.",
+  "completed": [
+    "Recorded a high-resolution UTC start and all five frozen PRAXIS identity values, then captured the bounded process snapshot and end time.",
+    "The snapshot recorded three praxis_v2.cli run processes and three codex exec processes during the measured interval.",
+    "Added docs/validation/praxis_v2_live_concurrency_20260923/GO2_A_RESULT.md, ran Git diff checks, and committed it as d8fe945b336e3367fbb879fc494b3d2ea287cda8 on the requested branch with the frozen starting commit as parent.",
+    "Confirmed the final worktree is clean and the commit changes only the authorized result document.",
+    "No physics, GPU, or scientific work was run for this task."
+  ],
+  "not_completed": [
+    "The cross-task A/B/C interval comparison and global isolation decision remain for Praxis; this individual task does not make that global determination."
+  ],
+  "observations": [
+    {
+      "text": "The Praxis manifest identifies repository cwchewang/go2-mujoco-control, issue 159, the frozen branch, starting commit and task document; live-start.txt records the same five PRAXIS identity values and start time 2026-09-23T14:22:18.509644909Z.",
+      "evidence_ids": [
+        "E1",
+        "E3"
+      ]
+    },
+    {
+      "text": "At 2026-09-23T14:22:38.526603Z, the process snapshot lists three praxis_v2.cli run processes (PIDs 216157, 216159, 216161) and three codex exec processes (PIDs 216269, 216306, 216502); command arguments and environment values are omitted.",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    {
+      "text": "The recorded live-end timestamp is 2026-09-23T14:23:11.338230994Z.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "Git rejected the initial tracking-branch command; the named local branch was then created at the frozen commit and the committed result has that exact parent.",
+      "evidence_ids": [
+        "E7",
+        "E6"
+      ]
+    },
+    {
+      "text": "The first commit attempt failed because no author name was configured; the subsequent retry created the recorded commit.",
+      "evidence_ids": [
+        "E8",
+        "E9",
+        "E6"
+      ]
+    },
+    {
+      "text": "The committed result states that no physics, GPU, or scientific work ran; the task document also sets this task's zero-physics infrastructure boundary.",
+      "evidence_ids": [
+        "E2",
+        "E6"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The timestamps place the process sample about 20.017 seconds after the start and the end about 32.812 seconds after the sample, spanning the two required wait intervals.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "The six matching process records in one snapshot demonstrate coexistence of three Praxis run processes and three Codex executions at that sampled instant.",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    {
+      "text": "The commit parent equals the frozen starting commit, its sole changed path is the authorized result document, and the final status is clean; the frozen task document therefore remains unchanged in this commit.",
+      "evidence_ids": [
+        "E1",
+        "E6"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The individual Go2 A task's required live-overlap capture and tracked-result commit are complete, with direct process evidence at the recorded sample and a clean, single-file commit on the requested branch.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "One process snapshot establishes coexistence only at that instant; it does not establish uninterrupted overlap throughout the full interval or global isolation across the three independent tasks. Praxis must compare their separate evidence intervals and snapshots.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "manifest.json",
+      "description": "Praxis-provided frozen task identity and worktree metadata."
+    },
+    {
+      "id": "E2",
+      "path": "raw/frozen-task-document.md",
+      "description": "Task document extracted from the exact frozen starting commit; its Git blob is cross-checked in E6."
+    },
+    {
+      "id": "E3",
+      "path": "raw/live-start.txt",
+      "description": "High-resolution start timestamp and five frozen PRAXIS identity values."
+    },
+    {
+      "id": "E4",
+      "path": "raw/process-snapshot.txt",
+      "description": "Timestamped, bounded process listing with sanitized process labels and PIDs."
+    },
+    {
+      "id": "E5",
+      "path": "raw/live-end.txt",
+      "description": "High-resolution end timestamp."
+    },
+    {
+      "id": "E6",
+      "path": "raw/git-result.txt",
+      "description": "Commit and parent, changed path, clean final status, diff-check result, task-document blob comparison and committed patch."
+    },
+    {
+      "id": "E7",
+      "path": "raw/branch-track-attempt.txt",
+      "description": "Preserved failure output from Git's tracking-branch attempt."
+    },
+    {
+      "id": "E8",
+      "path": "raw/commit-output.txt",
+      "description": "Preserved first commit failure caused by missing configured author name."
+    },
+    {
+      "id": "E9",
+      "path": "raw/commit-retry.txt",
+      "description": "Successful commit output for the authorized result document."
+    },
+    {
+      "id": "E10",
+      "path": "raw/SHA256SUMS",
+      "description": "SHA-256 manifest for the frozen task metadata and principal raw evidence files."
+    },
+    {
+      "id": "E11",
+      "path": "raw/sha256-verification.txt",
+      "description": "Recorded successful verification of every entry in E10."
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+fatal: Cannot setup tracking information; starting point 'origin/research/praxis-v2-live-concurrency-go2-a-20260923' is not a branch.
+exit_code=128

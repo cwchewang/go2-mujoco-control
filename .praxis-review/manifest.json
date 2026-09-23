@@ -1,0 +1,13 @@
+{
+  "result_commit": "d8fe945b336e3367fbb879fc494b3d2ea287cda8",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "research/praxis-v2-live-concurrency-go2-a-20260923",
+    "issue_number": 159,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "081f4e123425ac6e5c5f1e642cf5d4c0ffad53f2",
+    "task_path": "docs/research/TASK_PRAXIS_V2_LIVE_CONCURRENCY_GO2_A_20260923.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-159"
+}

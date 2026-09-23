@@ -1,0 +1,82 @@
+{
+  "files": [
+    {
+      "path": "closeout.json",
+      "sha256": "ee22322540b23e379ff06d198857929a3965e51b5dfe30a836a42f915b2f64c3",
+      "size": 6008
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "546202a702bd259396fc9de187f0bc71d109c3b9b440eaf0775576aea69732c9",
+      "size": 116986
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "46f5a46672aca996f7c2a83910c281e9f5fc63b02ef6056750b3c66e912b6515",
+      "size": 508
+    },
+    {
+      "path": "raw/SHA256SUMS",
+      "sha256": "a3dff89d8cd99184099eea177d35f779851af2258ed8d115ca1a645193baa7da",
+      "size": 788
+    },
+    {
+      "path": "raw/branch-track-attempt.txt",
+      "sha256": "18082fcc283f6f28e40a8f0e27cd52b628a7eb1a000b19e849c7744ee3298b47",
+      "size": 148
+    },
+    {
+      "path": "raw/commit-output.txt",
+      "sha256": "d9571d2c564fcd09ec12c71a7bf51dd552208c924b28bf993d30a5058b2db396",
+      "size": 325
+    },
+    {
+      "path": "raw/commit-retry.txt",
+      "sha256": "cac0164dd8501cece62d24ea9a5ef8602a4c97d94c0f0962b2a600f9f7be9d42",
+      "size": 235
+    },
+    {
+      "path": "raw/frozen-task-document.md",
+      "sha256": "011cdffa3342d7f5f5ac362d55193dfad5d22af28501bbb571a6c9d1900022ef",
+      "size": 2137
+    },
+    {
+      "path": "raw/git-result.txt",
+      "sha256": "b8a16a3f9fad4e968a6c2e83e3b0c395cc490cb779a53eaf2a2d9753f40e0082",
+      "size": 2385
+    },
+    {
+      "path": "raw/live-end.txt",
+      "sha256": "a47e991bb16d8ae3dff80f10b62051e1d7879114203746db96d18d45c525dd22",
+      "size": 45
+    },
+    {
+      "path": "raw/live-start.txt",
+      "sha256": "1af3e3668aeab67d03d76144922823d9602554d7ec37ed2236c060c8d7fe3a99",
+      "size": 327
+    },
+    {
+      "path": "raw/process-snapshot.txt",
+      "sha256": "a6b0064e6ee0b2e7151d7cade8562a2007ee58d5bd6b92621be3b6a68b453bac",
+      "size": 304
+    },
+    {
+      "path": "raw/sha256-verification.txt",
+      "sha256": "ae2322427a83c39d45f48a733ddf473f0aeb55ff4f7d0854090794ad213663ca",
+      "size": 230
+    }
+  ],
+  "result_commit": "d8fe945b336e3367fbb879fc494b3d2ea287cda8",
+  "schema_version": 1,
+  "status": "complete"
+}
