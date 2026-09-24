@@ -1,7 +1,13 @@
-"""Exact-head review and explicit start-record validation; no runner imports."""
+"""Review inheritance and explicit start-record validation; no runner imports."""
+
+from __future__ import annotations
+
+import re
+
+from tools.research.review_contract import validate_receipt
 
 
-def validate_review(review, head):
+def _legacy_review(review, head):
     if (
         not isinstance(review, dict)
         or set(review) != {"head", "science", "execution"}
@@ -22,6 +28,39 @@ def validate_review(review, head):
             raise ValueError("missing independent " + role + " review")
         identities.append(item["reviewer"])
     if len(set(identities)) != 2:
+        raise ValueError("science and execution reviewers must differ")
+
+
+def validate_review(review, head, contracts=None):
+    """Validate either legacy exact-HEAD review or schema-2 contract approvals.
+
+    Schema 2 treats target_head as provenance. Approval validity is keyed to the
+    reviewed contract digest, so an execution-only HEAD change does not
+    invalidate an unchanged science approval.
+    """
+    if not isinstance(review, dict) or review.get("schema") != 2:
+        return _legacy_review(review, head)
+
+    allowed = {"schema", "target_head", "science", "execution"}
+    if set(review) != allowed:
+        raise ValueError("invalid schema-2 review bundle")
+    target_head = review["target_head"]
+    if not isinstance(target_head, str) or not re.fullmatch(r"[0-9a-f]{40}", target_head):
+        raise ValueError("schema-2 review requires target_head provenance")
+    if not isinstance(contracts, dict):
+        raise ValueError("schema-2 review requires current contract hashes")
+
+    science = validate_receipt(
+        review["science"],
+        contracts,
+        required_domains=["science"],
+    )
+    execution = validate_receipt(
+        review["execution"],
+        contracts,
+        required_domains=["execution"],
+    )
+    if science["reviewer"].strip() == execution["reviewer"].strip():
         raise ValueError("science and execution reviewers must differ")
 
 
