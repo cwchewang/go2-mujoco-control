@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "role": "science",
+  "target_head": "de5e396331e01576a2bfd0fe1ccdf662835aa15a",
+  "reviewer": "OpenAI Codex (science review)",
+  "verdict": "APPROVED",
+  "summary": "APPROVED. The protocol at the exact target is byte-identical to the cited prior integrity result (SHA-256 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803), including the nine-case matrix, commands, scenes, thresholds, terrain goals, safety, max_attempts=9, retry/progression semantics, and sealed #166 digest 1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484. The target commit changes only prospective r2 review references in the formal task; intervening source edits bind Praxis task identity and wire trusted values into preflight without changing capture inputs or evidence meaning.",
+  "evidence": [
+    "E1: review_audit/scientific_comparison — prior and target protocol snapshots, exact-byte/hash comparison, case details, prior integrity closeout, and target formal task snapshot.",
+    "E2: review_audit/execution_identity/identity_hardening.diff — full prior-result-to-target source diff for identity, preflight, launch, task loader/configuration, and launch identity tests.",
+    "E3: review_audit/review_paths/formal_task_review_location_diff.txt — exact target commit diff for prospective r2 science and execution review paths.",
+    "E4: review_audit/unit_tests — raw non-plant unit test outputs, including the passing current-identity suite and the preflight integration fixture failure.",
+    "E5: review_audit/execution_identity/diff_base_surface_effect.json — prior and target diff-base values with inferred preflight change surfaces and affected paths.",
+    "E6: review_audit/review_findings.md — review notes, scope limits, and disposition tied to preserved source and test artifacts."
+  ],
+  "concerns": [
+    "Execution review note (E4, E2): 24 of 25 preflight integration fixture tests pass. The exact-binding success fixture fails because it does not supply the newly required --expected-praxis-issue-number and --expected-praxis-task-path arguments; launch.py passes both from tracked task metadata. This is an execution test-fixture gap and does not alter the scientific disposition.",
+    "Execution baseline note (E5): changing diff_base to the prior integrity result narrows preflight inferred surfaces from runner/runtime/schema to runner/runtime. It reclassifies the earlier protocol repair as established baseline; the protocol bytes and capture inputs remain identical, and the launcher still requires exact-head review and qualification."
+  ]
+}
