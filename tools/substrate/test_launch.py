@@ -103,7 +103,15 @@ class CurrentIdentityTests(unittest.TestCase):
         self.git("add", "tracked.txt")
         self.git("commit", "-m", "fixture")
         self.head = self.git("rev-parse", "HEAD")
-        self.task = {"configuration": {"branch": "fixture"}}
+        self.task = {
+            "configuration": {
+                "branch": "fixture",
+                "praxis": {
+                    "issue_number": 158,
+                    "task_path": "docs/research/TASK_IDENTITY_FIXTURE.md",
+                },
+            }
+        }
 
     def git(self, *args):
         return subprocess.check_output(
@@ -172,6 +180,18 @@ class CurrentIdentityTests(unittest.TestCase):
         self.detach_head()
         with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
             self.current_identity(self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40))
+
+    def test_detached_head_with_wrong_praxis_issue_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(self.praxis_binding(PRAXIS_ISSUE_NUMBER="999"))
+
+    def test_detached_head_with_wrong_praxis_task_path_fails(self):
+        self.detach_head()
+        with self.assertRaisesRegex(ValueError, "Praxis-bound detached HEAD"):
+            self.current_identity(
+                self.praxis_binding(PRAXIS_TASK_PATH="docs/research/WRONG.md")
+            )
 
     def test_detached_head_with_incomplete_binding_fails(self):
         self.detach_head()
