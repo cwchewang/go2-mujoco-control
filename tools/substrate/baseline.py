@@ -26,7 +26,7 @@ from .integrity import (
     verify_bundle,
     write_new,
 )
-from .launch import CHECKPOINT, current_identity, preflight, setup_runtime
+from .launch import CHECKPOINT, current_identity, preflight, review_contracts, setup_runtime
 from .model import dependency_manifest, physical_fingerprint
 from .qualification import validate, validate_reference
 from .readiness import validate_authorization, validate_review
@@ -132,7 +132,7 @@ def prepare(output, review_path, qualification_path, task_path=TASK):
         protocol_path = ROOT / task["configuration"]["protocol"]
         protocol = strict_json(protocol_path.read_text())
         review = strict_json(review_path.read_text())
-        validate_review(review, head)
+        validate_review(review, head, review_contracts(task))
         qualification = validate(qualification_path)
         fresh_preflight(
             lock,
@@ -224,7 +224,7 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
         prepared["prepared_manifest_sha256"] = digest(prepared_path / "manifest.json")
         auth = strict_json(authorization_path.read_text())
         validate_authorization(auth, prepared)
-        validate_review(prepared["review"], head)
+        validate_review(prepared["review"], head, review_contracts(task))
         qualification = validate_reference(prepared["qualification_reference"])
         verify_environment()
         setup_runtime()
