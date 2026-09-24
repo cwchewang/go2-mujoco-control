@@ -393,6 +393,7 @@ def _main() -> int:
         help="use when a runner/analyzer/tooling diff changes trajectory or primary evidence meaning",
     )
     ap.add_argument("--approved-head")
+    ap.add_argument("--review-validation-mode", choices=("exact_head", "contract_hash"), default="exact_head")
     ap.add_argument("--require-file", action="append", default=[])
     ap.add_argument("--hash", dest="hash_requirements", action="append", default=[])
     ap.add_argument(
@@ -696,18 +697,27 @@ def _main() -> int:
     review_required = bool(args.requires_sol_review or (changed & AUTO_REVIEW_SURFACES))
     report["sol_review"] = {
         "required": review_required,
+        "validation_mode": args.review_validation_mode,
         "approved_head": args.approved_head,
         "current_head": head,
         "auto_trigger_surfaces": sorted(changed & AUTO_REVIEW_SURFACES),
     }
+    review_valid = (
+        not review_required
+        or args.review_validation_mode == "contract_hash"
+        or (bool(args.approved_head) and args.approved_head == head)
+    )
     add_check(
         checks,
-        "sol_review_exact_head",
-        (not review_required)
-        or (bool(args.approved_head) and args.approved_head == head),
+        "sol_review_validity",
+        review_valid,
         "not required"
         if not review_required
-        else {"approved_head": args.approved_head, "current_head": head},
+        else {
+            "validation_mode": args.review_validation_mode,
+            "approved_head": args.approved_head,
+            "current_head": head,
+        },
     )
 
     post_head_rc, post_head, _ = command(["git", "rev-parse", "HEAD"], repo)
