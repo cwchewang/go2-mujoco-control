@@ -9,6 +9,8 @@ from .baseline_episode import (
     SourcePolicy,
     analyze,
     command_at,
+    expected_reference_digest,
+    enforce_reference_digest,
     repeat_reference,
     safety,
     stop_after,
@@ -397,6 +399,7 @@ def verify(capture, prepared_path, output):
             protocol == strict_json((prepared_path / "protocol.json").read_text()),
             "protocol mismatch",
         )
+        sealed_reference = expected_reference_digest(protocol)
         reference = strict_json((capture / "preparation-reference.json").read_text())
         require(
             reference["manifest_sha256"] == digest(prepared_path / "manifest.json"),
@@ -496,6 +499,11 @@ def verify(capture, prepared_path, output):
                     prepared["source_inputs"][".substrate/rl/policy.pt"],
                 )
             result, audit = audit_rows(rows, plant, policy, case, protocol)
+            result = enforce_reference_digest(
+                result,
+                case,
+                sealed_reference if case["id"] == "flat_reference" else None,
+            )
             reference_case = repeat_reference(case)
             if (
                 reference_case is not None

@@ -12,6 +12,8 @@ from .baseline_episode import (
     UnsupportedSceneError,
     analyze,
     command_at,
+    expected_reference_digest,
+    enforce_reference_digest,
     episode,
     make_policy,
     reference_inputs,
@@ -69,6 +71,7 @@ def validate_capability_protocol(protocol):
     ids = [case.get("id") for case in cases]
     if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
         raise ValueError("capability-map cases must have unique IDs and lead with reference")
+    expected_reference_digest(protocol)
     ranges = protocol["engineering_probe_envelope"]
     bounds = {
         "vx": ranges["vx_mps"],
@@ -466,6 +469,7 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     rows = [strict_json(line) for line in raw.read_text().splitlines()]
                     result = analyze(rows, case, protocol)
                     result["elapsed_s"] = time.monotonic() - started
+                    result = enforce_reference_digest(result, case)
                     reference_case = repeat_reference(case)
                     if (
                         reference_case is not None

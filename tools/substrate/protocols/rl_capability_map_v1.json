@@ -30,6 +30,7 @@
       "track_axes": ["vx"],
       "flat_probe": true,
       "reference_gate": true,
+      "reference_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
       "requires": [],
       "measurement_delay_ticks": 1000
     },

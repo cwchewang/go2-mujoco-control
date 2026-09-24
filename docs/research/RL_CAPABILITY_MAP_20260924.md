@@ -1,5 +1,8 @@
 # RL capability map design — 2026-09-24
 
+This design includes the prospective reference-integrity binding from the
+[integrity r2 closeout](../validation/rl_capability_map_integrity_r2_20260924/RESULTS.md).
+
 ## Decision served
 
 After the shared-model, shared-home, ten-step-start, adapter deployment passed
@@ -94,7 +97,7 @@ foot-center lateral offset and 0.022 m foot radius from the scene edge.
 
 | Order / case | Changed variable and command `[vx,vy,wz]` | Horizon / metric window | Success gate and question | Attempt / progression |
 |---|---|---|---|---|
-| 1 `flat_reference` | Flat scene; `[1.0,0,0]` m/s. | 6,000 ticks / ticks [1,000,6,000). | Existing flat reference gates above. If it does not pass, all later cases remain `NOT_RUN`; no terrain interpretation is valid. | 1; sentinel. |
+| 1 `flat_reference` | Flat scene; `[1.0,0,0]` m/s. | 6,000 ticks / ticks [1,000,6,000). | Existing flat reference gates above and exact equality with sealed #166 qpos/qvel/target/applied digest `1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484`. A digest mismatch is `INTEGRITY_STOP`; all dependent cases remain `NOT_RUN`. | 1; sentinel. |
 | 2 `flat_half_speed` | Flat; `[0.5,0,0]` m/s, the pinned class-range endpoint and half the verified reference speed. | 6,000 / [1,000,6,000). | Forward MAE gate; lateral displacement and yaw excursion each <=0.30. Screens the intermediate speed condition. | 1; continue after performance failure. |
 | 3 `flat_reverse_probe` | Flat; `[-0.5,0,0]` m/s. | 6,000 / [1,000,6,000). | Reverse-axis MAE gate; uncommanded lateral displacement and yaw excursion each <=0.30. Screens reverse command semantics. | 1; continue after performance failure. |
 | 4 `flat_lateral_probe` | Flat; `[0,0.25,0]` m/s, half the pinned initial positive lateral range. | 2,500 / [100,2,500). | Lateral-axis MAE gate; forward displacement and yaw excursion each <=0.30; absolute lateral safety limit remains 1.50 m. Screens the lateral input channel with margin to its configured range. | 1; continue after performance failure. |
@@ -119,7 +122,11 @@ route compliance, and maximum goal-hold ticks, including failed cases.
   lateral displacement above 1.5 m. No later case runs.
 - `INTEGRITY_STOP`: a prepared bundle, source identity, scene fingerprint, or
   campaign claim changes after readiness, or a declared deterministic trace
-  comparison disagrees. No retry or continuation.
+  comparison disagrees. The `flat_reference` trace must match the sealed #166
+  qpos/qvel/target/applied digest exactly. A mismatch overrides performance
+  classification, preserves the observed digest and raw trace, consumes only
+  the already-started sentinel attempt, and prevents every dependent case from
+  running. No retry or continuation.
 - `UNSUPPORTED_SCENE_PREFLIGHT_FAILURE` / `PREFLIGHT_FAILURE`: a scene does not
   match its declared world-geometry contract or another required qualification,
   review, identity, environment, or fresh-preflight gate fails. No scientific
@@ -168,8 +175,9 @@ python -m tools.substrate.baseline verify \
 ```
 
 The task file pins the current logical task branch, protocol hash, and parent
-commit. A later Praxis task must bind the final design commit and its own logical
-identity before capture. This design task authorizes no capture.
+commit. The capability-map integrity task updates that binding alongside this
+digest. A later Praxis task must bind the final design commit and its own
+logical identity before capture. This design task authorizes no capture.
 
 ## Self-review
 
@@ -192,6 +200,13 @@ The review identified three issues and repaired them before this freeze:
    sends each case's declared three-axis command through the shape check and
    verifies the live `MjData` and time remain unchanged. The preparation test
    runs under the zero-step guard.
+4. The flat sentinel now binds the exact deterministic qpos/qvel/target/applied
+   digest sealed by formal #166. Both preserved #166 traces independently
+   reproduce the protocol digest under the historical schema-1 canonicalization
+   and match row-by-row on those four fields. Capture classifies a mismatch as
+   `INTEGRITY_STOP`; offline verification recomputes the raw trace digest and
+   checks the same expected protocol digest before accepting the stored result.
+   Schema-1 protocols without this binding keep their historical behavior.
 
 Historical schema-1 analysis remains on its original code path. The sealed
 baseline and shared-transfer results are not rewritten or rerun.

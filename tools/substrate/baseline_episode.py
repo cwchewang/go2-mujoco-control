@@ -295,6 +295,44 @@ def repeat_reference(case):
     return None
 
 
+def expected_reference_digest(protocol):
+    """Return the frozen schema-2 reference digest and reject missing bindings."""
+    if protocol.get("schema") != 2:
+        return None
+    cases = protocol.get("cases", [])
+    if not cases or cases[0].get("id") != "flat_reference":
+        raise ValueError("sealed reference must be the first capability case")
+    expected = cases[0].get("reference_trace_sha256")
+    if (
+        not isinstance(expected, str)
+        or len(expected) != 64
+        or any(char not in "0123456789abcdef" for char in expected)
+        or any("reference_trace_sha256" in case for case in cases[1:])
+    ):
+        raise ValueError("invalid sealed reference trace digest")
+    return expected
+
+
+def enforce_reference_digest(result, case, expected=None):
+    """Classify a changed sealed reference after independently hashing its trace."""
+    if expected is None:
+        expected = case.get("reference_trace_sha256")
+    if expected is None:
+        return result
+    observed = result["trace_sha256"]
+    matched = observed == expected
+    result["reference_integrity"] = {
+        "expected_trace_sha256": expected,
+        "observed_trace_sha256": observed,
+        "matches": matched,
+    }
+    if not matched:
+        result["verdict"] = "INTEGRITY_STOP"
+        result["integrity_failure"] = "sealed_reference_trace_mismatch"
+        result["failure_classes"] = ["INTEGRITY_STOP"]
+    return result
+
+
 def stop_after(protocol, verdict):
     if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
         return True

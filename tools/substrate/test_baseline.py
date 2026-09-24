@@ -13,6 +13,8 @@ from .baseline_episode import (
     UnsupportedSceneError,
     analyze,
     command_at,
+    enforce_reference_digest,
+    expected_reference_digest,
     episode,
     safety,
 )
@@ -369,6 +371,108 @@ class BaselineContractTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "probe envelope"):
             validate_capability_protocol(invalid)
+
+    def test_capability_reference_digest_is_required_and_schema_one_stays_unbound(self):
+        expected = "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484"
+        self.assertEqual(expected_reference_digest(CAPABILITY_PROTOCOL), expected)
+        self.assertIsNone(expected_reference_digest(COMBINED_PROTOCOL))
+        missing = {
+            **CAPABILITY_PROTOCOL,
+            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
+        }
+        del missing["cases"][0]["reference_trace_sha256"]
+        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
+            validate_capability_protocol(missing)
+        misplaced = {
+            **CAPABILITY_PROTOCOL,
+            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
+        }
+        misplaced["cases"][1]["reference_trace_sha256"] = expected
+        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
+            validate_capability_protocol(misplaced)
+        legacy = {"verdict": "PASS", "trace_sha256": expected}
+        self.assertEqual(
+            enforce_reference_digest(legacy.copy(), COMBINED_PROTOCOL["cases"][0]),
+            legacy,
+        )
+
+    def test_sealed_reference_digest_match_and_performance_mismatch_classification(self):
+        case = CAPABILITY_PROTOCOL["cases"][0]
+        matched = enforce_reference_digest(
+            {
+                "verdict": "PASS",
+                "failure": None,
+                "failure_classes": [],
+                "trace_sha256": case["reference_trace_sha256"],
+            },
+            case,
+        )
+        self.assertEqual(matched["verdict"], "PASS")
+        self.assertTrue(matched["reference_integrity"]["matches"])
+        performance_failure = enforce_reference_digest(
+            {
+                "verdict": "PERFORMANCE_FAIL",
+                "failure": None,
+                "failure_classes": ["TRACKING_FAILURE"],
+                "trace_sha256": "0" * 64,
+            },
+            case,
+            expected_reference_digest(CAPABILITY_PROTOCOL),
+        )
+        self.assertEqual(performance_failure["verdict"], "INTEGRITY_STOP")
+        self.assertEqual(performance_failure["failure_classes"], ["INTEGRITY_STOP"])
+        self.assertEqual(performance_failure["trace_sha256"], "0" * 64)
+
+    def test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents(self):
+        sentinel = {
+            **CAPABILITY_PROTOCOL["cases"][0],
+            "horizon_ticks": 1,
+            "first_inference_tick": 10,
+            "measurement_delay_ticks": 0,
+        }
+        rows, claims = [], []
+        episode(
+            FakePlant(),
+            FakePolicy(),
+            sentinel,
+            CAPABILITY_PROTOCOL,
+            rows.append,
+            lambda: claims.append(sentinel["id"]),
+        )
+        self.assertEqual(claims, ["flat_reference"])
+        self.assertTrue(trace_consumed(rows))
+        raw_result = analyze(rows, sentinel, CAPABILITY_PROTOCOL)
+        self.assertNotEqual(
+            raw_result["trace_sha256"], sentinel["reference_trace_sha256"]
+        )
+        mismatched = enforce_reference_digest(raw_result, sentinel)
+        self.assertEqual(mismatched["verdict"], "INTEGRITY_STOP")
+        self.assertEqual(
+            mismatched["integrity_failure"], "sealed_reference_trace_mismatch"
+        )
+        self.assertEqual(mismatched["failure_classes"], ["INTEGRITY_STOP"])
+        self.assertTrue(stop_after(CAPABILITY_PROTOCOL, mismatched["verdict"]))
+        self.assertEqual(
+            mismatched["reference_integrity"]["observed_trace_sha256"],
+            raw_result["trace_sha256"],
+        )
+        self.assertFalse(mismatched["reference_integrity"]["matches"])
+        later_case = CAPABILITY_PROTOCOL["cases"][1]
+        self.assertFalse(
+            all(
+                {"flat_reference": mismatched}.get(name, {}).get("verdict") == "PASS"
+                for name in later_case["requires"]
+            )
+        )
+        attempts = [
+            {"case": sentinel["id"], "status": mismatched["verdict"]},
+            {"case": later_case["id"], "status": "NOT_RUN"},
+        ]
+        self.assertEqual(
+            [item["status"] for item in attempts], ["INTEGRITY_STOP", "NOT_RUN"]
+        )
+        self.assertEqual(len(claims), 1)
+        self.assertFalse(campaign_characterized(attempts, CAPABILITY_PROTOCOL))
 
     def test_capability_progression_retains_performance_and_stops_integrity(self):
         self.assertFalse(stop_after(CAPABILITY_PROTOCOL, "PERFORMANCE_FAIL"))
