@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-09-23**
-> **状态：SOURCE RL FLAT REFERENCE VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
+> **最后更新：2026-09-24**
+> **状态：SHARED-TRANSFER 1M/S FLAT VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -20,9 +20,7 @@
 
 ## 1. [2026-09-23 | CURRENT | SNAPSHOT] 当前项目
 
-用户已恢复实际研究，并明确优先“先把公开策略做成可靠、能力清楚的研究基线”。
-当前任务是上游部署复现、接口等价核验和受控能力/移植测试，不训练或微调；
-任务和进展跟随 CURRENT.md。基础建设已完成，原始失败仍封存。
+公开 RL 策略的源条件、接口等价与完整 shared-transfer 组合均已形成正式证据。当前已确认共享 model/home/ten-step-start/adapter 在冻结 1 m/s 平地协议下保持能力；下一步转入 bounded terrain/direction capability mapping，并继续完整 Substrate Gate 0。任务和精确执行 frontier 跟随 CURRENT.md。
 
 项目以**研究为主**，老师任务是同一路线上的硬约束与早期交付；作品集价值是副产品。短期工程与长期科研不能拆成两条互不相干的线。
 
@@ -42,6 +40,14 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1C. [2026-09-24 | VERIFIED / BOUNDED] shared-transfer 正式组合确认
+
+Praxis v2 #166 在精确起始 HEAD `9e82e56ac2a5db63d7834e86ce402d542bf10ae8` 上完成冻结 `rl-shared-transfer-combination-v1` campaign。两例 `combined_1` / `combined_2` 均 PASS，各 6000 steps，mean vx = 0.8858825097 m/s；两例 trace SHA-256 完全一致。authoritative ledger 与 offline verifier 都确认恰好消耗 2 次 scientific attempts，且无 retry。正式 closeout 为 `docs/validation/shared_transfer_combination_formal_v2_20260923/RESULTS.md`，result commit `6f67769851aaffed1c1826d138293e52265dbba7`，Praxis review publication commit `076f72dfcbab32dbed0c364b5f88f753f500123e`。
+
+该结果只证明：**完整 pinned shared deployment combination 在冻结 1 m/s 平地协议下保持已封存源策略能力，并具有精确重复性。** 它不证明低速、terrain、hardware 或 general robustness。原先“单因素通过不等于组合通过”的未决点至此关闭。
+
+执行侧发生过两个非科学故障：原始 offline verifier 对 detached HEAD 的 branch identity 比较不兼容；Praxis 旧 closeout 一度拒绝目录型 evidence bundle。前者通过不修改 capture/raw evidence 的窄 identity adapter 完成零物理 offline verification；后者由 Praxis publication-only salvage 修复，未重新运行 capture、未增加 scientific attempt。不得把这些 closeout/verification 基础设施问题写成科学失败。
 
 ## 1B. [2026-09-23 | VERIFIED / BOUNDED] 公开RL源条件基线
 
@@ -166,8 +172,7 @@ Challengers / baselines：
 ### RL baseline
 优先直接用公开 checkpoint，不从头训练。目标是建立 terrain capability ceiling / failure map，并防止把 learning policy 已轻松解决的问题当科研 gap。
 
-现已接入的 Gym checkpoint 已通过冻结1 m/s平地原条件复现与接口等价核验，
-可作为有限对照；尚未通过跨地形、鲁棒性及横向比较选定为强主基线。默认后端和已投入的工程成本不能替代科学
+现已接入的 Gym checkpoint 已通过冻结 1 m/s 平地源条件复现、接口等价核验，以及完整 shared model/home/ten-step-start/adapter 组合的两次正式 PASS；因此 1 m/s 平地 shared deployment 可作为可靠对照。它仍未通过跨地形、低速、鲁棒性及横向比较，不能据此宣布强 terrain capability ceiling。默认后端和已投入的工程成本不能替代科学
 选型依据。0.15 m/s 是历史局部兼容性协议的工程设定，没有被论证为全项目目标；
 今后参数先说明需求/来源/假设和对决策的作用，再定义验收。原 FAIL 不追溯改写。
 
@@ -194,8 +199,7 @@ Gate 目的不是选“永远唯一 controller”，而是建立高天花板、�
 [项目推进指南](OPERATING_GUIDE.md)。本文件不维护会过期的“最新 main SHA”或
 机器工作分支快照；具体运行的历史 SHA 保留在对应结果中。
 
-首轮正式平地 RL 移植验收已有 FAIL closeout，完整 Substrate Gate 0 尚未完成；
-基础设施合并或这一单次结果都不能代表 MJPC/RL/DIAL 地形能力已完成验证。
+首轮 0.15 m/s 平地 RL 移植验收的 FAIL closeout 仍保留；随后 1 m/s shared-transfer 正式组合已两次 PASS。两者回答的是不同冻结条件，不能互相改写。完整 Substrate Gate 0 仍未完成；当前尚不能代表 MJPC/RL/DIAL 地形能力已完成验证.
 
 ## 8. [CURRENT | TOPIC STATUS] 选题状态
 
@@ -212,10 +216,9 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-公开RL源条件复现已完成并封存，当前有可重复的1 m/s平地对照与明确的低速、
-横漂和机身接触边界。下一项前瞻确认共享模型/home/十步启动/接口的组合，
-随后按需求扩展地形与方向覆盖。不要把单因素通过拼成未运行的组合通过，
-也不把接触停止写成摔倒。入口见 CURRENT；历史与本轮campaign均不可续跑。
+1 m/s 平地 shared-transfer 组合确认已完成并封存，不再重复该 campaign。下一阶段以该已验证 shared deployment 为 RL reference，前瞻冻结 bounded terrain/direction capability mapping，优先把 step / stairs / obstacle 与方向/速度覆盖做成可比较 failure map；随后继续 MJPC smoke，并仅在需要诊断 local-gradient / nonsmooth-contact / multimodality 时启用 DIAL challenger。
+
+低速 0.15 m/s 不足、横漂与 23 cm 楼梯 base-contact stop 仍是已观察边界，但未形成论文问题；必须先在统一 benchmark 与强 baseline 下复现、分离 deployment artifact 与真实 capability bottleneck。Gate 0 前仍不从历史 L9/L10/FSEF 等候选直接造方法。
 
 ## 10. [2026-09-22 | GOVERNANCE] Repo-native 项目记录
 
