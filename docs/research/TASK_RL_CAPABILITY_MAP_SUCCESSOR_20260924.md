@@ -4,8 +4,8 @@
 
 Run a new prospective nine-case `rl-capability-map-v1` campaign after the incomplete #178 campaign. This is a **new campaign**, not a retry or continuation of #178's permanent ledger.
 
-Issue identity: **#189**  
-Logical branch: `research/rl-capability-map-successor-20260924`  
+Issue identity: **#189**
+Logical branch: `research/rl-capability-map-successor-20260924`
 Task path: `docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md`
 
 Scientific protocol is unchanged:
