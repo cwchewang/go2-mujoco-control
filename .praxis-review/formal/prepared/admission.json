@@ -1,0 +1,9 @@
+{
+  "capability_status": "NOT_RUN",
+  "errors": [
+    "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+  ],
+  "live_runs": 0,
+  "scope": "offline_engineering_admission",
+  "status": "FAILED"
+}

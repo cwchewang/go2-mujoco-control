@@ -1,0 +1,5 @@
+ln -s /home/che/dev/go2-workspace/current/.substrate/rl .substrate/rl
+ln -s /home/che/dev/go2-workspace/current/.substrate/headless-reliable .substrate/headless-reliable
+ln -s /home/che/dev/go2-workspace/current/.substrate/upstream-go2-30e74dc5 .substrate/upstream-go2-30e74dc5
+mkdir -p .substrate/controller-reliable
+cmake -S example/cpp -B .substrate/controller-reliable -DCMAKE_BUILD_TYPE=Release -DGO2_MUJOCO_ROOT=/home/che/.mujoco/mujoco-3.3.6

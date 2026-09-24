@@ -1,0 +1,136 @@
+{
+  "capture": {
+    "attempts": [
+      {
+        "case": "combined_1",
+        "elapsed_s": 2.3561337570135947,
+        "index": 1,
+        "lateral_max_m": 0.06490106716002314,
+        "min_clearance_m": 0.27,
+        "policy_p50_ms": 0.3352929779794067,
+        "policy_p99_ms": 0.541720520122907,
+        "policy_updates": 599,
+        "progress_m": 10.486111570522883,
+        "status": "PASS",
+        "steps": 6000,
+        "trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+        "verdict": "PASS",
+        "windows": [
+          {
+            "command": 1.0,
+            "end_tick": 6000,
+            "mae": 0.11411749029282782,
+            "mean_vx": 0.8858825097071722,
+            "rmse": 0.11919403374163143,
+            "samples": 5000,
+            "start_tick": 0
+          }
+        ],
+        "yaw_max_rad": 0.03719463073879735
+      },
+      {
+        "case": "combined_2",
+        "elapsed_s": 2.404426794993924,
+        "index": 2,
+        "lateral_max_m": 0.06490106716002314,
+        "min_clearance_m": 0.27,
+        "policy_p50_ms": 0.3377980028744787,
+        "policy_p99_ms": 0.6797237368300555,
+        "policy_updates": 599,
+        "progress_m": 10.486111570522883,
+        "status": "PASS",
+        "steps": 6000,
+        "trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+        "verdict": "PASS",
+        "windows": [
+          {
+            "command": 1.0,
+            "end_tick": 6000,
+            "mae": 0.11411749029282782,
+            "mean_vx": 0.8858825097071722,
+            "rmse": 0.11919403374163143,
+            "samples": 5000,
+            "start_tick": 0
+          }
+        ],
+        "yaw_max_rad": 0.03719463073879735
+      }
+    ],
+    "attempts_consumed_by_external_ledger": 2,
+    "capability_status": "CHARACTERIZED",
+    "ledger_files": [
+      "campaign.json",
+      "combined_1.json",
+      "combined_2.json"
+    ],
+    "live_runs": 2,
+    "status": "CAPTURE_COMPLETE"
+  },
+  "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "classification": "PASS",
+  "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "interpretation_scope": "complete pinned shared deployment combination under the frozen 1.0 m/s flat confirmatory protocol only",
+  "issue_number": 166,
+  "max_attempts": 2,
+  "offline_verification": {
+    "capture_manifest_sha256": "165249ddff98ac8ede3aaa8e3945d7a16fef73ba81e2efc56c18febbca9a473c",
+    "consumed": 2,
+    "external_ledger_checked": true,
+    "mode": "baseline.verify via in-memory detached-Praxis identity compatibility adapter",
+    "physics_steps": 0,
+    "prepared_manifest_sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+    "status": "VERIFIED"
+  },
+  "preparation": {
+    "physics_steps": 0,
+    "prepared_manifest_sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+    "readiness": "READY_AWAITING_START",
+    "scientific_attempts_field": "not emitted by preparation schema"
+  },
+  "progression": "first_nonpass_stop",
+  "protocol_id": "rl-shared-transfer-combination-v1",
+  "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "qualification": {
+    "all_checks_passed": true,
+    "capability_status": "NOT_RUN",
+    "checks": {
+      "controller_build": 0,
+      "controller_configure": 0,
+      "controller_tests": 0,
+      "diff_check": 0,
+      "preflight_tests": 0,
+      "quality": 0,
+      "substrate_tests": 0,
+      "tooling_tests": 0
+    },
+    "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "status": "ENGINEERING_ADMITTED"
+  },
+  "resource_preflight_pass": true,
+  "retry": "none",
+  "review_tips": {
+    "execution": "16810592cbc342ed29d3ce92f22efe6062516bb5",
+    "science": "ace65bec9fdcad8a52d29fc3cae0d113246d7312"
+  },
+  "schema": 1,
+  "source_commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+  "standard_verify_invocation": {
+    "capture_preflight_git": {
+      "branch": "",
+      "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+    },
+    "failure": "ValueError: preflight identity mismatch",
+    "returncode": 1,
+    "task_logical_branch": "research/shared-transfer-formal-v2-final-20260923"
+  },
+  "start_authorization": {
+    "action": "START_FORMAL_CAPTURE",
+    "authorized_by": "user",
+    "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "max_attempts": 2,
+    "prepared_manifest_sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+    "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+    "user_instruction": "好，开吧"
+  },
+  "task": "shared-transfer formal capture v2"
+}

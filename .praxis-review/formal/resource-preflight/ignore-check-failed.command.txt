@@ -1,0 +1,1 @@
+git check-ignore -v .substrate/rl/policy.pt .substrate/headless-reliable/go2_mjpc_admit .substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/configs/go2.yaml .substrate/controller-reliable/CMakeCache.txt

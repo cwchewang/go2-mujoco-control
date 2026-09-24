@@ -1,0 +1,41 @@
+test_analyzer_changes_require_a_no_live_test (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_changed_surface_inference (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_domain_230_is_legal_and_linux_safe (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_domain_233_exceeds_rtps_udp_range (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_linux_safe_pool_edges (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_logger_schema_file_not_double_counted_as_runtime (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_process_matching_uses_real_executable_or_script (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_runner_domain_parser (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_substrate_runtime_protocol_runner_and_analyzer_changes_are_detected (tools.research.test_preflight.PreflightRegressionTest) ... ok
+test_baseline_runner_declares_real_transport (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_passes_with_exact_praxis_binding (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_incomplete_praxis_binding (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_wrong_praxis_issue_number (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_wrong_praxis_logical_branch (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_wrong_praxis_repository (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_wrong_praxis_task_commit (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_rejects_wrong_praxis_task_path (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_detached_head_without_praxis_binding_fails (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_dynamic_domain_assignment_is_rejected (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_empty_expected_head_cannot_disable_identity_check (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_explicit_runner_change_records_diff_for_nonstandard_path (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_hard_failure_prevents_test_execution (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_hash_requirement_requires_full_digest (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_inherited_lock_rejects_unrelated_descriptor (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_inprocess_preflight_never_executes_python_runner (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_inprocess_rejects_fictitious_dds_domain (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_inprocess_requires_declared_transport (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_named_expected_branch_passes_without_praxis_binding (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_output_cannot_create_capture_directory (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_output_collision_preserves_original (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_output_is_written_once_and_worktree_remains_clean (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_positive_fixture_does_not_launch_runner (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_proc_unavailable_fails_closed (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_review_required_for_substrate_runtime_change (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_test_mutation_of_runner_is_detected (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+test_wrong_head_or_dirty_checkout_fails (tools.research.test_preflight_integration.ReadinessFixtures) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.843s
+
+OK

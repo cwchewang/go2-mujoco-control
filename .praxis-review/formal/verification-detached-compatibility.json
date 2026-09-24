@@ -1,0 +1,30 @@
+{
+  "adapter": "in-memory preflight branch normalization only",
+  "captured_git_identity": {
+    "branch": "",
+    "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+  },
+  "logical_task_branch": "research/shared-transfer-formal-v2-final-20260923",
+  "praxis_identity_validation": {
+    "mode": "detached",
+    "actual_branch": "",
+    "expected_branch": "research/shared-transfer-formal-v2-final-20260923",
+    "actual_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "expected_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "head_matches": true,
+    "pass": true,
+    "praxis_binding": {
+      "present": true,
+      "complete": true,
+      "expected_transport_identity_complete": true,
+      "valid": true,
+      "check_pass": true,
+      "missing": [],
+      "mismatches": {}
+    }
+  },
+  "normalization": "empty actual branch is mapped to the tracked logical task branch only after exact five-field detached Praxis identity passes",
+  "preflight_report_modified": false,
+  "capture_bundle_modified": false,
+  "baseline_verify_source_modified": false
+}

@@ -1,0 +1,1 @@
+rg '^GO2_MUJOCO_ROOT:PATH=/home/che/.mujoco/mujoco-3.3.6$' .substrate/controller-reliable/CMakeCache.txt

@@ -1,0 +1,22 @@
+{
+  "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "reviews": {
+    "science": {
+      "branch_tip": "ace65bec9fdcad8a52d29fc3cae0d113246d7312",
+      "review_sha256": "9755b9c78e1940527889ff26525965cc28d569aed2f5aad231ebb4fd31c38f37",
+      "reviewer": "OpenAI Codex (GPT-6)",
+      "verdict": "APPROVED",
+      "target_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+      "evidence_items": 6
+    },
+    "execution": {
+      "branch_tip": "16810592cbc342ed29d3ce92f22efe6062516bb5",
+      "review_sha256": "885ddeee3a791405c32babfaa6e861f42550b87181d97a3a06a9ae66f69b0a09",
+      "reviewer": "GPT-6 Codex execution reviewer #173 r3",
+      "verdict": "APPROVED",
+      "target_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+      "evidence_items": 7
+    }
+  },
+  "validation": "PASS: tools.substrate.readiness.validate_review"
+}

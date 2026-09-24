@@ -1,0 +1,9 @@
+{
+  "action": "START_FORMAL_CAPTURE",
+  "authorized_by": "user",
+  "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "max_attempts": 2,
+  "prepared_manifest_sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+  "protocol_sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+  "user_instruction": "\u597d\uff0c\u5f00\u5427"
+}

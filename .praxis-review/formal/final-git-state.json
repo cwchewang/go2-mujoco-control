@@ -1,0 +1,25 @@
+{
+  "bundles": {
+    "capture_status": "CAPTURE_COMPLETE",
+    "offline_physics_steps": 0,
+    "offline_verification": "VERIFIED",
+    "prepared_readiness": "READY_AWAITING_START",
+    "qualification_status": "ENGINEERING_ADMITTED",
+    "standard_verify_status": "FAILED"
+  },
+  "changed_paths": [
+    "docs/validation/shared_transfer_combination_formal_v2_20260923/RESULTS.md"
+  ],
+  "commit_message": "docs: close out shared transfer formal v2",
+  "evidence_result_sha256": "3483dabc7ec125dd04f5f6d3bdf1defb8e5f1d11b2edba33399bd3a912aed321",
+  "head": "6f67769851aaffed1c1826d138293e52265dbba7",
+  "ledger_copy_matches_authoritative": true,
+  "ledger_files_and_sha256": {
+    "campaign.json": "364aeaf92edf7b2e28acf930d8f8bf33118c63cd7fdd5989854dbdf9a5b82305",
+    "combined_1.json": "5d516b49d20c8afbeb3b277f8cd0ca7258239641d49a25531ae72b30230e1f56",
+    "combined_2.json": "255ab6f743ceccea4daead9a1105fc7b7e4b6c00e4f539a9f4ae043303d54fed"
+  },
+  "parent": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "tracked_result_sha256": "3483dabc7ec125dd04f5f6d3bdf1defb8e5f1d11b2edba33399bd3a912aed321",
+  "worktree_clean": true
+}

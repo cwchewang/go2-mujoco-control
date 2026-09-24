@@ -1,0 +1,247 @@
+{
+  "status": "complete",
+  "summary": "The frozen shared-transfer formal v2 campaign completed with both prescribed cases PASS, zero-step offline verification of the captured result, and a committed RESULTS.md. The unmodified verifier's detached-branch comparison failure is preserved and documented; final offline verification completed through a narrow in-memory identity adapter.",
+  "completed": [
+    "Retrieved and validated both exact-head APPROVED independent review results with distinct reviewer identities; recorded the remote branch tips used.",
+    "Passed resource admission: the frozen checkpoint and protocol hashes matched, all 50 locked upstream files matched, the reliable interpreter verified the locked environment, and the native admission binary and MuJoCo SDK were present.",
+    "Completed clean non-development qualification at the frozen starting HEAD; all eight required check return codes were zero and capability status remained NOT_RUN.",
+    "Prepared the campaign as READY_AWAITING_START with physics_steps=0, confirmed the ledger was absent, and wrote the exact user START authorization bound to the prepared manifest.",
+    "Passed the immediate pre-capture Praxis identity, clean-worktree, review, qualification, prepared-snapshot, authorization, and no-ledger boundary checks.",
+    "Executed exactly one capture command. Both cases PASS; the authoritative campaign ledger records exactly two consumed scientific attempts and no retry.",
+    "Completed offline verification of the captured and prepared bundles with physics_steps=0, checking both capture traces and the authoritative external ledger; copied the ledger into the evidence package and verified the copy byte-for-byte.",
+    "Created and committed only docs/validation/shared_transfer_combination_formal_v2_20260923/RESULTS.md as commit 6f67769851aaffed1c1826d138293e52265dbba7, with a clean detached worktree afterward."
+  ],
+  "not_completed": [
+    "The unmodified baseline verify CLI still returns preflight identity mismatch on the expected detached HEAD. Its failure is preserved; the same offline verifier operation completed through an in-memory adapter that first validated the exact detached Praxis identity. No tracked verifier change was made."
+  ],
+  "observations": [
+    {
+      "text": "Science review tip ace65bec9fdcad8a52d29fc3cae0d113246d7312 and execution review tip 16810592cbc342ed29d3ce92f22efe6062516bb5 both state APPROVED, target the frozen starting HEAD, and identify different reviewers; remote tips still matched immediately before capture.",
+      "evidence_ids": [
+        "E1",
+        "E6"
+      ]
+    },
+    {
+      "text": "Resource preflight matched protocol SHA-256 2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32, checkpoint SHA-256 9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d, all 50 locked upstream file hashes, and the locked Torch 2.6.0+cpu, MuJoCo 3.3.6, NumPy 2.2.6 environment. The SDK and MJPC admission binary were present.",
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Qualification was ENGINEERING_ADMITTED, clean and non-development at the frozen starting HEAD, with all eight required checks returning zero and capability_status NOT_RUN.",
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "text": "Preparation returned READY_AWAITING_START with physics_steps=0. The prepared manifest SHA-256 is 58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e, and the campaign ledger did not exist before capture.",
+      "evidence_ids": [
+        "E4",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "An initial preparation invocation passed the Markdown task path to the JSON-task CLI and failed during JSON decoding; that failure bundle is preserved. The corrected invocation using the frozen JSON task configuration returned READY_AWAITING_START with physics_steps=0.",
+      "evidence_ids": [
+        "E4",
+        "E14",
+        "E18"
+      ]
+    },
+    {
+      "text": "The single capture completed as CAPTURE_COMPLETE / CHARACTERIZED. combined_1 and combined_2 each passed at 6,000 steps, both with trace SHA-256 1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484 and measurement mean vx 0.8858825097071722 m/s.",
+      "evidence_ids": [
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "text": "The unmodified offline-verification invocation returned ValueError: preflight identity mismatch. The captured preflight records branch as empty and the frozen task has logical branch research/shared-transfer-formal-v2-final-20260923.",
+      "evidence_ids": [
+        "E7",
+        "E8",
+        "E11"
+      ]
+    },
+    {
+      "text": "The in-memory detached-identity adapter validated the complete five-field Praxis binding, then the baseline offline verifier returned VERIFIED with consumed=2 and physics_steps=0. The capture and prepared bundles passed manifest checks.",
+      "evidence_ids": [
+        "E9",
+        "E10",
+        "E11"
+      ]
+    },
+    {
+      "text": "The evidence copy of campaign.json, combined_1.json, and combined_2.json matches the external authoritative campaign ledger by SHA-256.",
+      "evidence_ids": [
+        "E12",
+        "E13"
+      ]
+    },
+    {
+      "text": "Commit 6f67769851aaffed1c1826d138293e52265dbba7 has the frozen starting HEAD as its parent, changes only the requested RESULTS.md, and leaves the worktree clean.",
+      "evidence_ids": [
+        "E15",
+        "E16"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The unmodified verifier failure is a detached-HEAD identity comparison incompatibility: the captured HEAD is exact and the five-field Praxis identity validates, but the verifier compares the empty actual Git branch with the task's logical branch. This is independent of the two case verdicts.",
+      "evidence_ids": [
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ]
+    },
+    {
+      "text": "Both cases satisfy the frozen protocol's PASS classification after offline replay; the result supports only the pinned shared deployment combination's 1.0 m/s flat capability under this protocol.",
+      "evidence_ids": [
+        "E7",
+        "E9",
+        "E13"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "Campaign classification: PASS. combined_1 and combined_2 both passed, with matching repeated trace hashes; PERFORMANCE_FAIL, SAFETY_STOP, and INTEGRITY_STOP were not observed.",
+      "evidence_ids": [
+        "E7",
+        "E9",
+        "E13"
+      ]
+    },
+    {
+      "text": "Exactly two scientific attempts were consumed according to the authoritative ledger. No capture retry occurred.",
+      "evidence_ids": [
+        "E7",
+        "E9",
+        "E12"
+      ]
+    },
+    {
+      "text": "The intended tracked closeout is committed as 6f67769851aaffed1c1826d138293e52265dbba7.",
+      "evidence_ids": [
+        "E15",
+        "E16"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "The campaign evaluated only the frozen 1.0 m/s flat protocol. It provides no result for low-speed operation, terrain, hardware, or general robustness.",
+      "evidence_ids": [
+        "E2",
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "text": "The unmodified CLI compatibility issue remains in tracked verifier code; final verification used a documented in-memory adapter and did not alter the capture, preflight report, or verifier source.",
+      "evidence_ids": [
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "formal/reviews/validation-summary.json",
+      "description": "Parsed exact-head review results, distinct reviewer identities, hashes, and exact review branch tips."
+    },
+    {
+      "id": "E2",
+      "path": "formal/resource-preflight",
+      "description": "Resource checks, full per-file upstream hash report, locked environment import output, SDK/binary checks, resource links, and controller CMake configuration logs."
+    },
+    {
+      "id": "E3",
+      "path": "formal/qualification",
+      "description": "Sealed clean non-development qualification bundle, manifest, static admission result, and required check logs."
+    },
+    {
+      "id": "E4",
+      "path": "formal/prepared-retry",
+      "description": "Successful zero-step prepared bundle with readiness, task/review/qualification references, protocol snapshot, and manifest."
+    },
+    {
+      "id": "E5",
+      "path": "formal/ledger-before-prepare.txt",
+      "description": "Recorded absence of the campaign ledger before successful preparation."
+    },
+    {
+      "id": "E6",
+      "path": "formal/authorization.json",
+      "description": "Validated explicit user START authorization bound to the frozen HEAD, protocol, prepared manifest, and two-attempt budget."
+    },
+    {
+      "id": "E7",
+      "path": "formal/capture",
+      "description": "Sealed one-command capture bundle with both raw JSONL traces, analyses, exact attempts, and capture manifest."
+    },
+    {
+      "id": "E8",
+      "path": "formal/verification",
+      "description": "Preserved failed unmodified offline-verification bundle and its manifest."
+    },
+    {
+      "id": "E9",
+      "path": "formal/verification-compatible",
+      "description": "Successful offline-verification bundle; reports VERIFIED, external ledger checked, consumed=2, physics_steps=0."
+    },
+    {
+      "id": "E10",
+      "path": "formal/verification-detached-compatibility.json",
+      "description": "Exact in-memory compatibility normalization record and detached Praxis identity validation result."
+    },
+    {
+      "id": "E11",
+      "path": "formal/verification-compatibility-source",
+      "description": "Evidence snapshots of baseline verifier and Praxis identity validator used to assess the detached-branch mismatch."
+    },
+    {
+      "id": "E12",
+      "path": "formal/ledger",
+      "description": "Copied authoritative external campaign ledger with campaign claim and the two consumed case claim files."
+    },
+    {
+      "id": "E13",
+      "path": "formal/formal-summary.json",
+      "description": "Concise machine-readable campaign summary with exact metrics, verdicts, consumed count, and verification state."
+    },
+    {
+      "id": "E14",
+      "path": "formal/command-index.json",
+      "description": "Index of exact task commands, saved outputs, return codes, and preserved nonzero invocations."
+    },
+    {
+      "id": "E15",
+      "path": "formal/RESULTS.md",
+      "description": "Evidence-package copy of the committed tracked results document; SHA-256 matches the Git version."
+    },
+    {
+      "id": "E16",
+      "path": "formal/final-git-state.json",
+      "description": "Final exact commit, parent, changed path, clean worktree, bundle checks, and ledger-copy hashes."
+    },
+    {
+      "id": "E17",
+      "path": "formal/task-document.md",
+      "description": "Evidence snapshot of the frozen task document used for execution."
+    },
+    {
+      "id": "E18",
+      "path": "formal/prepared",
+      "description": "Preserved failed preparation invocation showing JSONDecodeError from the Markdown task path; the successful corrected preparation is separately sealed under E4."
+    }
+  ]
+}

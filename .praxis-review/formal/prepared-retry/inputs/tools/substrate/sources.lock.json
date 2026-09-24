@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "mujoco": "3.3.6",
+  "torch": "2.6.0+cpu",
+  "mjpc": {
+    "repository": "https://github.com/johnzhang3/mujoco_mpc.git",
+    "commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+    "upstream_mujoco_commit": "088079eff0450e32b98ee743141780ed68307506",
+    "integration_mujoco_tag": "3.3.6"
+  },
+  "rl": {
+    "repository": "https://github.com/wty-yy/go2_rl_gym.git",
+    "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+    "checkpoint": "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt",
+    "sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+    "git_blob_sha1": "db065febf09056839b04a60ead053c9382705597",
+    "bytes": 5208824,
+    "deployment": "deploy/deploy_mujoco/deploy_go2.py",
+    "configuration": "deploy/deploy_mujoco/configs/go2.yaml"
+  },
+  "abseil_commit": "fb3621f4f897824c0dbe0615fa94543df6192f30"
+}

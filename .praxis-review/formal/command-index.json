@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "commands": [
+    {
+      "name": "review_fetch",
+      "command_path": "formal/reviews/fetch-command.txt",
+      "output_path": "formal/reviews/fetch.log",
+      "return_code_path": "formal/reviews/fetch.rc",
+      "return_code": 0,
+      "note": "Fetched both exact r3 review refs"
+    },
+    {
+      "name": "review_validation_launcher_initial",
+      "command_path": "formal/reviews/validation-command.txt",
+      "output_path": "formal/reviews/validation.log",
+      "return_code_path": "formal/reviews/validation.rc",
+      "return_code": 127,
+      "note": "Failed because the shell has no python alias; no review result changed"
+    },
+    {
+      "name": "review_validation_python3",
+      "command_path": "formal/reviews/validation-command-retry.txt",
+      "output_path": "formal/reviews/validation-retry.log",
+      "return_code_path": "formal/reviews/validation-retry.rc",
+      "return_code": 0,
+      "note": "Validated both reviews and constructed validate_review input"
+    },
+    {
+      "name": "review_remote_tip_check",
+      "command_path": "formal/reviews/current-tips-command.txt",
+      "output_path": "formal/reviews/current-tips.log",
+      "return_code_path": "formal/reviews/current-tips.rc",
+      "return_code": 0,
+      "note": "Confirmed remote review tips remained unchanged before capture"
+    },
+    {
+      "name": "resource_preflight",
+      "command_path": "formal/resource-preflight/command.txt",
+      "output_path": "formal/resource-preflight/command.log",
+      "return_code_path": "formal/resource-preflight/command.rc",
+      "return_code": 0,
+      "note": "Checked hashes, locked environment, native admission binary, and MuJoCo SDK"
+    },
+    {
+      "name": "controller_cmake_configure",
+      "command_path": "formal/resource-preflight/expose-and-configure.commands.txt",
+      "output_path": "formal/resource-preflight/controller-configure.log",
+      "return_code_path": "formal/resource-preflight/controller-configure.rc",
+      "return_code": 0,
+      "note": "Preconfigured task-local build with the required MuJoCo SDK path"
+    },
+    {
+      "name": "ignored_path_check_initial",
+      "command_path": "formal/resource-preflight/ignore-check-failed.command.txt",
+      "output_path": "formal/resource-preflight/ignore-check-failed.log",
+      "return_code_path": "formal/resource-preflight/ignore-check-failed.rc",
+      "return_code": 128,
+      "note": "Git rejected child paths traversing directory symlinks"
+    },
+    {
+      "name": "ignored_path_check_retry",
+      "command_path": "formal/resource-preflight/ignore-check-retry.command.txt",
+      "output_path": "formal/resource-preflight/ignore-check-retry.log",
+      "return_code_path": "formal/resource-preflight/ignore-check-retry.rc",
+      "return_code": 0,
+      "note": "Confirmed resource symlinks and local build are ignored"
+    },
+    {
+      "name": "qualification",
+      "command_path": "formal/qualification-command.txt",
+      "output_path": "formal/qualification-command.log",
+      "return_code_path": "formal/qualification-command.rc",
+      "return_code": 0,
+      "note": "Clean non-development qualification"
+    },
+    {
+      "name": "preparation_initial_task_path",
+      "command_path": "formal/prepare-command.txt",
+      "output_path": "formal/prepare-command.log",
+      "return_code_path": "formal/prepare-command.rc",
+      "return_code": 1,
+      "note": "Failed because CLI --task expects the frozen JSON task configuration, not the Markdown task document"
+    },
+    {
+      "name": "preparation_json_task",
+      "command_path": "formal/prepare-retry-command.txt",
+      "output_path": "formal/prepare-retry-command.log",
+      "return_code_path": "formal/prepare-retry-command.rc",
+      "return_code": 0,
+      "note": "Successful zero-step preparation"
+    },
+    {
+      "name": "authorization_initial_schema_check",
+      "command_path": "formal/authorization-command.txt",
+      "output_path": "formal/authorization-command.log",
+      "return_code_path": "formal/authorization-command.rc",
+      "return_code": 1,
+      "note": "Initial helper incorrectly expected preparation to emit a scientific_attempts field; no authorization was written"
+    },
+    {
+      "name": "authorization_validated",
+      "command_path": "formal/authorization-retry-command.txt",
+      "output_path": "formal/authorization-retry-command.log",
+      "return_code_path": "formal/authorization-retry-command.rc",
+      "return_code": 0,
+      "note": "Wrote and validated user START record after successful preparation"
+    },
+    {
+      "name": "pre_capture_boundary",
+      "command_path": "formal/pre-capture-boundary-command.txt",
+      "output_path": "formal/pre-capture-boundary-command.log",
+      "return_code_path": "formal/pre-capture-boundary-command.rc",
+      "return_code": 0,
+      "note": "Validated exact Praxis identity, reviews, qualification, prepared bundle, and missing ledger"
+    },
+    {
+      "name": "single_capture",
+      "command_path": "formal/capture-command.txt",
+      "output_path": "formal/capture-command.log",
+      "return_code_path": "formal/capture-command.rc",
+      "return_code": 0,
+      "note": "The only baseline capture invocation; consumed attempts are in the campaign ledger"
+    },
+    {
+      "name": "standard_offline_verify",
+      "command_path": "formal/verify-command.txt",
+      "output_path": "formal/verify-command.log",
+      "return_code_path": "formal/verify-command.rc",
+      "return_code": 1,
+      "note": "Failed with detached Git branch versus logical task branch comparison"
+    },
+    {
+      "name": "detached_compat_offline_verify",
+      "command_path": "formal/verify-compatible-command.txt",
+      "output_path": "formal/verify-compatible-command.log",
+      "return_code_path": "formal/verify-compatible-command.rc",
+      "return_code": 0,
+      "note": "Same baseline offline verifier with in-memory detached Praxis identity compatibility"
+    },
+    {
+      "name": "campaign_ledger_copy",
+      "command_path": "formal/ledger-copy-command.txt",
+      "output_path": "formal/ledger-copy-command.log",
+      "return_code_path": "formal/ledger-copy-command.rc",
+      "return_code": 0,
+      "note": "Copied the authoritative external ledger into the evidence package"
+    },
+    {
+      "name": "campaign_ledger_copy_compare",
+      "command_path": "formal/ledger-copy-command.txt",
+      "output_path": "formal/ledger-copy-compare.log",
+      "return_code_path": "formal/ledger-copy-compare.rc",
+      "return_code": 0,
+      "note": "Compared the copied ledger against the authoritative external ledger"
+    },
+    {
+      "name": "formal_summary_initial",
+      "command_path": "formal/make-summary-command.txt",
+      "output_path": "formal/make-summary-command.log",
+      "return_code_path": "formal/make-summary-command.rc",
+      "return_code": 1,
+      "note": "Initial summary helper compared the capture-only elapsed_s telemetry field"
+    },
+    {
+      "name": "formal_summary",
+      "command_path": "formal/make-summary-v2-command.txt",
+      "output_path": "formal/make-summary-v2-command.log",
+      "return_code_path": "formal/make-summary-v2-command.rc",
+      "return_code": 0,
+      "note": "Built summary from verified metrics; offline replay omits elapsed_s timing telemetry"
+    },
+    {
+      "name": "commit_results",
+      "command_path": "formal/commit-command.txt",
+      "output_path": "formal/commit-command.log",
+      "return_code_path": "formal/commit-command.rc",
+      "return_code": 0,
+      "note": "Committed only the tracked RESULTS.md closeout"
+    },
+    {
+      "name": "final_audit_initial",
+      "command_path": "formal/final-audit-command.txt",
+      "output_path": "formal/final-audit-command.log",
+      "return_code_path": "formal/final-audit-command.rc",
+      "return_code": 0,
+      "note": "Initial final-state audit"
+    },
+    {
+      "name": "final_audit_exact_head",
+      "command_path": "formal/final-audit-v2-command.txt",
+      "output_path": "formal/final-audit-v2-command.log",
+      "return_code_path": "formal/final-audit-v2-command.rc",
+      "return_code": 0,
+      "note": "Rechecked exact commit, clean worktree, bundle manifests, and ledger copy"
+    },
+    {
+      "name": "controller_sdk_cache_check",
+      "command_path": "formal/resource-preflight/controller-root-check-command.txt",
+      "output_path": "formal/resource-preflight/controller-root-check.log",
+      "return_code_path": "formal/resource-preflight/controller-root-check.rc",
+      "return_code": 0,
+      "note": "Confirmed the task-local controller CMakeCache pins GO2_MUJOCO_ROOT to the canonical SDK"
+    }
+  ]
+}

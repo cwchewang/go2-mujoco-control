@@ -1,0 +1,1 @@
+python3 "$PRAXIS_EVIDENCE_DIR/formal/resource-preflight/check_resources.py"

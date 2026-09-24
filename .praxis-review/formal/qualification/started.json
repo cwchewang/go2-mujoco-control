@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-166/tools/substrate/qualify.py",
+    "--output",
+    "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/qualification"
+  ],
+  "pid": 294173,
+  "schema": 1,
+  "unix_time": 1790206635.7903283
+}

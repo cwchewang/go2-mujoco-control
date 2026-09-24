@@ -1,0 +1,1265 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E18",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 166,
+  "local_full_evidence_retained": true,
+  "omitted": [
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/base_4.obj",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "size": 7776234
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/thigh_mirror_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "size": 1482261
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/rl/policy.pt",
+      "reason": "review total size limit exceeded",
+      "sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+      "size": 5208824
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "size": 1330465
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "size": 811791
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_3.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "size": 379093
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_4.obj",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "size": 7776234
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "size": 877174
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "size": 876538
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "size": 327261
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/foot.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "size": 1144729
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "size": 2863864
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "size": 2767918
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "size": 2841868
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "size": 1491320
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "size": 2817674
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "size": 1482261
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/wood.png",
+      "reason": "review total size limit exceeded",
+      "sha256": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+      "size": 941355
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/base.dae",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "e52bebbb5c7ff1f6aedee620c9b5b349f6e965360ecc63a9bb743eeff2d0be64",
+      "size": 10727399
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "29872fa1a435b92bc2b395fdfa7f0aee26101db3c494681896bd4ef24ee7883c",
+      "size": 1125517
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf_mirror.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "79c66be7ed06760bd5001c067a1fb0ac517f639d8b1a5f89be471903b3f359e1",
+      "size": 1125457
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/foot.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "ffbd95fd641866ce9bd277aa249b92dafc9148d70131fa2c52709a35ce5b710b",
+      "size": 506988
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/hip.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "8735e10617afe252cef0844c1d139d15bc6d4c653660d742fea9fe05c2704d8f",
+      "size": 4666421
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "a622381ae308897ff143b8bbf02f075457c342b22984205040424a5a983246fa",
+      "size": 3884136
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh_mirror.dae",
+      "reason": "review total size limit exceeded",
+      "sha256": "c7bae0b0565c2aa4b7cc15a538d795e9153e0f10c821cc18429e92693172bdc6",
+      "size": 3896575
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_1.png",
+      "reason": "review total size limit exceeded",
+      "sha256": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+      "size": 2201
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_10.png",
+      "reason": "review total size limit exceeded",
+      "sha256": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+      "size": 2655
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_4.png",
+      "reason": "review total size limit exceeded",
+      "sha256": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+      "size": 2423
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_7.png",
+      "reason": "review total size limit exceeded",
+      "sha256": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+      "size": 2272
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/race_track.xml",
+      "reason": "review total size limit exceeded",
+      "sha256": "b5f5d9995429f71e38b7b37e98588c7ac8eb035a87ea1a62931fa91d0e5cc79c",
+      "size": 48500
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/stairs.xml",
+      "reason": "review total size limit exceeded",
+      "sha256": "d3e43ab7e11bf7a7320c45a5cbd42fd5991bca813452cb026da28cc8cf5ce922",
+      "size": 18890
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/urdf/go2.urdf",
+      "reason": "review total size limit exceeded",
+      "sha256": "4f306754e9b3d73930ac8362aa456eb8912f2e886665618e7eced9627c1704a4",
+      "size": 24170
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/rsl_rl/rsl_rl/modules/actor_critic_moe_cts.py",
+      "reason": "review total size limit exceeded",
+      "sha256": "ff3689a3cfdaf80246e7be76b9c5eae54054112f2d4b5750798980a8033e7d58",
+      "size": 5139
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/tools/substrate/rl_reference.lock.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b",
+      "size": 5841
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/base_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "size": 1330465
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/base_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "size": 811791
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/base_2.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "size": 294090
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/base_3.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "size": 379093
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/base_4.obj",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "size": 7776234
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/calf_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "size": 877174
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/calf_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "size": 326865
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/calf_mirror_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "size": 876538
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/calf_mirror_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "size": 327261
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/foot.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "size": 1144729
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/hip_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "size": 2863864
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/hip_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "size": 2767918
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/thigh_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "size": 2841868
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/thigh_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "size": 1491320
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/thigh_mirror_0.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "size": 2817674
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/assets/thigh_mirror_1.obj",
+      "reason": "review total size limit exceeded",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "size": 1482261
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/go2.xml",
+      "reason": "review total size limit exceeded",
+      "sha256": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+      "size": 15711
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/unitree_robots/go2/phase2_flat.xml",
+      "reason": "review total size limit exceeded",
+      "sha256": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+      "size": 860
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/manifest.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+      "size": 10561
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/preflight.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "0735ad248e1449c0d4fa91fb67afb01b8b9f91de217c5557bda6e1eed1b8cc8e",
+      "size": 7955
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/preflight.stdout",
+      "reason": "review total size limit exceeded",
+      "sha256": "0735ad248e1449c0d4fa91fb67afb01b8b9f91de217c5557bda6e1eed1b8cc8e",
+      "size": 7955
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/protocol.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "5fb20ff3a260059297201330d618c0ab82dedb7408c8b372a3fdd9a6be31f596",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/admission.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "8f157b74f7cefc1052480e859d72adb040d44f08ffb08167ca679e6a23bde188",
+      "size": 2129
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/authorization.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "d5118656ecc13233cbe89d1f4768d99e72a9e3a1c0ef3ad475d46d18d9abfba6",
+      "size": 378
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/campaign-claim.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "364aeaf92edf7b2e28acf930d8f8bf33118c63cd7fdd5989854dbdf9a5b82305",
+      "size": 281
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_1.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "6f904bcff0be69ecc6a027088125ee8b0b901fc7d351713390a6d9cc504e02dd",
+      "size": 13985183
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_1_analysis.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "11686f3ec9b466abe1babc510bc42731721d698b49c3d866475927189fe18f06",
+      "size": 694
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_1_claim.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "5d516b49d20c8afbeb3b277f8cd0ca7258239641d49a25531ae72b30230e1f56",
+      "size": 301
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_2.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "3bd28bc459b022fa150a78b5e44b3d360efd004feb7ff352e31bb85b8b346b6c",
+      "size": 13985125
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_2_analysis.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "2e87a6d6ce35629b249f3349bdf61731d15889cf7f82de2a502e1c48c821c824",
+      "size": 694
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/combined_2_claim.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "255ab6f743ceccea4daead9a1105fc7b7e4b6c00e4f539a9f4ae043303d54fed",
+      "size": 301
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/manifest.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "165249ddff98ac8ede3aaa8e3945d7a16fef73ba81e2efc56c18febbca9a473c",
+      "size": 1383
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/preflight.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "55bdeb30176c1d74036e2b3fb3b6e78f892558dd9fa72d220f7eb9e806c2af47",
+      "size": 7923
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/preflight.stdout",
+      "reason": "review total size limit exceeded",
+      "sha256": "55bdeb30176c1d74036e2b3fb3b6e78f892558dd9fa72d220f7eb9e806c2af47",
+      "size": 7923
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/preparation-reference.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "aec81d5e81203fe636dd1465847c5393d059411853d9466249c8d92542d7b424",
+      "size": 232
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/protocol.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "5fb20ff3a260059297201330d618c0ab82dedb7408c8b372a3fdd9a6be31f596",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E8",
+      "path": "formal/verification/admission.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "2fd2450305646c45fd8231568f856bfa06ca9d032c58e1da2d52deece63964e2",
+      "size": 186
+    },
+    {
+      "evidence_id": "E8",
+      "path": "formal/verification/manifest.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "eaeb84a1afbc67211e49cdb2c3a9fe72c201e6ed7a1bd0df1ffd1180a7cc0283",
+      "size": 177
+    },
+    {
+      "evidence_id": "E8",
+      "path": "formal/verification/started.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "6cf6f9e95218a44083c95ef7fa85cf3389263622511ca88ff6ba493b74c13b46",
+      "size": 112
+    },
+    {
+      "evidence_id": "E9",
+      "path": "formal/verification-compatible/admission.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "bcc5544b3a4bb95a843ac3153ab184570002dba0980c472f0d0f7e06fb221980",
+      "size": 450
+    },
+    {
+      "evidence_id": "E9",
+      "path": "formal/verification-compatible/analysis.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "8d1b90575ba47068c828968514da0b49cb5afa18622c186712deb1e04f7460c2",
+      "size": 1456
+    },
+    {
+      "evidence_id": "E9",
+      "path": "formal/verification-compatible/audits.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "db0f11dfcd8427996378092ecdc34663e97beccc8efb98e7d291422c2a4a4a44",
+      "size": 297
+    },
+    {
+      "evidence_id": "E9",
+      "path": "formal/verification-compatible/manifest.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "390b8cc8763e77166a3ccaf3e3f524a5a57dee8790a470f427729c9ad620cb7b",
+      "size": 349
+    },
+    {
+      "evidence_id": "E9",
+      "path": "formal/verification-compatible/started.json",
+      "reason": "review total size limit exceeded",
+      "sha256": "decee692443184cc94b69b121c01fe227a51a6d697dbdd56bb1fa88a555085a4",
+      "size": 112
+    }
+  ],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "0389123c8bb6616020240b7b9c34e15d3567b34b2f9327b980838db0274cb567",
+      "size": 11278
+    },
+    {
+      "path": "index.json",
+      "sha256": "c1bde9e19bb14e1b8408bfc2c4fa566742a0c7328b06240e51055711d49b6b64",
+      "size": 55109
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "6b307424aff2a842af71d8fb5fd49e8c05d239d0655cc0bd541304126feb426a",
+      "size": 500
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "formal/reviews/validation-summary.json",
+      "sha256": "ce28fa61bbd5de5ae42b303e1d9d80688aa8a94ce6f6b96d817309203d0c7efb",
+      "size": 845
+    },
+    {
+      "evidence_id": "E10",
+      "path": "formal/verification-detached-compatibility.json",
+      "sha256": "5f066fee163aacf6672c2c4ea2c2536a8d1f5e4bb2c49d9e42c159301bb64689",
+      "size": 1071
+    },
+    {
+      "evidence_id": "E11",
+      "path": "formal/verification-compatibility-source/baseline_verify.py",
+      "sha256": "eab970235206f942d923a62074dd6415841e1358808f68418ac979bfb7f6acc3",
+      "size": 12829
+    },
+    {
+      "evidence_id": "E11",
+      "path": "formal/verification-compatibility-source/identity.py",
+      "sha256": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+      "size": 3419
+    },
+    {
+      "evidence_id": "E12",
+      "path": "formal/ledger/campaign.json",
+      "sha256": "364aeaf92edf7b2e28acf930d8f8bf33118c63cd7fdd5989854dbdf9a5b82305",
+      "size": 281
+    },
+    {
+      "evidence_id": "E12",
+      "path": "formal/ledger/combined_1.json",
+      "sha256": "5d516b49d20c8afbeb3b277f8cd0ca7258239641d49a25531ae72b30230e1f56",
+      "size": 301
+    },
+    {
+      "evidence_id": "E12",
+      "path": "formal/ledger/combined_2.json",
+      "sha256": "255ab6f743ceccea4daead9a1105fc7b7e4b6c00e4f539a9f4ae043303d54fed",
+      "size": 301
+    },
+    {
+      "evidence_id": "E13",
+      "path": "formal/formal-summary.json",
+      "sha256": "77d631d572ce490c75fbd31c052b22109795d48a5954ef6314e9653efa08c7fe",
+      "size": 4684
+    },
+    {
+      "evidence_id": "E14",
+      "path": "formal/command-index.json",
+      "sha256": "02eec124ca112e7764cd101635faea0c54d167a63e25deba3440f1df1861e690",
+      "size": 8696
+    },
+    {
+      "evidence_id": "E15",
+      "path": "formal/RESULTS.md",
+      "sha256": "3483dabc7ec125dd04f5f6d3bdf1defb8e5f1d11b2edba33399bd3a912aed321",
+      "size": 4497
+    },
+    {
+      "evidence_id": "E16",
+      "path": "formal/final-git-state.json",
+      "sha256": "f67f7f6ff8c28e57d1d97a90da8d914b8c7c3e56055093cf500e3d9f99dc4d93",
+      "size": 1127
+    },
+    {
+      "evidence_id": "E18",
+      "path": "formal/prepared/admission.json",
+      "sha256": "5d2ae3fb36401343fa962c1abe6e824e4786ab61723981f6b95f43d7076f4f78",
+      "size": 205
+    },
+    {
+      "evidence_id": "E18",
+      "path": "formal/prepared/manifest.json",
+      "sha256": "7bec4aa1600e58d9e32a7bd14820d391602942d9335ae42182617da0c10fd568",
+      "size": 177
+    },
+    {
+      "evidence_id": "E18",
+      "path": "formal/prepared/started.json",
+      "sha256": "f658326e45d75ef6cb7409e23e2a865b9a22636fd609d15474f6e781775d48e2",
+      "size": 114
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/check_resources.py",
+      "sha256": "c49e737823799a2074ca08cfdc8c9eae26339d66d5499267904a112fae12fe7e",
+      "size": 5121
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/command.log",
+      "sha256": "0847f8dcfda422e1ff04019a2dd4ed0c3d64acb8ee5481b3ac1280a49d16ee6e",
+      "size": 4067
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/command.rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "size": 2
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/command.txt",
+      "sha256": "4b09968a6c8ad783f3db77de8a23e1cc857c32dc99e400ca99560b6aa1f35439",
+      "size": 76
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/controller-configure.log",
+      "sha256": "5ac4620bc73e755c8117d8866fde969cc48985093f758001e4fbe14cbabc4438",
+      "size": 863
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/controller-configure.rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "size": 2
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/controller-root-check-command.txt",
+      "sha256": "a38ba68044dca7158d369ef4fa72b2c9d56be67b52a3b58b910c14d1b2375a4c",
+      "size": 105
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/controller-root-check.log",
+      "sha256": "52da1ee36a544e3e2004d888e01d036c47c5a2ab9700b61254ed06e2a2743b84",
+      "size": 52
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/controller-root-check.rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "size": 2
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/expose-and-configure.commands.txt",
+      "sha256": "8b2f8d3962a21a518d9bd48debcca8a470510c5fdde4cf95c216107f80adf344",
+      "size": 449
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/git-status-after-resources.txt",
+      "sha256": "ba051334ebc33f3162a4fd5be48615e03c8dac8ec7977e7c2752dbc1cf981841",
+      "size": 20
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-failed.command.txt",
+      "sha256": "98f84cfd410d9beafbadd78380376d90208668e2a09d8c718b44bb1728af7c79",
+      "size": 205
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-failed.log",
+      "sha256": "39eeee319de1f1c3e423abfc9f650100b80bee89e46aac26ed2cd90baef1f90e",
+      "size": 66
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-failed.rc",
+      "sha256": "56292515f7d3a7110811eb8de26b3f75f82a0766aa5a1fd66ebcfcb84fe6d5ff",
+      "size": 4
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-retry.command.txt",
+      "sha256": "a228640f62b9e56bde4852122957996b4b048be4c326ffcf16e8db5cc365593f",
+      "size": 153
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-retry.log",
+      "sha256": "1e7d4d645093bfe4d5483edf4e920e7510c3173a9c7348e8fb0e7217f7c2c6ba",
+      "size": 226
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignore-check-retry.rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "size": 2
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/ignored-paths.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/protocol.json",
+      "sha256": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/reliable-imports.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/reliable-imports.stdout",
+      "sha256": "3c826243658acb40079cc6da27f2c32f84e453888c399ebca953835d8766565d",
+      "size": 2687
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/resource-preflight.json",
+      "sha256": "c752e087d6ab8ae2e5ca7173745a913e3117bae438c004c98b97238a37d6c2e7",
+      "size": 15582
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/rl_reference.lock.json",
+      "sha256": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b",
+      "size": 5841
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/sources.lock.json",
+      "sha256": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+      "size": 885
+    },
+    {
+      "evidence_id": "E2",
+      "path": "formal/resource-preflight/task.json",
+      "sha256": "ba4d76d8472404eeb7831270c668f729a52de342048e371c70fafe21312bd901",
+      "size": 433
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/admission.json",
+      "sha256": "f069777600c73ea8fec519907bcd3560003820412f8fc7bcf09c93edb6b0b1b4",
+      "size": 512696
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/build-identity.json",
+      "sha256": "ab37115927b0fe8c2b5be0902399112fc421b18ec0e5950488344fe8fd9d6c62",
+      "size": 233284
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_build.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_build.stdout",
+      "sha256": "98a7b405a97d14cb504e6cb46a173c6665cdae852eef298f1547c41652fb80e4",
+      "size": 10317
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_configure.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_configure.stdout",
+      "sha256": "f5be4dd9165eeb920dadf70478b5e8132e668a508977d63daab1e8700dbbbdc8",
+      "size": 179
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/controller_tests.stdout",
+      "sha256": "f02a242498e5edc13d8cb7493b02e2a01c3dc30c1acebb34e0e66664cae34271",
+      "size": 4654
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/diff_check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/diff_check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/base_0.obj",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "size": 1330465
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/base_1.obj",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "size": 811791
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/base_2.obj",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "size": 294090
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/base_3.obj",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "size": 379093
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/calf_0.obj",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "size": 877174
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/calf_1.obj",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "size": 326865
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/calf_mirror_0.obj",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "size": 876538
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/calf_mirror_1.obj",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "size": 327261
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/foot.obj",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "size": 1144729
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/hip_0.obj",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "size": 2863864
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/hip_1.obj",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "size": 2767918
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/thigh_0.obj",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "size": 2841868
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/thigh_1.obj",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "size": 1491320
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/assets/thigh_mirror_0.obj",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "size": 2817674
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/go2.xml",
+      "sha256": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+      "size": 15711
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/phase2_flat.xml",
+      "sha256": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+      "size": 860
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/phase2_repeated_steps.xml",
+      "sha256": "07635f42395b5a5637da74829cd1a93d7ce257cd9d2b7056dc9a515e33fbd90a",
+      "size": 798
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/phase2_step_10cm.xml",
+      "sha256": "a7cca7c2d614b5ccf92ee5de686022a7999c11b2269d4c10fa0ed285a6080bc2",
+      "size": 620
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/inputs/unitree_robots/go2/phase2_step_5cm.xml",
+      "sha256": "ab2106afe65c86827aae02158e3b35b5ebb61e2b14d3665ddbd7c971e7573b0e",
+      "size": 619
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/manifest.json",
+      "sha256": "475dc54f849c68136d2e1c2df9f59afdcf2770ff22bef766e4fe24494882eebb",
+      "size": 4717
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/mjpc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/mjpc.stdout",
+      "sha256": "f171b4500c6ae5525ae080a8849f58d7f5fbb28b133897797f3a830490dd1c13",
+      "size": 523
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/mjpc_flat.xml",
+      "sha256": "08bbbad3f2fd051475dada9d5a8e7a1c642286b357f696a94f9858ab9bcdc544",
+      "size": 844
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/native-linkage.txt",
+      "sha256": "a246c5d45605a9fd9b1f9bf0c8912bfea51760af1557fe40fc2ac0d781c56dd5",
+      "size": 620
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/preflight_tests.stderr",
+      "sha256": "7f7adf295bc8bf7f13635ac7668c348a291ae1f72960e68e9bd54992e7c92481",
+      "size": 4220
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/preflight_tests.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/quality.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/quality.stdout",
+      "sha256": "57394e02dbad4677bacc49df1103d8a7ca19b1476a60502b9de4913f6be66dc6",
+      "size": 125
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/started.json",
+      "sha256": "057556982d798f52ff963abb1dcafde85eab02f16d3d25de12510f175c1eaa82",
+      "size": 341
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/substrate_tests.stderr",
+      "sha256": "f73f8733f7b558cb4ccbc0d8cdf0407aa2598ec0dcddfcaaec202641c1f4817e",
+      "size": 11318
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/substrate_tests.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/tooling_tests.stderr",
+      "sha256": "fe4a963a9b71b7512c306b398c3cfe7cf957df2b7376a46da11aac73b8828a8b",
+      "size": 132
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/tooling_tests.stdout",
+      "sha256": "f2b4fb47be14ef692bb41f234206f063e7dea4f103c34cdeb71ef95781b51b6b",
+      "size": 33
+    },
+    {
+      "evidence_id": "E3",
+      "path": "formal/qualification/working_tree.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/admission.json",
+      "sha256": "a33e71c5dea4fc42113c2f2e0f8b52c000d0ad4138483b70841d7ee6441e1ea3",
+      "size": 28287
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/configs/go2.yaml",
+      "sha256": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+      "size": 1876
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/deploy_go2.py",
+      "sha256": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+      "size": 10959
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/utils.py",
+      "sha256": "58e576d2c285a16b491f62e55f75c49b15177d4b879cb1731180b47ca4a2d2b4",
+      "size": 4364
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_config.py",
+      "sha256": "0597eabb0aa9422240ea408e7bd3aa0ebc9ec36cc781d1e5fb26773ca3579362",
+      "size": 963
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_task.py",
+      "sha256": "bbfbb77ae8f90b0383af6003b554c47de75bea75b9f77e29a548cff123306330",
+      "size": 4469
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot.py",
+      "sha256": "8440d9a07e77039f82328fc572f10103c12fb23a0e72ab7a5e6123ac6417444d",
+      "size": 79288
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot_config.py",
+      "sha256": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+      "size": 17574
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config.py",
+      "sha256": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+      "size": 14073
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_fast_flat_move.py",
+      "sha256": "aa13e218835a5484a576c9cc1119bf9afd159e4f8643d045c94d10758e47967b",
+      "size": 15690
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla.py",
+      "sha256": "dde2daedff703aa9ded1cda58d36b5f9604288f5909a5e599134f70742060fbf",
+      "size": 14654
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla_with_dynamic_cmd.py",
+      "sha256": "000aa6d6d90131e988833ca222b3c5db0d6664f4a4b999f43b963076d11c55df",
+      "size": 14604
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_env.py",
+      "sha256": "0179982b0e832f08503f1cfaf5e9f4301358475daa32f30a0173ab0f3308165b",
+      "size": 3996
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/utils/helpers.py",
+      "sha256": "10ee7a59afd423e2d785df997fbca4075668ee845409eddff9779ad2fa63f6f5",
+      "size": 8029
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_2.obj",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "size": 294090
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_1.obj",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "size": 326865
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/height_field.png",
+      "sha256": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+      "size": 3258
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_slope.xml",
+      "sha256": "f3b2f330897f219df6b243a8226ff6b4f2e9f9fee8f8d140c7b24dbdc7d4b941",
+      "size": 5103
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_stairs.xml",
+      "sha256": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+      "size": 11803
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "sha256": "0ad2696c6c53701dbba34f1a9a2158e1c1e4f491eb114263b0f86ecadc9e40ac",
+      "size": 855
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/go2.xml",
+      "sha256": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+      "size": 11565
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/inputs/tools/substrate/sources.lock.json",
+      "sha256": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+      "size": 885
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E4",
+      "path": "formal/prepared-retry/started.json",
+      "sha256": "060a36bd5ec214c83bf5be9d38c13e4abd536bc01339d474f52a3e10f9ecf59e",
+      "size": 115
+    },
+    {
+      "evidence_id": "E5",
+      "path": "formal/ledger-before-prepare.txt",
+      "sha256": "e54a50d4545866b4a485ac415872fb1af8d881becb67cdaa17ee1e1373e1cd24",
+      "size": 17
+    },
+    {
+      "evidence_id": "E6",
+      "path": "formal/authorization.json",
+      "sha256": "d5118656ecc13233cbe89d1f4768d99e72a9e3a1c0ef3ad475d46d18d9abfba6",
+      "size": 378
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E7",
+      "path": "formal/capture/started.json",
+      "sha256": "37c86b83096f0a4a13c333321f40be9a9ec9b3a106253a85c6f7fb27834b6598",
+      "size": 105
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "6f67769851aaffed1c1826d138293e52265dbba7",
+  "schema_version": 1,
+  "source_index_sha256": "c1bde9e19bb14e1b8408bfc2c4fa566742a0c7328b06240e51055711d49b6b64",
+  "task_branch": "research/shared-transfer-formal-v2-final-20260923",
+  "task_commit": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+}
