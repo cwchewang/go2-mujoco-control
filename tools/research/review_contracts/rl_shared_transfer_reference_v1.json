@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "name": "rl-shared-transfer-reference-v1",
+  "domains": {
+    "science": {
+      "files": [],
+      "json_files": [
+        "tools/substrate/protocols/rl_shared_transfer_combination_v1.json"
+      ],
+      "values": {
+        "question": "Does the pinned shared deployment preserve the sealed 1.0 m/s flat capability under the frozen two-case confirmatory protocol?",
+        "interpretation_boundary": "No low-speed, terrain, hardware, general robustness, or causal-mechanism claim."
+      }
+    },
+    "execution": {
+      "files": [
+        "tools/substrate/task.py",
+        "tools/research/identity.py",
+        "tools/research/preflight.py",
+        "tools/substrate/baseline.py"
+      ],
+      "json_files": [
+        "tools/substrate/protocols/rl_shared_transfer_combination_v1.json",
+        "tools/substrate/tasks/rl_shared_transfer_combination_v1.json"
+      ],
+      "values": {
+        "start_authorization": "explicit user START_FORMAL_CAPTURE",
+        "retry_policy": "none"
+      }
+    },
+    "evidence": {
+      "files": [
+        "tools/substrate/baseline_episode.py",
+        "tools/substrate/baseline_verify.py",
+        "tools/substrate/integrity.py"
+      ],
+      "json_files": [
+        "tools/substrate/protocols/rl_shared_transfer_combination_v1.json"
+      ],
+      "values": {
+        "raw_evidence": "jsonl trace + independent offline verification",
+        "publication": "claim-linked preserved evidence"
+      }
+    }
+  },
+  "precheck": {
+    "timeout_seconds": 120,
+    "commands": [
+      [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.substrate.test_launch.CurrentIdentityTests"
+      ],
+      [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.substrate.test_baseline.BaselineContractTests"
+      ]
+    ]
+  }
+}
