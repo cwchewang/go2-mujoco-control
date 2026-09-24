@@ -1,0 +1,8 @@
+command: env PYTHONPATH='/tmp/praxis-r2-target-de5e3963' python3 '/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-182/20260924T025924Z-8a3d5548be53/ledger-no-retry-check.py'
+exit_code: 0
+{
+  "existing_ledger": "capture rejected with IntegrityStopError",
+  "message": "campaign already claimed; no retry",
+  "replacement_output_created": false,
+  "ledger_preserved": true
+}

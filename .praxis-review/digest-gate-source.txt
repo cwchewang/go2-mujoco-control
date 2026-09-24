@@ -1,0 +1,316 @@
+tools/substrate/verify_capture.py-101-        )
+tools/substrate/verify_capture.py-102-        for key in ("progress_m", "vx_mae_mps"):
+tools/substrate/verify_capture.py-103-            if independent[key] is None or value[key] is None:
+tools/substrate/verify_capture.py-104-                if independent[key] != value[key]:
+tools/substrate/verify_capture.py-105-                    raise ValueError("independent metric oracle mismatch")
+tools/substrate/verify_capture.py-106-            elif not np.isclose(independent[key], value[key], rtol=0, atol=1e-12):
+tools/substrate/verify_capture.py-107-                raise ValueError("independent metric oracle mismatch")
+tools/substrate/verify_capture.py-108-        if reference_trace is None:
+tools/substrate/verify_capture.py:109:            reference_trace = value["trace_sha256"]
+tools/substrate/verify_capture.py-110-        original = strict_json((prepared_directory / "initial-state.json").read_text())
+tools/substrate/verify_capture.py-111-        if rows[0]["qpos"] != original["qpos"] or rows[0]["qvel"] != original["qvel"]:
+tools/substrate/verify_capture.py-112-            raise ValueError("initial state differs from prepared reset")
+tools/substrate/verify_capture.py-113-        saved = strict_json(
+tools/substrate/verify_capture.py-114-            (directory / ("attempt_%02d_analysis.json" % index)).read_text()
+tools/substrate/verify_capture.py-115-        )
+tools/substrate/verify_capture.py-116-        if (
+tools/substrate/verify_capture.py-117-            any(saved[k] != v or item["analysis"][k] != v for k, v in value.items())
+--
+tools/substrate/baseline.py-7-import time
+tools/substrate/baseline.py-8-
+tools/substrate/baseline.py-9-from .admit import ROOT
+tools/substrate/baseline.py-10-from .baseline_episode import (
+tools/substrate/baseline.py-11-    Plant,
+tools/substrate/baseline.py-12-    UnsupportedSceneError,
+tools/substrate/baseline.py-13-    analyze,
+tools/substrate/baseline.py-14-    command_at,
+tools/substrate/baseline.py:15:    expected_reference_digest,
+tools/substrate/baseline.py:16:    enforce_reference_digest,
+tools/substrate/baseline.py-17-    episode,
+tools/substrate/baseline.py-18-    make_policy,
+tools/substrate/baseline.py-19-    reference_inputs,
+tools/substrate/baseline.py-20-    repeat_reference,
+tools/substrate/baseline.py-21-    stop_after,
+tools/substrate/baseline.py-22-)
+tools/substrate/baseline.py-23-from .environment import verify_environment
+tools/substrate/baseline.py-24-from .guards import wall_deadline, zero_step_guard
+--
+tools/substrate/baseline.py-66-    if protocol.get("id") != "rl-capability-map-v1" or protocol.get("schema") != 2:
+tools/substrate/baseline.py-67-        raise ValueError("unsupported capability-map protocol")
+tools/substrate/baseline.py-68-    cases = protocol.get("cases", [])
+tools/substrate/baseline.py-69-    if len(cases) != protocol.get("max_attempts"):
+tools/substrate/baseline.py-70-        raise ValueError("capability-map attempt budget must equal case count")
+tools/substrate/baseline.py-71-    ids = [case.get("id") for case in cases]
+tools/substrate/baseline.py-72-    if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
+tools/substrate/baseline.py-73-        raise ValueError("capability-map cases must have unique IDs and lead with reference")
+tools/substrate/baseline.py:74:    expected_reference_digest(protocol)
+tools/substrate/baseline.py-75-    ranges = protocol["engineering_probe_envelope"]
+tools/substrate/baseline.py-76-    bounds = {
+tools/substrate/baseline.py-77-        "vx": ranges["vx_mps"],
+tools/substrate/baseline.py-78-        "vy": ranges["vy_mps"],
+tools/substrate/baseline.py-79-        "wz": ranges["wz_rps"],
+tools/substrate/baseline.py-80-    }
+tools/substrate/baseline.py-81-    valid_axes = set(bounds)
+tools/substrate/baseline.py-82-    for index, case in enumerate(cases):
+--
+tools/substrate/baseline.py-217-    if isinstance(exc, UnsupportedSceneError):
+tools/substrate/baseline.py-218-        return {
+tools/substrate/baseline.py-219-            "status": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+tools/substrate/baseline.py-220-            "classification": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+tools/substrate/baseline.py-221-            "reason": reason,
+tools/substrate/baseline.py-222-        }
+tools/substrate/baseline.py-223-    if isinstance(exc, IntegrityStopError):
+tools/substrate/baseline.py-224-        return {
+tools/substrate/baseline.py:225:            "status": "INTEGRITY_STOP",
+tools/substrate/baseline.py:226:            "classification": "INTEGRITY_STOP",
+tools/substrate/baseline.py-227-            "reason": reason,
+tools/substrate/baseline.py-228-        }
+tools/substrate/baseline.py-229-    if isinstance(exc, PreflightFailureError) or operation == "prepare":
+tools/substrate/baseline.py-230-        return {
+tools/substrate/baseline.py-231-            "status": "PREFLIGHT_FAILURE",
+tools/substrate/baseline.py-232-            "classification": "PREFLIGHT_FAILURE",
+tools/substrate/baseline.py-233-            "reason": reason,
+tools/substrate/baseline.py-234-        }
+--
+tools/substrate/baseline.py-464-                            with wall_deadline(protocol["wall_timeout_s"]):
+tools/substrate/baseline.py-465-                                episode(plant, policy, case, protocol, emit, consume)
+tools/substrate/baseline.py-466-                        finally:
+tools/substrate/baseline.py-467-                            stream.flush()
+tools/substrate/baseline.py-468-                            os.fsync(stream.fileno())
+tools/substrate/baseline.py-469-                    rows = [strict_json(line) for line in raw.read_text().splitlines()]
+tools/substrate/baseline.py-470-                    result = analyze(rows, case, protocol)
+tools/substrate/baseline.py-471-                    result["elapsed_s"] = time.monotonic() - started
+tools/substrate/baseline.py:472:                    result = enforce_reference_digest(result, case)
+tools/substrate/baseline.py-473-                    reference_case = repeat_reference(case)
+tools/substrate/baseline.py-474-                    if (
+tools/substrate/baseline.py-475-                        reference_case is not None
+tools/substrate/baseline.py:476:                        and result["trace_sha256"]
+tools/substrate/baseline.py:477:                        != (completed[reference_case]["trace_sha256"])
+tools/substrate/baseline.py-478-                    ):
+tools/substrate/baseline.py:479:                        result["verdict"] = "INTEGRITY_STOP"
+tools/substrate/baseline.py-480-                        result["failure"] = "trajectory_mismatch"
+tools/substrate/baseline.py-481-                        if "failure_classes" in result:
+tools/substrate/baseline.py:482:                            result["failure_classes"] = ["INTEGRITY_STOP"]
+tools/substrate/baseline.py-483-                    write_new(run.path / (case["id"] + "_analysis.json"), result)
+tools/substrate/baseline.py-484-                    item.update(status=result["verdict"], analysis=result)
+tools/substrate/baseline.py-485-                    completed[case["id"]] = result
+tools/substrate/baseline.py-486-                    validate_snapshot(
+tools/substrate/baseline.py-487-                        prepared_path, prepared["prepared_manifest_sha256"]
+tools/substrate/baseline.py-488-                    )
+tools/substrate/baseline.py-489-                    print(json.dumps({"case": case["id"], **result}), flush=True)
+tools/substrate/baseline.py-490-                    if stop_after(protocol, result["verdict"]):
+--
+tools/substrate/baseline_verify.py-4-import numpy as np
+tools/substrate/baseline_verify.py-5-
+tools/substrate/baseline_verify.py-6-from .admit import ROOT
+tools/substrate/baseline_verify.py-7-from .baseline_episode import (
+tools/substrate/baseline_verify.py-8-    Plant,
+tools/substrate/baseline_verify.py-9-    SourcePolicy,
+tools/substrate/baseline_verify.py-10-    analyze,
+tools/substrate/baseline_verify.py-11-    command_at,
+tools/substrate/baseline_verify.py:12:    expected_reference_digest,
+tools/substrate/baseline_verify.py:13:    enforce_reference_digest,
+tools/substrate/baseline_verify.py-14-    repeat_reference,
+tools/substrate/baseline_verify.py-15-    safety,
+tools/substrate/baseline_verify.py-16-    stop_after,
+tools/substrate/baseline_verify.py-17-)
+tools/substrate/baseline_verify.py-18-from .guards import zero_step_guard
+tools/substrate/baseline_verify.py-19-from .integrity import (
+tools/substrate/baseline_verify.py-20-    EvidenceRun,
+tools/substrate/baseline_verify.py-21-    digest,
+--
+tools/substrate/baseline_verify.py-313-            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+tools/substrate/baseline_verify.py-314-                "flat_cross_axis_max"
+tools/substrate/baseline_verify.py-315-            ]
+tools/substrate/baseline_verify.py-316-    require(
+tools/substrate/baseline_verify.py-317-        result["flat_cross_axis_pass"] == flat_cross_axis_pass,
+tools/substrate/baseline_verify.py-318-        "flat cross-axis gate mismatch",
+tools/substrate/baseline_verify.py-319-    )
+tools/substrate/baseline_verify.py-320-
+tools/substrate/baseline_verify.py:321:    if case.get("reference_gate", False):
+tools/substrate/baseline_verify.py-322-        mean_vx = result["windows"][0]["axes"]["vx"]["mean"]
+tools/substrate/baseline_verify.py-323-        require(
+tools/substrate/baseline_verify.py-324-            result["reference_mean_vx"] == mean_vx
+tools/substrate/baseline_verify.py-325-            and result["reference_pass"]
+tools/substrate/baseline_verify.py-326-            == (mean_vx is not None and mean_vx >= protocol["reference_mean_min"]),
+tools/substrate/baseline_verify.py-327-            "flat reference gate mismatch",
+tools/substrate/baseline_verify.py-328-        )
+tools/substrate/baseline_verify.py-329-    else:
+--
+tools/substrate/baseline_verify.py-394-        prepared = verify_bundle(prepared_path)
+tools/substrate/baseline_verify.py-395-        admission = verify_manifest(capture)
+tools/substrate/baseline_verify.py-396-        require(admission["status"] == "CAPTURE_COMPLETE", "capture incomplete")
+tools/substrate/baseline_verify.py-397-        protocol = strict_json((capture / "protocol.json").read_text())
+tools/substrate/baseline_verify.py-398-        require(
+tools/substrate/baseline_verify.py-399-            protocol == strict_json((prepared_path / "protocol.json").read_text()),
+tools/substrate/baseline_verify.py-400-            "protocol mismatch",
+tools/substrate/baseline_verify.py-401-        )
+tools/substrate/baseline_verify.py:402:        sealed_reference = expected_reference_digest(protocol)
+tools/substrate/baseline_verify.py-403-        reference = strict_json((capture / "preparation-reference.json").read_text())
+tools/substrate/baseline_verify.py-404-        require(
+tools/substrate/baseline_verify.py-405-            reference["manifest_sha256"] == digest(prepared_path / "manifest.json"),
+tools/substrate/baseline_verify.py-406-            "preparation mismatch",
+tools/substrate/baseline_verify.py-407-        )
+tools/substrate/baseline_verify.py-408-        prepared["prepared_manifest_sha256"] = reference["manifest_sha256"]
+tools/substrate/baseline_verify.py-409-        validate_authorization(
+tools/substrate/baseline_verify.py-410-            strict_json((capture / "authorization.json").read_text()), prepared
+--
+tools/substrate/baseline_verify.py-494-                )
+tools/substrate/baseline_verify.py-495-            else:
+tools/substrate/baseline_verify.py-496-                policy = SourcePolicy(
+tools/substrate/baseline_verify.py-497-                    prepared_path / "inputs/.substrate/upstream-go2-30e74dc5",
+tools/substrate/baseline_verify.py-498-                    prepared_path / "inputs/.substrate/rl/policy.pt",
+tools/substrate/baseline_verify.py-499-                    prepared["source_inputs"][".substrate/rl/policy.pt"],
+tools/substrate/baseline_verify.py-500-                )
+tools/substrate/baseline_verify.py-501-            result, audit = audit_rows(rows, plant, policy, case, protocol)
+tools/substrate/baseline_verify.py:502:            result = enforce_reference_digest(
+tools/substrate/baseline_verify.py-503-                result,
+tools/substrate/baseline_verify.py-504-                case,
+tools/substrate/baseline_verify.py-505-                sealed_reference if case["id"] == "flat_reference" else None,
+tools/substrate/baseline_verify.py-506-            )
+tools/substrate/baseline_verify.py-507-            reference_case = repeat_reference(case)
+tools/substrate/baseline_verify.py-508-            if (
+tools/substrate/baseline_verify.py-509-                reference_case is not None
+tools/substrate/baseline_verify.py:510:                and result["trace_sha256"]
+tools/substrate/baseline_verify.py:511:                != (completed[reference_case]["trace_sha256"])
+tools/substrate/baseline_verify.py-512-            ):
+tools/substrate/baseline_verify.py:513:                result.update(verdict="INTEGRITY_STOP", failure="trajectory_mismatch")
+tools/substrate/baseline_verify.py-514-                if "failure_classes" in result:
+tools/substrate/baseline_verify.py:515:                    result["failure_classes"] = ["INTEGRITY_STOP"]
+tools/substrate/baseline_verify.py-516-            stored = strict_json(
+tools/substrate/baseline_verify.py-517-                (capture / (case["id"] + "_analysis.json")).read_text()
+tools/substrate/baseline_verify.py-518-            )
+tools/substrate/baseline_verify.py-519-            require(
+tools/substrate/baseline_verify.py-520-                all(stored[k] == v for k, v in result.items())
+tools/substrate/baseline_verify.py-521-                and stored == item["analysis"]
+tools/substrate/baseline_verify.py-522-                and stored["verdict"] == item["status"],
+tools/substrate/baseline_verify.py-523-                "analysis mismatch",
+--
+tools/substrate/baseline_episode.py-290-    if "repeat_of" in case:
+tools/substrate/baseline_episode.py-291-        return case["repeat_of"]
+tools/substrate/baseline_episode.py-292-    # Preserve the sealed v1 comparison semantics without changing its protocol.
+tools/substrate/baseline_episode.py-293-    if case["id"] in ("source_repeat", "shared_adapter"):
+tools/substrate/baseline_episode.py-294-        return "source_1"
+tools/substrate/baseline_episode.py-295-    return None
+tools/substrate/baseline_episode.py-296-
+tools/substrate/baseline_episode.py-297-
+tools/substrate/baseline_episode.py:298:def expected_reference_digest(protocol):
+tools/substrate/baseline_episode.py-299-    """Return the frozen schema-2 reference digest and reject missing bindings."""
+tools/substrate/baseline_episode.py-300-    if protocol.get("schema") != 2:
+tools/substrate/baseline_episode.py-301-        return None
+tools/substrate/baseline_episode.py-302-    cases = protocol.get("cases", [])
+tools/substrate/baseline_episode.py-303-    if not cases or cases[0].get("id") != "flat_reference":
+tools/substrate/baseline_episode.py-304-        raise ValueError("sealed reference must be the first capability case")
+tools/substrate/baseline_episode.py:305:    expected = cases[0].get("reference_trace_sha256")
+tools/substrate/baseline_episode.py-306-    if (
+tools/substrate/baseline_episode.py-307-        not isinstance(expected, str)
+tools/substrate/baseline_episode.py-308-        or len(expected) != 64
+tools/substrate/baseline_episode.py-309-        or any(char not in "0123456789abcdef" for char in expected)
+tools/substrate/baseline_episode.py:310:        or any("reference_trace_sha256" in case for case in cases[1:])
+tools/substrate/baseline_episode.py-311-    ):
+tools/substrate/baseline_episode.py-312-        raise ValueError("invalid sealed reference trace digest")
+tools/substrate/baseline_episode.py-313-    return expected
+tools/substrate/baseline_episode.py-314-
+tools/substrate/baseline_episode.py-315-
+tools/substrate/baseline_episode.py:316:def enforce_reference_digest(result, case, expected=None):
+tools/substrate/baseline_episode.py-317-    """Classify a changed sealed reference after independently hashing its trace."""
+tools/substrate/baseline_episode.py-318-    if expected is None:
+tools/substrate/baseline_episode.py:319:        expected = case.get("reference_trace_sha256")
+tools/substrate/baseline_episode.py-320-    if expected is None:
+tools/substrate/baseline_episode.py-321-        return result
+tools/substrate/baseline_episode.py:322:    observed = result["trace_sha256"]
+tools/substrate/baseline_episode.py-323-    matched = observed == expected
+tools/substrate/baseline_episode.py-324-    result["reference_integrity"] = {
+tools/substrate/baseline_episode.py:325:        "expected_trace_sha256": expected,
+tools/substrate/baseline_episode.py:326:        "observed_trace_sha256": observed,
+tools/substrate/baseline_episode.py-327-        "matches": matched,
+tools/substrate/baseline_episode.py-328-    }
+tools/substrate/baseline_episode.py-329-    if not matched:
+tools/substrate/baseline_episode.py:330:        result["verdict"] = "INTEGRITY_STOP"
+tools/substrate/baseline_episode.py-331-        result["integrity_failure"] = "sealed_reference_trace_mismatch"
+tools/substrate/baseline_episode.py:332:        result["failure_classes"] = ["INTEGRITY_STOP"]
+tools/substrate/baseline_episode.py-333-    return result
+tools/substrate/baseline_episode.py-334-
+tools/substrate/baseline_episode.py-335-
+tools/substrate/baseline_episode.py-336-def stop_after(protocol, verdict):
+tools/substrate/baseline_episode.py:337:    if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
+tools/substrate/baseline_episode.py-338-        return True
+tools/substrate/baseline_episode.py-339-    progression = protocol["progression"]
+tools/substrate/baseline_episode.py-340-    if progression == "first_nonpass_stop":
+tools/substrate/baseline_episode.py-341-        return verdict != "PASS"
+tools/substrate/baseline_episode.py-342-    if progression == "performance_continue_safety_integrity_stop":
+tools/substrate/baseline_episode.py-343-        return False
+tools/substrate/baseline_episode.py-344-    raise ValueError("unknown campaign progression: " + str(progression))
+tools/substrate/baseline_episode.py-345-
+--
+tools/substrate/baseline_episode.py-476-        for w in windows
+tools/substrate/baseline_episode.py-477-    )
+tools/substrate/baseline_episode.py-478-    usable = (
+tools/substrate/baseline_episode.py-479-        tracking
+tools/substrate/baseline_episode.py-480-        and lateral <= protocol["flat_lateral_max"]
+tools/substrate/baseline_episode.py-481-        and max(map(abs, yaw)) <= protocol["flat_yaw_max"]
+tools/substrate/baseline_episode.py-482-    )
+tools/substrate/baseline_episode.py-483-    if case.get(
+tools/substrate/baseline_episode.py:484:        "reference_gate",
+tools/substrate/baseline_episode.py-485-        case["id"] in ("source_1", "source_repeat", "shared_adapter"),
+tools/substrate/baseline_episode.py-486-    ):
+tools/substrate/baseline_episode.py-487-        usable = usable and windows[0]["mean_vx"] >= protocol["reference_mean_min"]
+tools/substrate/baseline_episode.py-488-    goal_pass = None
+tools/substrate/baseline_episode.py-489-    if "stairs_goal" in protocol:
+tools/substrate/baseline_episode.py-490-        hold = maximum_hold = 0
+tools/substrate/baseline_episode.py-491-        goal = protocol["stairs_goal"]
+tools/substrate/baseline_episode.py-492-        for row in rows:
+--
+tools/substrate/baseline_episode.py-503-    latency = [r["policy_wall_s"] for r in rows if r["policy_wall_s"] is not None]
+tools/substrate/baseline_episode.py-504-    return dict(
+tools/substrate/baseline_episode.py-505-        verdict="SAFETY_STOP"
+tools/substrate/baseline_episode.py-506-        if rows[-1]["failure"]
+tools/substrate/baseline_episode.py-507-        else ("PASS" if usable else "PERFORMANCE_FAIL"),
+tools/substrate/baseline_episode.py-508-        failure=rows[-1]["failure"],
+tools/substrate/baseline_episode.py-509-        complete=complete,
+tools/substrate/baseline_episode.py-510-        steps=rows[-1]["tick"],
+tools/substrate/baseline_episode.py:511:        trace_sha256=trajectory.hexdigest(),
+tools/substrate/baseline_episode.py-512-        windows=windows,
+tools/substrate/baseline_episode.py-513-        progress_m=rows[-1]["qpos"][0] - rows[0]["qpos"][0],
+tools/substrate/baseline_episode.py-514-        lateral_max_m=lateral,
+tools/substrate/baseline_episode.py-515-        yaw_max_rad=max(map(abs, yaw)),
+tools/substrate/baseline_episode.py-516-        min_clearance_m=min(r["clearance"] for r in rows),
+tools/substrate/baseline_episode.py-517-        goal_pass=goal_pass,
+tools/substrate/baseline_episode.py-518-        policy_updates=len(latency),
+tools/substrate/baseline_episode.py-519-        policy_p50_ms=float(np.median(latency)) * 1000 if latency else None,
+--
+tools/substrate/baseline_episode.py-621-            flat_cross_axis_pass = max_y <= protocol["flat_cross_axis_max"]
+tools/substrate/baseline_episode.py-622-        if "wz" not in case["track_axes"]:
+tools/substrate/baseline_episode.py-623-            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+tools/substrate/baseline_episode.py-624-                "flat_cross_axis_max"
+tools/substrate/baseline_episode.py-625-            ]
+tools/substrate/baseline_episode.py-626-
+tools/substrate/baseline_episode.py-627-    reference_pass = True
+tools/substrate/baseline_episode.py-628-    reference_mean_vx = None
+tools/substrate/baseline_episode.py:629:    if case.get("reference_gate", False):
+tools/substrate/baseline_episode.py-630-        first_window = windows[0]["axes"].get("vx")
+tools/substrate/baseline_episode.py-631-        reference_mean_vx = first_window["mean"] if first_window else None
+tools/substrate/baseline_episode.py-632-        reference_pass = (
+tools/substrate/baseline_episode.py-633-            reference_mean_vx is not None
+tools/substrate/baseline_episode.py-634-            and reference_mean_vx >= protocol["reference_mean_min"]
+tools/substrate/baseline_episode.py-635-        )
+tools/substrate/baseline_episode.py-636-
+tools/substrate/baseline_episode.py-637-    task_goal_pass = None
+--
+tools/substrate/baseline_episode.py-682-
+tools/substrate/baseline_episode.py-683-    latency = [row["policy_wall_s"] for row in rows if row["policy_wall_s"] is not None]
+tools/substrate/baseline_episode.py-684-    return dict(
+tools/substrate/baseline_episode.py-685-        verdict=verdict,
+tools/substrate/baseline_episode.py-686-        failure=rows[-1]["failure"],
+tools/substrate/baseline_episode.py-687-        failure_classes=failure_classes,
+tools/substrate/baseline_episode.py-688-        complete=complete,
+tools/substrate/baseline_episode.py-689-        steps=rows[-1]["tick"],
+tools/substrate/baseline_episode.py:690:        trace_sha256=trajectory.hexdigest(),
+tools/substrate/baseline_episode.py-691-        windows=windows,
+tools/substrate/baseline_episode.py-692-        tracked_axes=case["track_axes"],
+tools/substrate/baseline_episode.py-693-        tracking_pass=tracking_pass,
+tools/substrate/baseline_episode.py-694-        flat_cross_axis_pass=flat_cross_axis_pass,
+tools/substrate/baseline_episode.py-695-        reference_mean_vx=reference_mean_vx,
+tools/substrate/baseline_episode.py-696-        reference_pass=reference_pass,
+tools/substrate/baseline_episode.py-697-        task_goal_pass=task_goal_pass,
+tools/substrate/baseline_episode.py-698-        route_pass=route_pass,

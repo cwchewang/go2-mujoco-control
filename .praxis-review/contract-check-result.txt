@@ -1,0 +1,6 @@
+command: python3 ../../home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-182/20260924T025924Z-8a3d5548be53/contract-check.py
+exit_code: 1
+Traceback (most recent call last):
+  File "/tmp/praxis-r2-target-de5e3963/../../home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-182/20260924T025924Z-8a3d5548be53/contract-check.py", line 10, in <module>
+    from tools.substrate.task import load_task
+ModuleNotFoundError: No module named 'tools'

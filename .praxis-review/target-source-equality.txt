@@ -1,0 +1,2 @@
+command: git diff --exit-code de5e396331e01576a2bfd0fe1ccdf662835aa15a 8a3d5548be53ba7ef0cad11083ea2e939aff84f9 -- tools/substrate tools/research docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md
+exit_code: 0

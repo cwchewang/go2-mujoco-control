@@ -1,0 +1,3 @@
+command: git diff-tree --no-commit-id --name-only -r HEAD
+exit_code: 0
+docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json

@@ -1,0 +1,161 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E19",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 182,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "8b96e6103b96fccccbb6af312c7ddcb9058e101557f4ff7d158f365077a5d153",
+      "size": 8455
+    },
+    {
+      "path": "index.json",
+      "sha256": "6b59faf547415725c932e409e89625d5da3595d206de933b4bc2544334a60a28",
+      "size": 9674
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "fca0f9014c34020c1466e211b3b574855b154658444bc5edee58f4e3e7bc475a",
+      "size": 523
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "contract-check-result-retry.txt",
+      "sha256": "d6e193298d531091b09b7f263d2e5e11f1c48fdbc571c0c9864f30c453c39136",
+      "size": 2094
+    },
+    {
+      "evidence_id": "E10",
+      "path": "target-source-equality.txt",
+      "sha256": "db7b8e0acaa5cfa32f20cec907b0cab667501fbb9a106955873c937d0c1b34f0",
+      "size": 215
+    },
+    {
+      "evidence_id": "E11",
+      "path": "final-commit.txt",
+      "sha256": "d3192fc811cb0a1662bc78b1284ac3825d141ce81a19ffcb517443dc92640e63",
+      "size": 382
+    },
+    {
+      "evidence_id": "E12",
+      "path": "final-parent.txt",
+      "sha256": "2cd23b1d8484695fe166ebf0b4343c303894d2865d00bf6f08a237f04e9d47f5",
+      "size": 83
+    },
+    {
+      "evidence_id": "E13",
+      "path": "final-files.txt",
+      "sha256": "431c99495e362ea206f280b543bd4a86df93cbc262d46fec610d2fae0c1fbf3d",
+      "size": 153
+    },
+    {
+      "evidence_id": "E14",
+      "path": "final-status.txt",
+      "sha256": "4d68c49d2276a1e6cc4974301f83f436b443638a925ea365090e3bf3e93e08c6",
+      "size": 70
+    },
+    {
+      "evidence_id": "E15",
+      "path": "contract-check-result.txt",
+      "sha256": "205af546c4ed009a34ef81c04b25050b9f9bd49d728d001f12a71ddfb5cdab10",
+      "size": 475
+    },
+    {
+      "evidence_id": "E16",
+      "path": "target-worktree-create.txt",
+      "sha256": "6def9d13f4aca2e0a05e47dbdf194d9d77c0e78b5bd8d4da1d040f95e42bfb77",
+      "size": 239
+    },
+    {
+      "evidence_id": "E17",
+      "path": "target-worktree-status.txt",
+      "sha256": "4d68c49d2276a1e6cc4974301f83f436b443638a925ea365090e3bf3e93e08c6",
+      "size": 70
+    },
+    {
+      "evidence_id": "E19",
+      "path": "preflight-identity-source.txt",
+      "sha256": "a278b1de9a80999f703a3e1a153fc185991e7c2524a185f417146d11b3fb4894",
+      "size": 5285
+    },
+    {
+      "evidence_id": "E2",
+      "path": "identity-unit-tests.txt",
+      "sha256": "7f61499f62a014dfefa1c60848c1710ff756b9ca03a22edb8d09ad04285f6c06",
+      "size": 1048
+    },
+    {
+      "evidence_id": "E3",
+      "path": "capability-contract-tests.txt",
+      "sha256": "13a516ca2d48fe553c45bd6147cd0f95a9ed1021b1b8aa4325ee3c4e59a2f827",
+      "size": 1659
+    },
+    {
+      "evidence_id": "E4",
+      "path": "capability-scene-tests.txt",
+      "sha256": "d7fc3c15e29c045b9b2c4778c9a63b59e4a625f6b2336fcf090a466e05404f26",
+      "size": 695
+    },
+    {
+      "evidence_id": "E5",
+      "path": "ledger-no-retry-check.txt",
+      "sha256": "88b55d2e93ee8e8d2f29b983bcbec15c644de301d62bace343878e4b7e693e23",
+      "size": 396
+    },
+    {
+      "evidence_id": "E6",
+      "path": "digest-gate-source.txt",
+      "sha256": "48201aaeaad3a4663f0bbdbf1e056082c66a6169c8f97a77dc011a805c351f3c",
+      "size": 23548
+    },
+    {
+      "evidence_id": "E7",
+      "path": "zero-step-source.txt",
+      "sha256": "7c853c81cf535dc9e3b7e9a5638ea17cd4edef3a95821e4c8f1cc2d87cf10109",
+      "size": 3613
+    },
+    {
+      "evidence_id": "E8",
+      "path": "target-task.txt",
+      "sha256": "8122e3a158f800baace95ab63201a75e3263421983a6eaa1defb63987db73f1d",
+      "size": 6567
+    },
+    {
+      "evidence_id": "E9",
+      "path": "target-task-config.txt",
+      "sha256": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+      "size": 412
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "ee5f1a8ae1767d05cb245112c8ba2d5d94390ed7",
+  "schema_version": 1,
+  "source_index_sha256": "6b59faf547415725c932e409e89625d5da3595d206de933b4bc2544334a60a28",
+  "task_branch": "review/rl-capability-map-formal-execution-r2-20260924",
+  "task_commit": "8a3d5548be53ba7ef0cad11083ea2e939aff84f9"
+}

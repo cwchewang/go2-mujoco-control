@@ -1,0 +1,233 @@
+{
+  "status": "complete",
+  "summary": "Approved the exact execution target and committed the required r2 review artifact. Zero-physics checks passed; no scientific capability episode was run.",
+  "completed": [
+    "Read the frozen task document and reviewed target HEAD de5e396331e01576a2bfd0fe1ccdf662835aa15a in a detached, clean worktree.",
+    "Verified strict task loading, all five Praxis identity fields, wrong issue/path rejection, incomplete-binding rejection, and launcher/preflight propagation.",
+    "Ran 18 targeted identity, capability protocol/digest, selected-scene, and zero-step tests; all passed.",
+    "Verified sealed reference enforcement in capture and offline verification, nine-attempt/no-retry configuration, and refusal to recapture when a permanent ledger exists.",
+    "Committed only docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json as ee5f1a8ae1767d05cb245112c8ba2d5d94390ed7."
+  ],
+  "not_completed": [
+    "The scientific capability campaign was intentionally not run under the zero-physics review scope."
+  ],
+  "observations": [
+    {
+      "text": "The exact target commit was available and remained detached and clean during the review; relevant task, research identity, and substrate sources match the prepared starting commit.",
+      "evidence_ids": [
+        "E10",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "The strict task loader accepted the formal task config. Its Praxis binding resolved to repository cwchewang/go2-mujoco-control, issue 178, logical branch research/rl-capability-map-formal-20260924, target commit de5e396331e01576a2bfd0fe1ccdf662835aa15a, and task path docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md.",
+      "evidence_ids": [
+        "E1",
+        "E8",
+        "E9"
+      ]
+    },
+    {
+      "text": "The protocol hash was 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803; it declares nine cases, max_attempts 9, and retry none.",
+      "evidence_ids": [
+        "E1",
+        "E3"
+      ]
+    },
+    {
+      "text": "Wrong nonempty issue and task-path values failed identity validation, and removing a Praxis field failed detached execution. The launcher generated preflight arguments with issue 178 and the task path from tracked metadata.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E19"
+      ]
+    },
+    {
+      "text": "All 18 selected unit tests passed: 8 identity tests, 6 capability contract/digest tests, and 4 capability scene tests. The preparation probe retained zero plant steps and zero time.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "text": "A pre-existing campaign ledger caused capture to stop with the no-retry error, preserving the ledger and creating no replacement output.",
+      "evidence_ids": [
+        "E5"
+      ]
+    },
+    {
+      "text": "The formal task names the r2 science and execution review branches/results and contains no #179 or #180 requirement; the execution result was committed at its declared r2 path.",
+      "evidence_ids": [
+        "E1",
+        "E8",
+        "E11",
+        "E13"
+      ]
+    },
+    {
+      "text": "The first supplemental script invocation failed before checks because PYTHONPATH was missing. The same script passed after setting PYTHONPATH; both outputs are preserved.",
+      "evidence_ids": [
+        "E1",
+        "E15"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The five-field detached identity fix is effective for the formal #178 task because exact identity passes while wrong issue, wrong task path, and incomplete binding are rejected at both the shared validator and launcher boundary.",
+      "evidence_ids": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "text": "The frozen formal task's r2 review-path contract is satisfiable by this execution result, and the task does not depend on stale #179/#180 results.",
+      "evidence_ids": [
+        "E1",
+        "E8",
+        "E13"
+      ]
+    },
+    {
+      "text": "The preparation path remains zero-step, and capture plus independent offline verification retain the sealed reference digest gate.",
+      "evidence_ids": [
+        "E3",
+        "E4",
+        "E6",
+        "E7"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "APPROVED: no remaining execution blocker was found in the frozen review scope.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8"
+      ]
+    },
+    {
+      "text": "The required review artifact is the only tracked change, its parent is the frozen starting commit, and the prepared worktree is clean after commit.",
+      "evidence_ids": [
+        "E11",
+        "E12",
+        "E13",
+        "E14"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "This execution review verified the separate r2 science-review branch/result path declared by the formal task, but did not retrieve or assess that branch's review contents; formal task launch must still validate both exact-head review artifacts before qualification or capture.",
+      "evidence_ids": [
+        "E8",
+        "E19"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "contract-check-result-retry.txt",
+      "description": "Successful exact-target contract harness: strict loader, identity matrix, preflight propagation, protocol hash and budget, r2 review paths, and static invariants."
+    },
+    {
+      "id": "E2",
+      "path": "identity-unit-tests.txt",
+      "description": "Output from all 8 CurrentIdentityTests."
+    },
+    {
+      "id": "E3",
+      "path": "capability-contract-tests.txt",
+      "description": "Output from 6 selected capability protocol, sealed-digest, progression, and preflight tests."
+    },
+    {
+      "id": "E4",
+      "path": "capability-scene-tests.txt",
+      "description": "Output from 4 scene-contract and zero-step capability tests."
+    },
+    {
+      "id": "E5",
+      "path": "ledger-no-retry-check.txt",
+      "description": "No-retry test against a pre-existing campaign ledger."
+    },
+    {
+      "id": "E6",
+      "path": "digest-gate-source.txt",
+      "description": "Target source excerpts for capture and offline sealed-reference digest enforcement."
+    },
+    {
+      "id": "E7",
+      "path": "zero-step-source.txt",
+      "description": "Target source excerpts for preparation's zero-step guard and physics_steps=0 output."
+    },
+    {
+      "id": "E8",
+      "path": "target-task.txt",
+      "description": "Formal task document at the exact target commit, including its r2 review paths and launch requirements."
+    },
+    {
+      "id": "E9",
+      "path": "target-task-config.txt",
+      "description": "Formal task configuration at the exact target commit."
+    },
+    {
+      "id": "E10",
+      "path": "target-source-equality.txt",
+      "description": "Successful exact diff check for relevant target and prepared-start files."
+    },
+    {
+      "id": "E11",
+      "path": "final-commit.txt",
+      "description": "Committed review SHA and commit metadata."
+    },
+    {
+      "id": "E12",
+      "path": "final-parent.txt",
+      "description": "Verified parent commit equals the frozen starting commit."
+    },
+    {
+      "id": "E13",
+      "path": "final-files.txt",
+      "description": "Verified the commit changes exactly the required review.json path."
+    },
+    {
+      "id": "E14",
+      "path": "final-status.txt",
+      "description": "Verified the prepared worktree is clean and detached after commit."
+    },
+    {
+      "id": "E15",
+      "path": "contract-check-result.txt",
+      "description": "Preserved failed first harness invocation caused by missing PYTHONPATH."
+    },
+    {
+      "id": "E16",
+      "path": "target-worktree-create.txt",
+      "description": "Created a temporary detached worktree at the exact target commit without creating a branch."
+    },
+    {
+      "id": "E17",
+      "path": "target-worktree-status.txt",
+      "description": "Exact-target temporary worktree status after tests; detached and clean."
+    },
+    {
+      "id": "E18",
+      "path": "target-worktree-remove.txt",
+      "description": "Removed the temporary exact-target worktree after review."
+    },
+    {
+      "id": "E19",
+      "path": "preflight-identity-source.txt",
+      "description": "Target preflight parser and shared identity-validator argument propagation."
+    }
+  ]
+}

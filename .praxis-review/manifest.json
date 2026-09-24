@@ -1,0 +1,13 @@
+{
+  "result_commit": "ee5f1a8ae1767d05cb245112c8ba2d5d94390ed7",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "review/rl-capability-map-formal-execution-r2-20260924",
+    "issue_number": 182,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "8a3d5548be53ba7ef0cad11083ea2e939aff84f9",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_EXECUTION_REVIEW_R2_20260924.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-182"
+}

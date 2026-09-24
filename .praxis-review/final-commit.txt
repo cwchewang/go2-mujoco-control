@@ -1,0 +1,9 @@
+command: git show -s --format=fuller HEAD
+exit_code: 0
+commit ee5f1a8ae1767d05cb245112c8ba2d5d94390ed7
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 11:12:59 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 11:12:59 2026 +0800
+
+    docs: approve RL capability map execution review r2

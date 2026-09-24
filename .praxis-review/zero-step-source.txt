@@ -1,0 +1,58 @@
+tools/substrate/guards.py-6-import signal
+tools/substrate/guards.py-7-import subprocess
+tools/substrate/guards.py-8-import sys
+tools/substrate/guards.py-9-
+tools/substrate/guards.py-10-
+tools/substrate/guards.py-11-@contextlib.contextmanager
+tools/substrate/guards.py:12:def zero_step_guard():
+tools/substrate/guards.py-13-    import mujoco
+tools/substrate/guards.py-14-
+tools/substrate/guards.py-15-    def forbidden(*args, **kwargs):
+tools/substrate/guards.py-16-        raise RuntimeError("prepare forbids real plant integration")
+tools/substrate/guards.py-17-
+tools/substrate/guards.py-18-    originals = {
+--
+tools/substrate/baseline_episode.py-405-                consume()
+tools/substrate/baseline_episode.py-406-                consumed = True
+tools/substrate/baseline_episode.py-407-        row["target"] = target.tolist()
+tools/substrate/baseline_episode.py-408-        emit(row)
+tools/substrate/baseline_episode.py-409-        if row["failure"] or tick == case["horizon_ticks"]:
+tools/substrate/baseline_episode.py-410-            break
+tools/substrate/baseline_episode.py:411:        plant.step(applied)
+tools/substrate/baseline_episode.py-412-
+tools/substrate/baseline_episode.py-413-
+tools/substrate/baseline_episode.py-414-def analyze(rows, case, protocol):
+tools/substrate/baseline_episode.py-415-    if protocol.get("schema") == 2:
+tools/substrate/baseline_episode.py-416-        return analyze_capability_map(rows, case, protocol)
+tools/substrate/baseline_episode.py-417-    trajectory = hashlib.sha256()
+--
+tools/substrate/baseline.py-199-    except Exception as exc:
+tools/substrate/baseline.py-200-        raise IntegrityStopError("prepared snapshot bundle verification failed") from exc
+tools/substrate/baseline.py-201-    if digest(path / "manifest.json") != expected_manifest:
+tools/substrate/baseline.py-202-        raise IntegrityStopError("prepared snapshot changed")
+tools/substrate/baseline.py-203-
+tools/substrate/baseline.py-204-
+tools/substrate/baseline.py:205:def prepare_probe(plant, policy, case, command):
+tools/substrate/baseline.py-206-    initial = plant.snapshot(0)
+tools/substrate/baseline.py-207-    action = policy.act(plant.observe(), command)
+tools/substrate/baseline.py-208-    target = action.position_target if case["adapter"] else action[1]
+tools/substrate/baseline.py-209-    plant.control(target)
+tools/substrate/baseline.py-210-    if plant.steps or plant.data.time != 0 or plant.snapshot(0) != initial:
+tools/substrate/baseline.py-211-        raise ValueError("prepare modified plant")
+--
+tools/substrate/baseline.py-312-            runtime=runtime,
+tools/substrate/baseline.py-313-            qualification_reference=qualification,
+tools/substrate/baseline.py-314-            protocol_sha256=digest(protocol_path),
+tools/substrate/baseline.py-315-            max_attempts=protocol["max_attempts"],
+tools/substrate/baseline.py-316-            source_inputs=source_inputs,
+tools/substrate/baseline.py-317-            models=models,
+tools/substrate/baseline.py:318:            physics_steps=0,
+tools/substrate/baseline.py-319-        )
+tools/substrate/baseline.py-320-    verify_bundle(output)
+tools/substrate/baseline.py:321:    return {"status": "READY_AWAITING_START", "head": head, "physics_steps": 0}
+tools/substrate/baseline.py-322-
+tools/substrate/baseline.py-323-
+tools/substrate/baseline.py-324-def capture_readiness(prepared_path, authorization_path, task_path):
+tools/substrate/baseline.py-325-    try:
+tools/substrate/baseline.py-326-        prepared = verify_bundle(prepared_path)
+tools/substrate/baseline.py-327-        task = load_task(task_path)

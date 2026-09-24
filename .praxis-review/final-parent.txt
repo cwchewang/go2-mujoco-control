@@ -1,0 +1,3 @@
+command: git rev-parse HEAD^
+exit_code: 0
+8a3d5548be53ba7ef0cad11083ea2e939aff84f9

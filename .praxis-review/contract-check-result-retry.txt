@@ -1,0 +1,56 @@
+command: env PYTHONPATH='/tmp/praxis-r2-target-de5e3963' python3 '/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-182/20260924T025924Z-8a3d5548be53/contract-check.py'
+exit_code: 0
+{
+  "target_head": "de5e396331e01576a2bfd0fe1ccdf662835aa15a",
+  "loader": "accepted",
+  "praxis_identity": {
+    "repository": "cwchewang/go2-mujoco-control",
+    "issue_number": 178,
+    "branch": "research/rl-capability-map-formal-20260924",
+    "commit": "de5e396331e01576a2bfd0fe1ccdf662835aa15a",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+  },
+  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "attempts": 9,
+  "retry": "none",
+  "review_paths": {
+    "science_branch": "review/rl-capability-map-formal-science-r2-20260924",
+    "science_result": "docs/validation/rl_capability_map_formal_science_review_r2_20260924/review.json",
+    "execution_branch": "review/rl-capability-map-formal-execution-r2-20260924",
+    "execution_result": "docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json",
+    "execution_result_is_expected_output": true,
+    "stale_179_180_refs_in_formal_task": false
+  },
+  "identity_negative_cases": {
+    "PRAXIS_ISSUE_NUMBER": {
+      "pass": false,
+      "mismatches": {
+        "PRAXIS_ISSUE_NUMBER": {
+          "actual": "179",
+          "expected": "178"
+        }
+      }
+    },
+    "PRAXIS_TASK_PATH": {
+      "pass": false,
+      "mismatches": {
+        "PRAXIS_TASK_PATH": {
+          "actual": "docs/research/TASK_OTHER.md",
+          "expected": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+        }
+      }
+    }
+  },
+  "incomplete_five_field_binding_pass": false,
+  "launcher_preflight_arguments": {
+    "issue_number": "178",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+  },
+  "campaign_static_invariants": {
+    "capture_digest_enforcement": true,
+    "offline_digest_enforcement": true,
+    "exclusive_permanent_ledger": true,
+    "no_retry_guard": true,
+    "zero_step_prepare_result": true
+  }
+}

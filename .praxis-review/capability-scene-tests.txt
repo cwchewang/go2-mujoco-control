@@ -1,0 +1,11 @@
+command: python3 -m unittest tools.substrate.test_baseline.CapabilityMapSceneTests -v
+exit_code: 0
+test_nonworld_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_preparation_probe_checks_command_without_stepping_plant (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_selected_scenes_parse_and_match_world_collision_contracts (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_unlisted_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.153s
+
+OK

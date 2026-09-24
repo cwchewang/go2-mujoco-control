@@ -1,0 +1,4 @@
+command: git worktree add --detach /tmp/praxis-r2-target-de5e3963 de5e396331e01576a2bfd0fe1ccdf662835aa15a
+exit_code: 0
+Preparing worktree (detached HEAD de5e396)
+HEAD is now at de5e396 fix: bind capability formal to r2 exact-head reviews

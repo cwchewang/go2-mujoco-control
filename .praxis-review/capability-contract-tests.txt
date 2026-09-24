@@ -1,0 +1,13 @@
+command: python3 -m unittest tools.substrate.test_baseline.BaselineContractTests.test_capability_protocol_freezes_three_axis_commands_and_budget tools.substrate.test_baseline.BaselineContractTests.test_capability_reference_digest_is_required_and_schema_one_stays_unbound tools.substrate.test_baseline.BaselineContractTests.test_sealed_reference_digest_match_and_performance_mismatch_classification tools.substrate.test_baseline.BaselineContractTests.test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents tools.substrate.test_baseline.BaselineContractTests.test_capability_progression_retains_performance_and_stops_integrity tools.substrate.test_baseline.BaselineContractTests.test_scene_and_preparation_failures_are_not_scientific_outcomes -v
+exit_code: 0
+test_capability_protocol_freezes_three_axis_commands_and_budget (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_reference_digest_is_required_and_schema_one_stays_unbound (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_sealed_reference_digest_match_and_performance_mismatch_classification (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_progression_retains_performance_and_stops_integrity (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_scene_and_preparation_failures_are_not_scientific_outcomes (tools.substrate.test_baseline.BaselineContractTests) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK

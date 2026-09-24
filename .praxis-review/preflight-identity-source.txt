@@ -1,0 +1,130 @@
+17-import signal
+18-import subprocess
+19-import sys
+20-from typing import Any
+21-
+22-if __package__:
+23:    from .identity import validate_execution_identity
+24-else:
+25-    # Direct script execution puts this directory, not the repo root, on sys.path.
+26:    from identity import validate_execution_identity
+27-
+28-DEFAULT_PROCESS_NAMES = ("unitree_mujoco", "real_trot_go2", "run_trot.sh")
+29-LINUX_SAFE_DOMAIN_RANGES = ((0, 101), (215, 232))
+30-SURFACES = {"runtime", "runner", "schema", "scene", "analyzer"}
+31-AUTO_REVIEW_SURFACES = {"runtime", "schema", "scene"}
+32-AUTO_TEST_SURFACES = {"runtime", "schema", "scene", "analyzer"}
+33-
+34-
+35:def command(argv: list[str], cwd: Path) -> tuple[int, str, str]:
+36-    process = subprocess.Popen(
+37-        argv,
+38-        cwd=cwd,
+39-        text=True,
+40-        stdout=subprocess.PIPE,
+41-        stderr=subprocess.PIPE,
+--
+344-        except (OSError, ValueError, IndexError) as exc:
+345-            raise RuntimeError("UDP inspection unavailable: " + table) from exc
+346-    return ports
+347-
+348-
+349-def _main() -> int:
+350:    ap = argparse.ArgumentParser(description=__doc__)
+351:    ap.add_argument("--repo-root", type=Path, default=Path.cwd())
+352:    ap.add_argument("--experiment-id", required=True)
+353:    ap.add_argument("--expected-branch", required=True)
+354:    ap.add_argument(
+355-        "--expected-head",
+356-        required=True,
+357-        help="exact HEAD prepared and reviewed for this checkpoint",
+358-    )
+359:    ap.add_argument("--expected-praxis-issue-number")
+360:    ap.add_argument("--expected-praxis-task-path")
+361:    ap.add_argument("--runner", type=Path, required=True)
+362:    ap.add_argument("--run-dir", type=Path, required=True)
+363:    ap.add_argument("--domain", type=int)
+364:    ap.add_argument("--transport", choices=("dds", "inprocess"), default="dds")
+365:    ap.add_argument("--held-lock-fd", type=int)
+366:    ap.add_argument(
+367-        "--qualification", type=Path, help="verified content-bound offline test receipt"
+368-    )
+369:    ap.add_argument(
+370-        "--participants",
+371-        type=int,
+372-        default=2,
+373-        help="reserved participant count (controller and simulator default)",
+374-    )
+375:    ap.add_argument(
+376-        "--dds-policy", choices=("linux-safe", "spec-only"), default="linux-safe"
+377-    )
+378:    ap.add_argument("--baseline-runner", type=Path)
+379:    ap.add_argument(
+380-        "--diff-base",
+381-        help="accepted parent/baseline ref used to auto-detect changed execution surfaces",
+382-    )
+383:    ap.add_argument(
+384-        "--changed-surface",
+385-        action="append",
+386-        choices=tuple(sorted(SURFACES)),
+387-        default=[],
+388-        help="manual override/addition",
+389-    )
+390:    ap.add_argument(
+391-        "--requires-sol-review",
+392-        action="store_true",
+393-        help="use when a runner/analyzer/tooling diff changes trajectory or primary evidence meaning",
+394-    )
+395:    ap.add_argument("--approved-head")
+396:    ap.add_argument("--require-file", action="append", default=[])
+397:    ap.add_argument("--hash", dest="hash_requirements", action="append", default=[])
+398:    ap.add_argument(
+399-        "--test",
+400-        action="append",
+401-        default=[],
+402-        help="reviewed no-live/build test command",
+403-    )
+404:    ap.add_argument("--process-name", action="append", default=[])
+405:    ap.add_argument(
+406-        "--output",
+407-        type=Path,
+408-        help="JSON report; stdout or ignored/out-of-repo path recommended",
+409-    )
+410-    args = ap.parse_args()
+411-
+--
+433-        "checks": checks,
+434-    }
+435-
+436-    git_rc, head, git_err = command(["git", "rev-parse", "HEAD"], repo)
+437-    branch_rc, branch, branch_err = command(["git", "branch", "--show-current"], repo)
+438-    status_rc, status, status_err = command(["git", "status", "--porcelain"], repo)
+439:    identity = validate_execution_identity(
+440-        branch if branch_rc == 0 else "",
+441-        args.expected_branch,
+442-        head if git_rc == 0 else "",
+443-        args.expected_head,
+444-        os.environ,
+445:        expected_issue_number=args.expected_praxis_issue_number,
+446:        expected_task_path=args.expected_praxis_task_path,
+447-    )
+448-    report["identity"] = identity
+449-    add_check(
+450-        checks, "git_head_readable", git_rc == 0, head if git_rc == 0 else git_err
+451-    )
+452-    add_check(
+--
+808-
+809-    previous_signal = signal.signal(signal.SIGTERM, interrupted)
+810-    try:
+811-        # A launcher may pass its already-held descriptor, preserving one
+812-        # uninterrupted lock across preflight and capture. Verify its inode and
+813-        # acquire on that same open file description; never trust an env flag.
+814:        probe = argparse.ArgumentParser(add_help=False)
+815:        probe.add_argument("--held-lock-fd", type=int)
+816-        inherited, _ = probe.parse_known_args()
+817-        lock_path = "/tmp/go2_mujoco_experiment.lock"
+818-        if inherited.held_lock_fd is not None:
+819-            fd = inherited.held_lock_fd
+820-            actual, expected = os.fstat(fd), os.stat(lock_path)
+821-            if (actual.st_dev, actual.st_ino) != (expected.st_dev, expected.st_ino):
