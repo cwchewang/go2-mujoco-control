@@ -1,0 +1,59 @@
+     1	"""Zero-step preparation and bounded native-call supervision."""
+     2	
+     3	import contextlib
+     4	import os
+     5	from pathlib import Path
+     6	import signal
+     7	import subprocess
+     8	import sys
+     9	
+    10	
+    11	@contextlib.contextmanager
+    12	def zero_step_guard():
+    13	    import mujoco
+    14	
+    15	    def forbidden(*args, **kwargs):
+    16	        raise RuntimeError("prepare forbids real plant integration")
+    17	
+    18	    originals = {
+    19	        name: getattr(mujoco, name) for name in ("mj_step", "mj_step1", "mj_step2")
+    20	    }
+    21	    try:
+    22	        for name in originals:
+    23	            setattr(mujoco, name, forbidden)
+    24	        yield
+    25	    finally:
+    26	        for name, value in originals.items():
+    27	            setattr(mujoco, name, value)
+    28	
+    29	
+    30	@contextlib.contextmanager
+    31	def wall_deadline(seconds):
+    32	    def expired(*args):
+    33	        raise TimeoutError("wall_timeout")
+    34	
+    35	    guard = subprocess.Popen(
+    36	        [
+    37	            sys.executable,
+    38	            str(Path(__file__).with_name("watchdog.py")),
+    39	            str(os.getpid()),
+    40	            str(seconds),
+    41	        ],
+    42	        stdin=subprocess.PIPE,
+    43	        stdout=subprocess.DEVNULL,
+    44	        stderr=subprocess.DEVNULL,
+    45	        start_new_session=True,
+    46	    )
+    47	    previous = signal.signal(signal.SIGALRM, expired)
+    48	    signal.setitimer(signal.ITIMER_REAL, seconds)
+    49	    try:
+    50	        yield
+    51	    finally:
+    52	        signal.setitimer(signal.ITIMER_REAL, 0)
+    53	        signal.signal(signal.SIGALRM, previous)
+    54	        guard.stdin.close()
+    55	        try:
+    56	            guard.wait(timeout=3)
+    57	        except subprocess.TimeoutExpired:
+    58	            guard.kill()
+    59	            guard.wait()

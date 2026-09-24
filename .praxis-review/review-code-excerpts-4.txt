@@ -1,0 +1,678 @@
+
+===== baseline_episode.py:1,45 =====
+     1	"""Pinned upstream deployment semantics with isolated, zero-step telemetry."""
+     2	
+     3	import ast
+     4	import hashlib
+     5	import io
+     6	import json
+     7	import math
+     8	import time
+     9	import numpy as np
+    10	
+    11	from .contracts import POLICY_JOINTS, Proprioception
+    12	from .diagnose import joint_map, yaml_literals
+    13	from .integrity import digest, strict_json
+    14	from .rl import FrozenPolicy, observation45
+    15	
+    16	
+    17	class UnsupportedSceneError(ValueError):
+    18	    """The runner cannot make its declared telemetry claims for this scene."""
+    19	
+    20	
+    21	def reference_inputs(root):
+    22	    lock = strict_json((root / "tools/substrate/rl_reference.lock.json").read_text())
+    23	    directory = root / ".substrate/upstream-go2-30e74dc5"
+    24	    for name, expected in lock["files"].items():
+    25	        path = (directory / name).resolve()
+    26	        if not path.is_relative_to(directory.resolve()) or digest(path) != expected:
+    27	            raise ValueError("upstream reference changed: " + name)
+    28	    return directory, lock
+    29	
+    30	
+    31	class SourcePolicy:
+    32	    """Independent source assembly; only pure helper AST from the pinned file."""
+    33	
+    34	    def __init__(self, reference, checkpoint, expected):
+    35	        import torch
+    36	
+    37	        data = checkpoint.read_bytes()
+    38	        if hashlib.sha256(data).hexdigest() != expected:
+    39	            raise ValueError("checkpoint changed")
+    40	        self.torch = torch
+    41	        self.policy = torch.jit.load(io.BytesIO(data), map_location="cpu").eval()
+    42	        self.config = yaml_literals(reference / "deploy/deploy_mujoco/configs/go2.yaml")
+    43	        c = self.config
+    44	        if (
+    45	            tuple(c["mujoco_joint_names"]) != POLICY_JOINTS
+
+===== baseline_episode.py:414,525 =====
+   414	def analyze(rows, case, protocol):
+   415	    if protocol.get("schema") == 2:
+   416	        return analyze_capability_map(rows, case, protocol)
+   417	    trajectory = hashlib.sha256()
+   418	    for row in rows:
+   419	        trajectory.update(
+   420	            json.dumps(
+   421	                {k: row[k] for k in ("qpos", "qvel", "target", "applied")},
+   422	                sort_keys=True,
+   423	                separators=(",", ":"),
+   424	            ).encode()
+   425	        )
+   426	    complete = rows[-1]["tick"] == case["horizon_ticks"]
+   427	    windows = []
+   428	    for index, (start, speed) in enumerate(case["commands"]):
+   429	        end = (
+   430	            case["commands"][index + 1][0]
+   431	            if index + 1 < len(case["commands"])
+   432	            else case["horizon_ticks"]
+   433	        )
+   434	        selected = [
+   435	            r
+   436	            for r in rows
+   437	            if start + case["measurement_delay_ticks"] <= r["tick"] < end
+   438	        ]
+   439	        velocity = []
+   440	        for r in selected:
+   441	            w, x, y, z = r["qpos"][3:7]
+   442	            velocity.append(
+   443	                np.dot(
+   444	                    [1 - 2 * (y * y + z * z), 2 * (x * y + w * z), 2 * (x * z - w * y)],
+   445	                    r["qvel"][:3],
+   446	                )
+   447	            )
+   448	        error = np.asarray(velocity) - speed
+   449	        windows.append(
+   450	            dict(
+   451	                start_tick=start,
+   452	                end_tick=end,
+   453	                command=speed,
+   454	                samples=len(selected),
+   455	                mean_vx=float(np.mean(velocity)) if selected else None,
+   456	                mae=float(np.mean(np.abs(error))) if selected else None,
+   457	                rmse=float(np.sqrt(np.mean(error**2))) if selected else None,
+   458	            )
+   459	        )
+   460	    yaw = [
+   461	        math.atan2(
+   462	            2 * (r["qpos"][3] * r["qpos"][6] + r["qpos"][4] * r["qpos"][5]),
+   463	            1 - 2 * (r["qpos"][5] ** 2 + r["qpos"][6] ** 2),
+   464	        )
+   465	        for r in rows
+   466	    ]
+   467	    yaw = np.unwrap(yaw) - yaw[0]
+   468	    lateral = max(abs(r["qpos"][1] - rows[0]["qpos"][1]) for r in rows)
+   469	    tracking = complete and all(
+   470	        w["mae"] is not None
+   471	        and w["mae"]
+   472	        <= max(
+   473	            protocol["tracking_absolute_tolerance"],
+   474	            protocol["tracking_relative_tolerance"] * abs(w["command"]),
+   475	        )
+   476	        for w in windows
+   477	    )
+   478	    usable = (
+   479	        tracking
+   480	        and lateral <= protocol["flat_lateral_max"]
+   481	        and max(map(abs, yaw)) <= protocol["flat_yaw_max"]
+   482	    )
+   483	    if case.get(
+   484	        "reference_gate",
+   485	        case["id"] in ("source_1", "source_repeat", "shared_adapter"),
+   486	    ):
+   487	        usable = usable and windows[0]["mean_vx"] >= protocol["reference_mean_min"]
+   488	    goal_pass = None
+   489	    if "stairs_goal" in protocol:
+   490	        hold = maximum_hold = 0
+   491	        goal = protocol["stairs_goal"]
+   492	        for row in rows:
+   493	            reached = (
+   494	                row["qpos"][0] >= goal["base_x"]
+   495	                and abs(row["qpos"][1]) <= goal["lateral_max"]
+   496	                and min(f[0] for f in row["feet"]) >= goal["foot_x"]
+   497	            )
+   498	            hold = hold + 1 if reached else 0
+   499	            maximum_hold = max(maximum_hold, hold)
+   500	        goal_pass = maximum_hold > goal["hold_ticks"]
+   501	        if case["id"] == "source_stairs":
+   502	            usable = complete and goal_pass
+   503	    latency = [r["policy_wall_s"] for r in rows if r["policy_wall_s"] is not None]
+   504	    return dict(
+   505	        verdict="SAFETY_STOP"
+   506	        if rows[-1]["failure"]
+   507	        else ("PASS" if usable else "PERFORMANCE_FAIL"),
+   508	        failure=rows[-1]["failure"],
+   509	        complete=complete,
+   510	        steps=rows[-1]["tick"],
+   511	        trace_sha256=trajectory.hexdigest(),
+   512	        windows=windows,
+   513	        progress_m=rows[-1]["qpos"][0] - rows[0]["qpos"][0],
+   514	        lateral_max_m=lateral,
+   515	        yaw_max_rad=max(map(abs, yaw)),
+   516	        min_clearance_m=min(r["clearance"] for r in rows),
+   517	        goal_pass=goal_pass,
+   518	        policy_updates=len(latency),
+   519	        policy_p50_ms=float(np.median(latency)) * 1000 if latency else None,
+   520	        policy_p99_ms=float(np.quantile(latency, 0.99)) * 1000 if latency else None,
+   521	    )
+   522	
+   523	
+   524	def rotate_world_to_body(quaternion_wxyz, vector):
+   525	    """Use the pinned deployment's inverse-quaternion rotation convention."""
+
+===== baseline_episode.py:553,710 =====
+   553	def analyze_capability_map(rows, case, protocol):
+   554	    trajectory = hashlib.sha256()
+   555	    for row in rows:
+   556	        trajectory.update(
+   557	            json.dumps(
+   558	                {k: row[k] for k in ("qpos", "qvel", "target", "applied")},
+   559	                sort_keys=True,
+   560	                separators=(",", ":"),
+   561	            ).encode()
+   562	        )
+   563	    complete = rows[-1]["tick"] == case["horizon_ticks"]
+   564	    twists = [body_twist(row) for row in rows]
+   565	    windows = []
+   566	    for index, command in enumerate(case["commands"]):
+   567	        start = command[0]
+   568	        target = command[1:] if len(command) == 4 else [command[1], 0.0, 0.0]
+   569	        end = (
+   570	            case["commands"][index + 1][0]
+   571	            if index + 1 < len(case["commands"])
+   572	            else case["horizon_ticks"]
+   573	        )
+   574	        selected_indices = [
+   575	            i
+   576	            for i, row in enumerate(rows)
+   577	            if start + case["measurement_delay_ticks"] <= row["tick"] < end
+   578	        ]
+   579	        axes = {}
+   580	        for name, value in zip(("vx", "vy", "wz"), target):
+   581	            if name not in case["track_axes"]:
+   582	                continue
+   583	            actual = np.asarray([twists[i][name] for i in selected_indices])
+   584	            error = actual - value
+   585	            axes[name] = dict(
+   586	                command=float(value),
+   587	                samples=len(actual),
+   588	                mean=float(np.mean(actual)) if len(actual) else None,
+   589	                mae=float(np.mean(np.abs(error))) if len(actual) else None,
+   590	                rmse=float(np.sqrt(np.mean(error**2))) if len(actual) else None,
+   591	            )
+   592	        windows.append(dict(start_tick=start, end_tick=end, axes=axes))
+   593	
+   594	    tracked = [axis for window in windows for axis in window["axes"].values()]
+   595	    tracking_pass = complete and bool(tracked) and all(
+   596	        metric["mae"] is not None
+   597	        and metric["mae"]
+   598	        <= max(
+   599	            protocol["tracking_absolute_tolerance"],
+   600	            protocol["tracking_relative_tolerance"] * abs(metric["command"]),
+   601	        )
+   602	        for metric in tracked
+   603	    )
+   604	    yaw = yaw_series(rows)
+   605	    initial = rows[0]["qpos"]
+   606	    displacement = [
+   607	        [row["qpos"][0] - initial[0], row["qpos"][1] - initial[1]]
+   608	        for row in rows
+   609	    ]
+   610	    flat_cross_axis_pass = True
+   611	    if case.get("flat_probe", False):
+   612	        max_x = max(abs(point[0]) for point in displacement)
+   613	        max_y = max(abs(point[1]) for point in displacement)
+   614	        if "wz" in case["track_axes"]:
+   615	            flat_cross_axis_pass = max(
+   616	                max_x, max_y
+   617	            ) <= protocol["flat_cross_axis_max"]
+   618	        elif "vy" in case["track_axes"]:
+   619	            flat_cross_axis_pass = max_x <= protocol["flat_cross_axis_max"]
+   620	        else:
+   621	            flat_cross_axis_pass = max_y <= protocol["flat_cross_axis_max"]
+   622	        if "wz" not in case["track_axes"]:
+   623	            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+   624	                "flat_cross_axis_max"
+   625	            ]
+   626	
+   627	    reference_pass = True
+   628	    reference_mean_vx = None
+   629	    if case.get("reference_gate", False):
+   630	        first_window = windows[0]["axes"].get("vx")
+   631	        reference_mean_vx = first_window["mean"] if first_window else None
+   632	        reference_pass = (
+   633	            reference_mean_vx is not None
+   634	            and reference_mean_vx >= protocol["reference_mean_min"]
+   635	        )
+   636	
+   637	    task_goal_pass = None
+   638	    route_pass = None
+   639	    maximum_hold = 0
+   640	    if "terrain_goal" in case:
+   641	        goal = case["terrain_goal"]
+   642	        edge = goal["terrain_x_max"]
+   643	        initial_y = initial[1]
+   644	        hold = 0
+   645	        for row in rows:
+   646	            cleared = (
+   647	                row["qpos"][0] >= edge + goal["base_clearance_m"]
+   648	                and min(foot[0] for foot in row["feet"])
+   649	                >= edge + goal["foot_clearance_m"]
+   650	                and abs(row["qpos"][1] - initial_y)
+   651	                <= goal["route_lateral_max_m"]
+   652	            )
+   653	            hold = hold + 1 if cleared else 0
+   654	            maximum_hold = max(maximum_hold, hold)
+   655	        route_rows = [
+   656	            row
+   657	            for row in rows
+   658	            if goal["terrain_x_min"]
+   659	            <= row["qpos"][0]
+   660	            <= goal["terrain_x_max"]
+   661	        ]
+   662	        route_pass = bool(route_rows) and all(
+   663	            abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
+   664	            for row in route_rows
+   665	        )
+   666	        task_goal_pass = complete and route_pass and maximum_hold >= goal["hold_ticks"]
+   667	
+   668	    failure_classes = []
+   669	    if rows[-1]["failure"]:
+   670	        failure_classes.append("SAFETY_STOP")
+   671	    else:
+   672	        if not tracking_pass or not flat_cross_axis_pass or not reference_pass:
+   673	            failure_classes.append("TRACKING_FAILURE")
+   674	        if task_goal_pass is False:
+   675	            failure_classes.append("TASK_GOAL_FAILURE")
+   676	    if "SAFETY_STOP" in failure_classes:
+   677	        verdict = "SAFETY_STOP"
+   678	    elif failure_classes:
+   679	        verdict = "PERFORMANCE_FAIL"
+   680	    else:
+   681	        verdict = "PASS"
+   682	
+   683	    latency = [row["policy_wall_s"] for row in rows if row["policy_wall_s"] is not None]
+   684	    return dict(
+   685	        verdict=verdict,
+   686	        failure=rows[-1]["failure"],
+   687	        failure_classes=failure_classes,
+   688	        complete=complete,
+   689	        steps=rows[-1]["tick"],
+   690	        trace_sha256=trajectory.hexdigest(),
+   691	        windows=windows,
+   692	        tracked_axes=case["track_axes"],
+   693	        tracking_pass=tracking_pass,
+   694	        flat_cross_axis_pass=flat_cross_axis_pass,
+   695	        reference_mean_vx=reference_mean_vx,
+   696	        reference_pass=reference_pass,
+   697	        task_goal_pass=task_goal_pass,
+   698	        route_pass=route_pass,
+   699	        task_goal_maximum_hold_ticks=maximum_hold,
+   700	        progress_m=rows[-1]["qpos"][0] - initial[0],
+   701	        lateral_max_m=max(abs(row["qpos"][1] - initial[1]) for row in rows),
+   702	        yaw_max_rad=float(max(map(abs, yaw))),
+   703	        min_clearance_m=min(row["clearance"] for row in rows),
+   704	        policy_updates=len(latency),
+   705	        policy_p50_ms=float(np.median(latency)) * 1000 if latency else None,
+   706	        policy_p99_ms=float(np.quantile(latency, 0.99)) * 1000 if latency else None,
+   707	    )
+   708	
+   709	
+   710	def make_policy(root, case, checkpoint_hash):
+
+===== baseline_verify.py:1,35 =====
+     1	"""No-integration audit: external claims, source policy replay and PD algebra."""
+     2	
+     3	import math
+     4	import numpy as np
+     5	
+     6	from .admit import ROOT
+     7	from .baseline_episode import (
+     8	    Plant,
+     9	    SourcePolicy,
+    10	    analyze,
+    11	    command_at,
+    12	    expected_reference_digest,
+    13	    enforce_reference_digest,
+    14	    repeat_reference,
+    15	    safety,
+    16	    stop_after,
+    17	)
+    18	from .guards import zero_step_guard
+    19	from .integrity import (
+    20	    EvidenceRun,
+    21	    digest,
+    22	    experiment_lock,
+    23	    strict_json,
+    24	    verify_bundle,
+    25	    verify_manifest,
+    26	    write_new,
+    27	)
+    28	from .launch import setup_runtime
+    29	from .readiness import validate_authorization, validate_review
+    30	from .rl import DEFAULT, FrozenPolicy, observation45
+    31	
+    32	
+    33	def require(condition, message):
+    34	    if not condition:
+    35	        raise ValueError(message)
+
+===== baseline_verify.py:118,238 =====
+   118	def audit_rows(rows, plant, policy, case, protocol):
+   119	    require(bool(rows), "empty trace")
+   120	    expected_target = DEFAULT.copy() if case["adapter"] else policy.default.copy()
+   121	    updates = 0
+   122	    maximum_target_error = 0.0
+   123	    for tick, row in enumerate(rows):
+   124	        require(
+   125	            row["tick"] == tick
+   126	            and abs(row["time"] - tick * protocol["physics_period_s"]) < 1e-8,
+   127	            "trace clock",
+   128	        )
+   129	        command = command_at(case, tick)
+   130	        require(row["command"] == command, "command schedule")
+   131	        require(
+   132	            np.isfinite(row["qpos"] + row["qvel"] + row["target"]).all(),
+   133	            "nonfinite trace",
+   134	        )
+   135	        if tick == 0:
+   136	            require(
+   137	                row["qpos"] == plant.data.qpos.tolist()
+   138	                and row["qvel"] == plant.data.qvel.tolist(),
+   139	                "reset mismatch",
+   140	            )
+   141	        plant.data.qpos[:] = row["qpos"]
+   142	        plant.data.qvel[:] = row["qvel"]
+   143	        plant.data.time = row["time"]
+   144	        rebuilt = plant.snapshot(tick)
+   145	        for key in (
+   146	            "feet",
+   147	            "terrain_height",
+   148	            "clearance",
+   149	            "ground_contacts",
+   150	            "base_contacts",
+   151	        ):
+   152	            require(rebuilt[key] == row[key], "telemetry mismatch: " + key)
+   153	        require(
+   154	            row["failure"] == safety(row, protocol), "safety classification mismatch"
+   155	        )
+   156	        active = tick < case["horizon_ticks"] and row["failure"] is None
+   157	        update = (
+   158	            active
+   159	            and tick >= case["first_inference_tick"]
+   160	            and tick % protocol["decimation"] == 0
+   161	        )
+   162	        require(
+   163	            (row["observation"] is not None) == update
+   164	            and (row["policy_wall_s"] is not None) == update,
+   165	            "policy cadence",
+   166	        )
+   167	        if update:
+   168	            assembled, expected_target = replay_policy_action(
+   169	                plant, policy, case, row["command"]
+   170	            )
+   171	            require(
+   172	                np.array_equal(assembled, row["observation"]),
+   173	                "source observation mismatch",
+   174	            )
+   175	            updates += 1
+   176	        error = float(np.max(np.abs(expected_target - row["target"])))
+   177	        maximum_target_error = max(error, maximum_target_error)
+   178	        require(error == 0, "source target mismatch")
+   179	        if active:
+   180	            q, v = np.array(row["qpos"]), np.array(row["qvel"])
+   181	            independent = 20.0 * (expected_target - q[plant.qadr]) - 0.5 * v[plant.vadr]
+   182	            require(
+   183	                np.allclose(independent, row["requested"], rtol=0, atol=1e-12),
+   184	                "PD mismatch",
+   185	            )
+   186	            bounds = plant.model.actuator_ctrlrange[plant.aids]
+   187	            applied = [
+   188	                min(max(value, lo), hi) if limited else value
+   189	                for value, (lo, hi), limited in zip(
+   190	                    independent, bounds, plant.model.actuator_ctrllimited[plant.aids]
+   191	                )
+   192	            ]
+   193	            require(
+   194	                np.allclose(applied, row["applied"], rtol=0, atol=1e-12),
+   195	                "actuation mismatch",
+   196	            )
+   197	            plant.data.ctrl[plant.aids] = row["applied"]
+   198	        else:
+   199	            require(
+   200	                row["applied"] is None and row["requested"] is None, "terminal control"
+   201	            )
+   202	            require(tick == len(rows) - 1, "trace continued after stop")
+   203	    require(
+   204	        rows[-1]["failure"] is not None or rows[-1]["tick"] == case["horizon_ticks"],
+   205	        "truncated trace",
+   206	    )
+   207	    result = analyze(rows, case, protocol)
+   208	    if protocol.get("schema") == 2:
+   209	        _audit_capability_metrics(rows, case, protocol, result)
+   210	    else:
+   211	        # Independent scalar body-axis projection and MAE, not the analyzer helper.
+   212	        for window in result["windows"]:
+   213	            values = []
+   214	            for r in rows:
+   215	                if (
+   216	                    window["start_tick"] + case["measurement_delay_ticks"]
+   217	                    <= r["tick"]
+   218	                    < window["end_tick"]
+   219	                ):
+   220	                    values.append(independent_body_vx(r["qpos"][3:7], r["qvel"][:3]))
+   221	            if values:
+   222	                require(
+   223	                    abs(
+   224	                        math.fsum(
+   225	                            abs(v - window["command"]) for v in values
+   226	                        )
+   227	                        / len(values)
+   228	                        - window["mae"]
+   229	                    )
+   230	                    < 1e-10,
+   231	                    "independent MAE mismatch",
+   232	                )
+   233	    return result, {
+   234	        "policy_updates_replayed": updates,
+   235	        "max_target_error": maximum_target_error,
+   236	        "contact_frames_rebuilt": len(rows),
+   237	        "physics_steps": 0,
+   238	    }
+
+===== baseline_verify.py:241,330 =====
+   241	def _audit_capability_metrics(rows, case, protocol, result):
+   242	    actual = [
+   243	        independent_body_twist(row["qpos"][3:7], row["qvel"]) for row in rows
+   244	    ]
+   245	    for window in result["windows"]:
+   246	        commands = [
+   247	            row
+   248	            for row in case["commands"]
+   249	            if row[0] == window["start_tick"]
+   250	        ]
+   251	        require(len(commands) == 1, "unknown capability command window")
+   252	        command = commands[0][1:]
+   253	        selected = [
+   254	            i
+   255	            for i, row in enumerate(rows)
+   256	            if window["start_tick"] + case["measurement_delay_ticks"]
+   257	            <= row["tick"]
+   258	            < window["end_tick"]
+   259	        ]
+   260	        for name, value in zip(("vx", "vy", "wz"), command):
+   261	            if name not in case["track_axes"]:
+   262	                continue
+   263	            metrics = window["axes"][name]
+   264	            values = [actual[i][name] for i in selected]
+   265	            errors = [v - value for v in values]
+   266	            require(metrics["samples"] == len(values), "axis sample count mismatch")
+   267	            if not values:
+   268	                require(metrics["mae"] is None, "empty axis window has metrics")
+   269	                continue
+   270	            mean = math.fsum(values) / len(values)
+   271	            mae = math.fsum(abs(error) for error in errors) / len(errors)
+   272	            rmse = math.sqrt(math.fsum(error * error for error in errors) / len(errors))
+   273	            require(
+   274	                abs(mean - metrics["mean"]) < 1e-10
+   275	                and abs(mae - metrics["mae"]) < 1e-10
+   276	                and abs(rmse - metrics["rmse"]) < 1e-10,
+   277	                "independent body-axis metrics mismatch",
+   278	            )
+   279	
+   280	    complete = rows[-1]["tick"] == case["horizon_ticks"]
+   281	    tracking_pass = complete and all(
+   282	        metrics["mae"] is not None
+   283	        and metrics["mae"]
+   284	        <= max(
+   285	            protocol["tracking_absolute_tolerance"],
+   286	            protocol["tracking_relative_tolerance"] * abs(metrics["command"]),
+   287	        )
+   288	        for window in result["windows"]
+   289	        for metrics in window["axes"].values()
+   290	    )
+   291	    require(result["tracking_pass"] == tracking_pass, "tracking gate mismatch")
+   292	
+   293	    initial = rows[0]["qpos"]
+   294	    yaw = [
+   295	        math.atan2(
+   296	            2 * (row["qpos"][3] * row["qpos"][6] + row["qpos"][4] * row["qpos"][5]),
+   297	            1 - 2 * (row["qpos"][5] ** 2 + row["qpos"][6] ** 2),
+   298	        )
+   299	        for row in rows
+   300	    ]
+   301	    yaw = np.unwrap(yaw) - yaw[0]
+   302	    flat_cross_axis_pass = True
+   303	    if case.get("flat_probe", False):
+   304	        dx = max(abs(row["qpos"][0] - initial[0]) for row in rows)
+   305	        dy = max(abs(row["qpos"][1] - initial[1]) for row in rows)
+   306	        if "wz" in case["track_axes"]:
+   307	            flat_cross_axis_pass = max(dx, dy) <= protocol["flat_cross_axis_max"]
+   308	        elif "vy" in case["track_axes"]:
+   309	            flat_cross_axis_pass = dx <= protocol["flat_cross_axis_max"]
+   310	        else:
+   311	            flat_cross_axis_pass = dy <= protocol["flat_cross_axis_max"]
+   312	        if "wz" not in case["track_axes"]:
+   313	            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+   314	                "flat_cross_axis_max"
+   315	            ]
+   316	    require(
+   317	        result["flat_cross_axis_pass"] == flat_cross_axis_pass,
+   318	        "flat cross-axis gate mismatch",
+   319	    )
+   320	
+   321	    if case.get("reference_gate", False):
+   322	        mean_vx = result["windows"][0]["axes"]["vx"]["mean"]
+   323	        require(
+   324	            result["reference_mean_vx"] == mean_vx
+   325	            and result["reference_pass"]
+   326	            == (mean_vx is not None and mean_vx >= protocol["reference_mean_min"]),
+   327	            "flat reference gate mismatch",
+   328	        )
+   329	    else:
+   330	        require(result["reference_pass"] is True, "unexpected reference gate failure")
+
+===== baseline.py:1,65 =====
+     1	"""Source-policy baseline: reviewed preparation, bounded capture, offline verification."""
+     2	
+     3	import argparse
+     4	import json
+     5	import os
+     6	from pathlib import Path
+     7	import time
+     8	
+     9	from .admit import ROOT
+    10	from .baseline_episode import (
+    11	    Plant,
+    12	    UnsupportedSceneError,
+    13	    analyze,
+    14	    command_at,
+    15	    expected_reference_digest,
+    16	    enforce_reference_digest,
+    17	    episode,
+    18	    make_policy,
+    19	    reference_inputs,
+    20	    repeat_reference,
+    21	    stop_after,
+    22	)
+    23	from .environment import verify_environment
+    24	from .guards import wall_deadline, zero_step_guard
+    25	from .integrity import (
+    26	    EvidenceRun,
+    27	    digest,
+    28	    experiment_lock,
+    29	    strict_json,
+    30	    verify_bundle,
+    31	    write_new,
+    32	)
+    33	from .launch import CHECKPOINT, current_identity, preflight, setup_runtime
+    34	from .model import dependency_manifest, physical_fingerprint
+    35	from .qualification import validate, validate_reference
+    36	from .readiness import validate_authorization, validate_review
+    37	from .task import load_task
+    38	
+    39	TASK = ROOT / "tools/substrate/tasks/rl_source_v1.json"
+    40	TRANSPORT = "inprocess"
+    41	
+    42	
+    43	class IntegrityStopError(RuntimeError):
+    44	    """Source or prepared evidence changed after a campaign was qualified."""
+    45	
+    46	
+    47	class PreflightFailureError(RuntimeError):
+    48	    """A required review, qualification, identity, or fresh preflight did not pass."""
+    49	
+    50	
+    51	def validate_source_identity(protocol, reference_lock, source_lock):
+    52	    identity = protocol.get("source_identity")
+    53	    if identity is None:
+    54	        return
+    55	    locked_source = source_lock["rl"]
+    56	    expected = {
+    57	        "commit": reference_lock["commit"],
+    58	        "checkpoint": locked_source["checkpoint"],
+    59	        "checkpoint_sha256": locked_source["sha256"],
+    60	    }
+    61	    if identity != expected:
+    62	        raise ValueError("protocol source identity differs from source locks")
+    63	
+    64	
+    65	def validate_capability_protocol(protocol):
+
+===== baseline.py:518,570 =====
+   518	def main():
+   519	    parser = argparse.ArgumentParser(description=__doc__)
+   520	    sub = parser.add_subparsers(dest="operation", required=True)
+   521	    prep = sub.add_parser("prepare")
+   522	    prep.add_argument("--task", type=Path, default=TASK)
+   523	    prep.add_argument("--output", required=True, type=Path)
+   524	    prep.add_argument("--review", required=True, type=Path)
+   525	    prep.add_argument("--qualification", required=True, type=Path)
+   526	    cap = sub.add_parser("capture")
+   527	    cap.add_argument("--task", type=Path, default=TASK)
+   528	    cap.add_argument("--prepared", required=True, type=Path)
+   529	    cap.add_argument("--authorization", required=True, type=Path)
+   530	    cap.add_argument("--output", required=True, type=Path)
+   531	    ver = sub.add_parser("verify")
+   532	    ver.add_argument("--capture", required=True, type=Path)
+   533	    ver.add_argument("--prepared", required=True, type=Path)
+   534	    ver.add_argument("--output", required=True, type=Path)
+   535	    args = parser.parse_args()
+   536	    try:
+   537	        if args.operation == "prepare":
+   538	            result = prepare(args.output, args.review, args.qualification, args.task)
+   539	        elif args.operation == "capture":
+   540	            result = capture(args.prepared, args.authorization, args.output, args.task)
+   541	        else:
+   542	            from .baseline_verify import verify
+   543	
+   544	            result = verify(args.capture, args.prepared, args.output)
+   545	        print(json.dumps(result))
+   546	        return 0
+   547	    except (Exception, KeyboardInterrupt) as exc:
+   548	        print(json.dumps(failure_result(exc, args.operation)))
+   549	        return 1
+   550	
+   551	
+   552	if __name__ == "__main__":
+   553	    raise SystemExit(main())

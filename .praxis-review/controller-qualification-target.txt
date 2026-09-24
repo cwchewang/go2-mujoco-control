@@ -1,0 +1,100 @@
+     1	cmake_minimum_required(VERSION 3.16)
+     2	project(stand_go2)
+     3	enable_testing()
+     4	
+     5	# Release is the default; explicit Debug and multi-config builds remain usable.
+     6	if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+     7	    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+     8	endif()
+     9	
+    10	list(APPEND CMAKE_PREFIX_PATH "/opt/unitree_robotics/lib/cmake")
+    11	find_package(unitree_sdk2 REQUIRED)
+    12	find_package(Eigen3 REQUIRED)
+    13	
+    14	set(GO2_CPP_INCLUDE_DIRS
+    15	    ${CMAKE_CURRENT_SOURCE_DIR}
+    16	    ${CMAKE_CURRENT_SOURCE_DIR}/apps
+    17	    ${CMAKE_CURRENT_SOURCE_DIR}/trot
+    18	    ${CMAKE_CURRENT_SOURCE_DIR}/gait
+    19	    ${CMAKE_CURRENT_SOURCE_DIR}/kinematics
+    20	    ${CMAKE_CURRENT_SOURCE_DIR}/contact
+    21	    ${CMAKE_CURRENT_SOURCE_DIR}/wbc
+    22	    ${CMAKE_CURRENT_SOURCE_DIR}/util
+    23	    ${CMAKE_CURRENT_SOURCE_DIR}/leg_lift
+    24	    ${CMAKE_CURRENT_SOURCE_DIR}/terrain
+    25	)
+    26	include_directories(${GO2_CPP_INCLUDE_DIRS})
+    27	
+    28	set(GO2_MUJOCO_ROOT
+    29	    "${CMAKE_CURRENT_SOURCE_DIR}/../../simulate/mujoco" CACHE PATH
+    30	    "MuJoCo SDK/runtime root used for the controller build")
+    31	set(_go2_mujoco_lib "${GO2_MUJOCO_ROOT}/lib/libmujoco.so")
+    32	set(_go2_mujoco_inc "${GO2_MUJOCO_ROOT}/include")
+    33	set(_go2_model_path
+    34	    "${CMAKE_CURRENT_SOURCE_DIR}/../../unitree_robots/go2/go2.xml")
+    35	
+    36	function(go2_link_mujoco target)
+    37	    target_include_directories(${target} PRIVATE "${_go2_mujoco_inc}")
+    38	    target_link_libraries(${target} "${_go2_mujoco_lib}")
+    39	    target_compile_definitions(${target} PRIVATE GO2_MODEL_PATH="${_go2_model_path}")
+    40	endfunction()
+    41	
+    42	# Register a test beside its target: adding a test cannot silently omit CTest.
+    43	function(go2_test name)
+    44	    add_executable(${name} tests/${name}.cpp ${ARGN})
+    45	    add_test(NAME ${name} COMMAND ${name})
+    46	endfunction()
+    47	
+    48	foreach(name IN ITEMS stand_go2 hold_pose_go2 track_lowcmd_lowstate_go2
+    49	                      dds_lowstate_probe single_leg_lift_go2)
+    50	    add_executable(${name} apps/${name}.cpp)
+    51	    target_link_libraries(${name} unitree_sdk2)
+    52	endforeach()
+    53	# dds_lowstate_probe is subscription-only; it creates no LowCmd publisher.
+    54	
+    55	add_executable(real_leg_lift_go2
+    56	    leg_lift/real_leg_lift_go2.cpp
+    57	    leg_lift/leg_lift_cli.cpp
+    58	    leg_lift/leg_lift_lifecycle.cpp
+    59	    leg_lift/leg_lift_world.cpp
+    60	    leg_lift/leg_lift_diagnostics.cpp
+    61	    leg_lift/leg_lift_control.cpp)
+    62	target_link_libraries(real_leg_lift_go2 unitree_sdk2)
+    63	
+    64	set(GO2_TROT_RUNTIME_SOURCES
+    65	    trot/trot_task.cpp
+    66	    trot/trot_experiment_lifecycle.cpp
+    67	    trot/trot_experiment_gait.cpp
+    68	    trot/trot_experiment_wbc.cpp
+    69	    trot/trot_experiment_diagnostics.cpp
+    70	    trot/trot_experiment_control.cpp)
+    71	add_executable(real_trot_go2
+    72	    trot/real_trot_go2.cpp trot/trot_cli.cpp ${GO2_TROT_RUNTIME_SOURCES})
+    73	target_link_libraries(real_trot_go2 unitree_sdk2 Eigen3::Eigen)
+    74	
+    75	add_test(NAME test_dds_runtime
+    76	    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dds_runtime.sh
+    77	                 ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+    78	
+    79	foreach(name IN ITEMS
+    80	        test_go2_inverse_kinematics test_raibert_footstep_planner
+    81	        test_cartesian_world_trot test_motion_frame_utils test_velocity_filter
+    82	        test_velocity_command test_contact_state_filter test_contact_fusion_fault_harness
+    83	        test_dynamic_acceleration_target test_motion_event_response test_wbc_runtime_gate
+    84	        test_lockstep_writer_gate test_lockstep_motion_clock test_centroidal_wbc
+    85	        test_clean_baseline)
+    86	    go2_test(${name})
+    87	endforeach()
+    88	
+    89	foreach(name IN ITEMS
+    90	        test_raibert_trot_kernel test_contact_wrench_allocator test_go2_leg_jacobian
+    91	        test_contact_wrench_constraints test_contact_torque_mapping
+    92	        test_projected_contact_wrench_allocator test_contact_wrench_lexicographic_allocator
+    93	        test_preview_footstep_horizon test_dense_qp test_contact_wrench_qp test_srbd_mpc)
+    94	    go2_test(${name})
+    95	    target_link_libraries(${name} Eigen3::Eigen)
+    96	endforeach()
+    97	
+    98	go2_test(test_trot_task trot/trot_task.cpp)
+    99	go2_test(test_lean_route_guard trot/trot_cli.cpp trot/trot_task.cpp)
+   100	target_link_libraries(test_lean_route_guard unitree_sdk2 Eigen3::Eigen)

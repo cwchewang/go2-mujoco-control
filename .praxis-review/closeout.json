@@ -1,0 +1,102 @@
+{
+  "status": "complete",
+  "summary": "The exact-head execution review for #178 is complete and committed. Verdict: VETO. The formal task JSON includes a praxis field rejected by the target's strict loader, so baseline.prepare cannot reach READY; the issue and task path are also not equality-checked by the shared Praxis identity validator. No qualification, preparation, capture, tests, simulation, or plant physics were run.",
+  "completed": [
+    "Read the frozen review task first and inspected target commit 6bd0485f25f848d9286ae986ed4f2f7d805a5090 statically.",
+    "Verified the capability protocol SHA-256 and the #176/#177 commit and branch references.",
+    "Reviewed task binding, exact-head review and authorization checks, preparation and qualification step boundaries, capture ledger, progression, offline verification, and evidence persistence.",
+    "Created docs/validation/rl_capability_map_formal_execution_review_20260924/review.json with role=execution and verdict=VETO.",
+    "Committed exactly one tracked file as 31a6ddebf49f9eb6c5234fbd83fc6b1e064cb3ab and verified the committed path, JSON parse, and clean detached worktree."
+  ],
+  "not_completed": [
+    "The #178 qualification, preparation, capture, tests, simulation, and plant physics were not run. The frozen review task prohibits qualification, preparation, capture, simulation, and plant physics; tests were also not run. The VETO identifies a blocker before preparation can reach READY."
+  ],
+  "observations": [
+    {
+      "text": "The task config at the target has an additional praxis object; task.py requires an exact five-key set, and baseline.prepare calls load_task before its qualification receipt and readiness checks.",
+      "evidence_ids": ["E2", "E3"]
+    },
+    {
+      "text": "The protocol file digest is 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803, matching the formal task. The #176 design and #177 integrity commits are ancestors of the target, and the formal task uses the #177 result as its diff base.",
+      "evidence_ids": ["E5", "E12"]
+    },
+    {
+      "text": "The shared identity validator requires all five Praxis values but compares only repository, branch, and commit; issue number and task path are presence-only checks.",
+      "evidence_ids": ["E4", "E5"]
+    },
+    {
+      "text": "The review validator checks an exact head, approved science/execution roles, nonempty reviewer/evidence values, and different reviewer labels. Authorization binds head, protocol hash, prepared manifest hash, and attempt budget, while accepting any nonempty user_instruction.",
+      "evidence_ids": ["E3", "E4"]
+    },
+    {
+      "text": "Preparation uses a zero-step guard and checks plant step count, time, and snapshot; qualification validates native plant_time_s is zero. The targeted qualification test-source scan found no real mj_step calls beyond a mocked function.",
+      "evidence_ids": ["E8", "E9", "E10", "E11"]
+    },
+    {
+      "text": "Capture checks for an existing permanent ledger, creates the ledger exclusively after fresh preflight, claims cases individually, continues performance failures, stops on safety or integrity failures, and suppresses cases dependent on a failed sentinel.",
+      "evidence_ids": ["E6", "E7"]
+    },
+    {
+      "text": "The baseline CLI's default task is rl_source_v1.json, so #178 must pass its capability-map task JSON explicitly.",
+      "evidence_ids": ["E2"]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "With the target task JSON supplied, baseline.prepare will raise invalid task schema before it can return READY_AWAITING_START; this follows from the exact key-set check and call order and was not dynamically exercised because preparation is prohibited.",
+      "evidence_ids": ["E2", "E3", "E16"]
+    },
+    {
+      "text": "Issue number and task path exactness require the task's explicit manual capture-boundary check; they cannot be inferred from successful project-level identity validation.",
+      "evidence_ids": ["E4", "E5"]
+    },
+    {
+      "text": "The capture and offline verifier both enforce the sealed digest over raw rows, but they share the analyzer and digest-gate helper, leaving no second hash implementation.",
+      "evidence_ids": ["E7"]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The execution review verdict is VETO because the formal task config is incompatible with the target's strict task loader. Resolve the task metadata/loader binding before starting #178; do not create authorization or invoke capture against this target.",
+      "evidence_ids": ["E2", "E3", "E14"]
+    },
+    {
+      "text": "The prior #176/#177 branch identities and result commits do not themselves block #178; their commit references and diff base are coherent. The generic CLI default must still be overridden with the capability-map task JSON.",
+      "evidence_ids": ["E2", "E5"]
+    },
+    {
+      "text": "The review task is complete: one JSON file was committed, parses successfully, and the worktree is clean.",
+      "evidence_ids": ["E14", "E15", "E18"]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Host-specific qualification, scene/resource preflight, and readiness outcomes remain unknown because the task required a static zero-physics review and no such commands were run.",
+      "evidence_ids": ["E16"]
+    },
+    {
+      "text": "The external #178 science and execution review artifacts were not retrieved in this review task; only the target's validation rules and the required review paths were inspected.",
+      "evidence_ids": ["E2", "E16", "E17"]
+    }
+  ],
+  "evidence": [
+    {"id": "E1", "path": "baseline.txt", "description": "Frozen Praxis #180 task environment, detached worktree, starting commit, and target commit object availability."},
+    {"id": "E2", "path": "target_snapshot", "description": "Non-empty exact-source snapshot extracted from target commit 6bd0485f25f848d9286ae986ed4f2f7d805a5090."},
+    {"id": "E3", "path": "review-code-excerpts-1.txt", "description": "Target source excerpts for strict task loading, preparation ordering, zero-step checks, readiness, and authorization."},
+    {"id": "E4", "path": "praxis-task-binding-search.txt", "description": "Target-wide search for Praxis identity fields and task loader callers."},
+    {"id": "E5", "path": "protocol-and-prior-results-check.txt", "description": "Protocol digest and #176/#177 result identity and commit ancestry checks."},
+    {"id": "E6", "path": "review-code-excerpts-2.txt", "description": "Capture, permanent ledger, evidence-run persistence, and offline verification source excerpts."},
+    {"id": "E7", "path": "review-code-excerpts-4.txt", "description": "Raw-row digest gate, progression rules, offline replay, and baseline CLI source excerpts."},
+    {"id": "E8", "path": "zero-step-guard-source.txt", "description": "Target zero-step guard blocks mj_step, mj_step1, and mj_step2 during preparation."},
+    {"id": "E9", "path": "admit-source.txt", "description": "Target qualification admission code and its zero plant-time condition."},
+    {"id": "E10", "path": "zero-step-test-surface.txt", "description": "Static search for physics stepping in qualification test sources and CTest registration."},
+    {"id": "E11", "path": "controller-qualification-target.txt", "description": "Target CMake qualification test registrations."},
+    {"id": "E12", "path": "target-snapshot-sha256.txt", "description": "SHA-256 hashes for every extracted target source artifact, including the protocol."},
+    {"id": "E13", "path": "target-task-grep.txt", "description": "Target task, protocol, and prior result references relevant to requested execution criteria."},
+    {"id": "E14", "path": "review-artifact.json", "description": "Copy of the committed execution review result."},
+    {"id": "E15", "path": "commit-verification.txt", "description": "Verified commit ID, sole changed path, file digest, JSON parse, and clean detached worktree."},
+    {"id": "E16", "path": "audit-scope.txt", "description": "Audit actions performed and explicitly prohibited runtime actions not taken."},
+    {"id": "E17", "path": "review-enforcement-search.txt", "description": "Target search for exact-head review and distinct-reviewer enforcement."},
+    {"id": "E18", "path": "review-json-check.txt", "description": "JSON parse and staged diff-check outcomes, including the missing python alias and successful python3 retry."}
+  ]
+}

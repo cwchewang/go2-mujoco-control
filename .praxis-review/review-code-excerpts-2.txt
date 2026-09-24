@@ -1,0 +1,1042 @@
+
+===== baseline.py:452,525 =====
+   452	                started = time.monotonic()
+   453	                try:
+   454	                    with raw.open("x") as stream:
+   455	
+   456	                        def emit(row):
+   457	                            stream.write(
+   458	                                json.dumps(row, separators=(",", ":"), allow_nan=False)
+   459	                                + "\n"
+   460	                            )
+   461	                            stream.flush()
+   462	
+   463	                        try:
+   464	                            with wall_deadline(protocol["wall_timeout_s"]):
+   465	                                episode(plant, policy, case, protocol, emit, consume)
+   466	                        finally:
+   467	                            stream.flush()
+   468	                            os.fsync(stream.fileno())
+   469	                    rows = [strict_json(line) for line in raw.read_text().splitlines()]
+   470	                    result = analyze(rows, case, protocol)
+   471	                    result["elapsed_s"] = time.monotonic() - started
+   472	                    result = enforce_reference_digest(result, case)
+   473	                    reference_case = repeat_reference(case)
+   474	                    if (
+   475	                        reference_case is not None
+   476	                        and result["trace_sha256"]
+   477	                        != (completed[reference_case]["trace_sha256"])
+   478	                    ):
+   479	                        result["verdict"] = "INTEGRITY_STOP"
+   480	                        result["failure"] = "trajectory_mismatch"
+   481	                        if "failure_classes" in result:
+   482	                            result["failure_classes"] = ["INTEGRITY_STOP"]
+   483	                    write_new(run.path / (case["id"] + "_analysis.json"), result)
+   484	                    item.update(status=result["verdict"], analysis=result)
+   485	                    completed[case["id"]] = result
+   486	                    validate_snapshot(
+   487	                        prepared_path, prepared["prepared_manifest_sha256"]
+   488	                    )
+   489	                    print(json.dumps({"case": case["id"], **result}), flush=True)
+   490	                    if stop_after(protocol, result["verdict"]):
+   491	                        break
+   492	                except BaseException as exc:
+   493	                    item.update(
+   494	                        status="ERROR", reason=type(exc).__name__ + ": " + str(exc)
+   495	                    )
+   496	                    raise
+   497	            validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+   498	            try:
+   499	                capture_inputs = inputs(protocol)
+   500	            except Exception as exc:
+   501	                raise IntegrityStopError("source inputs failed capture revalidation") from exc
+   502	            if (head, sources) != current_identity(task) or capture_inputs != prepared[
+   503	                "source_inputs"
+   504	            ]:
+   505	                raise IntegrityStopError("source changed during capture")
+   506	            run.result.update(
+   507	                status="CAPTURE_COMPLETE",
+   508	                capability_status="CHARACTERIZED"
+   509	                if campaign_characterized(attempts, protocol)
+   510	                else "PARTIAL",
+   511	            )
+   512	    return {
+   513	        "status": run.result["status"],
+   514	        "capability_status": run.result["capability_status"],
+   515	    }
+   516	
+   517	
+   518	def main():
+   519	    parser = argparse.ArgumentParser(description=__doc__)
+   520	    sub = parser.add_subparsers(dest="operation", required=True)
+   521	    prep = sub.add_parser("prepare")
+   522	    prep.add_argument("--task", type=Path, default=TASK)
+   523	    prep.add_argument("--output", required=True, type=Path)
+   524	    prep.add_argument("--review", required=True, type=Path)
+   525	    prep.add_argument("--qualification", required=True, type=Path)
+
+===== baseline_episode.py:289,414 =====
+   289	def repeat_reference(case):
+   290	    if "repeat_of" in case:
+   291	        return case["repeat_of"]
+   292	    # Preserve the sealed v1 comparison semantics without changing its protocol.
+   293	    if case["id"] in ("source_repeat", "shared_adapter"):
+   294	        return "source_1"
+   295	    return None
+   296	
+   297	
+   298	def expected_reference_digest(protocol):
+   299	    """Return the frozen schema-2 reference digest and reject missing bindings."""
+   300	    if protocol.get("schema") != 2:
+   301	        return None
+   302	    cases = protocol.get("cases", [])
+   303	    if not cases or cases[0].get("id") != "flat_reference":
+   304	        raise ValueError("sealed reference must be the first capability case")
+   305	    expected = cases[0].get("reference_trace_sha256")
+   306	    if (
+   307	        not isinstance(expected, str)
+   308	        or len(expected) != 64
+   309	        or any(char not in "0123456789abcdef" for char in expected)
+   310	        or any("reference_trace_sha256" in case for case in cases[1:])
+   311	    ):
+   312	        raise ValueError("invalid sealed reference trace digest")
+   313	    return expected
+   314	
+   315	
+   316	def enforce_reference_digest(result, case, expected=None):
+   317	    """Classify a changed sealed reference after independently hashing its trace."""
+   318	    if expected is None:
+   319	        expected = case.get("reference_trace_sha256")
+   320	    if expected is None:
+   321	        return result
+   322	    observed = result["trace_sha256"]
+   323	    matched = observed == expected
+   324	    result["reference_integrity"] = {
+   325	        "expected_trace_sha256": expected,
+   326	        "observed_trace_sha256": observed,
+   327	        "matches": matched,
+   328	    }
+   329	    if not matched:
+   330	        result["verdict"] = "INTEGRITY_STOP"
+   331	        result["integrity_failure"] = "sealed_reference_trace_mismatch"
+   332	        result["failure_classes"] = ["INTEGRITY_STOP"]
+   333	    return result
+   334	
+   335	
+   336	def stop_after(protocol, verdict):
+   337	    if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
+   338	        return True
+   339	    progression = protocol["progression"]
+   340	    if progression == "first_nonpass_stop":
+   341	        return verdict != "PASS"
+   342	    if progression == "performance_continue_safety_integrity_stop":
+   343	        return False
+   344	    raise ValueError("unknown campaign progression: " + str(progression))
+   345	
+   346	
+   347	def safety(row, protocol):
+   348	    q = row["qpos"]
+   349	    if not np.isfinite(q + row["qvel"]).all():
+   350	        return "nonfinite"
+   351	    if abs(np.linalg.norm(q[3:7]) - 1) > 1e-6:
+   352	        return "orientation"
+   353	    if row["warnings"]:
+   354	        return "physics_warning"
+   355	    if row["base_contacts"]:
+   356	        return "base_contact"
+   357	    tilt = math.acos(float(np.clip(1 - 2 * (q[4] ** 2 + q[5] ** 2), -1, 1)))
+   358	    if (
+   359	        tilt > protocol["safety"]["tilt_max"]
+   360	        or row["clearance"] < protocol["safety"]["clearance_min"]
+   361	    ):
+   362	        return "posture"
+   363	    if abs(q[1]) > protocol["safety"]["lateral_max"]:
+   364	        return "lateral"
+   365	    return None
+   366	
+   367	
+   368	def episode(plant, policy, case, protocol, emit, consume):
+   369	    target = np.array(
+   370	        [0.1, 0.8, -1.5, -0.1, 0.8, -1.5, 0.1, 1.0, -1.5, -0.1, 1.0, -1.5],
+   371	        dtype=np.float32,
+   372	    )
+   373	    consumed = False
+   374	    for tick in range(case["horizon_ticks"] + 1):
+   375	        row = plant.snapshot(tick)
+   376	        if abs(row["time"] - tick * protocol["physics_period_s"]) > 1e-8:
+   377	            raise ValueError("clock mismatch")
+   378	        row.update(
+   379	            command=command_at(case, tick),
+   380	            failure=safety(row, protocol),
+   381	            observation=None,
+   382	            policy_wall_s=None,
+   383	            requested=None,
+   384	            applied=None,
+   385	        )
+   386	        if not row["failure"] and tick < case["horizon_ticks"]:
+   387	            if (
+   388	                tick >= case["first_inference_tick"]
+   389	                and tick % protocol["decimation"] == 0
+   390	            ):
+   391	                obs = plant.observe()
+   392	                start = time.monotonic()
+   393	                if case["adapter"]:
+   394	                    assembled = observation45(
+   395	                        obs, row["command"], policy.previous_action
+   396	                    )
+   397	                    target = policy.act(obs, row["command"]).position_target
+   398	                else:
+   399	                    assembled, target = policy.act(obs, row["command"])
+   400	                row["policy_wall_s"] = time.monotonic() - start
+   401	                row["observation"] = assembled.tolist()
+   402	            requested, applied = plant.control(target)
+   403	            row.update(requested=requested.tolist(), applied=applied.tolist())
+   404	            if not consumed:
+   405	                consume()
+   406	                consumed = True
+   407	        row["target"] = target.tolist()
+   408	        emit(row)
+   409	        if row["failure"] or tick == case["horizon_ticks"]:
+   410	            break
+   411	        plant.step(applied)
+   412	
+   413	
+   414	def analyze(rows, case, protocol):
+
+===== baseline_verify.py:300,355 =====
+   300	    ]
+   301	    yaw = np.unwrap(yaw) - yaw[0]
+   302	    flat_cross_axis_pass = True
+   303	    if case.get("flat_probe", False):
+   304	        dx = max(abs(row["qpos"][0] - initial[0]) for row in rows)
+   305	        dy = max(abs(row["qpos"][1] - initial[1]) for row in rows)
+   306	        if "wz" in case["track_axes"]:
+   307	            flat_cross_axis_pass = max(dx, dy) <= protocol["flat_cross_axis_max"]
+   308	        elif "vy" in case["track_axes"]:
+   309	            flat_cross_axis_pass = dx <= protocol["flat_cross_axis_max"]
+   310	        else:
+   311	            flat_cross_axis_pass = dy <= protocol["flat_cross_axis_max"]
+   312	        if "wz" not in case["track_axes"]:
+   313	            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+   314	                "flat_cross_axis_max"
+   315	            ]
+   316	    require(
+   317	        result["flat_cross_axis_pass"] == flat_cross_axis_pass,
+   318	        "flat cross-axis gate mismatch",
+   319	    )
+   320	
+   321	    if case.get("reference_gate", False):
+   322	        mean_vx = result["windows"][0]["axes"]["vx"]["mean"]
+   323	        require(
+   324	            result["reference_mean_vx"] == mean_vx
+   325	            and result["reference_pass"]
+   326	            == (mean_vx is not None and mean_vx >= protocol["reference_mean_min"]),
+   327	            "flat reference gate mismatch",
+   328	        )
+   329	    else:
+   330	        require(result["reference_pass"] is True, "unexpected reference gate failure")
+   331	
+   332	    if "terrain_goal" in case:
+   333	        goal = case["terrain_goal"]
+   334	        edge = goal["terrain_x_max"]
+   335	        initial_y = initial[1]
+   336	        holds, maximum = 0, 0
+   337	        for row in rows:
+   338	            reached = (
+   339	                row["qpos"][0] >= edge + goal["base_clearance_m"]
+   340	                and min(foot[0] for foot in row["feet"])
+   341	                >= edge + goal["foot_clearance_m"]
+   342	                and abs(row["qpos"][1] - initial_y)
+   343	                <= goal["route_lateral_max_m"]
+   344	            )
+   345	            holds = holds + 1 if reached else 0
+   346	            maximum = max(maximum, holds)
+   347	        route = [
+   348	            row
+   349	            for row in rows
+   350	            if goal["terrain_x_min"]
+   351	            <= row["qpos"][0]
+   352	            <= goal["terrain_x_max"]
+   353	        ]
+   354	        route_pass = bool(route) and all(
+   355	            abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
+
+===== baseline_verify.py:387,545 =====
+   387	def verify(capture, prepared_path, output):
+   388	    with (
+   389	        experiment_lock(),
+   390	        zero_step_guard(),
+   391	        EvidenceRun(output, {"operation": "baseline_offline_verify"}) as run,
+   392	    ):
+   393	        setup_runtime()
+   394	        prepared = verify_bundle(prepared_path)
+   395	        admission = verify_manifest(capture)
+   396	        require(admission["status"] == "CAPTURE_COMPLETE", "capture incomplete")
+   397	        protocol = strict_json((capture / "protocol.json").read_text())
+   398	        require(
+   399	            protocol == strict_json((prepared_path / "protocol.json").read_text()),
+   400	            "protocol mismatch",
+   401	        )
+   402	        sealed_reference = expected_reference_digest(protocol)
+   403	        reference = strict_json((capture / "preparation-reference.json").read_text())
+   404	        require(
+   405	            reference["manifest_sha256"] == digest(prepared_path / "manifest.json"),
+   406	            "preparation mismatch",
+   407	        )
+   408	        prepared["prepared_manifest_sha256"] = reference["manifest_sha256"]
+   409	        validate_authorization(
+   410	            strict_json((capture / "authorization.json").read_text()), prepared
+   411	        )
+   412	        validate_review(prepared["review"], prepared["head"])
+   413	        audit_preflight(
+   414	            strict_json((capture / "preflight.json").read_text()), prepared, protocol
+   415	        )
+   416	        require(admission["head"] == prepared["head"], "capture head mismatch")
+   417	        ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
+   418	        claim = strict_json((capture / "campaign-claim.json").read_text())
+   419	        require(
+   420	            claim == strict_json((ledger / "campaign.json").read_text()),
+   421	            "external campaign mismatch",
+   422	        )
+   423	        require(
+   424	            claim
+   425	            == dict(
+   426	                head=prepared["head"],
+   427	                output=str(capture.resolve()),
+   428	                protocol_sha256=prepared["protocol_sha256"],
+   429	            ),
+   430	            "campaign identity mismatch",
+   431	        )
+   432	        require(
+   433	            len(admission["attempts"]) == protocol["max_attempts"],
+   434	            "attempt budget mismatch",
+   435	        )
+   436	        completed = {}
+   437	        audits = {}
+   438	        consumed = set()
+   439	        stopped = False
+   440	        for index, (case, item) in enumerate(
+   441	            zip(protocol["cases"], admission["attempts"])
+   442	        ):
+   443	            require(
+   444	                item["case"] == case["id"] and item["index"] == index + 1,
+   445	                "case identity mismatch",
+   446	            )
+   447	            raw = capture / (case["id"] + ".jsonl")
+   448	            dependency_failed = any(
+   449	                completed.get(n, {}).get("verdict") != "PASS" for n in case["requires"]
+   450	            )
+   451	            if stopped or dependency_failed:
+   452	                require(
+   453	                    item["status"] == "NOT_RUN" and not raw.exists(),
+   454	                    "run after stop/failed dependency",
+   455	                )
+   456	                continue
+   457	            require(
+   458	                item["status"] != "NOT_RUN" and raw.exists(), "missing prescribed case"
+   459	            )
+   460	            rows = [strict_json(line) for line in raw.read_text().splitlines()]
+   461	            if trace_consumed(rows):
+   462	                require(
+   463	                    strict_json((capture / (case["id"] + "_claim.json")).read_text())
+   464	                    == strict_json((ledger / (case["id"] + ".json")).read_text())
+   465	                    == dict(
+   466	                        index=index + 1,
+   467	                        case=case["id"],
+   468	                        head=prepared["head"],
+   469	                        raw=str(raw.resolve()),
+   470	                        boundary="first_post_handoff_state_control_sample",
+   471	                    ),
+   472	                    "external attempt mismatch",
+   473	                )
+   474	                consumed.add(case["id"] + ".json")
+   475	            else:
+   476	                require(
+   477	                    len(rows) == 1 and rows[0]["failure"] is not None,
+   478	                    "unconsumed trace is not initial safety stop",
+   479	                )
+   480	                require(
+   481	                    not (capture / (case["id"] + "_claim.json")).exists()
+   482	                    and not (ledger / (case["id"] + ".json")).exists(),
+   483	                    "claim without control sample",
+   484	                )
+   485	            plant = Plant(
+   486	                prepared_path / "inputs" / case["scene"],
+   487	                case,
+   488	                protocol["physics_period_s"],
+   489	            )
+   490	            if case["adapter"]:
+   491	                policy = FrozenPolicy(
+   492	                    prepared_path / "inputs/.substrate/rl/policy.pt",
+   493	                    prepared["source_inputs"][".substrate/rl/policy.pt"],
+   494	                )
+   495	            else:
+   496	                policy = SourcePolicy(
+   497	                    prepared_path / "inputs/.substrate/upstream-go2-30e74dc5",
+   498	                    prepared_path / "inputs/.substrate/rl/policy.pt",
+   499	                    prepared["source_inputs"][".substrate/rl/policy.pt"],
+   500	                )
+   501	            result, audit = audit_rows(rows, plant, policy, case, protocol)
+   502	            result = enforce_reference_digest(
+   503	                result,
+   504	                case,
+   505	                sealed_reference if case["id"] == "flat_reference" else None,
+   506	            )
+   507	            reference_case = repeat_reference(case)
+   508	            if (
+   509	                reference_case is not None
+   510	                and result["trace_sha256"]
+   511	                != (completed[reference_case]["trace_sha256"])
+   512	            ):
+   513	                result.update(verdict="INTEGRITY_STOP", failure="trajectory_mismatch")
+   514	                if "failure_classes" in result:
+   515	                    result["failure_classes"] = ["INTEGRITY_STOP"]
+   516	            stored = strict_json(
+   517	                (capture / (case["id"] + "_analysis.json")).read_text()
+   518	            )
+   519	            require(
+   520	                all(stored[k] == v for k, v in result.items())
+   521	                and stored == item["analysis"]
+   522	                and stored["verdict"] == item["status"],
+   523	                "analysis mismatch",
+   524	            )
+   525	            completed[case["id"]] = result
+   526	            audits[case["id"]] = audit
+   527	            stopped = stop_after(protocol, result["verdict"])
+   528	        require(
+   529	            {p.name for p in ledger.iterdir()} == consumed | {"campaign.json"},
+   530	            "external claim set mismatch",
+   531	        )
+   532	        require(admission["live_runs"] == len(consumed), "consumed count mismatch")
+   533	        write_new(run.path / "analysis.json", completed)
+   534	        write_new(run.path / "audits.json", audits)
+   535	        run.result.update(
+   536	            status="ENGINEERING_ADMITTED",
+   537	            verification="VERIFIED",
+   538	            external_ledger_checked=True,
+   539	            consumed=len(consumed),
+   540	            physics_steps=0,
+   541	            capture_manifest_sha256=digest(capture / "manifest.json"),
+   542	            prepared_manifest_sha256=digest(prepared_path / "manifest.json"),
+   543	        )
+   544	    return {"status": "VERIFIED", "consumed": len(consumed), "physics_steps": 0}
+
+===== verify_capture.py:1,175 =====
+     1	"""Read-only replay of formal evidence; never integrates a plant or loads a policy."""
+     2	
+     3	import argparse
+     4	import json
+     5	from pathlib import Path
+     6	import numpy as np
+     7	from .integrity import digest, strict_json, verify_bundle, verify_manifest
+     8	from .analyze_capture import analyze
+     9	from .oracle import verify_algebra
+    10	
+    11	
+    12	def verify_capture(directory, prepared_directory, ledger_directory=None):
+    13	    directory, prepared_directory = Path(directory), Path(prepared_directory)
+    14	    result = verify_manifest(directory)
+    15	    prepared = verify_bundle(prepared_directory)
+    16	    reference = strict_json((directory / "preparation-reference.json").read_text())
+    17	    if (
+    18	        reference["manifest_sha256"] != digest(prepared_directory / "manifest.json")
+    19	        or result["head"] != prepared["head"]
+    20	    ):
+    21	        raise ValueError("preparation reference mismatch")
+    22	    if (
+    23	        result["status"] != "CAPTURE_COMPLETE"
+    24	        or result["scope"] != "formal_exploratory_capture"
+    25	    ):
+    26	        raise ValueError("capture incomplete or failed infrastructure boundary")
+    27	    from .readiness import validate_authorization, validate_review
+    28	
+    29	    prepared["prepared_manifest_sha256"] = digest(prepared_directory / "manifest.json")
+    30	    authorization = strict_json((directory / "authorization.json").read_text())
+    31	    validate_authorization(authorization, prepared)
+    32	    validate_review(prepared["review"], prepared["head"])
+    33	    preflight = strict_json((directory / "preflight.json").read_text())
+    34	    if (
+    35	        preflight.get("pass") is not True
+    36	        or preflight.get("git", {}).get("head") != prepared["head"]
+    37	    ):
+    38	        raise ValueError("passing exact-head preflight missing")
+    39	    campaign_claim = strict_json((directory / "campaign-claim.json").read_text())
+    40	    if (
+    41	        campaign_claim["head"] != prepared["head"]
+    42	        or campaign_claim["protocol_sha256"] != prepared["protocol_sha256"]
+    43	    ):
+    44	        raise ValueError("campaign claim mismatch")
+    45	    protocol = strict_json((directory / "protocol.json").read_text())
+    46	    if protocol != strict_json((prepared_directory / "protocol.json").read_text()):
+    47	        raise ValueError("capture protocol mismatch")
+    48	    if authorization["max_attempts"] != protocol["max_attempts"]:
+    49	        raise ValueError("authorization and protocol attempt budget differ")
+    50	    attempts = result["attempts"]
+    51	    if len(attempts) != protocol["max_attempts"]:
+    52	        raise ValueError("attempt budget mismatch")
+    53	    stopped = False
+    54	    recomputed = []
+    55	    reference_trace = None
+    56	    consumed = 0
+    57	    expected = {"campaign.json": "campaign-claim.json"}
+    58	    for index, item in enumerate(attempts, 1):
+    59	        if item["index"] != index:
+    60	            raise ValueError("attempt order mismatch")
+    61	        raw = directory / ("attempt_%02d.jsonl" % index)
+    62	        if stopped:
+    63	            if (
+    64	                item["status"] != "NOT_RUN"
+    65	                or raw.exists()
+    66	                or (directory / ("attempt_%02d_claim.json" % index)).exists()
+    67	            ):
+    68	                raise ValueError("attempt exists after campaign stop")
+    69	            recomputed.append({"index": index, "status": "NOT_RUN"})
+    70	            continue
+    71	        rows = [strict_json(line) for line in raw.read_text().splitlines()]
+    72	        if rows and rows[0]["action"] is not None:
+    73	            consumed += 1
+    74	            claim = strict_json(
+    75	                (directory / ("attempt_%02d_claim.json" % index)).read_text()
+    76	            )
+    77	            if (
+    78	                claim["index"] != index
+    79	                or claim["head"] != prepared["head"]
+    80	                or claim["boundary"] != "first_post_handoff_state_control_sample"
+    81	                or claim["raw"] != str(Path(campaign_claim["output"]) / raw.name)
+    82	            ):
+    83	                raise ValueError("attempt claim mismatch")
+    84	            expected["attempt_%02d.json" % index] = "attempt_%02d_claim.json" % index
+    85	        elif (directory / ("attempt_%02d_claim.json" % index)).exists():
+    86	            raise ValueError("unconsumed attempt has a claim")
+    87	        value = analyze(
+    88	            rows,
+    89	            protocol,
+    90	            np.array(prepared["lower"]),
+    91	            np.array(prepared["upper"]),
+    92	            prepared["layout"],
+    93	            reference_trace,
+    94	        )
+    95	        independent = verify_algebra(
+    96	            rows,
+    97	            protocol,
+    98	            np.array(prepared["lower"]),
+    99	            np.array(prepared["upper"]),
+   100	            prepared["layout"],
+   101	        )
+   102	        for key in ("progress_m", "vx_mae_mps"):
+   103	            if independent[key] is None or value[key] is None:
+   104	                if independent[key] != value[key]:
+   105	                    raise ValueError("independent metric oracle mismatch")
+   106	            elif not np.isclose(independent[key], value[key], rtol=0, atol=1e-12):
+   107	                raise ValueError("independent metric oracle mismatch")
+   108	        if reference_trace is None:
+   109	            reference_trace = value["trace_sha256"]
+   110	        original = strict_json((prepared_directory / "initial-state.json").read_text())
+   111	        if rows[0]["qpos"] != original["qpos"] or rows[0]["qvel"] != original["qvel"]:
+   112	            raise ValueError("initial state differs from prepared reset")
+   113	        saved = strict_json(
+   114	            (directory / ("attempt_%02d_analysis.json" % index)).read_text()
+   115	        )
+   116	        if (
+   117	            any(saved[k] != v or item["analysis"][k] != v for k, v in value.items())
+   118	            or item["status"] != value["verdict"]
+   119	        ):
+   120	            raise ValueError("analyzer result differs")
+   121	        recomputed.append({"index": index, "status": value["verdict"]})
+   122	        stopped = value["verdict"] != "PASS"
+   123	    verdict = "PASS" if all(x["status"] == "PASS" for x in recomputed) else "FAIL"
+   124	    if verdict != result["capability_status"]:
+   125	        raise ValueError("campaign verdict mismatch")
+   126	    if type(result["live_runs"]) is not int or result["live_runs"] != consumed:
+   127	        raise ValueError("consumed attempt count mismatch")
+   128	    ledger_verified = False
+   129	    if {p.name for p in directory.glob("attempt_*_claim.json")} != set(
+   130	        expected.values()
+   131	    ) - {"campaign-claim.json"}:
+   132	        raise ValueError("capture claim file set differs from consumed attempts")
+   133	    if ledger_directory is not None:
+   134	        ledger = Path(ledger_directory)
+   135	        if (
+   136	            not ledger.is_dir()
+   137	            or ledger.is_symlink()
+   138	            or {p.name for p in ledger.iterdir()} != set(expected)
+   139	        ):
+   140	            raise ValueError("external ledger file set differs")
+   141	        for original, copied in expected.items():
+   142	            if (ledger / original).is_symlink() or digest(ledger / original) != digest(
+   143	                directory / copied
+   144	            ):
+   145	                raise ValueError("external ledger claim mismatch")
+   146	        ledger_verified = True
+   147	    return {
+   148	        "status": "VERIFIED",
+   149	        "capability_status": verdict,
+   150	        "attempts": recomputed,
+   151	        "external_ledger_verified": ledger_verified,
+   152	    }
+   153	
+   154	
+   155	def main():
+   156	    p = argparse.ArgumentParser(description=__doc__)
+   157	    p.add_argument("directory", type=Path)
+   158	    p.add_argument("--prepared", type=Path, required=True)
+   159	    mode = p.add_mutually_exclusive_group()
+   160	    mode.add_argument("--ledger", type=Path)
+   161	    mode.add_argument(
+   162	        "--portable",
+   163	        action="store_true",
+   164	        help="explicitly omit local ledger verification",
+   165	    )
+   166	    args = p.parse_args()
+   167	    protocol = strict_json((args.directory / "protocol.json").read_text())
+   168	    ledger = (
+   169	        None
+   170	        if args.portable
+   171	        else args.ledger
+   172	        or Path(__file__).resolve().parents[2]
+   173	        / "_runs/substrate_attempts"
+   174	        / protocol["id"]
+   175	    )
+
+===== launch.py:55,115 =====
+    55	    )
+    56	    if not identity["pass"]:
+    57	        raise ValueError(
+    58	            "launch preparation requires the expected named branch or an exact "
+    59	            "Praxis-bound detached HEAD"
+    60	        )
+    61	    if git("status", "--porcelain"):
+    62	        raise ValueError("launch preparation requires a clean worktree")
+    63	    return head, source_manifest()
+    64	
+    65	
+    66	def preflight(
+    67	    lock,
+    68	    head,
+    69	    review,
+    70	    report,
+    71	    fresh_run,
+    72	    task,
+    73	    qualification,
+    74	    *,
+    75	    runner=None,
+    76	    experiment_id="rl-flat-compatibility-v1",
+    77	):
+    78	    validate_review(review, head)
+    79	    argv = [
+    80	        sys.executable,
+    81	        str(ROOT / "tools/research/preflight.py"),
+    82	        "--repo-root",
+    83	        str(ROOT),
+    84	        "--experiment-id",
+    85	        experiment_id,
+    86	        "--expected-branch",
+    87	        task["configuration"]["branch"],
+    88	        "--expected-head",
+    89	        head,
+    90	        "--runner",
+    91	        str(runner or Path(__file__)),
+    92	        "--run-dir",
+    93	        str(fresh_run),
+    94	        "--transport",
+    95	        "inprocess",
+    96	        "--held-lock-fd",
+    97	        str(lock.fileno()),
+    98	        "--diff-base",
+    99	        task["configuration"]["diff_base"],
+   100	        "--requires-sol-review",
+   101	        "--approved-head",
+   102	        head,
+   103	        "--qualification",
+   104	        qualification["path"],
+   105	        "--output",
+   106	        str(report),
+   107	    ]
+   108	    # More than the one inner test's 120s limit; TERM is handled by preflight
+   109	    # so its independent test process group is reaped before the wrapper exits.
+   110	    run_logged(
+   111	        argv,
+   112	        report.parent,
+   113	        "preflight",
+   114	        timeout=180,
+   115	        cwd=ROOT,
+
+===== launch.py:130,325 =====
+   130	    torch.manual_seed(0)
+   131	
+   132	
+   133	def prepare(directory, review_path, qualification_path, task_path=DEFAULT_TASK):
+   134	    with LOCK_PATH.open("a") as lock, zero_step_guard():
+   135	        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+   136	        with EvidenceRun(
+   137	            directory, {"argv": sys.argv, "operation": "prepare_zero_step"}
+   138	        ) as run:
+   139	            task = load_task(task_path)
+   140	            protocol_path = ROOT / task["configuration"]["protocol"]
+   141	            head, sources = current_identity(task)
+   142	            qualification = validate_qualification(qualification_path)
+   143	            review = strict_json(review_path.read_text())
+   144	            preflight(
+   145	                lock,
+   146	                head,
+   147	                review,
+   148	                run.path / "preflight.json",
+   149	                run.path / "future_capture",
+   150	                task,
+   151	                qualification,
+   152	            )
+   153	            runtime = verify_environment()
+   154	            setup_runtime()
+   155	            protocol = strict_json(protocol_path.read_text())
+   156	            write_new(run.path / "protocol.json", protocol)
+   157	            write_new(run.path / "review.json", review)
+   158	            closure = dependency_manifest(ROOT / protocol["scene"], ROOT)
+   159	            for name, expected in closure["files"].items():
+   160	                target = run.path / "inputs" / name
+   161	                target.parent.mkdir(parents=True, exist_ok=True)
+   162	                target.write_bytes((ROOT / name).read_bytes())
+   163	                if digest(target) != expected:
+   164	                    raise ValueError("model changed while snapshotting")
+   165	            plant = MujocoPlant(run.path / "inputs" / protocol["scene"])
+   166	            if plant.model.opt.timestep != protocol["physics_period_s"]:
+   167	                raise ValueError("physics timestep differs from protocol")
+   168	            expected = strict_json(
+   169	                (ROOT / "tools/substrate/sources.lock.json").read_text()
+   170	            )["rl"]["sha256"]
+   171	            policy = FrozenPolicy(CHECKPOINT, expected)
+   172	            initial = plant.snapshot(0)
+   173	            if safety(initial, protocol):
+   174	                raise ValueError("initial state violates frozen safety conditions")
+   175	            action = policy.act(plant.observe(), [0.0, 0.0, 0.0]).resolve(
+   176	                plant.observe(), plant.lower, plant.upper, plant.names
+   177	            )
+   178	            policy.reset()
+   179	            second = policy.act(plant.observe(), [0.0, 0.0, 0.0]).resolve(
+   180	                plant.observe(), plant.lower, plant.upper, plant.names
+   181	            )
+   182	            if any(not (action[k] == second[k]).all() for k in action):
+   183	                raise ValueError("initial action reset mismatch")
+   184	            if plant.data.time != 0 or plant.steps != 0 or plant.snapshot(0) != initial:
+   185	                raise ValueError("prepare advanced or changed plant")
+   186	            write_new(run.path / "initial-state.json", initial)
+   187	            write_new(
+   188	                run.path / "initial-action.json",
+   189	                {k: v.tolist() for k, v in action.items()},
+   190	            )
+   191	            if (head, sources) != current_identity(
+   192	                task
+   193	            ) or closure != dependency_manifest(ROOT / protocol["scene"], ROOT):
+   194	                raise ValueError("source changed during prepare")
+   195	            validate_reference(qualification)
+   196	            if task != load_task(task_path):
+   197	                raise ValueError("task changed during prepare")
+   198	            readiness = (
+   199	                "VERIFIED_ZERO_STEP_CAMPAIGN_CLOSED"
+   200	                if (ROOT / "_runs/substrate_attempts" / protocol["id"]).exists()
+   201	                else "READY_AWAITING_START"
+   202	            )
+   203	            run.result.update(
+   204	                {
+   205	                    "status": "ENGINEERING_ADMITTED",
+   206	                    "readiness": readiness,
+   207	                    "head": head,
+   208	                    "source_files": sources,
+   209	                    "runtime": runtime,
+   210	                    "protocol_sha256": digest(protocol_path),
+   211	                    "max_attempts": protocol["max_attempts"],
+   212	                    "task": task,
+   213	                    "qualification_reference": qualification,
+   214	                    "checkpoint_sha256": expected,
+   215	                    "model": closure,
+   216	                    "physical_sha256": physical_fingerprint(plant.model),
+   217	                    "review": review,
+   218	                    "physics_steps": 0,
+   219	                    "scientific_attempts": 0,
+   220	                    "layout": {
+   221	                        "names": plant.names,
+   222	                        "qadr": plant.qadr,
+   223	                        "vadr": plant.vadr,
+   224	                    },
+   225	                    "lower": plant.lower.tolist(),
+   226	                    "upper": plant.upper.tolist(),
+   227	                }
+   228	            )
+   229	    verify_bundle(directory)
+   230	    return {
+   231	        "readiness": readiness,
+   232	        "head": head,
+   233	        "physics_steps": 0,
+   234	        "output": str(directory),
+   235	    }
+   236	
+   237	
+   238	def capture(prepared_dir, authorization_path, output):
+   239	    """Never invoked by prepare, qualification or tests with a real plant."""
+   240	    with LOCK_PATH.open("a") as lock:
+   241	        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+   242	        prepared = verify_bundle(prepared_dir)
+   243	        if not isinstance(prepared.get("task"), dict):
+   244	            raise ValueError("new capture requires task-bound preparation")
+   245	        task = load_task(ROOT / prepared["task"]["path"])
+   246	        if task != prepared["task"]:
+   247	            raise ValueError("task changed since preparation")
+   248	        protocol_path = ROOT / task["configuration"]["protocol"]
+   249	        head, sources = current_identity(task)
+   250	        if (
+   251	            prepared.get("readiness") != "READY_AWAITING_START"
+   252	            or prepared["head"] != head
+   253	            or prepared["source_files"] != sources
+   254	            or prepared["protocol_sha256"] != digest(protocol_path)
+   255	        ):
+   256	            raise ValueError("stale preparation")
+   257	        prepared["prepared_manifest_sha256"] = digest(prepared_dir / "manifest.json")
+   258	        authorization = strict_json(authorization_path.read_text())
+   259	        validate_authorization(authorization, prepared)
+   260	        validate_review(prepared["review"], head)
+   261	        qualification = validate_reference(prepared.get("qualification_reference"))
+   262	        verify_environment()
+   263	        setup_runtime()
+   264	        protocol = strict_json(protocol_path.read_text())
+   265	        if authorization["max_attempts"] != protocol["max_attempts"]:
+   266	            raise ValueError("authorization and protocol attempt budget differ")
+   267	        if (
+   268	            digest(CHECKPOINT) != prepared["checkpoint_sha256"]
+   269	            or dependency_manifest(ROOT / protocol["scene"], ROOT) != prepared["model"]
+   270	        ):
+   271	            raise ValueError("changed runtime inputs")
+   272	        # One immutable campaign claim per protocol, across output paths and
+   273	        # code revisions. No rerun/replacement campaign can hide a failed arm.
+   274	        ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
+   275	        if ledger.exists():
+   276	            raise ValueError(
+   277	                "campaign already claimed; inspect preserved evidence, no autonomous retry"
+   278	            )
+   279	        with EvidenceRun(
+   280	            output, {"argv": sys.argv, "operation": "formal_capture"}
+   281	        ) as run:
+   282	            run.result.update(
+   283	                {
+   284	                    "scope": "formal_exploratory_capture",
+   285	                    "capability_status": "INCOMPLETE",
+   286	                    "status": "FAILED",
+   287	                }
+   288	            )
+   289	            preflight(
+   290	                lock,
+   291	                head,
+   292	                prepared["review"],
+   293	                run.path / "preflight.json",
+   294	                ledger,
+   295	                task,
+   296	                qualification,
+   297	            )
+   298	            if (head, sources) != current_identity(task):
+   299	                raise ValueError("source changed before launch")
+   300	            write_new(run.path / "authorization.json", authorization)
+   301	            write_new(run.path / "protocol.json", protocol)
+   302	            write_new(
+   303	                run.path / "preparation-reference.json",
+   304	                {
+   305	                    "path": str(prepared_dir),
+   306	                    "manifest_sha256": prepared["prepared_manifest_sha256"],
+   307	                },
+   308	            )
+   309	            ledger.mkdir(parents=True, exist_ok=False)
+   310	            claim = {
+   311	                "head": head,
+   312	                "output": str(run.path.resolve()),
+   313	                "protocol_sha256": prepared["protocol_sha256"],
+   314	            }
+   315	            write_new(ledger / "campaign.json", claim)
+   316	            write_new(run.path / "campaign-claim.json", claim)
+   317	            attempts = [
+   318	                {"index": i, "status": "NOT_RUN"}
+   319	                for i in range(1, protocol["max_attempts"] + 1)
+   320	            ]
+   321	            run.result.update({"head": head, "attempts": attempts, "live_runs": 0})
+   322	            try:
+   323	                for item in attempts:
+   324	                    number = item["index"]
+   325	                    plant = MujocoPlant(prepared_dir / "inputs" / protocol["scene"])
+
+===== evidence.py:1,120 =====
+     1	"""Separate engineering admission from a frozen scientific experiment."""
+     2	
+     3	import math
+     4	import re
+     5	from .contracts import vector
+     6	
+     7	
+     8	def validate_capture_contract(contract):
+     9	    required = (
+    10	        "reviewed_by",
+    11	        "model_sha256",
+    12	        "backend_sha256",
+    13	        "information_regime",
+    14	        "start_state",
+    15	        "command",
+    16	        "horizon_s",
+    17	        "repeat_count",
+    18	        "thresholds",
+    19	        "support_semantics",
+    20	        "control_period_s",
+    21	    )
+    22	    missing = [k for k in required if k not in contract or contract[k] is None]
+    23	    if missing:
+    24	        raise ValueError("unfrozen capture fields: " + ", ".join(missing))
+    25	    for k in ("horizon_s", "control_period_s"):
+    26	        if (
+    27	            type(contract[k]) not in (float, int)
+    28	            or not math.isfinite(contract[k])
+    29	            or contract[k] <= 0
+    30	        ):
+    31	            raise ValueError("invalid " + k)
+    32	    if type(contract["repeat_count"]) is not int or contract["repeat_count"] < 1:
+    33	        raise ValueError("invalid repeat count")
+    34	    if (
+    35	        not contract["reviewed_by"]
+    36	        or not contract["thresholds"]
+    37	        or not contract["start_state"]
+    38	    ):
+    39	        raise ValueError("review, thresholds and start state must be frozen")
+    40	    if contract["information_regime"] not in (
+    41	        "proprioceptive",
+    42	        "known_model_oracle",
+    43	        "declared_perception",
+    44	    ):
+    45	        raise ValueError("undeclared information regime")
+    46	    if contract["support_semantics"] not in ("traverse", "mandatory_support"):
+    47	        raise ValueError("undeclared support semantics")
+    48	    for k in ("model_sha256", "backend_sha256"):
+    49	        if not isinstance(contract[k], str) or not re.fullmatch(
+    50	            "[0-9a-f]{64}", contract[k]
+    51	        ):
+    52	            raise ValueError("invalid " + k)
+    53	    if (
+    54	        not isinstance(contract["reviewed_by"], str)
+    55	        or not contract["reviewed_by"].strip()
+    56	    ):
+    57	        raise ValueError("review identity missing")
+    58	    if not isinstance(contract["start_state"], dict):
+    59	        raise ValueError("start state must contain qpos and qvel")
+    60	    qpos = vector(contract["start_state"].get("qpos"), 19, "initial qpos")
+    61	    if not math.isclose(sum(float(x * x) for x in qpos[3:7]), 1.0, abs_tol=2e-6):
+    62	        raise ValueError("initial quaternion is not normalized")
+    63	    vector(contract["start_state"].get("qvel"), 18, "initial qvel")
+    64	    vector(contract["command"], 3, "command")
+    65	    if not isinstance(contract["thresholds"], dict) or any(
+    66	        not isinstance(v, (float, int))
+    67	        or isinstance(v, bool)
+    68	        or not math.isfinite(v)
+    69	        or v < 0
+    70	        for v in contract["thresholds"].values()
+    71	    ):
+    72	        raise ValueError("threshold values must be finite nonnegative numbers")
+    73	    if contract["control_period_s"] > contract["horizon_s"]:
+    74	        raise ValueError("control period exceeds horizon")
+    75	    if contract["support_semantics"] == "mandatory_support":
+    76	        names = contract.get("required_supports")
+    77	        if (
+    78	            not isinstance(names, list)
+    79	            or not names
+    80	            or any(type(n) is not str or not n for n in names)
+    81	            or len(set(names)) != len(names)
+    82	        ):
+    83	            raise ValueError("mandatory support set must contain unique names")
+    84	    # Completeness only. This function neither approves nor launches a run.
+    85	    return True
+    86	
+    87	
+    88	def summarize_frames(
+    89	    frames, period_s, support_semantics="traverse", required_supports=()
+    90	):
+    91	    if (
+    92	        not frames
+    93	        or type(period_s) not in (float, int)
+    94	        or not math.isfinite(period_s)
+    95	        or period_s <= 0
+    96	    ):
+    97	        raise ValueError("empty evidence or invalid period")
+    98	    if support_semantics not in ("traverse", "mandatory_support"):
+    99	        raise ValueError("invalid support semantics")
+   100	    if not isinstance(required_supports, (tuple, list)):
+   101	        raise ValueError("required supports must be a sequence of names")
+   102	    if support_semantics == "mandatory_support" and not required_supports:
+   103	        raise ValueError("mandatory support set is empty")
+   104	    if len(set(required_supports)) != len(required_supports) or any(
+   105	        type(v) is not str or not v for v in required_supports
+   106	    ):
+   107	        raise ValueError("invalid required supports")
+   108	    first_failure, supports, previous = None, set(), None
+   109	    start_time = frames[0]["sim_time_s"]
+   110	    for index, row in enumerate(frames):
+   111	        if not isinstance(row, dict):
+   112	            raise ValueError("frame must be an object")
+   113	        if "task_complete" in row and type(row["task_complete"]) is not bool:
+   114	            raise ValueError("task_complete must be a boolean")
+   115	        if "supports" in row and (
+   116	            not isinstance(row["supports"], list)
+   117	            or any(type(v) is not str or not v for v in row["supports"])
+   118	        ):
+   119	            raise ValueError("supports must be a list of names")
+   120	        for key in ("failure", "terminal_reason"):
+
+===== integrity.py:1,180 =====
+
+===== README.md:98,153 =====
+    98	objective, and its tiny improvement cannot establish useful gait optimization.
+    99	MJPC has known-model access; RL receives ideal proprioception. Shared physics
+   100	does not make these information conditions equivalent.
+   101	
+   102	## Formal experiment boundary
+   103	
+   104	The SOP preflight entry `tools/research/preflight.py` is restored from historical
+   105	source and hardened. It checks exact HEAD, the expected logical branch identity
+   106	(named branch or a complete exact Praxis v2 binding for detached worktrees), a
+   107	clean state, runner/domain, all reserved participant ports, current UDP
+   108	occupancy, global/domain locks, process inspection, files/hashes, changed
+   109	surfaces, required review and tests.
+   110	Existing output is protected, and tests are skipped after an early hard failure.
+   111	Standalone preflight is a readiness snapshot. The substrate launcher now passes
+   112	its held lock descriptor to preflight and retains it through capture, with explicit
+   113	in-process transport checks. A literal runner-domain check does not replace review of runner
+   114	semantics, and a user-supplied approved SHA is not independent proof of review.
+   115	
+   116	The older generic capture template remains unfrozen and is not the first-run entrypoint.
+   117	The concrete first-run protocol is now `protocols/rl_flat_v1.json`; see
+   118	`docs/research/SUBSTRATE_FIRST_CAPTURE.md` for its prospective rationale and exact
+   119	historical commands. Under SOP v0.3, `launch prepare` additionally requires
+   120	`--qualification QUALIFIED_BUNDLE --task TRACKED_TASK_JSON`. Task metadata owns
+   121	expected branch/accepted-parent/protocol identity. Project-level execution
+   122	checks accept a named expected branch for manual runs or a detached Praxis v2
+   123	worktree bound to the exact repository, logical branch and frozen commit.
+   124	Qualification must be sealed, clean, non-development and match current
+   125	runtime/test/model/dependency inputs. Matching inputs reuse offline tests; fresh
+   126	lock/process/input checks and exact-head review/start identity remain mandatory.
+   127	`launch prepare` guards every real integration entrypoint and stops at
+   128	READY_AWAITING_START, or VERIFIED_ZERO_STEP_CAMPAIGN_CLOSED when the permanent
+   129	campaign ledger is already claimed. The latter is never a new start permission.
+   130	`launch capture` requires separate explicit user start
+   131	authorization, source-bound preparation and independent exact-head reviews.
+   132	`verify_capture` verifies raw integrity and recomputes the result with an
+   133	additional independent algebraic oracle. The local CLI checks the external ledger
+   134	by default; `--ledger` selects an archived copy and `--portable` explicitly reports
+   135	that the external ledger was not verified. Contact reconstruction from the model
+   136	is available in the zero-integration `diagnose` command, separately from algebra.
+   137	
+   138	The first campaign is CLOSED / FAIL and cannot be retried. Its outcome and exact
+   139	execution HEAD remain in `docs/validation/substrate_first_capture_20260922/`.
+   140	Upstream comparisons use the pinned reference manifest, not latest upstream files.
+   141	
+   142	The generic `evidence.py` checks typed
+   143	completeness, unique support names and exact cadence; it preserves the earliest
+   144	failure separately from terminal state and rejects samples after termination.
+   145	These helpers do not approve or launch experiments. The first-run protocol now fixes the scientific question, reset, information regime,
+   146	goals, thresholds, horizon/repeats, support semantics, runner and attempt boundary.
+   147	A future start must still validate the exact reviewed HEAD and explicit start record.
+   148	No scientific thresholds, legacy evidence or method rankings change here.
+   149	
+   150	Hosted CI runs dependency-light tests, pinned lint/format, tracked-source syntax
+   151	and portable documentation checks. Native qualification adds controller CTests,
+   152	actual Torch/model fixtures and backend admission. Exact counts belong to each
+   153	qualification report, not this guide. CI does not certify a robot capability.

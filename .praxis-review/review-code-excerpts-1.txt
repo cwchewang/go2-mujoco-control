@@ -1,0 +1,846 @@
+
+===== readiness.py:1,100 =====
+     1	"""Exact-head review and explicit start-record validation; no runner imports."""
+     2	
+     3	
+     4	def validate_review(review, head):
+     5	    if (
+     6	        not isinstance(review, dict)
+     7	        or set(review) != {"head", "science", "execution"}
+     8	        or review["head"] != head
+     9	    ):
+    10	        raise ValueError("review must bind exact launch HEAD")
+    11	    identities = []
+    12	    for role in ("science", "execution"):
+    13	        item = review[role]
+    14	        if (
+    15	            not isinstance(item, dict)
+    16	            or item.get("verdict") != "APPROVED"
+    17	            or not isinstance(item.get("reviewer"), str)
+    18	            or not item["reviewer"].strip()
+    19	            or not isinstance(item.get("evidence"), str)
+    20	            or not item["evidence"].strip()
+    21	        ):
+    22	            raise ValueError("missing independent " + role + " review")
+    23	        identities.append(item["reviewer"])
+    24	    if len(set(identities)) != 2:
+    25	        raise ValueError("science and execution reviewers must differ")
+    26	
+    27	
+    28	def validate_authorization(value, prepared):
+    29	    expected = {
+    30	        "action": "START_FORMAL_CAPTURE",
+    31	        "head": prepared["head"],
+    32	        "protocol_sha256": prepared["protocol_sha256"],
+    33	        "prepared_manifest_sha256": prepared["prepared_manifest_sha256"],
+    34	        "max_attempts": prepared.get("max_attempts", 3),
+    35	    }
+    36	    if type(expected["max_attempts"]) is not int or expected["max_attempts"] < 1:
+    37	        raise ValueError("invalid attempt budget")
+    38	    if not isinstance(value, dict) or any(
+    39	        type(value.get(k)) is not type(v) or value[k] != v for k, v in expected.items()
+    40	    ):
+    41	        raise ValueError(
+    42	            "explicit start authorization does not match prepared checkpoint"
+    43	        )
+    44	    if (
+    45	        value.get("authorized_by") != "user"
+    46	        or not isinstance(value.get("user_instruction"), str)
+    47	        or not value["user_instruction"].strip()
+    48	    ):
+    49	        raise ValueError(
+    50	            "record the actual user instruction to start; preparation is not authorization"
+    51	        )
+
+===== qualification.py:1,240 =====
+     1	"""Content-bound qualification receipts; exact execution identity stays separate."""
+     2	
+     3	from pathlib import Path
+     4	import hashlib
+     5	import json
+     6	import subprocess
+     7	import sys
+     8	import re
+     9	import shlex
+    10	import shutil
+    11	from tools.check_quality import source_paths
+    12	
+    13	from .integrity import digest, verify_bundle
+    14	from .environment import verify_environment
+    15	from .build_identity import verify as verify_build
+    16	
+    17	ROOT = Path(__file__).resolve().parents[2]
+    18	REQUIRED_CHECKS = {
+    19	    "controller_configure",
+    20	    "controller_build",
+    21	    "controller_tests",
+    22	    "substrate_tests",
+    23	    "preflight_tests",
+    24	    "tooling_tests",
+    25	    "quality",
+    26	    "diff_check",
+    27	}
+    28	
+    29	
+    30	def tracked_inputs(root=ROOT):
+    31	    """Include code, tests, build plans and assets; exclude prose and task metadata."""
+    32	    names = (
+    33	        subprocess.check_output(["git", "ls-files", "-z"], cwd=root)
+    34	        .decode()
+    35	        .split("\0")
+    36	    )
+    37	    quality_sources = set(source_paths(root))
+    38	    return {
+    39	        name: digest(root / name)
+    40	        for name in sorted(names)
+    41	        if name
+    42	        and (not name.startswith("docs/") or name in quality_sources)
+    43	        and not name.startswith(("tools/substrate/tasks/", "example/cpp/experiments/"))
+    44	        and Path(name).suffix.lower() not in (".md", ".rst")
+    45	        and (root / name).is_file()
+    46	    }
+    47	
+    48	
+    49	def controller_inputs(build):
+    50	    """Bind actual CMake products, compiler inputs and resolved link dependencies."""
+    51	    files = set()
+    52	    depfiles = list(build.rglob("*.o.d"))
+    53	    if not depfiles or not (build / "CMakeCache.txt").is_file():
+    54	        raise ValueError("controller build dependencies missing")
+    55	    for depfile in depfiles:
+    56	        content = depfile.read_text().replace("\\\n", " ")
+    57	        for name in shlex.split(content.split(":", 1)[1]):
+    58	            path = Path(name)
+    59	            files.add((path if path.is_absolute() else build / path).resolve())
+    60	    for path in build.rglob("*"):
+    61	        if path.is_file() and (
+    62	            path.name
+    63	            in ("CMakeCache.txt", "flags.make", "link.txt", "CTestTestfile.cmake")
+    64	            or path.suffix in (".a", ".so")
+    65	            or (path.parent == build and path.read_bytes()[:4] == b"\x7fELF")
+    66	        ):
+    67	            files.add(path.resolve())
+    68	            if path.name == "link.txt":
+    69	                for name in shlex.split(path.read_text()):
+    70	                    item = Path(name)
+    71	                    if item.is_absolute() and item.is_file():
+    72	                        files.add(item.resolve())
+    73	            if path.read_bytes()[:4] == b"\x7fELF":
+    74	                result = subprocess.run(
+    75	                    ["ldd", str(path)], capture_output=True, text=True
+    76	                )
+    77	                for name in re.findall(r"(?:=>\s*)?(/[^\s]+)", result.stdout):
+    78	                    files.add(Path(name).resolve())
+    79	    for command in ("c++", "cc", "cmake", "ctest", "make"):
+    80	        found = shutil.which(command)
+    81	        if found is None:
+    82	            raise ValueError("controller tool missing: " + command)
+    83	        files.add(Path(found).resolve())
+    84	    return {str(path): digest(path) for path in sorted(files)}
+    85	
+    86	
+    87	def current_inputs(include_controller=True):
+    88	    binary = ROOT / ".substrate/headless-reliable/go2_mjpc_admit"
+    89	    libraries = {}
+    90	    for executable in (binary, Path(sys.executable).resolve()):
+    91	        linkage = subprocess.check_output(["ldd", str(executable)], text=True)
+    92	        for name in re.findall(r"(?:=>\s*)?(/[^\s]+)", linkage):
+    93	            path = Path(name).resolve()
+    94	            if path.is_file():
+    95	                libraries[str(path)] = digest(path)
+    96	    cpu = {
+    97	        line.split(":", 1)[0].strip(): line.split(":", 1)[1].strip()
+    98	        for line in Path("/proc/cpuinfo").read_text().splitlines()
+    99	        if ":" in line
+   100	        and line.split(":", 1)[0].strip()
+   101	        in ("vendor_id", "model name", "microcode", "flags")
+   102	    }
+   103	    return {
+   104	        "schema": 1,
+   105	        "tracked_files": tracked_inputs(),
+   106	        "runtime": verify_environment(),
+   107	        "interpreter_sha256": digest(Path(sys.executable).resolve()),
+   108	        "checkpoint_sha256": digest(ROOT / ".substrate/rl/policy.pt"),
+   109	        "native_build": verify_build(binary),
+   110	        "native_binary_sha256": digest(binary),
+   111	        "linked_libraries": libraries,
+   112	        "cpu_identity": cpu,
+   113	        "controller_build": (
+   114	            controller_inputs(ROOT / ".substrate/controller-reliable")
+   115	            if include_controller
+   116	            else None
+   117	        ),
+   118	    }
+   119	
+   120	
+   121	def fingerprint(value):
+   122	    return hashlib.sha256(
+   123	        json.dumps(
+   124	            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+   125	        ).encode()
+   126	    ).hexdigest()
+   127	
+   128	
+   129	def validate_record(record, actual):
+   130	    q = record.get("qualification", {})
+   131	    if q.get("clean_head") is not True or q.get("development") is not False:
+   132	        raise ValueError("qualification must be clean and non-development")
+   133	    checks = record.get("qualification_checks", {})
+   134	    if set(checks) != REQUIRED_CHECKS or any(
+   135	        type(item.get("returncode")) is not int or item["returncode"] != 0
+   136	        for item in checks.values()
+   137	    ):
+   138	        raise ValueError("qualification required checks missing or not passing")
+   139	    if record.get("qualification_inputs") != actual:
+   140	        raise ValueError("qualification inputs changed or receipt predates binding")
+   141	    if record.get("qualification_fingerprint") != fingerprint(actual):
+   142	        raise ValueError("qualification fingerprint mismatch")
+   143	
+   144	
+   145	def validate(directory):
+   146	    directory = Path(directory).resolve()
+   147	    record = verify_bundle(directory)
+   148	    validate_record(record, current_inputs())
+   149	    # Prose does not invalidate expensive tests, but its current hygiene still matters.
+   150	    subprocess.run(
+   151	        [sys.executable, "-m", "tools.check_quality"],
+   152	        cwd=ROOT,
+   153	        check=True,
+   154	        capture_output=True,
+   155	        timeout=120,
+   156	    )
+   157	    for name in REQUIRED_CHECKS:
+   158	        for suffix in ("stdout", "stderr"):
+   159	            if not (directory / f"{name}.{suffix}").is_file():
+   160	                raise ValueError("qualification check log missing")
+   161	    return {
+   162	        "path": str(directory),
+   163	        "manifest_sha256": digest(directory / "manifest.json"),
+   164	        "producer_head": record["qualification"]["head"],
+   165	        "fingerprint": record["qualification_fingerprint"],
+   166	    }
+   167	
+   168	
+   169	def validate_reference(reference):
+   170	    if not isinstance(reference, dict) or not reference.get("path"):
+   171	        raise ValueError("bound qualification receipt required")
+   172	    current = validate(reference["path"])
+   173	    if current != reference:
+   174	        raise ValueError("qualification reference mismatch")
+   175	    return current
+
+===== qualify.py:1,210 =====
+     1	"""One offline engineering qualification command; never starts a live controller."""
+     2	
+     3	import argparse
+     4	import json
+     5	from pathlib import Path
+     6	import subprocess
+     7	import sys
+     8	from .admit import admit, source_manifest
+     9	from .integrity import EvidenceRun, experiment_lock, run_logged
+    10	from .environment import verify_environment
+    11	from .qualification import current_inputs, fingerprint
+    12	
+    13	ROOT = Path(__file__).resolve().parents[2]
+    14	
+    15	
+    16	def main():
+    17	    p = argparse.ArgumentParser(description=__doc__)
+    18	    p.add_argument("--output", type=Path, required=True)
+    19	    p.add_argument(
+    20	        "--development",
+    21	        action="store_true",
+    22	        help="record dirty engineering work explicitly; final qualification requires clean HEAD",
+    23	    )
+    24	    args = p.parse_args()
+    25	    try:
+    26	        with experiment_lock(), EvidenceRun(args.output, {"argv": sys.argv}) as run:
+    27	            verify_environment()
+    28	            head = subprocess.check_output(
+    29	                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    30	            ).strip()
+    31	            before = subprocess.check_output(
+    32	                ["git", "status", "--porcelain"], cwd=ROOT, text=True
+    33	            )
+    34	            if before and not args.development:
+    35	                raise ValueError("final qualification requires a clean worktree")
+    36	            source_before = source_manifest()
+    37	            input_before = current_inputs(include_controller=False)
+    38	            qualification_inputs = None
+    39	            diff_before = subprocess.check_output(
+    40	                ["git", "diff", "--binary", "HEAD"], cwd=ROOT
+    41	            )
+    42	            build = ROOT / ".substrate/controller-reliable"
+    43	            commands = [
+    44	                (
+    45	                    "controller_configure",
+    46	                    [
+    47	                        "cmake",
+    48	                        "-S",
+    49	                        ROOT / "example/cpp",
+    50	                        "-B",
+    51	                        build,
+    52	                        "-DCMAKE_BUILD_TYPE=Release",
+    53	                    ],
+    54	                    120,
+    55	                ),
+    56	                ("controller_build", ["cmake", "--build", build, "-j", "4"], 600),
+    57	                (
+    58	                    "controller_tests",
+    59	                    ["ctest", "--test-dir", build, "--output-on-failure"],
+    60	                    120,
+    61	                ),
+    62	                (
+    63	                    "substrate_tests",
+    64	                    [
+    65	                        sys.executable,
+    66	                        "-m",
+    67	                        "unittest",
+    68	                        "tools.substrate.test_substrate",
+    69	                        "tools.substrate.test_native_boundary",
+    70	                        "tools.substrate.test_reliability",
+    71	                        "tools.substrate.test_policy_runtime",
+    72	                        "tools.substrate.test_clock",
+    73	                        "tools.substrate.test_launch",
+    74	                        "tools.substrate.test_qualification",
+    75	                        "tools.substrate.test_baseline",
+    76	                        "-v",
+    77	                    ],
+    78	                    120,
+    79	                ),
+    80	                (
+    81	                    "preflight_tests",
+    82	                    [
+    83	                        sys.executable,
+    84	                        "-m",
+    85	                        "unittest",
+    86	                        "tools.research.test_preflight",
+    87	                        "tools.research.test_preflight_integration",
+    88	                        "-v",
+    89	                    ],
+    90	                    120,
+    91	                ),
+    92	                (
+    93	                    "tooling_tests",
+    94	                    [
+    95	                        sys.executable,
+    96	                        "-m",
+    97	                        "unittest",
+    98	                        "discover",
+    99	                        "-s",
+   100	                        "tools/tests",
+   101	                        "-p",
+   102	                        "test_*.py",
+   103	                    ],
+   104	                    120,
+   105	                ),
+   106	                ("quality", [sys.executable, "-m", "tools.check_quality"], 120),
+   107	                ("diff_check", ["git", "diff", "--check"], 30),
+   108	            ]
+   109	            run.result["qualification_checks"] = {}
+   110	            for name, argv, timeout in commands:
+   111	                run.result["qualification_checks"][name] = run_logged(
+   112	                    argv, run.path, name, timeout, ROOT
+   113	                )
+   114	                if name == "controller_build":
+   115	                    qualification_inputs = current_inputs()
+   116	                    if any(
+   117	                        input_before[key] != qualification_inputs[key]
+   118	                        for key in input_before
+   119	                        if key != "controller_build"
+   120	                    ):
+   121	                        raise ValueError("qualification inputs changed during build")
+   122	            admit(
+   123	                run,
+   124	                ROOT / ".substrate/rl/policy.pt",
+   125	                ROOT / ".substrate/headless-reliable/go2_mjpc_admit",
+   126	            )
+   127	            after = subprocess.check_output(
+   128	                ["git", "status", "--porcelain"], cwd=ROOT, text=True
+   129	            )
+   130	            final_head = subprocess.check_output(
+   131	                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+   132	            ).strip()
+   133	            diff_after = subprocess.check_output(
+   134	                ["git", "diff", "--binary", "HEAD"], cwd=ROOT
+   135	            )
+   136	            if (
+   137	                before != after
+   138	                or head != final_head
+   139	                or source_before != source_manifest()
+   140	                or diff_before != diff_after
+   141	                or qualification_inputs != current_inputs()
+   142	            ):
+   143	                raise ValueError("checkout changed during qualification")
+   144	            run.result["qualification"] = {
+   145	                "clean_head": not before,
+   146	                "development": args.development,
+   147	                "head": head,
+   148	            }
+   149	            run.result["qualification_inputs"] = qualification_inputs
+   150	            run.result["qualification_fingerprint"] = fingerprint(qualification_inputs)
+   151	    except (Exception, KeyboardInterrupt) as exc:
+   152	        print(
+   153	            json.dumps(
+   154	                {"status": "FAILED", "reason": type(exc).__name__ + ": " + str(exc)}
+   155	            )
+   156	        )
+   157	        return 1
+   158	    print(
+   159	        json.dumps(
+   160	            {
+   161	                "status": "ENGINEERING_ADMITTED",
+   162	                "clean_head": not before,
+   163	                "capability_status": "NOT_RUN",
+   164	            }
+   165	        )
+   166	    )
+   167	    return 0
+   168	
+   169	
+   170	if __name__ == "__main__":
+   171	    sys.exit(main())
+
+===== task.py:1,140 =====
+     1	"""Tracked task metadata owns branch identity; protocol owns scientific budget."""
+     2	
+     3	from pathlib import Path
+     4	import re
+     5	import subprocess
+     6	from .integrity import digest, strict_json
+     7	
+     8	ROOT = Path(__file__).resolve().parents[2]
+     9	DEFAULT_TASK = ROOT / "tools/substrate/tasks/rl_flat_v1.json"
+    10	
+    11	
+    12	def load_task(path, root=ROOT):
+    13	    path, root = Path(path).resolve(), Path(root).resolve()
+    14	    if not path.is_relative_to(root):
+    15	        raise ValueError("task must be tracked inside repository")
+    16	    relative = path.relative_to(root).as_posix()
+    17	    subprocess.run(
+    18	        ["git", "ls-files", "--error-unmatch", relative],
+    19	        cwd=root,
+    20	        check=True,
+    21	        capture_output=True,
+    22	    )
+    23	    value = strict_json(path.read_text())
+    24	    if (
+    25	        set(value) != {"schema", "branch", "protocol", "protocol_sha256", "diff_base"}
+    26	        or type(value["schema"]) is not int
+    27	        or value["schema"] != 1
+    28	    ):
+    29	        raise ValueError("invalid task schema")
+    30	    if not isinstance(value["branch"], str) or not value["branch"]:
+    31	        raise ValueError("task branch required")
+    32	    subprocess.run(
+    33	        ["git", "check-ref-format", "--branch", value["branch"]],
+    34	        cwd=root,
+    35	        check=True,
+    36	        capture_output=True,
+    37	    )
+    38	    protocol = (root / value["protocol"]).resolve()
+    39	    if (
+    40	        not protocol.is_relative_to(root / "tools/substrate/protocols")
+    41	        or protocol.suffix != ".json"
+    42	        or not protocol.is_file()
+    43	    ):
+    44	        raise ValueError("protocol must belong to qualified protocol directory")
+    45	    subprocess.run(
+    46	        ["git", "ls-files", "--error-unmatch", protocol.relative_to(root).as_posix()],
+    47	        cwd=root,
+    48	        check=True,
+    49	        capture_output=True,
+    50	    )
+    51	    if digest(protocol) != value["protocol_sha256"]:
+    52	        raise ValueError("task protocol hash mismatch")
+    53	    budget = strict_json(protocol.read_text()).get("max_attempts")
+    54	    if type(budget) is not int or budget < 1:
+    55	        raise ValueError("protocol requires positive integer attempt budget")
+    56	    if not isinstance(value["diff_base"], str) or not re.fullmatch(
+    57	        r"[0-9a-f]{40}", value["diff_base"]
+    58	    ):
+    59	        raise ValueError("task requires exact parent commit")
+    60	    subprocess.run(
+    61	        ["git", "merge-base", "--is-ancestor", value["diff_base"], "HEAD"],
+    62	        cwd=root,
+    63	        check=True,
+    64	        capture_output=True,
+    65	    )
+    66	    return {"path": relative, "sha256": digest(path), "configuration": value}
+
+===== baseline.py:60,125 =====
+    60	    }
+    61	    if identity != expected:
+    62	        raise ValueError("protocol source identity differs from source locks")
+    63	
+    64	
+    65	def validate_capability_protocol(protocol):
+    66	    if protocol.get("id") != "rl-capability-map-v1" or protocol.get("schema") != 2:
+    67	        raise ValueError("unsupported capability-map protocol")
+    68	    cases = protocol.get("cases", [])
+    69	    if len(cases) != protocol.get("max_attempts"):
+    70	        raise ValueError("capability-map attempt budget must equal case count")
+    71	    ids = [case.get("id") for case in cases]
+    72	    if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
+    73	        raise ValueError("capability-map cases must have unique IDs and lead with reference")
+    74	    expected_reference_digest(protocol)
+    75	    ranges = protocol["engineering_probe_envelope"]
+    76	    bounds = {
+    77	        "vx": ranges["vx_mps"],
+    78	        "vy": ranges["vy_mps"],
+    79	        "wz": ranges["wz_rps"],
+    80	    }
+    81	    valid_axes = set(bounds)
+    82	    for index, case in enumerate(cases):
+    83	        if case.get("adapter") is not True or case.get("reset") != "shared_home":
+    84	            raise ValueError("all capability-map cases must preserve shared deployment")
+    85	        if not case.get("scene_geoms") or len(case["scene_geoms"]) != len(
+    86	            set(case["scene_geoms"])
+    87	        ):
+    88	            raise ValueError("each capability-map scene needs unique collision geom names")
+    89	        axes = case.get("track_axes")
+    90	        if not axes or len(axes) != len(set(axes)) or not set(axes) <= valid_axes:
+    91	            raise ValueError("invalid capability-map tracking axes")
+    92	        commands = case.get("commands", [])
+    93	        if not commands or any(len(row) != 4 for row in commands):
+    94	            raise ValueError("capability-map commands must be [tick, vx, vy, wz]")
+    95	        ticks = [row[0] for row in commands]
+    96	        if (
+    97	            ticks[0] != 0
+    98	            or ticks != sorted(set(ticks))
+    99	            or ticks[-1] >= case["horizon_ticks"]
+   100	        ):
+   101	            raise ValueError("capability-map command schedule is not bounded and ordered")
+   102	        if case.get("flat_probe") and index > 0:
+   103	            for row in commands:
+   104	                for axis, value in zip(("vx", "vy", "wz"), row[1:]):
+   105	                    if not bounds[axis][0] <= value <= bounds[axis][1]:
+   106	                        raise ValueError("flat probe exceeds source-configured probe envelope")
+   107	        if index > 0 and case.get("requires") != ["flat_reference"]:
+   108	            raise ValueError("all post-sentinel cases must depend on the flat reference")
+   109	        goal = case.get("terrain_goal")
+   110	        if goal is not None and not (
+   111	            0 <= goal["terrain_x_min"] < goal["terrain_x_max"]
+   112	            and goal["base_clearance_m"] > 0
+   113	            and goal["foot_clearance_m"] > 0
+   114	            and goal["route_lateral_max_m"] > 0
+   115	            and goal["hold_ticks"] > 0
+   116	        ):
+   117	            raise ValueError("invalid terrain crossing goal")
+   118	    if protocol.get("retry") != "none":
+   119	        raise ValueError("capability-map protocol must forbid retries")
+   120	    if protocol.get("progression") != "performance_continue_safety_integrity_stop":
+   121	        raise ValueError("capability-map progression must retain performance outcomes")
+   122	
+   123	
+   124	def campaign_characterized(attempts, protocol):
+   125	    statuses = [item["status"] for item in attempts]
+
+===== baseline.py:165,325 =====
+   165	            raise ValueError("repeat reference must name a preceding case")
+   166	        seen.add(case["id"])
+   167	    if protocol.get("schema") == 2:
+   168	        validate_capability_protocol(protocol)
+   169	    if protocol["progression"] not in (
+   170	        "first_nonpass_stop",
+   171	        "performance_continue_safety_integrity_stop",
+   172	    ):
+   173	        raise ValueError("unknown campaign progression")
+   174	    return result
+   175	
+   176	
+   177	def fresh_preflight(lock, head, review, report, fresh, task, qualification, protocol):
+   178	    try:
+   179	        preflight(
+   180	            lock,
+   181	            head,
+   182	            review,
+   183	            report,
+   184	            fresh,
+   185	            task,
+   186	            qualification,
+   187	            runner=Path(__file__),
+   188	            experiment_id=protocol["id"],
+   189	        )
+   190	    except UnsupportedSceneError:
+   191	        raise
+   192	    except Exception as exc:
+   193	        raise PreflightFailureError("fresh execution preflight did not pass") from exc
+   194	
+   195	
+   196	def validate_snapshot(path, expected_manifest):
+   197	    try:
+   198	        verify_bundle(path)
+   199	    except Exception as exc:
+   200	        raise IntegrityStopError("prepared snapshot bundle verification failed") from exc
+   201	    if digest(path / "manifest.json") != expected_manifest:
+   202	        raise IntegrityStopError("prepared snapshot changed")
+   203	
+   204	
+   205	def prepare_probe(plant, policy, case, command):
+   206	    initial = plant.snapshot(0)
+   207	    action = policy.act(plant.observe(), command)
+   208	    target = action.position_target if case["adapter"] else action[1]
+   209	    plant.control(target)
+   210	    if plant.steps or plant.data.time != 0 or plant.snapshot(0) != initial:
+   211	        raise ValueError("prepare modified plant")
+   212	    return initial
+   213	
+   214	
+   215	def failure_result(exc, operation):
+   216	    reason = type(exc).__name__ + ": " + str(exc)
+   217	    if isinstance(exc, UnsupportedSceneError):
+   218	        return {
+   219	            "status": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+   220	            "classification": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+   221	            "reason": reason,
+   222	        }
+   223	    if isinstance(exc, IntegrityStopError):
+   224	        return {
+   225	            "status": "INTEGRITY_STOP",
+   226	            "classification": "INTEGRITY_STOP",
+   227	            "reason": reason,
+   228	        }
+   229	    if isinstance(exc, PreflightFailureError) or operation == "prepare":
+   230	        return {
+   231	            "status": "PREFLIGHT_FAILURE",
+   232	            "classification": "PREFLIGHT_FAILURE",
+   233	            "reason": reason,
+   234	        }
+   235	    return {
+   236	        "status": "FAILED",
+   237	        "classification": "EXECUTION_OR_EVIDENCE_FAILURE",
+   238	        "reason": reason,
+   239	    }
+   240	
+   241	
+   242	def prepare(output, review_path, qualification_path, task_path=TASK):
+   243	    with (
+   244	        experiment_lock() as lock,
+   245	        zero_step_guard(),
+   246	        EvidenceRun(output, {"operation": "baseline_prepare_zero_step"}) as run,
+   247	    ):
+   248	        task = load_task(task_path)
+   249	        head, sources = current_identity(task)
+   250	        protocol_path = ROOT / task["configuration"]["protocol"]
+   251	        protocol = strict_json(protocol_path.read_text())
+   252	        review = strict_json(review_path.read_text())
+   253	        validate_review(review, head)
+   254	        qualification = validate(qualification_path)
+   255	        fresh_preflight(
+   256	            lock,
+   257	            head,
+   258	            review,
+   259	            run.path / "preflight.json",
+   260	            run.path / "future_capture",
+   261	            task,
+   262	            qualification,
+   263	            protocol,
+   264	        )
+   265	        runtime = verify_environment()
+   266	        setup_runtime()
+   267	        source_inputs = inputs(protocol)
+   268	        for name, expected in source_inputs.items():
+   269	            dest = run.path / "inputs" / name
+   270	            dest.parent.mkdir(parents=True, exist_ok=True)
+   271	            dest.write_bytes((ROOT / name).read_bytes())
+   272	            if digest(dest) != expected:
+   273	                raise ValueError("input changed during snapshot")
+   274	        models = {}
+   275	        for case in protocol["cases"]:
+   276	            plant = Plant(
+   277	                run.path / "inputs" / case["scene"], case, protocol["physics_period_s"]
+   278	            )
+   279	            policy = make_policy(
+   280	                run.path / "inputs", case, source_inputs[".substrate/rl/policy.pt"]
+   281	            )
+   282	            # Validate policy shape/finite output on an isolated object, not live history.
+   283	            probe_command = (
+   284	                command_at(case, 0) if protocol.get("schema") == 2 else [1.0, 0.0, 0.0]
+   285	            )
+   286	            row = prepare_probe(plant, policy, case, probe_command)
+   287	            models[case["id"]] = dict(
+   288	                physical_sha256=physical_fingerprint(plant.model),
+   289	                qadr=plant.qadr,
+   290	                vadr=plant.vadr,
+   291	                aids=plant.aids,
+   292	                initial=row,
+   293	            )
+   294	        if (
+   295	            inputs(protocol) != source_inputs
+   296	            or (head, sources) != current_identity(task)
+   297	            or task != load_task(task_path)
+   298	        ):
+   299	            raise ValueError("inputs changed during prepare")
+   300	        validate_reference(qualification)
+   301	        ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
+   302	        if ledger.exists():
+   303	            raise ValueError("campaign already claimed")
+   304	        write_new(run.path / "protocol.json", protocol)
+   305	        run.result.update(
+   306	            status="ENGINEERING_ADMITTED",
+   307	            readiness="READY_AWAITING_START",
+   308	            head=head,
+   309	            source_files=sources,
+   310	            task=task,
+   311	            review=review,
+   312	            runtime=runtime,
+   313	            qualification_reference=qualification,
+   314	            protocol_sha256=digest(protocol_path),
+   315	            max_attempts=protocol["max_attempts"],
+   316	            source_inputs=source_inputs,
+   317	            models=models,
+   318	            physics_steps=0,
+   319	        )
+   320	    verify_bundle(output)
+   321	    return {"status": "READY_AWAITING_START", "head": head, "physics_steps": 0}
+   322	
+   323	
+   324	def capture_readiness(prepared_path, authorization_path, task_path):
+   325	    try:
+
+===== baseline.py:324,465 =====
+   324	def capture_readiness(prepared_path, authorization_path, task_path):
+   325	    try:
+   326	        prepared = verify_bundle(prepared_path)
+   327	        task = load_task(task_path)
+   328	        head, sources = current_identity(task)
+   329	        protocol_path = ROOT / task["configuration"]["protocol"]
+   330	        protocol = strict_json(protocol_path.read_text())
+   331	        if (
+   332	            prepared["readiness"] != "READY_AWAITING_START"
+   333	            or prepared["task"] != task
+   334	            or prepared["head"] != head
+   335	            or prepared["source_files"] != sources
+   336	            or prepared["protocol_sha256"] != digest(protocol_path)
+   337	            or prepared["source_inputs"] != inputs(protocol)
+   338	        ):
+   339	            raise PreflightFailureError("stale preparation")
+   340	        prepared["prepared_manifest_sha256"] = digest(
+   341	            prepared_path / "manifest.json"
+   342	        )
+   343	        auth = strict_json(authorization_path.read_text())
+   344	        validate_authorization(auth, prepared)
+   345	        validate_review(prepared["review"], head)
+   346	        qualification = validate_reference(prepared["qualification_reference"])
+   347	        verify_environment()
+   348	        setup_runtime()
+   349	        return prepared, task, head, sources, protocol_path, protocol, auth, qualification
+   350	    except (PreflightFailureError, UnsupportedSceneError, IntegrityStopError):
+   351	        raise
+   352	    except Exception as exc:
+   353	        raise PreflightFailureError("capture readiness checks did not pass") from exc
+   354	
+   355	
+   356	def capture(prepared_path, authorization_path, output, task_path=TASK):
+   357	    with experiment_lock() as lock:
+   358	        (
+   359	            prepared,
+   360	            task,
+   361	            head,
+   362	            sources,
+   363	            protocol_path,
+   364	            protocol,
+   365	            auth,
+   366	            qualification,
+   367	        ) = capture_readiness(prepared_path, authorization_path, task_path)
+   368	        ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
+   369	        if ledger.exists():
+   370	            raise IntegrityStopError("campaign already claimed; no retry")
+   371	        with EvidenceRun(output, {"operation": "baseline_capture"}) as run:
+   372	            attempts = [
+   373	                dict(index=i + 1, case=c["id"], status="NOT_RUN")
+   374	                for i, c in enumerate(protocol["cases"])
+   375	            ]
+   376	            run.result.update(
+   377	                status="FAILED",
+   378	                capability_status="INCOMPLETE",
+   379	                head=head,
+   380	                attempts=attempts,
+   381	                live_runs=0,
+   382	            )
+   383	            fresh_preflight(
+   384	                lock,
+   385	                head,
+   386	                prepared["review"],
+   387	                run.path / "preflight.json",
+   388	                ledger,
+   389	                task,
+   390	                qualification,
+   391	                protocol,
+   392	            )
+   393	            write_new(run.path / "authorization.json", auth)
+   394	            write_new(run.path / "protocol.json", protocol)
+   395	            write_new(
+   396	                run.path / "preparation-reference.json",
+   397	                dict(
+   398	                    path=str(prepared_path.resolve()),
+   399	                    manifest_sha256=prepared["prepared_manifest_sha256"],
+   400	                ),
+   401	            )
+   402	            ledger.mkdir(parents=True, exist_ok=False)
+   403	            claim = dict(
+   404	                head=head,
+   405	                output=str(run.path.resolve()),
+   406	                protocol_sha256=prepared["protocol_sha256"],
+   407	            )
+   408	            write_new(ledger / "campaign.json", claim)
+   409	            write_new(run.path / "campaign-claim.json", claim)
+   410	            completed = {}
+   411	            for item, case in zip(attempts, protocol["cases"]):
+   412	                if any(
+   413	                    completed.get(name, {}).get("verdict") != "PASS"
+   414	                    for name in case["requires"]
+   415	                ):
+   416	                    item["reason"] = "reference_dependency_failed"
+   417	                    continue
+   418	                if (head, sources) != current_identity(task):
+   419	                    raise IntegrityStopError("source changed during capture")
+   420	                validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
+   421	                plant = Plant(
+   422	                    prepared_path / "inputs" / case["scene"],
+   423	                    case,
+   424	                    protocol["physics_period_s"],
+   425	                )
+   426	                if (
+   427	                    physical_fingerprint(plant.model)
+   428	                    != prepared["models"][case["id"]]["physical_sha256"]
+   429	                ):
+   430	                    raise IntegrityStopError("plant changed after preparation")
+   431	                policy = make_policy(
+   432	                    prepared_path / "inputs",
+   433	                    case,
+   434	                    prepared["source_inputs"][".substrate/rl/policy.pt"],
+   435	                )
+   436	                raw = run.path / (case["id"] + ".jsonl")
+   437	                item["status"] = "BOOTING"
+   438	
+   439	                def consume():
+   440	                    claim = dict(
+   441	                        index=item["index"],
+   442	                        case=case["id"],
+   443	                        head=head,
+   444	                        raw=str(raw.resolve()),
+   445	                        boundary="first_post_handoff_state_control_sample",
+   446	                    )
+   447	                    write_new(ledger / (case["id"] + ".json"), claim)
+   448	                    write_new(run.path / (case["id"] + "_claim.json"), claim)
+   449	                    run.result["live_runs"] += 1
+   450	                    item["status"] = "CAPTURING"
+   451	
+   452	                started = time.monotonic()
+   453	                try:
+   454	                    with raw.open("x") as stream:
+   455	
+   456	                        def emit(row):
+   457	                            stream.write(
+   458	                                json.dumps(row, separators=(",", ":"), allow_nan=False)
+   459	                                + "\n"
+   460	                            )
+   461	                            stream.flush()
+   462	
+   463	                        try:
+   464	                            with wall_deadline(protocol["wall_timeout_s"]):
+   465	                                episode(plant, policy, case, protocol, emit, consume)

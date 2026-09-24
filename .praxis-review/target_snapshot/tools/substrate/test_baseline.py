@@ -1,0 +1,718 @@
+"""Portable schedule/stop tests and optional zero-integration native checks."""
+
+import importlib.util
+from pathlib import Path
+import tempfile
+from types import SimpleNamespace
+import unittest
+import numpy as np
+
+from .baseline_episode import (
+    Plant,
+    SourcePolicy,
+    UnsupportedSceneError,
+    analyze,
+    command_at,
+    enforce_reference_digest,
+    expected_reference_digest,
+    episode,
+    safety,
+)
+from .contracts import POLICY_JOINTS, Proprioception
+from .baseline import (
+    IntegrityStopError,
+    PreflightFailureError,
+    campaign_characterized,
+    failure_result,
+    prepare_probe,
+    validate_capability_protocol,
+    validate_source_identity,
+)
+from .baseline_episode import repeat_reference, stop_after
+from .baseline_verify import (
+    audit_preflight,
+    _audit_capability_metrics,
+    independent_body_twist,
+    independent_body_vx,
+    replay_policy_action,
+    trace_consumed,
+)
+from .guards import zero_step_guard
+from .integrity import strict_json
+from .rl import FrozenPolicy, observation45
+
+ROOT = Path(__file__).resolve().parents[2]
+PROTOCOL = strict_json(
+    (ROOT / "tools/substrate/protocols/rl_source_v1.json").read_text()
+)
+COMBINED_PROTOCOL = strict_json(
+    (
+        ROOT / "tools/substrate/protocols/rl_shared_transfer_combination_v1.json"
+    ).read_text()
+)
+CAPABILITY_PROTOCOL = strict_json(
+    (ROOT / "tools/substrate/protocols/rl_capability_map_v1.json").read_text()
+)
+
+
+def sample(tick=0):
+    return dict(
+        tick=tick,
+        time=tick * 0.002,
+        qpos=[tick * 0.002, 0, 0.3, 1, 0, 0, 0] + [0] * 12,
+        qvel=[1, 0, 0] + [0] * 15,
+        clearance=0.3,
+        warnings=0,
+        base_contacts=[],
+        feet=[[tick * 0.002, 0, 0]] * 4,
+    )
+
+
+class FakePlant:
+    def __init__(self, fail_tick=None):
+        self.steps = 0
+        self.fail_tick = fail_tick
+
+    def snapshot(self, tick):
+        row = sample(tick)
+        row["warnings"] = int(tick == self.fail_tick)
+        return row
+
+    def observe(self):
+        return Proprioception(
+            POLICY_JOINTS, np.zeros(12), np.zeros(12), [1, 0, 0, 0], np.zeros(3)
+        )
+
+    def control(self, target):
+        return np.zeros(12), np.zeros(12)
+
+    def step(self, applied):
+        self.steps += 1
+
+
+class FakePolicy:
+    def act(self, obs, command):
+        return np.zeros(45), np.zeros(12, dtype=np.float32)
+
+
+class FakePreparePolicy:
+    def __init__(self):
+        self.command = None
+
+    def act(self, observation, command):
+        self.command = list(command)
+        return SimpleNamespace(position_target=np.zeros(12, dtype=np.float32))
+
+
+class FakeVerifyAdapter:
+    def __init__(self):
+        self.previous_action = np.zeros(12, dtype=np.float32)
+        self.command = None
+
+    def act(self, observation, command):
+        self.command = list(command)
+        self.previous_action = np.ones(12, dtype=np.float32)
+        return SimpleNamespace(position_target=np.ones(12, dtype=np.float32))
+
+
+class BaselineContractTests(unittest.TestCase):
+    def test_combination_protocol_freezes_the_minimal_full_transfer(self):
+        self.assertEqual(COMBINED_PROTOCOL["id"], "rl-shared-transfer-combination-v1")
+        self.assertEqual(COMBINED_PROTOCOL["mode"], "confirmatory")
+        self.assertEqual(COMBINED_PROTOCOL["max_attempts"], 2)
+        self.assertEqual(COMBINED_PROTOCOL["seed"], 0)
+        self.assertEqual(
+            COMBINED_PROTOCOL["source_identity"],
+            {
+                "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+                "checkpoint": (
+                    "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt"
+                ),
+                "checkpoint_sha256": (
+                    "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
+                ),
+            },
+        )
+        first, repeat = COMBINED_PROTOCOL["cases"]
+        for case in (first, repeat):
+            self.assertEqual(case["scene"], "unitree_robots/go2/phase2_flat.xml")
+            self.assertTrue(case["adapter"])
+            self.assertEqual(case["reset"], "shared_home")
+            self.assertEqual(case["first_inference_tick"], 10)
+            self.assertEqual(case["horizon_ticks"], 6000)
+            self.assertEqual(case["commands"], [[0, 1.0]])
+            self.assertEqual(case["measurement_delay_ticks"], 1000)
+            self.assertTrue(case["reference_gate"])
+        self.assertEqual(repeat["repeat_of"], first["id"])
+        self.assertEqual(repeat["requires"], [first["id"]])
+        self.assertEqual(COMBINED_PROTOCOL["progression"], "first_nonpass_stop")
+        self.assertEqual(COMBINED_PROTOCOL["reference_mean_min"], 0.8)
+        self.assertEqual(COMBINED_PROTOCOL["tracking_absolute_tolerance"], 0.05)
+        self.assertEqual(COMBINED_PROTOCOL["tracking_relative_tolerance"], 0.2)
+        self.assertEqual(COMBINED_PROTOCOL["flat_lateral_max"], 0.3)
+        self.assertEqual(COMBINED_PROTOCOL["flat_yaw_max"], 0.3)
+
+    def test_protocol_source_identity_is_bound_to_existing_locks(self):
+        reference_lock = strict_json(
+            (ROOT / "tools/substrate/rl_reference.lock.json").read_text()
+        )
+        source_lock = strict_json(
+            (ROOT / "tools/substrate/sources.lock.json").read_text()
+        )
+        validate_source_identity(COMBINED_PROTOCOL, reference_lock, source_lock)
+        altered_lock = {**source_lock, "rl": {**source_lock["rl"], "sha256": "0" * 64}}
+        with self.assertRaisesRegex(ValueError, "source identity"):
+            validate_source_identity(COMBINED_PROTOCOL, reference_lock, altered_lock)
+
+    def test_combination_uses_declared_repeat_and_first_nonpass(self):
+        self.assertEqual(repeat_reference(COMBINED_PROTOCOL["cases"][1]), "combined_1")
+        self.assertEqual(repeat_reference(PROTOCOL["cases"][1]), "source_1")
+        self.assertFalse(stop_after(COMBINED_PROTOCOL, "PASS"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "PERFORMANCE_FAIL"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "SAFETY_STOP"))
+        self.assertTrue(stop_after(COMBINED_PROTOCOL, "INTEGRITY_STOP"))
+        self.assertFalse(stop_after(PROTOCOL, "PERFORMANCE_FAIL"))
+        self.assertTrue(
+            campaign_characterized(
+                [{"status": "PERFORMANCE_FAIL"}, {"status": "NOT_RUN"}],
+                COMBINED_PROTOCOL,
+            )
+        )
+        self.assertFalse(
+            campaign_characterized(
+                [{"status": "SAFETY_STOP"}, {"status": "NOT_RUN"}],
+                COMBINED_PROTOCOL,
+            )
+        )
+
+    def test_combination_startup_cadence_runs_synthetically(self):
+        case = {
+            **COMBINED_PROTOCOL["cases"][0],
+            "adapter": False,
+            "horizon_ticks": 21,
+        }
+        plant, rows = FakePlant(), []
+        episode(plant, FakePolicy(), case, COMBINED_PROTOCOL, rows.append, lambda: None)
+        self.assertEqual(
+            [r["tick"] for r in rows if r["observation"] is not None], [10, 20]
+        )
+        self.assertEqual(plant.steps, 21)
+
+    def test_combination_analyzer_applies_reference_mean_gate(self):
+        case = {
+            **COMBINED_PROTOCOL["cases"][0],
+            "horizon_ticks": 2,
+            "measurement_delay_ticks": 0,
+        }
+        rows = []
+        for tick in range(3):
+            row = sample(tick)
+            row.update(
+                target=[0] * 12,
+                applied=[0] * 12,
+                failure=None,
+                policy_wall_s=None,
+            )
+            rows.append(row)
+        result = analyze(rows, case, COMBINED_PROTOCOL)
+        self.assertEqual(result["verdict"], "PASS")
+        stricter = {**COMBINED_PROTOCOL, "reference_mean_min": 1.01}
+        result = analyze(rows, case, stricter)
+        self.assertEqual(result["windows"][0]["mae"], 0)
+        self.assertEqual(result["verdict"], "PERFORMANCE_FAIL")
+
+    def test_nonunit_terminal_orientation_preserves_metric_polynomial(self):
+        self.assertEqual(independent_body_vx([2, 0, 0, 0], [1, 0, 0]), 1)
+
+    def test_independent_three_axis_projection_and_adapter_replay(self):
+        q = [np.cos(np.pi / 4), 0, 0, np.sin(np.pi / 4)]
+        twist = independent_body_twist(q, [0, 1, 0, 0, 0, 0.5])
+        self.assertAlmostEqual(twist["vx"], 1.0)
+        self.assertAlmostEqual(twist["vy"], 0.0)
+        self.assertAlmostEqual(twist["wz"], 0.5)
+        policy = FakeVerifyAdapter()
+        case = {"adapter": True}
+        command = [0.0, 0.25, 0.0]
+        assembled, target = replay_policy_action(FakePlant(), policy, case, command)
+        expected = observation45(
+            FakePlant().observe(), command, np.zeros(12, dtype=np.float32)
+        )
+        np.testing.assert_array_equal(assembled, expected)
+        np.testing.assert_array_equal(target, np.ones(12, dtype=np.float32))
+        self.assertEqual(policy.command, command)
+
+    def test_failed_preflight_cannot_verify(self):
+        with self.assertRaisesRegex(ValueError, "preflight not passing"):
+            audit_preflight({"pass": False, "hard_failure_count": 1}, {}, {})
+
+    def test_initial_safety_stop_does_not_consume(self):
+        rows, claims = [], []
+        episode(
+            FakePlant(0),
+            FakePolicy(),
+            PROTOCOL["cases"][0],
+            PROTOCOL,
+            rows.append,
+            lambda: claims.append(1),
+        )
+        self.assertEqual(claims, [])
+        self.assertFalse(trace_consumed(rows))
+        self.assertEqual(len(rows), 1)
+
+    def test_schedule_transition_exact(self):
+        case = PROTOCOL["cases"][5]
+        self.assertEqual(command_at(case, 2499)[0], 1)
+        self.assertEqual(command_at(case, 2500)[0], 0.5)
+        self.assertEqual(command_at(case, 7500)[0], 0)
+
+    def test_claim_before_step_and_source_cadence(self):
+        case = {**PROTOCOL["cases"][0], "horizon_ticks": 21}
+        plant, rows, claims = FakePlant(), [], []
+        episode(
+            plant,
+            FakePolicy(),
+            case,
+            PROTOCOL,
+            rows.append,
+            lambda: claims.append(plant.steps),
+        )
+        self.assertEqual(claims, [0])
+        self.assertEqual(
+            [r["tick"] for r in rows if r["observation"] is not None], [10, 20]
+        )
+        self.assertEqual(plant.steps, 21)
+        self.assertIsNone(rows[-1]["applied"])
+
+    def test_no_unused_terminal_inference(self):
+        case = {**PROTOCOL["cases"][0], "horizon_ticks": 20}
+        rows = []
+        episode(FakePlant(), FakePolicy(), case, PROTOCOL, rows.append, lambda: None)
+        self.assertEqual(
+            [r["tick"] for r in rows if r["observation"] is not None], [10]
+        )
+
+    def test_safety_stops_without_extra_step(self):
+        plant, rows = FakePlant(12), []
+        episode(
+            plant,
+            FakePolicy(),
+            PROTOCOL["cases"][0],
+            PROTOCOL,
+            rows.append,
+            lambda: None,
+        )
+        self.assertEqual(plant.steps, 12)
+        self.assertEqual(rows[-1]["failure"], "physics_warning")
+        self.assertIsNone(rows[-1]["applied"])
+
+    def test_emit_failure_prevents_step(self):
+        plant = FakePlant()
+        with self.assertRaises(OSError):
+            episode(
+                plant,
+                FakePolicy(),
+                PROTOCOL["cases"][0],
+                PROTOCOL,
+                lambda row: (_ for _ in ()).throw(OSError("disk")),
+                lambda: None,
+            )
+        self.assertEqual(plant.steps, 0)
+
+    def test_stairs_allow_high_world_height(self):
+        row = sample()
+        row["qpos"][2] = 2.2
+        self.assertIsNone(safety(row, PROTOCOL))
+        row["clearance"] = 0.01
+        self.assertEqual(safety(row, PROTOCOL), "posture")
+
+    def test_base_collision_stops(self):
+        row = sample()
+        row["base_contacts"] = [[0, 2]]
+        self.assertEqual(safety(row, PROTOCOL), "base_contact")
+
+    def test_metrics_body_frame_and_half_open_window(self):
+        case = {
+            **PROTOCOL["cases"][0],
+            "horizon_ticks": 3,
+            "measurement_delay_ticks": 1,
+        }
+        rows = []
+        for tick in range(4):
+            row = sample(tick)
+            row.update(
+                target=[0] * 12, applied=[0] * 12, policy_wall_s=None, failure=None
+            )
+            row["qvel"][0] = 100 if tick in (0, 3) else 1
+            rows.append(row)
+        result = analyze(rows, case, PROTOCOL)
+        self.assertEqual(result["windows"][0]["samples"], 2)
+        self.assertEqual(result["windows"][0]["mae"], 0)
+
+    def test_capability_protocol_freezes_three_axis_commands_and_budget(self):
+        validate_capability_protocol(CAPABILITY_PROTOCOL)
+        self.assertEqual(CAPABILITY_PROTOCOL["max_attempts"], 9)
+        self.assertEqual(len(CAPABILITY_PROTOCOL["cases"]), 9)
+        cases = {case["id"]: case for case in CAPABILITY_PROTOCOL["cases"]}
+        self.assertEqual(
+            command_at(cases["flat_lateral_probe"], 0), [0.0, 0.25, 0.0]
+        )
+        self.assertEqual(command_at(cases["flat_yaw_probe"], 0), [0.0, 0.0, 0.5])
+        self.assertEqual(command_at(PROTOCOL["cases"][0], 0), [1, 0.0, 0.0])
+        scheduled = {
+            **cases["flat_lateral_probe"],
+            "commands": [[0, 0.0, 0.25, 0.0], [5, 0.0, -0.25, 0.0]],
+        }
+        self.assertEqual(command_at(scheduled, 4), [0.0, 0.25, 0.0])
+        self.assertEqual(command_at(scheduled, 5), [0.0, -0.25, 0.0])
+        invalid = {**CAPABILITY_PROTOCOL, "cases": list(CAPABILITY_PROTOCOL["cases"])}
+        invalid["cases"][3] = {
+            **invalid["cases"][3],
+            "commands": [[0, 0.0, 0.8, 0.0]],
+        }
+        with self.assertRaisesRegex(ValueError, "probe envelope"):
+            validate_capability_protocol(invalid)
+
+    def test_capability_reference_digest_is_required_and_schema_one_stays_unbound(self):
+        expected = "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484"
+        self.assertEqual(expected_reference_digest(CAPABILITY_PROTOCOL), expected)
+        self.assertIsNone(expected_reference_digest(COMBINED_PROTOCOL))
+        missing = {
+            **CAPABILITY_PROTOCOL,
+            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
+        }
+        del missing["cases"][0]["reference_trace_sha256"]
+        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
+            validate_capability_protocol(missing)
+        misplaced = {
+            **CAPABILITY_PROTOCOL,
+            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
+        }
+        misplaced["cases"][1]["reference_trace_sha256"] = expected
+        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
+            validate_capability_protocol(misplaced)
+        legacy = {"verdict": "PASS", "trace_sha256": expected}
+        self.assertEqual(
+            enforce_reference_digest(legacy.copy(), COMBINED_PROTOCOL["cases"][0]),
+            legacy,
+        )
+
+    def test_sealed_reference_digest_match_and_performance_mismatch_classification(self):
+        case = CAPABILITY_PROTOCOL["cases"][0]
+        matched = enforce_reference_digest(
+            {
+                "verdict": "PASS",
+                "failure": None,
+                "failure_classes": [],
+                "trace_sha256": case["reference_trace_sha256"],
+            },
+            case,
+        )
+        self.assertEqual(matched["verdict"], "PASS")
+        self.assertTrue(matched["reference_integrity"]["matches"])
+        performance_failure = enforce_reference_digest(
+            {
+                "verdict": "PERFORMANCE_FAIL",
+                "failure": None,
+                "failure_classes": ["TRACKING_FAILURE"],
+                "trace_sha256": "0" * 64,
+            },
+            case,
+            expected_reference_digest(CAPABILITY_PROTOCOL),
+        )
+        self.assertEqual(performance_failure["verdict"], "INTEGRITY_STOP")
+        self.assertEqual(performance_failure["failure_classes"], ["INTEGRITY_STOP"])
+        self.assertEqual(performance_failure["trace_sha256"], "0" * 64)
+
+    def test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents(self):
+        sentinel = {
+            **CAPABILITY_PROTOCOL["cases"][0],
+            "horizon_ticks": 1,
+            "first_inference_tick": 10,
+            "measurement_delay_ticks": 0,
+        }
+        rows, claims = [], []
+        episode(
+            FakePlant(),
+            FakePolicy(),
+            sentinel,
+            CAPABILITY_PROTOCOL,
+            rows.append,
+            lambda: claims.append(sentinel["id"]),
+        )
+        self.assertEqual(claims, ["flat_reference"])
+        self.assertTrue(trace_consumed(rows))
+        raw_result = analyze(rows, sentinel, CAPABILITY_PROTOCOL)
+        self.assertNotEqual(
+            raw_result["trace_sha256"], sentinel["reference_trace_sha256"]
+        )
+        mismatched = enforce_reference_digest(raw_result, sentinel)
+        self.assertEqual(mismatched["verdict"], "INTEGRITY_STOP")
+        self.assertEqual(
+            mismatched["integrity_failure"], "sealed_reference_trace_mismatch"
+        )
+        self.assertEqual(mismatched["failure_classes"], ["INTEGRITY_STOP"])
+        self.assertTrue(stop_after(CAPABILITY_PROTOCOL, mismatched["verdict"]))
+        self.assertEqual(
+            mismatched["reference_integrity"]["observed_trace_sha256"],
+            raw_result["trace_sha256"],
+        )
+        self.assertFalse(mismatched["reference_integrity"]["matches"])
+        later_case = CAPABILITY_PROTOCOL["cases"][1]
+        self.assertFalse(
+            all(
+                {"flat_reference": mismatched}.get(name, {}).get("verdict") == "PASS"
+                for name in later_case["requires"]
+            )
+        )
+        attempts = [
+            {"case": sentinel["id"], "status": mismatched["verdict"]},
+            {"case": later_case["id"], "status": "NOT_RUN"},
+        ]
+        self.assertEqual(
+            [item["status"] for item in attempts], ["INTEGRITY_STOP", "NOT_RUN"]
+        )
+        self.assertEqual(len(claims), 1)
+        self.assertFalse(campaign_characterized(attempts, CAPABILITY_PROTOCOL))
+
+    def test_capability_progression_retains_performance_and_stops_integrity(self):
+        self.assertFalse(stop_after(CAPABILITY_PROTOCOL, "PERFORMANCE_FAIL"))
+        self.assertTrue(stop_after(CAPABILITY_PROTOCOL, "SAFETY_STOP"))
+        self.assertTrue(stop_after(CAPABILITY_PROTOCOL, "INTEGRITY_STOP"))
+        self.assertTrue(
+            campaign_characterized(
+                [
+                    {"status": "PASS"},
+                    {"status": "PERFORMANCE_FAIL"},
+                    {"status": "PASS"},
+                ],
+                CAPABILITY_PROTOCOL,
+            )
+        )
+        self.assertFalse(
+            campaign_characterized(
+                [
+                    {"status": "PERFORMANCE_FAIL"},
+                    {"status": "NOT_RUN"},
+                ],
+                CAPABILITY_PROTOCOL,
+            )
+        )
+
+    def test_scene_and_preparation_failures_are_not_scientific_outcomes(self):
+        unsupported = failure_result(
+            UnsupportedSceneError("unlisted terrain geom"), "prepare"
+        )
+        self.assertEqual(
+            unsupported["classification"], "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE"
+        )
+        preflight = failure_result(ValueError("qualification missing"), "prepare")
+        self.assertEqual(preflight["classification"], "PREFLIGHT_FAILURE")
+        capture_preflight = failure_result(
+            PreflightFailureError("stale preparation"), "capture"
+        )
+        self.assertEqual(capture_preflight["classification"], "PREFLIGHT_FAILURE")
+        integrity = failure_result(IntegrityStopError("source changed"), "capture")
+        self.assertEqual(integrity["classification"], "INTEGRITY_STOP")
+        runtime = failure_result(RuntimeError("capture failed"), "capture")
+        self.assertEqual(runtime["classification"], "EXECUTION_OR_EVIDENCE_FAILURE")
+
+    def test_capability_analyzer_separates_tracking_and_goal_failures(self):
+        cases = {case["id"]: case for case in CAPABILITY_PROTOCOL["cases"]}
+        base = {
+            **cases["step_5cm_cross"],
+            "horizon_ticks": 2,
+            "measurement_delay_ticks": 0,
+            "terrain_goal": {
+                "terrain_x_min": 0.0,
+                "terrain_x_max": 0.5,
+                "base_clearance_m": 0.1881,
+                "foot_clearance_m": 0.022,
+                "route_lateral_max_m": 0.55,
+                "hold_ticks": 2,
+            },
+        }
+
+        def rows(vx=1.0, clear=True):
+            result = []
+            for tick in range(3):
+                row = sample(tick)
+                row["qpos"][0] = 0.0 if tick == 0 else 1.0
+                row["qvel"][0] = vx
+                row["feet"] = [[2.0 if clear and tick else 0.0, 0.0, 0.0]] * 4
+                row.update(
+                    target=[0] * 12,
+                    applied=[0] * 12,
+                    failure=None,
+                    policy_wall_s=None,
+                )
+                result.append(row)
+            return result
+
+        success = analyze(rows(), base, CAPABILITY_PROTOCOL)
+        self.assertEqual(success["verdict"], "PASS")
+        self.assertTrue(success["task_goal_pass"])
+        _audit_capability_metrics(rows(), base, CAPABILITY_PROTOCOL, success)
+        tracking_only = analyze(rows(vx=0.0), base, CAPABILITY_PROTOCOL)
+        self.assertIn("TRACKING_FAILURE", tracking_only["failure_classes"])
+        self.assertTrue(tracking_only["task_goal_pass"])
+        _audit_capability_metrics(
+            rows(vx=0.0), base, CAPABILITY_PROTOCOL, tracking_only
+        )
+        goal_only = analyze(rows(clear=False), base, CAPABILITY_PROTOCOL)
+        self.assertNotIn("TRACKING_FAILURE", goal_only["failure_classes"])
+        self.assertIn("TASK_GOAL_FAILURE", goal_only["failure_classes"])
+        _audit_capability_metrics(rows(clear=False), base, CAPABILITY_PROTOCOL, goal_only)
+
+    def test_capability_yaw_probe_does_not_gate_requested_yaw_excursion(self):
+        case = {
+            **next(
+                c for c in CAPABILITY_PROTOCOL["cases"] if c["id"] == "flat_yaw_probe"
+            ),
+            "horizon_ticks": 2,
+            "measurement_delay_ticks": 0,
+        }
+        rows = []
+        for tick in range(3):
+            row = sample(tick)
+            row["qvel"][5] = 0.5
+            angle = tick * 0.5
+            row["qpos"][3:7] = [np.cos(angle / 2), 0, 0, np.sin(angle / 2)]
+            row.update(
+                target=[0] * 12,
+                applied=[0] * 12,
+                failure=None,
+                policy_wall_s=None,
+            )
+            rows.append(row)
+        result = analyze(rows, case, CAPABILITY_PROTOCOL)
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertGreater(result["yaw_max_rad"], 0.3)
+
+
+@unittest.skipUnless(importlib.util.find_spec("mujoco"), "MuJoCo parser required")
+class CapabilityMapSceneTests(unittest.TestCase):
+    def test_selected_scenes_parse_and_match_world_collision_contracts(self):
+        with zero_step_guard():
+            for case in CAPABILITY_PROTOCOL["cases"]:
+                plant = Plant(ROOT / case["scene"], case, 0.002)
+                self.assertEqual(plant.steps, 0)
+                self.assertEqual(plant.data.time, 0)
+                actual = {
+                    plant.mj.mj_id2name(
+                        plant.model, plant.mj.mjtObj.mjOBJ_GEOM, geom
+                    )
+                    for geom in plant.terrain
+                }
+                self.assertEqual(actual, set(case["scene_geoms"]))
+
+    def test_unlisted_collision_geometry_is_unsupported_at_preflight(self):
+        case = {
+            **CAPABILITY_PROTOCOL["cases"][0],
+            "scene_geoms": ["a_different_geom"],
+        }
+        with zero_step_guard(), self.assertRaisesRegex(
+            UnsupportedSceneError, "contract mismatch"
+        ):
+            Plant(ROOT / case["scene"], case, 0.002)
+
+    def test_nonworld_collision_geometry_is_unsupported_at_preflight(self):
+        source = (ROOT / "unitree_robots/go2/phase2_flat.xml").read_text()
+        source = source.replace(
+            "</worldbody>",
+            '<body name="unlisted_terrain"><geom name="extra_terrain" '
+            'type="box" pos="0 0 0.1" size="0.1 0.1 0.1"/></body></worldbody>',
+        )
+        case = {
+            **CAPABILITY_PROTOCOL["cases"][0],
+            "scene_geoms": ["phase2_floor"],
+        }
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            prefix="scene-contract-",
+            suffix=".xml",
+            dir=ROOT / "unitree_robots/go2",
+            delete=False,
+        ) as stream:
+            stream.write(source)
+            scene = Path(stream.name)
+        try:
+            with zero_step_guard(), self.assertRaisesRegex(
+                UnsupportedSceneError, "attached outside"
+            ):
+                Plant(scene, case, 0.002)
+        finally:
+            scene.unlink(missing_ok=True)
+
+    def test_preparation_probe_checks_command_without_stepping_plant(self):
+        case = next(
+            c for c in CAPABILITY_PROTOCOL["cases"] if c["id"] == "flat_lateral_probe"
+        )
+        policy = FakePreparePolicy()
+        with zero_step_guard():
+            plant = Plant(ROOT / case["scene"], case, 0.002)
+            initial = prepare_probe(plant, policy, case, command_at(case, 0))
+            self.assertEqual(policy.command, [0.0, 0.25, 0.0])
+            self.assertEqual(plant.steps, 0)
+            self.assertEqual(plant.data.time, 0)
+            self.assertEqual(plant.snapshot(0), initial)
+
+
+@unittest.skipUnless(
+    importlib.util.find_spec("mujoco")
+    and importlib.util.find_spec("torch")
+    and (ROOT / ".substrate/upstream-go2-30e74dc5").exists(),
+    "native source assets required",
+)
+class NativeBaselineTests(unittest.TestCase):
+    def test_telemetry_does_not_modify_live_data(self):
+        with zero_step_guard():
+            case = PROTOCOL["cases"][0]
+            p = Plant(ROOT / case["scene"], case, 0.002)
+            before = {
+                n: getattr(p.data, n).copy()
+                for n in ("qpos", "qvel", "qacc_warmstart", "ctrl", "qfrc_actuator")
+            }
+            p.snapshot(0)
+            for name, expected in before.items():
+                np.testing.assert_array_equal(getattr(p.data, name), expected)
+            self.assertEqual(p.steps, 0)
+
+    def test_all_models_zero_step_and_limit_location(self):
+        with zero_step_guard():
+            for index in (0, 7, 8, 9):
+                c = PROTOCOL["cases"][index]
+                p = Plant(ROOT / c["scene"], c, 0.002)
+                self.assertIsNone(safety(p.snapshot(0), PROTOCOL))
+                self.assertEqual(p.steps, 0)
+                if index == 0:
+                    self.assertFalse(p.model.actuator_ctrllimited.any())
+                    self.assertTrue(p.model.jnt_actfrclimited[1:].all())
+
+    def test_source_adapter_initial_history_equivalence(self):
+        expected = strict_json(
+            (ROOT / "tools/substrate/sources.lock.json").read_text()
+        )["rl"]["sha256"]
+        source = SourcePolicy(
+            ROOT / ".substrate/upstream-go2-30e74dc5",
+            ROOT / ".substrate/rl/policy.pt",
+            expected,
+        )
+        adapter = FrozenPolicy(ROOT / ".substrate/rl/policy.pt", expected)
+        with zero_step_guard():
+            for i in range(8):
+                obs = Proprioception(
+                    POLICY_JOINTS,
+                    np.arange(12) * 0.01 * i,
+                    np.arange(12) * 0.03,
+                    [1, 0, 0, 0],
+                    [0.1, 0.2, 0.3],
+                )
+                assembled = observation45(obs, [1, 0, 0], adapter.previous_action)
+                upstream, target = source.act(obs, [1, 0, 0])
+                own = adapter.act(obs, [1, 0, 0])
+                np.testing.assert_array_equal(assembled, upstream)
+                np.testing.assert_array_equal(target, own.position_target)
+
+
+if __name__ == "__main__":
+    unittest.main()

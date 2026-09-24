@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "role": "execution",
+  "target_head": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+  "reviewer": "Codex execution reviewer",
+  "verdict": "VETO",
+  "summary": "VETO. The frozen protocol and progression are coherent, but the formal task cannot reach READY through baseline.prepare: its task JSON contains a praxis object that the strict task loader rejects. The shared Praxis identity validator also checks only presence, not the expected issue number or task path. Do not begin the #178 campaign until these binding defects are resolved outside this frozen target.",
+  "evidence": [
+    {
+      "id": "E1",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/tasks/rl_capability_map_v1.json",
+      "lines": "1-11",
+      "finding": "The formal task configuration has the expected branch, protocol digest, diff base, and an additional praxis object containing issue_number 178 and the formal task_path."
+    },
+    {
+      "id": "E2",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/task.py; tools/substrate/baseline.py",
+      "lines": "task.py:12-29; baseline.py:242-254",
+      "finding": "load_task requires exactly schema, branch, protocol, protocol_sha256, and diff_base, so it rejects E1's praxis key. baseline.prepare calls load_task before current_identity, protocol/review checks, and qualification receipt validation."
+    },
+    {
+      "id": "E3",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/research/identity.py",
+      "lines": "9-49; 50-60",
+      "finding": "Detached execution requires all five Praxis environment values and compares repository, logical branch, and commit. PRAXIS_ISSUE_NUMBER and PRAXIS_TASK_PATH are only required to be nonempty; neither is compared with the formal task's issue/path metadata."
+    },
+    {
+      "id": "E4",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/protocols/rl_capability_map_v1.json; docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "lines": "protocol: 1-189; task: 7-13",
+      "finding": "The protocol SHA-256 is 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803, matching the frozen task's expected digest. The protocol specifies nine cases and max_attempts 9."
+    },
+    {
+      "id": "E5",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/baseline.py; tools/substrate/baseline_episode.py; tools/substrate/baseline_verify.py",
+      "lines": "baseline.py:463-490; baseline_episode.py:298-344,553-561,684-705; baseline_verify.py:118-210,387-515",
+      "finding": "Capture hashes qpos/qvel/target/applied raw rows and enforces the sealed flat_reference digest as INTEGRITY_STOP. Offline verification replays raw rows and reapplies that gate before comparing stored analysis. It shares the capture analyze/enforce_reference_digest implementation, so the recomputation is a separate offline pass but not an independent hash implementation."
+    },
+    {
+      "id": "E6",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/baseline.py; tools/substrate/guards.py; tools/substrate/qualify.py; tools/substrate/admit.py",
+      "lines": "baseline.py:205-212,242-321; guards.py:11-27; qualify.py:43-123; admit.py:33-55,175-226",
+      "finding": "Preparation is inside zero_step_guard and checks plant step count, time, and snapshot remain unchanged. Qualification performs build/tests and isolated model/policy admission; its native result is rejected if plant_time_s is nonzero. The targeted test-source scan found no real mj_step calls in the qualification test surface (only a mocked function in test_launch.py). These were inspected statically and were not run."
+    },
+    {
+      "id": "E7",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/readiness.py; tools/substrate/baseline.py",
+      "lines": "readiness.py:4-51; baseline.py:324-353",
+      "finding": "The runner checks exact prepared HEAD, APPROVED science/execution reviews, nonempty reviewer/evidence fields, different reviewer labels, and authorization bindings to head, protocol hash, prepared manifest hash, and attempt budget. It requires a READY_AWAITING_START prepared bundle. The authorization validator accepts any nonempty user_instruction rather than enforcing the task's exact quoted instruction."
+    },
+    {
+      "id": "E8",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/baseline.py; tools/substrate/baseline_episode.py; tools/substrate/baseline_verify.py",
+      "lines": "baseline.py:356-408,411-451; baseline_episode.py:336-344; baseline_verify.py:447-530",
+      "finding": "Capture fails closed on an existing permanent protocol ledger, creates the ledger exclusively after fresh preflight, claims each case once, continues through performance failures, and stops after safety/integrity failures. Failed sentinel dependencies remain NOT_RUN. Preflight and unsupported-scene checks precede attempt claims."
+    },
+    {
+      "id": "E9",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md; docs/validation/rl_capability_map_design_20260924/RESULTS.md; docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md; tools/substrate/tasks/rl_capability_map_v1.json",
+      "lines": "formal task: 7-13; design results: 15-19; integrity results: 11-18; task config: 1-6",
+      "finding": "The #176 design result and #177 integrity result are present, their referenced commits are ancestors of the target, and the formal task's diff_base is the #177 result commit. Their earlier branch identities are historical and the formal task declares its own #178 branch."
+    },
+    {
+      "id": "E10",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/integrity.py; docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "lines": "integrity.py:87-150; formal task: 113-127",
+      "finding": "EvidenceRun preserves output on ordinary exceptions and writes admission and manifest records; the formal task requires preserving raw traces, ledger copies, verification bundle, commands/return codes, and a machine-readable summary in the external evidence package."
+    },
+    {
+      "id": "E11",
+      "commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "path": "tools/substrate/baseline.py",
+      "lines": "39; 521-530",
+      "finding": "The baseline CLI default task remains rl_source_v1.json. The #178 invocation must explicitly pass tools/substrate/tasks/rl_capability_map_v1.json or it will select the unrelated legacy task."
+    }
+  ],
+  "concerns": [
+    {
+      "id": "C1",
+      "severity": "blocking",
+      "evidence_ids": ["E1", "E2"],
+      "text": "The supplied #178 task JSON is not loadable by the target's strict loader. baseline.prepare will fail with invalid task schema before it can return READY_AWAITING_START; the formal map cannot safely proceed through its declared entrypoint."
+    },
+    {
+      "id": "C2",
+      "severity": "major",
+      "evidence_ids": ["E1", "E3"],
+      "text": "The exact issue number and task path are not machine-bound. The validator permits any nonempty PRAXIS_ISSUE_NUMBER and PRAXIS_TASK_PATH, so the formal task's required five-value identity check must be performed explicitly by the executor rather than inferred from this validator."
+    },
+    {
+      "id": "C3",
+      "severity": "major",
+      "evidence_ids": ["E7"],
+      "text": "Authorization binds the prepared manifest, head, protocol digest, and max_attempts, and capture accepts only a READY preparation. However, code does not require user_instruction to equal the frozen text 好，继续 or enforce when the record was created; that exact provenance remains procedural."
+    },
+    {
+      "id": "C4",
+      "severity": "major",
+      "evidence_ids": ["E5"],
+      "text": "Offline verification recomputes the digest from raw rows in a separate verification pass but reuses the capture analyzer and digest gate helper. It does not provide a second implementation of the trajectory hash."
+    },
+    {
+      "id": "C5",
+      "severity": "operational",
+      "evidence_ids": ["E11"],
+      "text": "Pass the capability-map task JSON explicitly to both prepare and capture. The baseline CLI default still selects rl_source_v1.json."
+    }
+  ]
+}

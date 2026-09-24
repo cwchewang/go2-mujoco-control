@@ -1,0 +1,255 @@
+     1	"""Source-bound, isolated offline admission; never starts a locomotion experiment."""
+     2	
+     3	import argparse
+     4	import hashlib
+     5	import json
+     6	from pathlib import Path
+     7	import subprocess
+     8	import sys
+     9	import numpy as np
+    10	from .contracts import Proprioception, TorqueCommand
+    11	from .model import (
+    12	    dependency_manifest,
+    13	    physical_fingerprint,
+    14	    joint_layout,
+    15	    decorate_mjpc,
+    16	)
+    17	from .rl import FrozenPolicy
+    18	from .integrity import (
+    19	    EvidenceRun,
+    20	    experiment_lock,
+    21	    digest,
+    22	    run_logged,
+    23	    strict_json,
+    24	    write_new,
+    25	)
+    26	from .environment import verify_environment
+    27	from .build_identity import verify as verify_build
+    28	
+    29	ROOT = Path(__file__).resolve().parents[2]
+    30	SCENES = ("phase2_flat", "phase2_step_5cm", "phase2_step_10cm", "phase2_repeated_steps")
+    31	
+    32	
+    33	def validate_native_result(value):
+    34	    if not isinstance(value, dict):
+    35	        raise ValueError("native result must be an object")
+    36	    expected = {
+    37	        "backend": "MJPC iLQG",
+    38	        "scope": "offline_static_state",
+    39	        "mujoco": "3.3.6",
+    40	        "planner": 2,
+    41	        "horizon_steps": 21,
+    42	        "finite_bounded": True,
+    43	        "rollout_failure": False,
+    44	    }
+    45	    for key, wanted in expected.items():
+    46	        actual = value.get(key)
+    47	        if type(actual) is not type(wanted) or actual != wanted:
+    48	            raise ValueError("invalid native result field: " + key)
+    49	    for key in ("plant_time_s", "cost", "initial_cost"):
+    50	        x = value.get(key)
+    51	        if type(x) not in (float, int) or not np.isfinite(x) or x < 0:
+    52	            raise ValueError("invalid native " + key)
+    53	    if value["plant_time_s"] != 0:
+    54	        raise ValueError("external plant advanced")
+    55	    if value["cost"] > value["initial_cost"] + 1e-10 * max(1.0, value["initial_cost"]):
+    56	        raise ValueError("optimizer regressed from its nominal fixture")
+    57	    from .contracts import vector
+    58	
+    59	    vector(value.get("torque"), 12, "native torque")
+    60	    return value
+    61	
+    62	
+    63	def source_manifest():
+    64	    paths = [
+    65	        p
+    66	        for directory in (ROOT / "tools/substrate", ROOT / "tools/research")
+    67	        for p in directory.rglob("*")
+    68	        if p.is_file()
+    69	        and "__pycache__" not in p.parts
+    70	        and p.suffix in (".py", ".cc", ".txt", ".json", ".lock", ".in")
+    71	    ]
+    72	    return {p.relative_to(ROOT).as_posix(): digest(p) for p in sorted(paths)}
+    73	
+    74	
+    75	def policy_replay(policy, base):
+    76	    def trace():
+    77	        rows = []
+    78	        for tick in range(12):
+    79	            # Synthetic proprioceptive packets, not a closed-loop trajectory.
+    80	            angle = 0.01 * tick
+    81	            obs = Proprioception(
+    82	                base.joint_names,
+    83	                base.position + 0.002 * tick,
+    84	                np.linspace(-0.1, 0.1, 12) * tick,
+    85	                np.array([np.cos(angle), np.sin(angle), 0.0, 0.0]),
+    86	                np.array([0.1, -0.05, 0.02]) * tick,
+    87	            )
+    88	            rows.append(policy.act(obs, [0.1, 0.0, 0.05]).position_target.tolist())
+    89	        return rows
+    90	
+    91	    policy.reset()
+    92	    first = trace()
+    93	    policy.reset()
+    94	    second = trace()
+    95	    if first != second:
+    96	        raise ValueError("stateful policy replay differs after reset")
+    97	    return {
+    98	        "packets": 12,
+    99	        "reset_reproducible": True,
+   100	        "targets": first,
+   101	        "trace_sha256": hashlib.sha256(
+   102	            json.dumps(first, separators=(",", ":")).encode()
+   103	        ).hexdigest(),
+   104	    }
+   105	
+   106	
+   107	def admit(run, checkpoint, binary):
+   108	    import mujoco
+   109	    import torch
+   110	
+   111	    result = run.result
+   112	    output = run.path
+   113	    result["runtime"] = verify_environment()
+   114	    torch.set_num_threads(1)
+   115	    torch.set_num_interop_threads(1)
+   116	    torch.use_deterministic_algorithms(True)
+   117	    result["torch_threads"] = {
+   118	        "intra": torch.get_num_threads(),
+   119	        "inter": torch.get_num_interop_threads(),
+   120	    }
+   121	    identity = verify_build(binary)
+   122	    write_new(output / "build-identity.json", identity)
+   123	    sources = strict_json((ROOT / "tools/substrate/sources.lock.json").read_text())
+   124	    result["git_head"] = subprocess.check_output(
+   125	        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+   126	    ).strip()
+   127	    result["git_status"] = subprocess.check_output(
+   128	        ["git", "status", "--porcelain"], cwd=ROOT, text=True
+   129	    )
+   130	    result["source_files"] = source_manifest()
+   131	    diff = subprocess.check_output(["git", "diff", "--binary", "HEAD"], cwd=ROOT)
+   132	    with (output / "working_tree.patch").open("xb") as stream:
+   133	        stream.write(diff)
+   134	    result["mjpc_binary_sha256"] = digest(binary)
+   135	    linkage = subprocess.check_output(["ldd", str(binary.resolve())], text=True)
+   136	    with (output / "native-linkage.txt").open("x") as stream:
+   137	        stream.write(linkage)
+   138	    native = [
+   139	        line.split("=>", 1)[1].strip().split()[0]
+   140	        for line in linkage.splitlines()
+   141	        if "libmujoco.so" in line and "=>" in line
+   142	    ]
+   143	    libraries = list(Path(mujoco.__file__).parent.glob("libmujoco.so.*"))
+   144	    if len(native) != 1 or len(libraries) != 1:
+   145	        raise ValueError("ambiguous MuJoCo linkage")
+   146	    result["mujoco_libraries"] = {
+   147	        "native": digest(native[0]),
+   148	        "python": digest(libraries[0]),
+   149	    }
+   150	    if (
+   151	        len(set(result["mujoco_libraries"].values())) != 1
+   152	        or digest(native[0]) != identity["inputs"]["mujoco_library"]
+   153	    ):
+   154	        raise ValueError("MuJoCo library identity mismatch")
+   155	    result["checkpoint_sha256"] = digest(checkpoint)
+   156	    policy = FrozenPolicy(checkpoint, sources["rl"]["sha256"])
+   157	    # Snapshot the complete registered asset closure before loading a model.
+   158	    input_root = output / "inputs"
+   159	    closures = {}
+   160	    for name in SCENES:
+   161	        path = ROOT / "unitree_robots/go2" / (name + ".xml")
+   162	        closure = dependency_manifest(path, ROOT)
+   163	        closures[name] = closure
+   164	        for filename, expected in closure["files"].items():
+   165	            dest = input_root / filename
+   166	            if not dest.exists():
+   167	                dest.parent.mkdir(parents=True, exist_ok=True)
+   168	                with dest.open("xb") as stream:
+   169	                    stream.write((ROOT / filename).read_bytes())
+   170	            if digest(dest) != expected:
+   171	                raise ValueError("asset changed during snapshot")
+   172	    result["models"] = {}
+   173	    for name in SCENES:
+   174	        path = input_root / "unitree_robots/go2" / (name + ".xml")
+   175	        model = mujoco.MjModel.from_xml_path(str(path))
+   176	        data = mujoco.MjData(model)
+   177	        if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home") != 0:
+   178	            raise ValueError("home keyframe mismatch")
+   179	        mujoco.mj_resetDataKeyframe(model, data, 0)
+   180	        mujoco.mj_forward(model, data)
+   181	        if not np.isfinite(data.qacc).all():
+   182	            raise ValueError("nonfinite model forward")
+   183	        names, qadr, vadr = joint_layout(model)
+   184	        result["models"][name] = {
+   185	            "closure": closures[name],
+   186	            "physical_sha256": physical_fingerprint(model),
+   187	            "joint_names": names,
+   188	            "qpos_addresses": qadr,
+   189	            "dof_addresses": vadr,
+   190	            "actuator_range": model.actuator_ctrlrange.tolist(),
+   191	            "timestep_s": model.opt.timestep,
+   192	        }
+   193	    path = input_root / "unitree_robots/go2/phase2_flat.xml"
+   194	    model = mujoco.MjModel.from_xml_path(str(path))
+   195	    data = mujoco.MjData(model)
+   196	    mujoco.mj_resetDataKeyframe(model, data, 0)
+   197	    mujoco.mj_forward(model, data)
+   198	    names, qadr, vadr = joint_layout(model)
+   199	    obs = Proprioception(
+   200	        names, data.qpos[qadr], data.qvel[vadr], data.qpos[3:7], data.qvel[3:6]
+   201	    )
+   202	    result["rl"] = policy_replay(policy, obs)
+   203	    result["rl"].update(
+   204	        {
+   205	            "information_regime": policy.information_regime,
+   206	            "frequency_hz": policy.frequency_hz,
+   207	        }
+   208	    )
+   209	    policy.reset()
+   210	    command = policy.act(obs, [0.0, 0.0, 0.0])
+   211	    result["rl"]["resolved_action"] = {
+   212	        k: v.tolist()
+   213	        for k, v in command.resolve(
+   214	            obs, model.actuator_ctrlrange[:, 0], model.actuator_ctrlrange[:, 1], names
+   215	        ).items()
+   216	    }
+   217	    decorated = output.resolve() / "mjpc_flat.xml"
+   218	    decorate_mjpc(path, decorated)
+   219	    augmented = mujoco.MjModel.from_xml_path(str(decorated))
+   220	    if physical_fingerprint(model) != physical_fingerprint(augmented):
+   221	        raise ValueError("decoration changed model/reset physics")
+   222	    result["mjpc_physics_identical"] = True
+   223	    result["native_invocation"] = run_logged(
+   224	        [binary.resolve(), decorated], output, "mjpc"
+   225	    )
+   226	    value = validate_native_result(strict_json((output / "mjpc.stdout").read_text()))
+   227	    value.update({"information_regime": "known_model_oracle", "joint_names": names})
+   228	    cmd = TorqueCommand(
+   229	        names,
+   230	        np.asarray(value["torque"]),
+   231	        np.zeros(12),
+   232	        np.zeros(12),
+   233	        np.zeros(12),
+   234	        np.zeros(12),
+   235	    )
+   236	    action = cmd.resolve(
+   237	        obs, model.actuator_ctrlrange[:, 0], model.actuator_ctrlrange[:, 1], names
+   238	    )
+   239	    if action["saturated"].any():
+   240	        raise ValueError("post-optimization clipping required")
+   241	    value["resolved_action"] = {k: v.tolist() for k, v in action.items()}
+   242	    result["mjpc"] = value
+   243	    if result["source_files"] != source_manifest() or verify_build(binary) != identity:
+   244	        raise ValueError("source/build changed during admission")
+   245	    for name in SCENES:
+   246	        if (
+   247	            dependency_manifest(ROOT / "unitree_robots/go2" / (name + ".xml"), ROOT)
+   248	            != closures[name]
+   249	        ):
+   250	            raise ValueError("original model changed during admission")
+   251	    result["status"] = "ENGINEERING_ADMITTED"
+   252	
+   253	
+   254	def main():
+   255	    parser = argparse.ArgumentParser(description=__doc__)

@@ -1,0 +1,303 @@
+{
+  "claim_evidence_ids": [
+    "E10",
+    "E11",
+    "E12",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 180,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "9f1e33bca2dc5eb60ffd1c095cf10dc53b94d2e18d3f470f83df9f97264b7eeb",
+      "size": 8443
+    },
+    {
+      "path": "index.json",
+      "sha256": "9f809d387a64fd00f83dad073897cceb8d3a3b1ac9b0d4a9757cb58022c180b7",
+      "size": 9059
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "5bad55483ef07cfd5ec35899a9e8d6f2592f558d859f40448b5cae8b924303fd",
+      "size": 517
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E10",
+      "path": "zero-step-test-surface.txt",
+      "sha256": "b7715d54b5dc2b4d02be6bc6b20d2ed3ffffd8acc52bd26547e2ff2e7e121383",
+      "size": 746
+    },
+    {
+      "evidence_id": "E11",
+      "path": "controller-qualification-target.txt",
+      "sha256": "174e66b12f2fd249c43b1751c91b9b08985a6f60252da9611c1e8b354c65958f",
+      "size": 4687
+    },
+    {
+      "evidence_id": "E12",
+      "path": "target-snapshot-sha256.txt",
+      "sha256": "11caad6363a09dfafab38903ec7ba30168034f2c1bbe6c375775a9641394313c",
+      "size": 6045
+    },
+    {
+      "evidence_id": "E14",
+      "path": "review-artifact.json",
+      "sha256": "6491258af80b72d9dfe21043c4f02e8f5a825b55b7beb3933e5d44cc9294e710",
+      "size": 8526
+    },
+    {
+      "evidence_id": "E15",
+      "path": "commit-verification.txt",
+      "sha256": "c18c598bc9dabd2845466c87cebfcf08e3416fe488eef5884c37c10c53e143c8",
+      "size": 398
+    },
+    {
+      "evidence_id": "E16",
+      "path": "audit-scope.txt",
+      "sha256": "8be9fa9703e699f2f13013a7c02b1f5e3d06406e6f1a0e77e033f808b00a6cd8",
+      "size": 657
+    },
+    {
+      "evidence_id": "E17",
+      "path": "review-enforcement-search.txt",
+      "sha256": "0b9f830b06fab606918976b5be77aa5b482819283a62c1297ca30f454c399ddd",
+      "size": 12015
+    },
+    {
+      "evidence_id": "E18",
+      "path": "review-json-check.txt",
+      "sha256": "19422b864b6bffc348fc1b764a20e489d3d0f31eacdf63970b1df1f0049c0a76",
+      "size": 432
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/docs/research/TASK_RL_CAPABILITY_MAP_DESIGN_20260924.md",
+      "sha256": "c0452c830863fd4aa00c31473e9d3996f8b3505eeb93bc4eb504674b57847ea5",
+      "size": 6299
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "sha256": "fd4bc7ff0069bc91293c51fb5039deb25342a4d98b6ccd9e1c512a1b26bf5c9b",
+      "size": 6555
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/docs/research/TASK_RL_CAPABILITY_MAP_INTEGRITY_R2_20260924.md",
+      "sha256": "de3cd181e584e6f3e21f19d02ccbebb7e137b7d1bcb62ca1efcda66a916e2a84",
+      "size": 2250
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/docs/validation/rl_capability_map_design_20260924/RESULTS.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "size": 6301
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md",
+      "sha256": "420f6171fa13fe16ed48c46ae7ed8f61f4f1e3d5b76c9443b8f755623d653332",
+      "size": 3066
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/research/identity.py",
+      "sha256": "54a530839e32f2dfb4353e98559ce962c87608213afdced2b2c0c21d2f52c5ff",
+      "size": 2674
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/research/preflight.py",
+      "sha256": "7e6ad26da2bbf9111610455cb012ce907b293085cd10a4621254f2ff948754fd",
+      "size": 28984
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/README.md",
+      "sha256": "5156aa3c317973eca5db39350b6f41ae6035c57fc88a93c604b8a4258ec7c6a7",
+      "size": 11343
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/admit.py",
+      "sha256": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad",
+      "size": 10233
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/baseline.py",
+      "sha256": "a64f205c4f11cf99e5a0fe8d11c6fa9760aa89b858c4c4e5b5d896aa16d2dfb5",
+      "size": 22228
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/baseline_episode.py",
+      "sha256": "b44b242ab4e23d088d942b4c7279f640f72002ce098a01182f669db8dbbcb7ae",
+      "size": 26789
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/baseline_verify.py",
+      "sha256": "f3da78d28ff2b9f99fa6750d57383ba855ab73e279f61cefba96d9af99f829ea",
+      "size": 20490
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/environment.py",
+      "sha256": "2f60733f004edadc01a95db2e93e3a05dd9925497ee72d5f7b03fc11203e512a",
+      "size": 3959
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/evidence.py",
+      "sha256": "a6d6caef1a4af4b75feeb423f2cf68b68c7022922cad190fc6367c6558845505",
+      "size": 6743
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/guards.py",
+      "sha256": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+      "size": 1506
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/integrity.py",
+      "sha256": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+      "size": 6431
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/launch.py",
+      "sha256": "622f89ea9e67c2236b6dfbcfe1ad7beea79a2c28fe5349373ec8ce7f6d373f0d",
+      "size": 17525
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/protocols/rl_capability_map_v1.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/qualification.py",
+      "sha256": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009",
+      "size": 6547
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/qualify.py",
+      "sha256": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+      "size": 6403
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/readiness.py",
+      "sha256": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+      "size": 1971
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/task.py",
+      "sha256": "439d2d8011969700a90c9e9022a7887fe091c6eec39ff0974d172eb08fe23eda",
+      "size": 2431
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/tasks/rl_capability_map_v1.json",
+      "sha256": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+      "size": 412
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/test_baseline.py",
+      "sha256": "e9eb39516714299a043933eb644f32e67d556a29705a04063aae2e4f65585120",
+      "size": 28167
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/test_launch.py",
+      "sha256": "5645ad7b8f7336d07b7f7fff5ce685dc3668256a8747f54619c6754a3a44240e",
+      "size": 24156
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/test_qualification.py",
+      "sha256": "ddf366284104171b463f9339854530e7a7c8f62194cccd25abe5819d24a71d9c",
+      "size": 7607
+    },
+    {
+      "evidence_id": "E2",
+      "path": "target_snapshot/tools/substrate/verify_capture.py",
+      "sha256": "95ff478deba5ae8bf4a62627d2cbe4c8c3064f12eafa719e074f45513518dade",
+      "size": 7692
+    },
+    {
+      "evidence_id": "E3",
+      "path": "review-code-excerpts-1.txt",
+      "sha256": "d7d8474ecac035cde96ba35fabaa1eb3a75cd298d3702be10eef76de458b39e9",
+      "size": 38350
+    },
+    {
+      "evidence_id": "E4",
+      "path": "praxis-task-binding-search.txt",
+      "sha256": "354de116ddba1c4f9255e92650b9fcbb72b356e8dd90eabd404567d17b650475",
+      "size": 14012
+    },
+    {
+      "evidence_id": "E5",
+      "path": "protocol-and-prior-results-check.txt",
+      "sha256": "5d6a19ef469ac625a03eadda8c0ec69bd31f2f4d819d8c24dcfbf71c3aa34bb7",
+      "size": 2303
+    },
+    {
+      "evidence_id": "E6",
+      "path": "review-code-excerpts-2.txt",
+      "sha256": "4086a9e6c4a191e8c60a4254d6d2b85d73953fcd9f5eaf6502c7d72d1c59700a",
+      "size": 51394
+    },
+    {
+      "evidence_id": "E7",
+      "path": "review-code-excerpts-4.txt",
+      "sha256": "46fdb4c94602054c2f4e73aa09c18c917cf5fd517ae45e4201e10b00437cb3b1",
+      "size": 29167
+    },
+    {
+      "evidence_id": "E8",
+      "path": "zero-step-guard-source.txt",
+      "sha256": "5dc7a5da22e1ad39bf97141241936f2d1305924d5ca0ed914fe841e45c946979",
+      "size": 1919
+    },
+    {
+      "evidence_id": "E9",
+      "path": "admit-source.txt",
+      "sha256": "a8a11db3af6ac8b96f4699f7ff6572c25c08433e1b9f69c09e4141880489990f",
+      "size": 11241
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "31a6ddebf49f9eb6c5234fbd83fc6b1e064cb3ab",
+  "schema_version": 1,
+  "source_index_sha256": "9f809d387a64fd00f83dad073897cceb8d3a3b1ac9b0d4a9757cb58022c180b7",
+  "task_branch": "review/rl-capability-map-formal-execution-20260924",
+  "task_commit": "773b20cdbfdbd8e21be051f51bee68260f44de53"
+}

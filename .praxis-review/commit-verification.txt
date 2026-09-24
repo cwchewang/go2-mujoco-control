@@ -1,0 +1,7 @@
+## HEAD (no branch)
+31a6ddebf49f9eb6c5234fbd83fc6b1e064cb3ab
+commit=31a6ddebf49f9eb6c5234fbd83fc6b1e064cb3ab
+subject=review: veto RL capability map execution
+docs/validation/rl_capability_map_formal_execution_review_20260924/review.json
+6491258af80b72d9dfe21043c4f02e8f5a825b55b7beb3933e5d44cc9294e710  docs/validation/rl_capability_map_formal_execution_review_20260924/review.json
+json_parse=PASS

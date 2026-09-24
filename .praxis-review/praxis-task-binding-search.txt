@@ -1,0 +1,103 @@
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:56:Each must be `APPROVED`, bind `target_head == PRAXIS_TASK_COMMIT`, contain a nonempty reviewer identity and evidence, and have different reviewer identities. If either is absent/stale/vetoed/ambiguous, stop before qualification and before physics.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:93:- `PRAXIS_TASK_PATH` is exactly `docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md`;
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:95:- current HEAD is exactly `PRAXIS_TASK_COMMIT`;
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:9:PRAXIS_REPOSITORY = "cwchewang/go2-mujoco-control"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:11:    "PRAXIS_REPOSITORY",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:12:    "PRAXIS_ISSUE_NUMBER",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:13:    "PRAXIS_TASK_BRANCH",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:14:    "PRAXIS_TASK_COMMIT",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:15:    "PRAXIS_TASK_PATH",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:40:        "PRAXIS_REPOSITORY": PRAXIS_REPOSITORY,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:41:        "PRAXIS_TASK_BRANCH": expected_branch,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:42:        "PRAXIS_TASK_COMMIT": expected_head,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/identity.py:71:        "praxis_binding": {
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/preflight.py:456:        "praxis_identity_binding",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/preflight.py:457:        identity["praxis_binding"]["check_pass"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/preflight.py:458:        identity["praxis_binding"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:40:    def call(self, *extra, praxis_environment=None):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:59:        if praxis_environment is not None:
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:60:            environment.update(praxis_environment)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:73:    def praxis_binding(self, **overrides):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:75:            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:76:            "PRAXIS_ISSUE_NUMBER": "158",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:77:            "PRAXIS_TASK_BRANCH": "fixture",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:78:            "PRAXIS_TASK_COMMIT": self.head,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:79:            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:93:    def test_named_expected_branch_passes_without_praxis_binding(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:99:    def test_detached_head_passes_with_exact_praxis_binding(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:101:        code, result = self.call(praxis_environment=self.praxis_binding())
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:106:    def test_detached_head_without_praxis_binding_fails(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:111:        self.assertFalse(result["identity"]["praxis_binding"]["check_pass"])
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:113:    def test_detached_head_rejects_wrong_praxis_repository(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:116:            praxis_environment=self.praxis_binding(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:117:                PRAXIS_REPOSITORY="someone-else/go2-mujoco-control"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:122:            "PRAXIS_REPOSITORY",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:123:            result["identity"]["praxis_binding"]["mismatches"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:126:    def test_detached_head_rejects_wrong_praxis_logical_branch(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:129:            praxis_environment=self.praxis_binding(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:130:                PRAXIS_TASK_BRANCH="research/other-task"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:135:            "PRAXIS_TASK_BRANCH",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:136:            result["identity"]["praxis_binding"]["mismatches"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:139:    def test_detached_head_rejects_wrong_praxis_task_commit(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:142:            praxis_environment=self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:146:            "PRAXIS_TASK_COMMIT",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:147:            result["identity"]["praxis_binding"]["mismatches"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:150:    def test_detached_head_rejects_incomplete_praxis_binding(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:152:        binding = self.praxis_binding()
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:153:        binding.pop("PRAXIS_TASK_PATH")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:154:        code, result = self.call(praxis_environment=binding)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/research/test_preflight_integration.py:157:            "PRAXIS_TASK_PATH", result["identity"]["praxis_binding"]["missing"]
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:33:from .launch import CHECKPOINT, current_identity, preflight, setup_runtime
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:242:def prepare(output, review_path, qualification_path, task_path=TASK):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:248:        task = load_task(task_path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:249:        head, sources = current_identity(task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:296:            or (head, sources) != current_identity(task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:297:            or task != load_task(task_path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:324:def capture_readiness(prepared_path, authorization_path, task_path):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:327:        task = load_task(task_path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:328:        head, sources = current_identity(task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:356:def capture(prepared_path, authorization_path, output, task_path=TASK):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:367:        ) = capture_readiness(prepared_path, authorization_path, task_path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:418:                if (head, sources) != current_identity(task):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:502:            if (head, sources) != current_identity(task) or capture_inputs != prepared[
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:46:def current_identity(task=None):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:133:def prepare(directory, review_path, qualification_path, task_path=DEFAULT_TASK):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:139:            task = load_task(task_path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:141:            head, sources = current_identity(task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:191:            if (head, sources) != current_identity(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:196:            if task != load_task(task_path):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:249:        head, sources = current_identity(task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:298:            if (head, sources) != current_identity(task):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:388:                    if (head, sources) != current_identity(task):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/task.py:12:def load_task(path, root=ROOT):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/tasks/rl_capability_map_v1.json:7:  "praxis": {
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/tasks/rl_capability_map_v1.json:9:    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:113:    def praxis_binding(self, **overrides):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:115:            "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:116:            "PRAXIS_ISSUE_NUMBER": "158",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:117:            "PRAXIS_TASK_BRANCH": "fixture",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:118:            "PRAXIS_TASK_COMMIT": self.head,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:119:            "PRAXIS_TASK_PATH": "docs/research/TASK_IDENTITY_FIXTURE.md",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:124:    def current_identity(self, praxis_environment=None):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:126:        if praxis_environment is not None:
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:127:            environment.update(praxis_environment)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:137:            return launch_module.current_identity(self.task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:143:        self.assertEqual(self.current_identity(), (self.head, {"fixture": "source"}))
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:145:    def test_detached_head_with_exact_praxis_binding_passes(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:148:            self.current_identity(self.praxis_binding()),
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:152:    def test_detached_head_without_praxis_binding_fails(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:155:            self.current_identity()
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:157:    def test_detached_head_with_wrong_praxis_repository_fails(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:160:            self.current_identity(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:161:                self.praxis_binding(PRAXIS_REPOSITORY="someone-else/go2-mujoco-control")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:164:    def test_detached_head_with_wrong_praxis_branch_fails(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:167:            self.current_identity(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:168:                self.praxis_binding(PRAXIS_TASK_BRANCH="research/other-task")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:171:    def test_detached_head_with_wrong_praxis_commit_fails(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:174:            self.current_identity(self.praxis_binding(PRAXIS_TASK_COMMIT="a" * 40))
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:178:        binding = self.praxis_binding()
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:179:        binding.pop("PRAXIS_TASK_PATH")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:181:            self.current_identity(binding)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:187:            self.current_identity(self.praxis_binding())
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:398:                    "tools.substrate.launch.current_identity",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:514:                current_identity=("a" * 40, {}),

@@ -1,0 +1,8 @@
+Attempt 1: python -m json.tool docs/validation/rl_capability_map_formal_execution_review_20260924/review.json
+Result: failed because this host has no `python` executable (command not found).
+
+Retry: python3 -m json.tool docs/validation/rl_capability_map_formal_execution_review_20260924/review.json
+Result: exit code 0; JSON parses successfully before and after commit.
+
+git diff --cached --check
+Result: exit code 0 before commit.

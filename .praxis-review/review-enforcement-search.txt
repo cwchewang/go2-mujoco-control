@@ -1,0 +1,92 @@
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:42:## Required exact-head reviews
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:46:Science review branch:
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:47:`review/rl-capability-map-formal-science-20260924`
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:49:`docs/validation/rl_capability_map_formal_science_review_20260924/review.json`
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:51:Execution review branch:
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:52:`review/rl-capability-map-formal-execution-20260924`
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:54:`docs/validation/rl_capability_map_formal_execution_review_20260924/review.json`
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:56:Each must be `APPROVED`, bind `target_head == PRAXIS_TASK_COMMIT`, contain a nonempty reviewer identity and evidence, and have different reviewer identities. If either is absent/stale/vetoed/ambiguous, stop before qualification and before physics.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:97:- reviews, qualification, preparation and authorization still validate;
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md:118:- review tips/results;
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:109:surfaces, required review and tests.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:113:in-process transport checks. A literal runner-domain check does not replace review of runner
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:114:semantics, and a user-supplied approved SHA is not independent proof of review.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:126:lock/process/input checks and exact-head review/start identity remain mandatory.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:131:authorization, source-bound preparation and independent exact-head reviews.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:147:A future start must still validate the exact reviewed HEAD and explicit start record.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:173:  --review _runs/rl_baseline_20260923/review_f0eaa44.json \
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:178:That review belongs only to the historical execution HEAD. The ten-case campaign
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/README.md:180:task/protocol and exact-HEAD review, not an edit of the closed protocol or ledger.
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:1:"""Source-policy baseline: reviewed preparation, bounded capture, offline verification."""
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:36:from .readiness import validate_authorization, validate_review
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:48:    """A required review, qualification, identity, or fresh preflight did not pass."""
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:177:def fresh_preflight(lock, head, review, report, fresh, task, qualification, protocol):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:182:            review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:242:def prepare(output, review_path, qualification_path, task_path=TASK):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:252:        review = strict_json(review_path.read_text())
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:253:        validate_review(review, head)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:258:            review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:311:            review=review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:345:        validate_review(prepared["review"], head)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:386:                prepared["review"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:524:    prep.add_argument("--review", required=True, type=Path)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline.py:538:            result = prepare(args.output, args.review, args.qualification, args.task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline_verify.py:29:from .readiness import validate_authorization, validate_review
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline_verify.py:70:        value["sol_review"]["approved_head"] == prepared["head"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline_verify.py:71:        "preflight review mismatch",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/baseline_verify.py:412:        validate_review(prepared["review"], prepared["head"])
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/capture.template.json:3:  "reviewed_by": null,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:10:        "reviewed_by",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:35:        not contract["reviewed_by"]
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:39:        raise ValueError("review, thresholds and start state must be frozen")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:54:        not isinstance(contract["reviewed_by"], str)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:55:        or not contract["reviewed_by"].strip()
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/evidence.py:57:        raise ValueError("review identity missing")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:29:    validate_review as validate_review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:69:    review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:78:    validate_review(review, head)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:100:        "--requires-sol-review",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:133:def prepare(directory, review_path, qualification_path, task_path=DEFAULT_TASK):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:143:            review = strict_json(review_path.read_text())
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:147:                review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:157:            write_new(run.path / "review.json", review)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:217:                    "review": review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:260:        validate_review(prepared["review"], head)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:292:                prepared["review"],
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:413:    prep.add_argument("--review", type=Path, required=True)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/launch.py:423:            prepare(args.output, args.review, args.qualification, args.task)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:1:"""Exact-head review and explicit start-record validation; no runner imports."""
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:4:def validate_review(review, head):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:6:        not isinstance(review, dict)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:7:        or set(review) != {"head", "science", "execution"}
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:8:        or review["head"] != head
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:10:        raise ValueError("review must bind exact launch HEAD")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:13:        item = review[role]
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:16:            or item.get("verdict") != "APPROVED"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:17:            or not isinstance(item.get("reviewer"), str)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:18:            or not item["reviewer"].strip()
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:22:            raise ValueError("missing independent " + role + " review")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:23:        identities.append(item["reviewer"])
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/readiness.py:25:        raise ValueError("science and execution reviewers must differ")
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:22:    validate_review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:332:    def test_review_is_exact_and_independent(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:333:        review = dict(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:336:                verdict="APPROVED",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:337:                reviewer="science-reviewer",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:338:                evidence="review transcript",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:341:                verdict="APPROVED",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:342:                reviewer="execution-reviewer",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:343:                evidence="review transcript",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:346:        validate_review(review, "a" * 40)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:348:            validate_review(review, "b" * 40)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:349:        review["execution"]["reviewer"] = "science-reviewer"
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:351:            validate_review(review, "a" * 40)
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:464:        review = dict(
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:466:            science=dict(verdict="APPROVED", reviewer="one", evidence="fixture"),
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:467:            execution=dict(verdict="APPROVED", reviewer="two", evidence="fixture"),
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:480:                review=review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_launch.py:532:                    review,
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_reliability.py:96:            reviewed_by="fixture reviewer",
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/test_substrate.py:146:    def test_unreviewed_capture_fail_closed(self):
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/verify_capture.py:27:    from .readiness import validate_authorization, validate_review
+6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/verify_capture.py:32:    validate_review(prepared["review"], prepared["head"])

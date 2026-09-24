@@ -1,0 +1,43 @@
+target=6bd0485f25f848d9286ae986ed4f2f7d805a5090
+target_subject=task: freeze RL capability map formal capture
+ target_commit=6bd0485f25f848d9286ae986ed4f2f7d805a5090
+protocol_sha256=0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803  /home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-180/20260924T023310Z-773b20cdbfdb/target_snapshot/tools/substrate/protocols/rl_capability_map_v1.json
+design_result_commit=754ceb38e2bd8b1c60ff9c63db0f8326943b17f2 Freeze shared RL capability map design
+design_result_is_ancestor=true
+integrity_result_commit=00d694dde213fb6862a161374e423261d13ab42b Bind capability map reference integrity
+integrity_result_is_ancestor=true
+
+--- design closeout identity ---
+the rationale, thresholds, case table, progression and exact runner commands
+are in [`RL_CAPABILITY_MAP_20260924.md`](../../research/RL_CAPABILITY_MAP_20260924.md).
+
+The task identity is Praxis issue **#176**, logical branch
+`research/rl-capability-map-design-20260924`, starting commit
+`1139827bd7faf9efd05a25c2ee0ce46dd78c833e`. The final design implementation is
+committed in the task worktree; the final commit identifier is recorded in the
+Praxis evidence package. [E5, E8]
+
+
+--- integrity closeout identity ---
+# RL capability-map integrity r2 closeout — 2026-09-24
+
+## Result
+
+**PASS.** The frozen capability-map design now binds its `flat_reference`
+sentinel to the exact sealed #166 qpos/qvel/target/applied trace digest. The
+change is prospective and leaves the nine-case matrix, thresholds, retry
+policy, and all #166 artifacts unchanged. No MuJoCo plant integration or
+scientific campaign was run: `physics_steps=0`, `scientific_attempts=0`. [E1, E3, E4]
+
+The Praxis task identity is issue **#177**, branch
+`research/rl-capability-map-integrity-r2-20260924`, starting HEAD
+`42e92806f1b5b96057298d98b30b2611e470ddc4`. The task config now binds this
+branch, the updated protocol hash
+`0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803`, and the
+frozen parent `754ceb38e2bd8b1c60ff9c63db0f8326943b17f2`. [E5]
+
+## Sealed reference audit
+
+The committed #166 `RESULTS.md` and publication evidence identify both
+`combined_1` and `combined_2` as PASS with the same digest. Independent
+recomputation from both preserved 6,001-row raw traces, using the exact
