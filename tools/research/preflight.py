@@ -356,6 +356,8 @@ def _main() -> int:
         required=True,
         help="exact HEAD prepared and reviewed for this checkpoint",
     )
+    ap.add_argument("--expected-praxis-issue-number")
+    ap.add_argument("--expected-praxis-task-path")
     ap.add_argument("--runner", type=Path, required=True)
     ap.add_argument("--run-dir", type=Path, required=True)
     ap.add_argument("--domain", type=int)
@@ -440,6 +442,8 @@ def _main() -> int:
         head if git_rc == 0 else "",
         args.expected_head,
         os.environ,
+        expected_issue_number=args.expected_praxis_issue_number,
+        expected_task_path=args.expected_praxis_task_path,
     )
     report["identity"] = identity
     add_check(
