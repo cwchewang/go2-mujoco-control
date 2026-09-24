@@ -33,6 +33,7 @@ from .guards import zero_step_guard as zero_step_guard, wall_deadline as wall_de
 from .task import DEFAULT_TASK, load_task
 from .qualification import validate as validate_qualification, validate_reference
 from ..research.identity import validate_execution_identity
+from ..research.review_contract import contract_hashes
 
 TRANSPORT = "inprocess"
 PROTOCOL = ROOT / "tools/substrate/protocols/rl_flat_v1.json"
@@ -42,6 +43,13 @@ CHECKPOINT = ROOT / ".substrate/rl/policy.pt"
 def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
+
+
+def review_contracts(task):
+    path = task["configuration"].get("review_contract")
+    if path is None:
+        return None
+    return contract_hashes(ROOT / path, ROOT)["contracts"]
 
 def current_identity(task=None):
     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
@@ -78,7 +86,8 @@ def preflight(
     runner=None,
     experiment_id="rl-flat-compatibility-v1",
 ):
-    validate_review(review, head)
+    contracts = review_contracts(task)
+    validate_review(review, head, contracts)
     argv = [
         sys.executable,
         str(ROOT / "tools/research/preflight.py"),
@@ -102,7 +111,9 @@ def preflight(
         task["configuration"]["diff_base"],
         "--requires-sol-review",
         "--approved-head",
-        head,
+        (review.get("target_head") if review.get("schema") == 2 else head),
+        "--review-validation-mode",
+        ("contract_hash" if contracts is not None and review.get("schema") == 2 else "exact_head"),
         "--qualification",
         qualification["path"],
         "--output",
@@ -270,7 +281,7 @@ def capture(prepared_dir, authorization_path, output):
         prepared["prepared_manifest_sha256"] = digest(prepared_dir / "manifest.json")
         authorization = strict_json(authorization_path.read_text())
         validate_authorization(authorization, prepared)
-        validate_review(prepared["review"], head)
+        validate_review(prepared["review"], head, review_contracts(task))
         qualification = validate_reference(prepared.get("qualification_reference"))
         verify_environment()
         setup_runtime()
