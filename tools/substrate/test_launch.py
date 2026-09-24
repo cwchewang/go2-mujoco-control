@@ -370,6 +370,68 @@ class LaunchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_review(review, "a" * 40)
 
+    def test_contract_bound_review_inherits_across_head_change(self):
+        contracts = {
+            "science": "1" * 64,
+            "execution": "2" * 64,
+            "evidence": "3" * 64,
+        }
+        review = {
+            "schema": 2,
+            "target_head": "a" * 40,
+            "science": {
+                "schema": 1,
+                "verdict": "APPROVED",
+                "reviewer": "science-reviewer",
+                "reviewed_domains": ["science"],
+                "contracts": {"science": contracts["science"]},
+                "target_head": "a" * 40,
+                "evidence": ["science.json"],
+            },
+            "execution": {
+                "schema": 1,
+                "verdict": "APPROVED",
+                "reviewer": "execution-reviewer",
+                "reviewed_domains": ["execution"],
+                "contracts": {"execution": contracts["execution"]},
+                "target_head": "b" * 40,
+                "evidence": ["execution.json"],
+            },
+        }
+        # The current launch HEAD may differ from the science review provenance.
+        validate_review(review, "c" * 40, contracts)
+
+    def test_contract_bound_review_rejects_changed_science(self):
+        contracts = {
+            "science": "1" * 64,
+            "execution": "2" * 64,
+            "evidence": "3" * 64,
+        }
+        review = {
+            "schema": 2,
+            "target_head": "a" * 40,
+            "science": {
+                "schema": 1,
+                "verdict": "APPROVED",
+                "reviewer": "science-reviewer",
+                "reviewed_domains": ["science"],
+                "contracts": {"science": "9" * 64},
+                "target_head": "a" * 40,
+                "evidence": ["science.json"],
+            },
+            "execution": {
+                "schema": 1,
+                "verdict": "APPROVED",
+                "reviewer": "execution-reviewer",
+                "reviewed_domains": ["execution"],
+                "contracts": {"execution": contracts["execution"]},
+                "target_head": "a" * 40,
+                "evidence": ["execution.json"],
+            },
+        }
+        with self.assertRaisesRegex(ValueError, "science approval is stale"):
+            validate_review(review, "c" * 40, contracts)
+
     def test_preparation_is_not_start_authorization(self):
         prepared = dict(
             head="a" * 40, protocol_sha256="b" * 64, prepared_manifest_sha256="c" * 64
