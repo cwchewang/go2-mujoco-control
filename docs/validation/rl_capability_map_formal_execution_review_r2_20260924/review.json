@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "role": "execution",
+  "target_head": "de5e396331e01576a2bfd0fe1ccdf662835aa15a",
+  "reviewer": "Codex (automated execution review)",
+  "verdict": "APPROVED",
+  "summary": "The exact target passes the requested zero-physics execution checks: strict task loading accepts the Praxis binding, detached identity validation rejects wrong issue/path and incomplete bindings, launcher preflight propagates the tracked issue/path, and the protocol, digest gates, zero-step preparation, scene contracts, and no-retry ledger remain enforced.",
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "contract-check-result-retry.txt",
+      "description": "On detached target de5e396331e01576a2bfd0fe1ccdf662835aa15a, strict task loading passed; exact #178 identity, formal task path, protocol digest, nine attempts, retry none, and declared r2 review branches/results were asserted."
+    },
+    {
+      "id": "E2",
+      "path": "contract-check-result-retry.txt",
+      "description": "Wrong nonempty issue number and task path failed shared and launcher identity validation; an incomplete five-field binding failed; launcher preflight emitted expected issue 178 and the tracked task path."
+    },
+    {
+      "id": "E3",
+      "path": "identity-unit-tests.txt",
+      "description": "All 8 CurrentIdentityTests passed, including detached exact binding, wrong repository/branch/commit, missing binding, and named-branch compatibility."
+    },
+    {
+      "id": "E4",
+      "path": "capability-contract-tests.txt",
+      "description": "All 6 selected capability contract tests passed, including nine-case budget, sealed reference digest mismatch handling, progression, and preflight classification."
+    },
+    {
+      "id": "E5",
+      "path": "capability-scene-tests.txt",
+      "description": "All 4 capability scene tests passed; selected scenes matched collision contracts and preparation probing left plant steps and time at zero."
+    },
+    {
+      "id": "E6",
+      "path": "ledger-no-retry-check.txt",
+      "description": "A pre-existing campaign ledger rejected another capture with the permanent no-retry error, preserved the ledger, and created no replacement capture."
+    },
+    {
+      "id": "E7",
+      "path": "digest-gate-source.txt",
+      "description": "Target source confirms capture applies the sealed reference digest gate and the independent offline verifier recomputes and applies the same gate."
+    },
+    {
+      "id": "E8",
+      "path": "zero-step-source.txt",
+      "description": "Target source confirms prepare runs under a guard against plant integration and records physics_steps=0; the zero-step probe test passed in E5."
+    },
+    {
+      "id": "E9",
+      "path": "target-source-equality.txt",
+      "description": "Relevant task, research identity, and substrate source files are unchanged between the frozen target and prepared starting commit; exact-target worktree remained detached and clean."
+    },
+    {
+      "id": "E10",
+      "path": "contract-check-result.txt",
+      "description": "Preserved initial failed harness invocation: Python could not import tools because PYTHONPATH was omitted; the same script passed after setting PYTHONPATH in E1."
+    }
+  ],
+  "concerns": []
+}
