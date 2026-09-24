@@ -1,0 +1,112 @@
+{
+  "files": [
+    {
+      "path": "artifacts/RESULTS.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "size": 6301
+    },
+    {
+      "path": "artifacts/RL_CAPABILITY_MAP_20260924.md",
+      "sha256": "b9f7989f3135346dce6e4e36ee8b0b45f6a087f2aae85bc0f809d45778325e5d",
+      "size": 14955
+    },
+    {
+      "path": "artifacts/rl_capability_map_v1.json",
+      "sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+      "size": 5653
+    },
+    {
+      "path": "artifacts/rl_capability_map_v1.task.json",
+      "sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+      "size": 293
+    },
+    {
+      "path": "closeout.json",
+      "sha256": "f018f663a1817101ec9e562d759dd7f1c03846930ca014045b3de2b9311a7e4e",
+      "size": 8693
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "c297bfb41b6e049461fe1d3ec217a0039be10492368a3d6eec70489c4a88f6f8",
+      "size": 634015
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "copy-provenance.txt",
+      "sha256": "c2abc85eb2cb9740bf612889d3d585d16afdca736a1a0b2b963c723f5a1cbd1b",
+      "size": 3111
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "17270563574c685548fd2e17a6bd198f7bd7b2931d45e53e82fde5e7de41a6f7",
+      "size": 492
+    },
+    {
+      "path": "recovery-git-state.txt",
+      "sha256": "a4a7111dc1c00b75696708fe3d384fdd3428f5284bf7e3120a8819d67f6fc356",
+      "size": 613
+    },
+    {
+      "path": "reused/commit-state.txt",
+      "sha256": "9d8c19fd3fd7b1aec2d52c71c24b0d15453b1a5fa1a53537f7861a794e598dbe",
+      "size": 830
+    },
+    {
+      "path": "reused/execution-boundary.json",
+      "sha256": "bcc8dfd3459657729716e1c700c2b5e4936724a20ad24fedf0f4508fdaa5152b",
+      "size": 478
+    },
+    {
+      "path": "reused/scene-audit-first-failure.txt",
+      "sha256": "6cd0f6ac7fd8f8e63dfd7503491e811ddc68be44e19e13acd2fa922a635a87ec",
+      "size": 612
+    },
+    {
+      "path": "reused/scene-static-audit.json",
+      "sha256": "0dd1f44d461fc9062fd0a38864fa66fa615bdea52ec5e4ef26d91373b273386a",
+      "size": 40793
+    },
+    {
+      "path": "reused/scene-static-audit.txt",
+      "sha256": "8e7fd04be52d08175d82187e8fbdc2f238f6fe248225acd2ea810bf91a52077c",
+      "size": 1168
+    },
+    {
+      "path": "reused/source-hash-audit.json",
+      "sha256": "9a9384304ff7f06aa0458575255e54755ada4a7d4a7d15e0388839888346d4b7",
+      "size": 7357
+    },
+    {
+      "path": "reused/source-manifest.json",
+      "sha256": "a0cf8c163f697dab3405f35b9d35d8cb498c888a01087bd102d2ff98b2c35dc8",
+      "size": 9184
+    },
+    {
+      "path": "reused/task-protocol-check-final.txt",
+      "sha256": "a8fe03760369f826cf6fd4659ac321569c97aeaab6d70a16acf8d340de68cded",
+      "size": 1166
+    },
+    {
+      "path": "reused/test-baseline-final-2.txt",
+      "sha256": "b8a2caae146de40fbcd52e9a9206119787771d091d7ca37eaac5e2e4e65ae1c3",
+      "size": 4360
+    },
+    {
+      "path": "reused/test-baseline-final-4.txt",
+      "sha256": "31462cd24f27b875e7c043c12df8eca1da4ab145c52503b7db563e253601ae98",
+      "size": 3455
+    }
+  ],
+  "result_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "schema_version": 1,
+  "status": "complete"
+}

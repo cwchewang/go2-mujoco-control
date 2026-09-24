@@ -1,0 +1,33 @@
+{
+  "capability_schema_valid": true,
+  "case_count": 9,
+  "case_ids": [
+    "flat_reference",
+    "flat_half_speed",
+    "flat_reverse_probe",
+    "flat_lateral_probe",
+    "flat_yaw_probe",
+    "step_5cm_cross",
+    "step_10cm_cross",
+    "repeated_steps_cross",
+    "low_friction_cross"
+  ],
+  "diff_base_is_ancestor": true,
+  "head": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "identity": {
+    "branch": "research/rl-capability-map-design-20260924",
+    "issue": "176",
+    "repository": "cwchewang/go2-mujoco-control",
+    "starting_commit": "1139827bd7faf9efd05a25c2ee0ce46dd78c833e",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_DESIGN_20260924.md"
+  },
+  "max_attempts": 9,
+  "parent": "1139827bd7faf9efd05a25c2ee0ce46dd78c833e",
+  "protocol": "tools/substrate/protocols/rl_capability_map_v1.json",
+  "protocol_id": "rl-capability-map-v1",
+  "protocol_sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+  "task": "tools/substrate/tasks/rl_capability_map_v1.json",
+  "task_sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+  "upstream_identity_matches_locks": true,
+  "worktree_clean": true
+}

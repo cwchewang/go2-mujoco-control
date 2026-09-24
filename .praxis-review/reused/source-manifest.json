@@ -1,0 +1,174 @@
+{
+  "repository": "wty-yy/go2_rl_gym",
+  "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+  "verified_files": [
+    {
+      "path": "deploy/deploy_mujoco/configs/go2.yaml",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/deploy/deploy_mujoco/configs/go2.yaml",
+      "sha256": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+      "bytes": 1876
+    },
+    {
+      "path": "deploy/deploy_mujoco/deploy_go2.py",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/deploy/deploy_mujoco/deploy_go2.py",
+      "sha256": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+      "bytes": 10959
+    },
+    {
+      "path": "legged_gym/envs/base/legged_robot_config.py",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/legged_gym/envs/base/legged_robot_config.py",
+      "sha256": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+      "bytes": 17574
+    },
+    {
+      "path": "legged_gym/envs/go2/go2_config.py",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/legged_gym/envs/go2/go2_config.py",
+      "sha256": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+      "bytes": 14073
+    },
+    {
+      "path": "resources/robots/go2/assets/base_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/base_0.obj",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "bytes": 1330465
+    },
+    {
+      "path": "resources/robots/go2/assets/base_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/base_1.obj",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "bytes": 811791
+    },
+    {
+      "path": "resources/robots/go2/assets/base_2.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/base_2.obj",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "bytes": 294090
+    },
+    {
+      "path": "resources/robots/go2/assets/base_3.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/base_3.obj",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "bytes": 379093
+    },
+    {
+      "path": "resources/robots/go2/assets/base_4.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/base_4.obj",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "bytes": 7776234
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/calf_0.obj",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "bytes": 877174
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/calf_1.obj",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "bytes": 326865
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_mirror_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/calf_mirror_0.obj",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "bytes": 876538
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_mirror_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/calf_mirror_1.obj",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "bytes": 327261
+    },
+    {
+      "path": "resources/robots/go2/assets/foot.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/foot.obj",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "bytes": 1144729
+    },
+    {
+      "path": "resources/robots/go2/assets/height_field.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/height_field.png",
+      "sha256": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+      "bytes": 3258
+    },
+    {
+      "path": "resources/robots/go2/assets/hip_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/hip_0.obj",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "bytes": 2863864
+    },
+    {
+      "path": "resources/robots/go2/assets/hip_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/hip_1.obj",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "bytes": 2767918
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/thigh_0.obj",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "bytes": 2841868
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/thigh_1.obj",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "bytes": 1491320
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_mirror_0.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/thigh_mirror_0.obj",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "bytes": 2817674
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_mirror_1.obj",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/thigh_mirror_1.obj",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "bytes": 1482261
+    },
+    {
+      "path": "resources/robots/go2/assets/wood.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/assets/wood.png",
+      "sha256": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+      "bytes": 941355
+    },
+    {
+      "path": "resources/robots/go2/cross_stairs.xml",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/cross_stairs.xml",
+      "sha256": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+      "bytes": 11803
+    },
+    {
+      "path": "resources/robots/go2/go2.xml",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/go2.xml",
+      "sha256": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+      "bytes": 11565
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_1.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/imgs/label_1.png",
+      "sha256": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+      "bytes": 2201
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_10.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/imgs/label_10.png",
+      "sha256": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+      "bytes": 2655
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_4.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/imgs/label_4.png",
+      "sha256": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+      "bytes": 2423
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_7.png",
+      "url": "https://raw.githubusercontent.com/wty-yy/go2_rl_gym/30e74dc507bec7a642a8c98be26081f2c6f0822d/resources/robots/go2/imgs/label_7.png",
+      "sha256": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+      "bytes": 2272
+    }
+  ]
+}

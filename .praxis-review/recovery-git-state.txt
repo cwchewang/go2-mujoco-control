@@ -1,0 +1,16 @@
+head=754ceb38e2bd8b1c60ff9c63db0f8326943b17f2
+parent=1139827bd7faf9efd05a25c2ee0ce46dd78c833e
+ancestor_of_frozen_start=true
+worktree_status_porcelain_begin
+worktree_status_porcelain_end
+commit_subject=Freeze shared RL capability map design
+commit_paths_begin
+docs/research/RL_CAPABILITY_MAP_20260924.md
+docs/validation/rl_capability_map_design_20260924/RESULTS.md
+tools/substrate/baseline.py
+tools/substrate/baseline_episode.py
+tools/substrate/baseline_verify.py
+tools/substrate/protocols/rl_capability_map_v1.json
+tools/substrate/tasks/rl_capability_map_v1.json
+tools/substrate/test_baseline.py
+commit_paths_end

@@ -1,0 +1,11 @@
+{
+  "task": "rl-capability-map-design-20260924",
+  "capture_entrypoint_invoked": false,
+  "capability_episode_invoked": false,
+  "campaign_ledger_exists": false,
+  "physics_steps": 0,
+  "scientific_attempts": 0,
+  "selected_scene_static_audit": "scene-static-audit.json",
+  "targeted_tests": "test-baseline-final.txt",
+  "note": "MuJoCo model compilation and telemetry forward evaluation were guarded against mj_step/mj_step1/mj_step2; unit episode tests use FakePlant only."
+}

@@ -1,0 +1,175 @@
+{
+  "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+  "checked_files": 28,
+  "mismatches": [],
+  "checks": [
+    {
+      "path": "deploy/deploy_mujoco/configs/go2.yaml",
+      "expected": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+      "actual": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+      "pass": true
+    },
+    {
+      "path": "deploy/deploy_mujoco/deploy_go2.py",
+      "expected": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+      "actual": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+      "pass": true
+    },
+    {
+      "path": "legged_gym/envs/base/legged_robot_config.py",
+      "expected": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+      "actual": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+      "pass": true
+    },
+    {
+      "path": "legged_gym/envs/go2/go2_config.py",
+      "expected": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+      "actual": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/base_0.obj",
+      "expected": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "actual": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/base_1.obj",
+      "expected": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "actual": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/base_2.obj",
+      "expected": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "actual": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/base_3.obj",
+      "expected": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "actual": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/base_4.obj",
+      "expected": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "actual": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_0.obj",
+      "expected": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "actual": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_1.obj",
+      "expected": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "actual": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_mirror_0.obj",
+      "expected": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "actual": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/calf_mirror_1.obj",
+      "expected": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "actual": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/foot.obj",
+      "expected": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "actual": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/height_field.png",
+      "expected": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+      "actual": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/hip_0.obj",
+      "expected": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "actual": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/hip_1.obj",
+      "expected": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "actual": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_0.obj",
+      "expected": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "actual": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_1.obj",
+      "expected": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "actual": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_mirror_0.obj",
+      "expected": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "actual": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/thigh_mirror_1.obj",
+      "expected": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "actual": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/assets/wood.png",
+      "expected": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+      "actual": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/cross_stairs.xml",
+      "expected": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+      "actual": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/go2.xml",
+      "expected": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+      "actual": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_1.png",
+      "expected": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+      "actual": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_10.png",
+      "expected": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+      "actual": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_4.png",
+      "expected": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+      "actual": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+      "pass": true
+    },
+    {
+      "path": "resources/robots/go2/imgs/label_7.png",
+      "expected": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+      "actual": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+      "pass": true
+    }
+  ]
+}

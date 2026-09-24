@@ -1,0 +1,44 @@
+test_base_collision_stops (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_analyzer_separates_tracking_and_goal_failures (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_progression_retains_performance_and_stops_integrity (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_protocol_freezes_three_axis_commands_and_budget (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_yaw_probe_does_not_gate_requested_yaw_excursion (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_claim_before_step_and_source_cadence (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_analyzer_applies_reference_mean_gate (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_protocol_freezes_the_minimal_full_transfer (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_startup_cadence_runs_synthetically (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_uses_declared_repeat_and_first_nonpass (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_emit_failure_prevents_step (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_failed_preflight_cannot_verify (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_independent_three_axis_projection_and_adapter_replay (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_initial_safety_stop_does_not_consume (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_metrics_body_frame_and_half_open_window (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_no_unused_terminal_inference (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_nonunit_terminal_orientation_preserves_metric_polynomial (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_protocol_source_identity_is_bound_to_existing_locks (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_safety_stops_without_extra_step (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_scene_and_preparation_failures_are_not_scientific_outcomes (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_schedule_transition_exact (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_stairs_allow_high_world_height (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_nonworld_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ERROR
+test_preparation_probe_checks_command_without_stepping_plant (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_selected_scenes_parse_and_match_world_collision_contracts (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_unlisted_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_all_models_zero_step_and_limit_location (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+test_source_adapter_initial_history_equivalence (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+test_telemetry_does_not_modify_live_data (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+
+======================================================================
+ERROR: test_nonworld_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-176/tools/substrate/test_baseline.py", line 528, in test_nonworld_collision_geometry_is_unsupported_at_preflight
+    Plant(scene, case, 0.002)
+  File "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-176/tools/substrate/baseline_episode.py", line 101, in __init__
+    self.model = m = mj.MjModel.from_xml_path(str(scene))
+ValueError: Error: Error opening file '/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-176/unitree_robots/go2/base_0.obj': No such file or directory
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.982s
+
+FAILED (errors=1, skipped=3)

@@ -1,0 +1,137 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 176,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "f018f663a1817101ec9e562d759dd7f1c03846930ca014045b3de2b9311a7e4e",
+      "size": 8693
+    },
+    {
+      "path": "index.json",
+      "sha256": "96a2aeb5bd913503ec5f9f4a7f1f6a8dfd872eceac8370b24db96bce7dc41706",
+      "size": 3488
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "17270563574c685548fd2e17a6bd198f7bd7b2931d45e53e82fde5e7de41a6f7",
+      "size": 492
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "recovery-git-state.txt",
+      "sha256": "a4a7111dc1c00b75696708fe3d384fdd3428f5284bf7e3120a8819d67f6fc356",
+      "size": 613
+    },
+    {
+      "evidence_id": "E10",
+      "path": "reused/test-baseline-final-4.txt",
+      "sha256": "31462cd24f27b875e7c043c12df8eca1da4ab145c52503b7db563e253601ae98",
+      "size": 3455
+    },
+    {
+      "evidence_id": "E11",
+      "path": "reused/test-baseline-final-2.txt",
+      "sha256": "b8a2caae146de40fbcd52e9a9206119787771d091d7ca37eaac5e2e4e65ae1c3",
+      "size": 4360
+    },
+    {
+      "evidence_id": "E12",
+      "path": "reused/execution-boundary.json",
+      "sha256": "bcc8dfd3459657729716e1c700c2b5e4936724a20ad24fedf0f4508fdaa5152b",
+      "size": 478
+    },
+    {
+      "evidence_id": "E2",
+      "path": "reused/commit-state.txt",
+      "sha256": "9d8c19fd3fd7b1aec2d52c71c24b0d15453b1a5fa1a53537f7861a794e598dbe",
+      "size": 830
+    },
+    {
+      "evidence_id": "E3",
+      "path": "artifacts/RESULTS.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "size": 6301
+    },
+    {
+      "evidence_id": "E3",
+      "path": "artifacts/RL_CAPABILITY_MAP_20260924.md",
+      "sha256": "b9f7989f3135346dce6e4e36ee8b0b45f6a087f2aae85bc0f809d45778325e5d",
+      "size": 14955
+    },
+    {
+      "evidence_id": "E3",
+      "path": "artifacts/rl_capability_map_v1.json",
+      "sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+      "size": 5653
+    },
+    {
+      "evidence_id": "E3",
+      "path": "artifacts/rl_capability_map_v1.task.json",
+      "sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+      "size": 293
+    },
+    {
+      "evidence_id": "E4",
+      "path": "reused/task-protocol-check-final.txt",
+      "sha256": "a8fe03760369f826cf6fd4659ac321569c97aeaab6d70a16acf8d340de68cded",
+      "size": 1166
+    },
+    {
+      "evidence_id": "E5",
+      "path": "reused/source-hash-audit.json",
+      "sha256": "9a9384304ff7f06aa0458575255e54755ada4a7d4a7d15e0388839888346d4b7",
+      "size": 7357
+    },
+    {
+      "evidence_id": "E6",
+      "path": "reused/source-manifest.json",
+      "sha256": "a0cf8c163f697dab3405f35b9d35d8cb498c888a01087bd102d2ff98b2c35dc8",
+      "size": 9184
+    },
+    {
+      "evidence_id": "E7",
+      "path": "reused/scene-static-audit.json",
+      "sha256": "0dd1f44d461fc9062fd0a38864fa66fa615bdea52ec5e4ef26d91373b273386a",
+      "size": 40793
+    },
+    {
+      "evidence_id": "E8",
+      "path": "reused/scene-static-audit.txt",
+      "sha256": "8e7fd04be52d08175d82187e8fbdc2f238f6fe248225acd2ea810bf91a52077c",
+      "size": 1168
+    },
+    {
+      "evidence_id": "E9",
+      "path": "reused/scene-audit-first-failure.txt",
+      "sha256": "6cd0f6ac7fd8f8e63dfd7503491e811ddc68be44e19e13acd2fa922a635a87ec",
+      "size": 612
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "schema_version": 1,
+  "source_index_sha256": "96a2aeb5bd913503ec5f9f4a7f1f6a8dfd872eceac8370b24db96bce7dc41706",
+  "task_branch": "research/rl-capability-map-design-20260924",
+  "task_commit": "1139827bd7faf9efd05a25c2ee0ce46dd78c833e"
+}

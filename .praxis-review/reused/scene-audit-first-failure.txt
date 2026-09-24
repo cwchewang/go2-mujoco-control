@@ -1,0 +1,6 @@
+Scene static audit attempt 1 (read-only compile, no MuJoCo integration)
+Command target: selected local scenes plus pinned upstream cross_stairs.xml
+Outcome: FAIL before report write while loading pinned upstream robot assets.
+Error: ValueError: Error: Error opening file '/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-176/20260924T003411Z-1139827bd7fa/upstream-source/resources/robots/go2/imgs/label_1.png': No such file or directory
+No plant step was executed; zero_step_guard was active.
+Repair: fetch the missing image assets from the source-locked commit and rerun the static audit.

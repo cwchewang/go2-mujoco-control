@@ -1,0 +1,152 @@
+{
+  "status": "complete",
+  "summary": "Recovered the existing committed result for Praxis task #176, verified its frozen parent and clean worktree, and closed the evidence package without rerunning the task procedure.",
+  "completed": [
+    "Confirmed result commit 754ceb38e2bd8b1c60ff9c63db0f8326943b17f2 is a clean descendant of the frozen starting commit and has that exact commit as its parent.",
+    "Confirmed the commit contains the protocol, task config, runner and verifier changes, tests, research design, and design closeout.",
+    "Copied the cited prior validation records and snapshots of the committed deliverables into this evidence directory with copy provenance and SHA256 hashes.",
+    "Recorded that the prior static validation used zero physics steps and zero scientific attempts; did not rerun tests or simulation during recovery."
+  ],
+  "not_completed": [
+    "The prospective nine-case capability campaign was not executed, as required by the frozen design-only, zero-physics task. No capability result is claimed."
+  ],
+  "observations": [
+    {
+      "text": "HEAD is 754ceb38e2bd8b1c60ff9c63db0f8326943b17f2, its parent is the frozen start 1139827bd7faf9efd05a25c2ee0ce46dd78c833e, the frozen start is an ancestor, and the worktree status is empty. The result commit changes the eight planned tracked paths.",
+      "evidence_ids": ["E1", "E2"]
+    },
+    {
+      "text": "The frozen protocol check recorded nine cases, a nine-attempt maximum, matching task identity and protocol/task hashes, and a clean worktree.",
+      "evidence_ids": ["E4"]
+    },
+    {
+      "text": "Pinned upstream source audit checked 28 files with no hash mismatches; the accompanying source manifest identifies the repository commit and source URLs.",
+      "evidence_ids": ["E5", "E6"]
+    },
+    {
+      "text": "The successful static audit wrote seven scene records with physics_steps=0. It includes the selected step, repeated-step, low-friction, and flat scenes, plus the reactive-obstacle and pinned cross-stairs audits.",
+      "evidence_ids": ["E7", "E8"]
+    },
+    {
+      "text": "An earlier read-only cross-stairs audit failed before writing a report because a referenced pinned image asset was absent from the evidence snapshot. The later audit completed after the source-locked asset repair; the failed attempt is retained.",
+      "evidence_ids": ["E7", "E9", "E5", "E6"]
+    },
+    {
+      "text": "The final targeted test log reports 29 tests, all non-skipped tests passing, and three skips because native source assets were unavailable. An earlier test log preserves a fixture-path failure involving base_0.obj.",
+      "evidence_ids": ["E10", "E11"]
+    },
+    {
+      "text": "The prior execution-boundary record says the capture entrypoint and capability episode were not invoked, no campaign ledger was created, physics_steps=0, and scientific_attempts=0.",
+      "evidence_ids": ["E12"]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The proposed matrix is a sparse screen rather than a terrain-by-command factorial: the flat cases isolate command and speed probes, while terrain cases hold the reference forward command fixed. The committed case rationale assigns distinct questions to the nine cases.",
+      "evidence_ids": ["E3", "E4"]
+    },
+    {
+      "text": "Lateral and yaw commands are admitted only as bounded flat engineering probes based on the pinned deployment/config semantics; the design does not claim those command classes were historically trained or test them on terrain.",
+      "evidence_ids": ["E3", "E5", "E6"]
+    },
+    {
+      "text": "Static scene compilation and geometry-contract tests support the selected scenes' compatibility with the declared scene/telemetry assumptions, but do not establish dynamic traversal capability.",
+      "evidence_ids": ["E3", "E7", "E10"]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The design-and-implementation task is complete in commit 754ceb38e2bd8b1c60ff9c63db0f8326943b17f2. The prior result is preserved without a new commit or remote push.",
+      "evidence_ids": ["E1", "E2", "E3"]
+    },
+    {
+      "text": "The frozen future screen contains a flat 1 m/s reference sentinel, half-speed forward, reverse, lateral and yaw flat probes, and four +X terrain probes (matched 5 cm and 10 cm steps, a 5/15/5 cm repeated profile, and a low-friction patch), with one attempt per case and no retries.",
+      "evidence_ids": ["E3", "E4"]
+    },
+    {
+      "text": "The task records physics_steps=0 and scientific_attempts=0. No capability pass/fail outcome, terrain result, or paper-gap claim follows from this design task.",
+      "evidence_ids": ["E3", "E7", "E12"]
+    },
+    {
+      "text": "The design reports no design blocker. A later capture still requires locked host assets/runtime, applicable clean qualification, exact-HEAD reviews, fresh preflight, and separate start authorization; its exact prepare, capture, and verify commands are frozen in the design document.",
+      "evidence_ids": ["E3"]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Three pre-existing native-source-policy tests were skipped because their required native source assets were absent, so the recorded validation is limited to the tests that ran and the zero-step/static checks.",
+      "evidence_ids": ["E10"]
+    },
+    {
+      "text": "The capability of the policy on the proposed command and terrain cases remains unknown until a separately authorized future capture is completed.",
+      "evidence_ids": ["E3", "E12"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "recovery-git-state.txt",
+      "description": "Fresh minimal recovery Git record: current HEAD, exact parent, ancestry result, clean worktree status, commit subject, and changed paths."
+    },
+    {
+      "id": "E2",
+      "path": "reused/commit-state.txt",
+      "description": "Byte-preserved commit-state record copied from the prior execution evidence at 20260924T003411Z-1139827bd7fa; records the task parent, intended paths, clean state, patch match, and no push."
+    },
+    {
+      "id": "E3",
+      "path": "artifacts/",
+      "description": "Non-empty bundle of the design document, RESULTS.md, frozen protocol, and task config copied from tracked HEAD 754ceb38e2bd8b1c60ff9c63db0f8326943b17f2; copy hashes and provenance are recorded in copy-provenance.txt."
+    },
+    {
+      "id": "E4",
+      "path": "reused/task-protocol-check-final.txt",
+      "description": "Final protocol/task identity check copied from prior execution evidence; includes case IDs, attempt cap, hashes, ancestry, and clean-worktree result."
+    },
+    {
+      "id": "E5",
+      "path": "reused/source-hash-audit.json",
+      "description": "Prior source-lock hash audit copied without modification; reports 28 checked files and no mismatches."
+    },
+    {
+      "id": "E6",
+      "path": "reused/source-manifest.json",
+      "description": "Prior pinned-upstream source manifest copied without modification; identifies the upstream repository, commit, URLs, hashes, and sizes."
+    },
+    {
+      "id": "E7",
+      "path": "reused/scene-static-audit.json",
+      "description": "Successful prior zero-step static scene audit JSON, copied byte-for-byte from the prior evidence directory."
+    },
+    {
+      "id": "E8",
+      "path": "reused/scene-static-audit.txt",
+      "description": "Human-readable summary of the successful prior static scene audit; records seven zero-integration scene records and physics_steps=0."
+    },
+    {
+      "id": "E9",
+      "path": "reused/scene-audit-first-failure.txt",
+      "description": "Preserved failed read-only scene audit from the prior evidence directory, including missing-asset error, zero-step guard, and repair note."
+    },
+    {
+      "id": "E10",
+      "path": "reused/test-baseline-final-4.txt",
+      "description": "Final targeted unit-test output from the prior execution; 29 tests ran, with three native-source tests skipped."
+    },
+    {
+      "id": "E11",
+      "path": "reused/test-baseline-final-2.txt",
+      "description": "Preserved earlier failing test output from the prior execution, including the fixture path error; retained as counterevidence to the final passing run."
+    },
+    {
+      "id": "E12",
+      "path": "reused/execution-boundary.json",
+      "description": "Prior execution-boundary record copied without modification; records no capture/episode invocation and zero physics/scientific attempts."
+    },
+    {
+      "id": "E13",
+      "path": "copy-provenance.txt",
+      "description": "SHA256 manifest for copied prior evidence and tracked artifact snapshots, with source evidence directory and source HEAD recorded."
+    }
+  ]
+}
