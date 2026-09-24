@@ -151,6 +151,30 @@ class ReadinessFixtures(unittest.TestCase):
             result["identity"]["praxis_binding"]["mismatches"],
         )
 
+    def test_detached_head_rejects_wrong_praxis_issue_number(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(PRAXIS_ISSUE_NUMBER="999")
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_ISSUE_NUMBER",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
+    def test_detached_head_rejects_wrong_praxis_task_path(self):
+        self.detach_head()
+        code, result = self.call(
+            praxis_environment=self.praxis_binding(
+                PRAXIS_TASK_PATH="docs/research/WRONG_TASK.md"
+            )
+        )
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "PRAXIS_TASK_PATH",
+            result["identity"]["praxis_binding"]["mismatches"],
+        )
+
     def test_detached_head_rejects_incomplete_praxis_binding(self):
         self.detach_head()
         binding = self.praxis_binding()
