@@ -39,21 +39,47 @@ Before interpreting any dependent result, `flat_reference` must:
 
 Any digest mismatch is `INTEGRITY_STOP`, consumes only the already-started sentinel attempt, preserves the observed raw trace/digest, and leaves all dependent cases `NOT_RUN`. Never reinterpret it as a performance failure.
 
-## Required exact-head reviews
+## Review carry-forward after deterministic fixture repair
 
-Before qualification or plant physics, retrieve and validate:
+The independent r2 reviews already approved the scientific/execution design at base
+HEAD `de5e396331e01576a2bfd0fe1ccdf662835aa15a`:
 
-Science review branch:
-`review/rl-capability-map-formal-science-r2-20260924`
-Result:
-`docs/validation/rl_capability_map_formal_science_review_r2_20260924/review.json`
+- science: `review/rl-capability-map-formal-science-r2-20260924`
+  / `docs/validation/rl_capability_map_formal_science_review_r2_20260924/review.json`;
+- execution: `review/rl-capability-map-formal-execution-r2-20260924`
+  / `docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json`.
 
-Execution review branch:
-`review/rl-capability-map-formal-execution-r2-20260924`
-Result:
-`docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json`
+A later launch HEAD may carry these semantic conclusions forward **without another
+expensive reviewer** only if the project-owner deterministic precheck proves all
+of the following on that exact final HEAD:
 
-Each must be `APPROVED`, bind `target_head == PRAXIS_TASK_COMMIT`, contain a nonempty reviewer identity and evidence, and have different reviewer identities. If either is absent/stale/vetoed/ambiguous, stop before qualification and before physics.
+1. relative to `de5e396331e01576a2bfd0fe1ccdf662835aa15a`, the only tracked
+   changes are the stale preflight integration fixture repair in
+   `tools/research/test_preflight_integration.py` and this task prose;
+2. the capability protocol bytes/hash are unchanged at
+   `0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803`;
+3. the complete preflight integration fixture suite passes, including the
+   detached exact five-field Praxis identity success path;
+4. the targeted current-identity tests pass and wrong issue/path/incomplete
+   binding still fail closed;
+5. no qualification/preparation/capture/plant physics/scientific attempt has
+   been consumed during the repair/precheck.
+
+If any condition fails or any other tracked execution/scientific surface changes,
+stop and obtain the appropriate new review.
+
+For the exact launch HEAD that satisfies those conditions, construct the runtime
+review bundle required by `readiness.validate_review` with:
+- `head`: the exact launch HEAD;
+- science entry: APPROVED, reviewer
+  `OpenAI Codex science r2 — inherited semantic approval`, with evidence citing
+  the original r2 science review plus the owner precheck proving a test-only diff;
+- execution entry: APPROVED, reviewer
+  `ChatGPT project owner deterministic precheck`, with evidence citing the
+  exact-head PRECHECK PASS and targeted machine checks.
+
+This is explicit review inheritance across a mechanically verified test-fixture
+repair, not a claim that the original reviewer inspected the later commit.
 
 ## Preflight / preparation
 
