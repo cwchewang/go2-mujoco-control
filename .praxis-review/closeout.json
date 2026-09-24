@@ -1,0 +1,90 @@
+{
+  "status": "complete",
+  "summary": "Repaired the frozen schema-2 capability map with a prospective exact flat-reference digest binding and independent offline verification. The design and closeout are committed as 00d694dde213fb6862a161374e423261d13ab42b; physics_steps=0 and scientific_attempts=0.",
+  "completed": [
+    "Verified both committed #166 reference traces directly from preserved raw rows using the exact historical schema-1 qpos/qvel/target/applied hash canonicalization; both reproduce 1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484 and match row-by-row on the four hashed streams.",
+    "Bound the schema-2 flat_reference sentinel to the sealed digest and required exactly one well-formed binding in protocol validation.",
+    "Made capture classify digest mismatch as INTEGRITY_STOP while retaining expected and observed digests and the raw trace; no dependent cases run after the started sentinel attempt.",
+    "Made offline verification recompute and compare the raw trace digest against the expected protocol digest independently of capture classification.",
+    "Preserved schema-1 behavior, left all other cases and performance thresholds unchanged, and updated the design, issue #177 closeout, protocol hash, and task identity config.",
+    "Passed the relevant zero-physics/static suite: 65 tests ran, 3 native source-asset tests were skipped, and all available tests passed.",
+    "Committed the eight intended tracked files with a clean detached worktree."
+  ],
+  "not_completed": [],
+  "observations": [
+    {
+      "text": "The #166 committed results and evidence bind combined_1 and combined_2 to the same PASS digest. Independent recomputation from each preserved 6001-row raw trace yields the sealed SHA-256; qpos, qvel, target, and applied match row-by-row. The evidence also confirms the shared flat model, shared_home reset, adapter, tick-10 first inference, and 1.0 m/s command.",
+      "evidence_ids": ["E1"]
+    },
+    {
+      "text": "An initial whole-row canonicalization produced a different digest and was rejected after the committed #166 schema-1 analyzer showed that its trace hash covers only qpos, qvel, target, and applied. The source-specific recomputation then matched both sealed traces.",
+      "evidence_ids": ["E1", "E2"]
+    },
+    {
+      "text": "The focused suite ran 65 tests and passed; three tests reported the explicit skip reason native source assets required. Capability-scene parser and zero-step preparation tests ran successfully.",
+      "evidence_ids": ["E4"]
+    },
+    {
+      "text": "The resulting commit is 00d694dde213fb6862a161374e423261d13ab42b, parented on the frozen starting commit, still detached, and leaves the worktree clean. The logical branch, protocol hash, and diff base validate.",
+      "evidence_ids": ["E5", "E6"]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "Because the prospective schema-2 analyzer hashes the same four state/command channels with the same canonicalization, the sealed digest will detect a changed flat-reference trajectory with overwhelming SHA-256 confidence even when performance gates still pass.",
+      "evidence_ids": ["E1", "E3"]
+    },
+    {
+      "text": "The runner compares the observed digest after the sentinel trace is written, converts any mismatch to INTEGRITY_STOP, and applies the existing stop/dependency rules. The focused mismatch test confirms one started sentinel claim and NOT_RUN dependent status.",
+      "evidence_ids": ["E3", "E4"]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "The frozen capability-map design can retain its scientific question and matrix with the integrity binding. A flat-reference digest mismatch is classified as INTEGRITY_STOP, overrides performance classification, preserves the raw trace and observed hash, and prevents dependent cases from running.",
+      "evidence_ids": ["E1", "E3", "E4"]
+    },
+    {
+      "text": "Task #177 is complete and committed. No MuJoCo plant integration or scientific campaign was run; physics_steps=0 and scientific_attempts=0.",
+      "evidence_ids": ["E4", "E5"]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Three native source-policy tests were skipped because native source assets were unavailable in this worktree. The sealed digest was nevertheless independently checked against both complete raw #166 traces, and the selected-scene parser tests passed under the zero-step guard.",
+      "evidence_ids": ["E1", "E4"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "reference-166",
+      "description": "Copied immutable #166 committed results and formal summary, raw capture traces and manifests, ledger, qualification model identity, historical analyzer source, and independent digest verification output."
+    },
+    {
+      "id": "E2",
+      "path": "reference-166/rejected-whole-row-hash-check.json",
+      "description": "Preserved the initial rejected all-row hash candidate and why the historical selected-field canonicalization is authoritative."
+    },
+    {
+      "id": "E3",
+      "path": "final-commit.patch",
+      "description": "Full committed issue #177 change set for code, protocol, task config, design, tests, and closeout."
+    },
+    {
+      "id": "E4",
+      "path": "zero-physics-validation",
+      "description": "Focused unit test command/output/return code, protocol and identity static checks, design-scope review, and preserved rejected hash attempt."
+    },
+    {
+      "id": "E5",
+      "path": "postcommit-state.json",
+      "description": "Post-commit exact HEAD and parent, clean detached worktree, task/protocol hash checks, changed paths, and zero-physics/attempt counts."
+    },
+    {
+      "id": "E6",
+      "path": "initial_state.txt",
+      "description": "Initial frozen Praxis repository, issue, branch, task path, starting HEAD, and clean detached worktree identity."
+    }
+  ]
+}

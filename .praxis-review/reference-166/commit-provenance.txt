@@ -1,0 +1,6 @@
+result_commit=6f67769851aaffed1c1826d138293e52265dbba7
+result_parent=9e82e56ac2a5db63d7834e86ce402d542bf10ae8
+result_subject=docs: close out shared transfer formal v2
+publication_commit=076f72dfcbab32dbed0c364b5f88f753f500123e
+publication_parent=6f67769851aaffed1c1826d138293e52265dbba7
+publication_subject=Publish review evidence for issue #166

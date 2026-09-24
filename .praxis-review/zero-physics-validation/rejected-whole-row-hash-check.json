@@ -1,0 +1,7 @@
+{
+  "attempt": "initial exploratory canonicalization over all stable row fields, excluding only wall_time_s and policy_wall_s",
+  "combined_1_sha256": "a01da115e95dfecfc3387638740e338cb14ff422e14c3b3e02934203d8001857",
+  "combined_2_sha256": "a01da115e95dfecfc3387638740e338cb14ff422e14c3b3e02934203d8001857",
+  "matches_sealed_digest": false,
+  "resolution": "Rejected as the wrong algorithm after reading the exact #166 schema-1 analyzer; that analyzer hashes only qpos, qvel, target, and applied as concatenated compact canonical JSON objects. The independent source-specific recomputation is recorded in reference-verification.json."
+}

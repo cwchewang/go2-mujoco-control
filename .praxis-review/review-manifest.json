@@ -1,0 +1,338 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6"
+  ],
+  "issue_number": 177,
+  "local_full_evidence_retained": true,
+  "omitted": [
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_1.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "6f904bcff0be69ecc6a027088125ee8b0b901fc7d351713390a6d9cc504e02dd",
+      "size": 13985183
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_2.jsonl",
+      "reason": "file exceeds review per-file size limit",
+      "sha256": "3bd28bc459b022fa150a78b5e44b3d360efd004feb7ff352e31bb85b8b346b6c",
+      "size": 13985125
+    }
+  ],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "bfb5752667c68780f976b11457eab0f54b2a7c404c1af4f18d48f55a7c3d6d43",
+      "size": 5882
+    },
+    {
+      "path": "index.json",
+      "sha256": "0f6db110c5f16199b80486ee094cec3727e14d4386447faaf0a1d5166ae7f188",
+      "size": 10359
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "390dc8bc0a2650c5426f34677b1b0fecb5be8f0dafdcf29f1676a4fc23657a6f",
+      "size": 504
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/baseline_episode-at-166.py",
+      "sha256": "69bc89674920cbda610a6498718333314e7ea75c8239cbfff1baf44900925317",
+      "size": 16267
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/admission.json",
+      "sha256": "8f157b74f7cefc1052480e859d72adb040d44f08ffb08167ca679e6a23bde188",
+      "size": 2129
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/authorization.json",
+      "sha256": "d5118656ecc13233cbe89d1f4768d99e72a9e3a1c0ef3ad475d46d18d9abfba6",
+      "size": 378
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/campaign-claim.json",
+      "sha256": "364aeaf92edf7b2e28acf930d8f8bf33118c63cd7fdd5989854dbdf9a5b82305",
+      "size": 281
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_1_analysis.json",
+      "sha256": "11686f3ec9b466abe1babc510bc42731721d698b49c3d866475927189fe18f06",
+      "size": 694
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_1_claim.json",
+      "sha256": "5d516b49d20c8afbeb3b277f8cd0ca7258239641d49a25531ae72b30230e1f56",
+      "size": 301
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_2_analysis.json",
+      "sha256": "2e87a6d6ce35629b249f3349bdf61731d15889cf7f82de2a502e1c48c821c824",
+      "size": 694
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/combined_2_claim.json",
+      "sha256": "255ab6f743ceccea4daead9a1105fc7b7e4b6c00e4f539a9f4ae043303d54fed",
+      "size": 301
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/manifest.json",
+      "sha256": "165249ddff98ac8ede3aaa8e3945d7a16fef73ba81e2efc56c18febbca9a473c",
+      "size": 1383
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/preflight.json",
+      "sha256": "55bdeb30176c1d74036e2b3fb3b6e78f892558dd9fa72d220f7eb9e806c2af47",
+      "size": 7923
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/preflight.stdout",
+      "sha256": "55bdeb30176c1d74036e2b3fb3b6e78f892558dd9fa72d220f7eb9e806c2af47",
+      "size": 7923
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/preparation-reference.json",
+      "sha256": "aec81d5e81203fe636dd1465847c5393d059411853d9466249c8d92542d7b424",
+      "size": 232
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/protocol.json",
+      "sha256": "5fb20ff3a260059297201330d618c0ab82dedb7408c8b372a3fdd9a6be31f596",
+      "size": 1590
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/capture/started.json",
+      "sha256": "37c86b83096f0a4a13c333321f40be9a9ec9b3a106253a85c6f7fb27834b6598",
+      "size": 105
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/commit-provenance.txt",
+      "sha256": "2aa16f6b6eef3f98ef1d8f71dc11a9d31c56aeb8f6ec10159ea4b2f53bd8998f",
+      "size": 346
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/committed-formal-summary.json",
+      "sha256": "77d631d572ce490c75fbd31c052b22109795d48a5954ef6314e9653efa08c7fe",
+      "size": 4684
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/committed-results.md",
+      "sha256": "3483dabc7ec125dd04f5f6d3bdf1defb8e5f1d11b2edba33399bd3a912aed321",
+      "size": 4497
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/formal-RESULTS.md",
+      "sha256": "3483dabc7ec125dd04f5f6d3bdf1defb8e5f1d11b2edba33399bd3a912aed321",
+      "size": 4497
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/go2.xml",
+      "sha256": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+      "size": 15711
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/independent-hash-command.stdout",
+      "sha256": "759507b1b799f7ace1332e9091addb3e369a687af89ebb492627fd148c305061",
+      "size": 214
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/ledger/campaign.json",
+      "sha256": "364aeaf92edf7b2e28acf930d8f8bf33118c63cd7fdd5989854dbdf9a5b82305",
+      "size": 281
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/ledger/combined_1.json",
+      "sha256": "5d516b49d20c8afbeb3b277f8cd0ca7258239641d49a25531ae72b30230e1f56",
+      "size": 301
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/ledger/combined_2.json",
+      "sha256": "255ab6f743ceccea4daead9a1105fc7b7e4b6c00e4f539a9f4ae043303d54fed",
+      "size": 301
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/ledger-sha256sums.txt",
+      "sha256": "91ca154e3566aeeb21f862cb61de469a4ca585b4721e9320b4f6fdbbcd5c7111",
+      "size": 601
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/phase2_flat.xml",
+      "sha256": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+      "size": 860
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/pre_capture_boundary.json",
+      "sha256": "f61997ab2eeaa94560a1605e806c245ac80c534b3cc67327dd76627b226c19eb",
+      "size": 1331
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/qualification-admission.json",
+      "sha256": "f069777600c73ea8fec519907bcd3560003820412f8fc7bcf09c93edb6b0b1b4",
+      "size": 512696
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/recompute_sealed_trace.py",
+      "sha256": "4dbca1590d7fd49accb0d50c7be831555e11876da15e24f915952cc081a8fc67",
+      "size": 866
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/reference-verification-command.stdout",
+      "sha256": "ca849e5d4e1a546151135bd095be64e41f8d02683405a61cb685cebb0047eab0",
+      "size": 1766
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/reference-verification.json",
+      "sha256": "ca849e5d4e1a546151135bd095be64e41f8d02683405a61cb685cebb0047eab0",
+      "size": 1766
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/rejected-whole-row-hash-check.json",
+      "sha256": "5e3142ca8dc9c50a6d1f36d9c88f55a63416d7bf1e239cd162f80aefd6e8a101",
+      "size": 640
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/source-closeout.json",
+      "sha256": "0389123c8bb6616020240b7b9c34e15d3567b34b2f9327b980838db0274cb567",
+      "size": 11278
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/source-package-index.json",
+      "sha256": "c1bde9e19bb14e1b8408bfc2c4fa566742a0c7328b06240e51055711d49b6b64",
+      "size": 55109
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/source-package-manifest.json",
+      "sha256": "6b307424aff2a842af71d8fb5fd49e8c05d239d0655cc0bd541304126feb426a",
+      "size": 500
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/task-166.md",
+      "sha256": "d020b400f2c049b9de26e8fa1f4e1cf0913720486d0b6fb12a9a0c0c7fb6d672",
+      "size": 7502
+    },
+    {
+      "evidence_id": "E1",
+      "path": "reference-166/verify_reference.py",
+      "sha256": "27be038ca1996ff2ca93f38ac39036d3316f7761ffeba175d37b3876a493e56f",
+      "size": 6569
+    },
+    {
+      "evidence_id": "E3",
+      "path": "final-commit.patch",
+      "sha256": "0014c1a5c7b148f29a94b372f0c8ee889c7fdc3f25ffcf651686792079c33d25",
+      "size": 19764
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/design-review.json",
+      "sha256": "d63efa4f3b8d84268ebc3975bbe7a5b338083ddc343241d5986a502868beeca4",
+      "size": 822
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/rejected-whole-row-hash-check.json",
+      "sha256": "5e3142ca8dc9c50a6d1f36d9c88f55a63416d7bf1e239cd162f80aefd6e8a101",
+      "size": 640
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/static-design-check.json",
+      "sha256": "e780fa79873ee674778fc9f3fe3818c97d7369db7678fd765642e322399896e1",
+      "size": 653
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/static-suite-command.txt",
+      "sha256": "326bddcccad710801df9d44a5b3bfeff711b7c5db66ad72230a457dff3ae14b0",
+      "size": 81
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/static-suite.rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "size": 2
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/static-suite.stderr",
+      "sha256": "3a7ab624553e327467dcf6cd240326d3313b63be58ebb10b6f941381d8fda018",
+      "size": 7127
+    },
+    {
+      "evidence_id": "E4",
+      "path": "zero-physics-validation/static-suite.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "evidence_id": "E5",
+      "path": "postcommit-state.json",
+      "sha256": "953246f7c756d7d681a5603dee97f4b574dc1f30dd394b59c6ee86b50d7eecef",
+      "size": 1172
+    },
+    {
+      "evidence_id": "E6",
+      "path": "initial_state.txt",
+      "sha256": "0935c092e5187dbd6a73295d1a1767216457ffb11d56c7267c459243b0d84355",
+      "size": 640
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+  "schema_version": 1,
+  "source_index_sha256": "0f6db110c5f16199b80486ee094cec3727e14d4386447faaf0a1d5166ae7f188",
+  "task_branch": "research/rl-capability-map-integrity-r2-20260924",
+  "task_commit": "42e92806f1b5b96057298d98b30b2611e470ddc4"
+}

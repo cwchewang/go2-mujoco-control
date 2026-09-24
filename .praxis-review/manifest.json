@@ -1,0 +1,13 @@
+{
+  "result_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "research/rl-capability-map-integrity-r2-20260924",
+    "issue_number": 177,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "42e92806f1b5b96057298d98b30b2611e470ddc4",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_INTEGRITY_R2_20260924.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-177"
+}

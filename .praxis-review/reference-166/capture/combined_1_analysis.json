@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "elapsed_s": 2.3561337570135947,
+  "failure": null,
+  "goal_pass": null,
+  "lateral_max_m": 0.06490106716002314,
+  "min_clearance_m": 0.27,
+  "policy_p50_ms": 0.3352929779794067,
+  "policy_p99_ms": 0.541720520122907,
+  "policy_updates": 599,
+  "progress_m": 10.486111570522883,
+  "steps": 6000,
+  "trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+  "verdict": "PASS",
+  "windows": [
+    {
+      "command": 1.0,
+      "end_tick": 6000,
+      "mae": 0.11411749029282782,
+      "mean_vx": 0.8858825097071722,
+      "rmse": 0.11919403374163143,
+      "samples": 5000,
+      "start_tick": 0
+    }
+  ],
+  "yaw_max_rad": 0.03719463073879735
+}

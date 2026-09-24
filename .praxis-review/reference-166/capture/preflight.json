@@ -1,0 +1,262 @@
+{
+  "changes": {
+    "auto_surfaces": [
+      "runner",
+      "runtime"
+    ],
+    "diff_base": "6c607e20c90c915e142a19fcdc8266680ae6e255",
+    "manual_surfaces": [],
+    "paths": [
+      ".github/workflows/repo-hygiene.yml",
+      "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+      "tools/research/identity.py",
+      "tools/research/preflight.py",
+      "tools/research/test_preflight_integration.py",
+      "tools/substrate/launch.py",
+      "tools/substrate/task.py",
+      "tools/substrate/tasks/rl_shared_transfer_combination_v1.json",
+      "tools/substrate/test_launch.py"
+    ],
+    "surfaces": [
+      "runner",
+      "runtime"
+    ]
+  },
+  "checks": [
+    {
+      "detail": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+      "name": "git_head_readable",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual_branch": "",
+        "actual_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+        "expected_branch": "research/shared-transfer-formal-v2-final-20260923",
+        "expected_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+        "head_matches": true,
+        "mode": "detached",
+        "pass": true,
+        "praxis_binding": {
+          "check_pass": true,
+          "complete": true,
+          "expected_transport_identity_complete": true,
+          "mismatches": {},
+          "missing": [],
+          "present": true,
+          "valid": true
+        },
+        "stderr": ""
+      },
+      "name": "expected_branch",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "check_pass": true,
+        "complete": true,
+        "expected_transport_identity_complete": true,
+        "mismatches": {},
+        "missing": [],
+        "present": true,
+        "valid": true
+      },
+      "name": "praxis_identity_binding",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+        "expected": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+      },
+      "name": "expected_head",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "",
+      "name": "worktree_clean_before_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "base": "6c607e20c90c915e142a19fcdc8266680ae6e255",
+        "error": ""
+      },
+      "name": "diff_base_resolved",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-166/tools/substrate/baseline.py",
+      "name": "runner_exists",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": null,
+      "name": "inprocess_has_no_domain",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-166/tools/substrate/baseline.py",
+      "name": "runner_python_syntax",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "declared and exact-head reviewed; no DDS sockets",
+      "name": "reviewed_inprocess_runner",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-166/_runs/substrate_attempts/rl-shared-transfer-combination-v1",
+      "name": "run_directory_fresh",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": [],
+      "name": "no_stale_runtime_process",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "additions": 0,
+        "changed": false,
+        "deletions": 0,
+        "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "baseline_runner_diff_generated",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "fingerprint": "f43594f0dec00b3c46ef53c18a7c99c864efe77676cf68e257a99e11289a5fec",
+        "manifest_sha256": "475dc54f849c68136d2e1c2df9f59afdcf2770ff22bef766e4fe24494882eebb",
+        "path": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/qualification",
+        "producer_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+      },
+      "name": "qualification_receipt_valid",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "surfaces": [
+          "runtime"
+        ],
+        "test_count": 0
+      },
+      "name": "changed_surface_has_no_live_test",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "approved_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+        "current_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+      },
+      "name": "sol_review_exact_head",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "after": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+        "before": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+      },
+      "name": "head_unchanged_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "",
+      "name": "worktree_clean_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "19c7a0482d95c670e3a42544eeedf63f0c02164e8126383d3168f0eddfafe392",
+      "name": "runner_unchanged_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "inside_repo": false,
+        "output": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/capture/preflight.json"
+      },
+      "name": "output_preserves_clean_worktree",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/capture/preflight.json",
+      "name": "output_fresh_outside_capture",
+      "severity": "hard",
+      "status": "PASS"
+    }
+  ],
+  "experiment_id": "rl-shared-transfer-combination-v1",
+  "git": {
+    "branch": "",
+    "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+  },
+  "hard_failure_count": 0,
+  "identity": {
+    "actual_branch": "",
+    "actual_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "expected_branch": "research/shared-transfer-formal-v2-final-20260923",
+    "expected_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "head_matches": true,
+    "mode": "detached",
+    "pass": true,
+    "praxis_binding": {
+      "check_pass": true,
+      "complete": true,
+      "expected_transport_identity_complete": true,
+      "mismatches": {},
+      "missing": [],
+      "present": true,
+      "valid": true
+    }
+  },
+  "output": {
+    "path": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/capture/preflight.json",
+    "written": true
+  },
+  "pass": true,
+  "qualification": {
+    "fingerprint": "f43594f0dec00b3c46ef53c18a7c99c864efe77676cf68e257a99e11289a5fec",
+    "manifest_sha256": "475dc54f849c68136d2e1c2df9f59afdcf2770ff22bef766e4fe24494882eebb",
+    "path": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/qualification",
+    "producer_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8"
+  },
+  "repo_root": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-166",
+  "runner_diff": {
+    "additions": 0,
+    "changed": false,
+    "deletions": 0,
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "schema_version": 2,
+  "sol_review": {
+    "approved_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "auto_trigger_surfaces": [
+      "runtime"
+    ],
+    "current_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "required": true
+  },
+  "tests": [],
+  "warning_count": 0
+}

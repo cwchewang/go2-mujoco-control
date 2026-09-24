@@ -1,0 +1,28 @@
+{
+  "praxis_fields": {
+    "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+    "PRAXIS_ISSUE_NUMBER": "166",
+    "PRAXIS_TASK_BRANCH": "research/shared-transfer-formal-v2-final-20260923",
+    "PRAXIS_TASK_COMMIT": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "PRAXIS_TASK_PATH": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md"
+  },
+  "head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "detached_identity_validation": "PASS",
+  "tracked_worktree_clean": true,
+  "review_tips_current_and_validated": {
+    "science": "ace65bec9fdcad8a52d29fc3cae0d113246d7312",
+    "execution": "16810592cbc342ed29d3ce92f22efe6062516bb5"
+  },
+  "review_validation": "PASS",
+  "qualification_reference": {
+    "path": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-166/20260923T233125Z-9e82e56ac2a5/formal/qualification",
+    "manifest_sha256": "475dc54f849c68136d2e1c2df9f59afdcf2770ff22bef766e4fe24494882eebb",
+    "producer_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+    "fingerprint": "f43594f0dec00b3c46ef53c18a7c99c864efe77676cf68e257a99e11289a5fec"
+  },
+  "prepared_manifest_sha256": "58d2cb99d5b13c014e9e2f750588b34b0214c75201159df7dcc802696afceb1e",
+  "prepared_readiness": "READY_AWAITING_START",
+  "physics_steps": 0,
+  "authorization_valid": true,
+  "campaign_ledger_exists": false
+}

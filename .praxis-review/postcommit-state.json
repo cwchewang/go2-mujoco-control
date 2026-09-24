@@ -1,0 +1,25 @@
+{
+  "changed_paths": [
+    "docs/research/RL_CAPABILITY_MAP_20260924.md",
+    "docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md",
+    "tools/substrate/baseline.py",
+    "tools/substrate/baseline_episode.py",
+    "tools/substrate/baseline_verify.py",
+    "tools/substrate/protocols/rl_capability_map_v1.json",
+    "tools/substrate/tasks/rl_capability_map_v1.json",
+    "tools/substrate/test_baseline.py"
+  ],
+  "commit": "00d694dde213fb6862a161374e423261d13ab42b",
+  "detached_head": true,
+  "diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "final_commit_patch_sha256": "0014c1a5c7b148f29a94b372f0c8ee889c7fdc3f25ffcf651686792079c33d25",
+  "logical_task_branch": "research/rl-capability-map-integrity-r2-20260924",
+  "parent": "42e92806f1b5b96057298d98b30b2611e470ddc4",
+  "physics_steps": 0,
+  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "reference_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+  "scientific_attempts": 0,
+  "status": "PASS",
+  "task_config_sha256": "7d4f1ac94765bc05fea0fcdb7f3d1e55d515d3371641bef203baf794d69be2a1",
+  "worktree_clean": true
+}

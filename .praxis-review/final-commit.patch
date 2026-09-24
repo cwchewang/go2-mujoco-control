@@ -1,0 +1,393 @@
+commit 00d694dde213fb6862a161374e423261d13ab42b
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 10:03:00 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 10:03:00 2026 +0800
+
+    Bind capability map reference integrity
+
+diff --git a/docs/research/RL_CAPABILITY_MAP_20260924.md b/docs/research/RL_CAPABILITY_MAP_20260924.md
+index f3b029d..321f838 100644
+--- a/docs/research/RL_CAPABILITY_MAP_20260924.md
++++ b/docs/research/RL_CAPABILITY_MAP_20260924.md
+@@ -1,5 +1,8 @@
+ # RL capability map design — 2026-09-24
+ 
++This design includes the prospective reference-integrity binding from the
++[integrity r2 closeout](../validation/rl_capability_map_integrity_r2_20260924/RESULTS.md).
++
+ ## Decision served
+ 
+ After the shared-model, shared-home, ten-step-start, adapter deployment passed
+@@ -94,7 +97,7 @@ foot-center lateral offset and 0.022 m foot radius from the scene edge.
+ 
+ | Order / case | Changed variable and command `[vx,vy,wz]` | Horizon / metric window | Success gate and question | Attempt / progression |
+ |---|---|---|---|---|
+-| 1 `flat_reference` | Flat scene; `[1.0,0,0]` m/s. | 6,000 ticks / ticks [1,000,6,000). | Existing flat reference gates above. If it does not pass, all later cases remain `NOT_RUN`; no terrain interpretation is valid. | 1; sentinel. |
++| 1 `flat_reference` | Flat scene; `[1.0,0,0]` m/s. | 6,000 ticks / ticks [1,000,6,000). | Existing flat reference gates above and exact equality with sealed #166 qpos/qvel/target/applied digest `1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484`. A digest mismatch is `INTEGRITY_STOP`; all dependent cases remain `NOT_RUN`. | 1; sentinel. |
+ | 2 `flat_half_speed` | Flat; `[0.5,0,0]` m/s, the pinned class-range endpoint and half the verified reference speed. | 6,000 / [1,000,6,000). | Forward MAE gate; lateral displacement and yaw excursion each <=0.30. Screens the intermediate speed condition. | 1; continue after performance failure. |
+ | 3 `flat_reverse_probe` | Flat; `[-0.5,0,0]` m/s. | 6,000 / [1,000,6,000). | Reverse-axis MAE gate; uncommanded lateral displacement and yaw excursion each <=0.30. Screens reverse command semantics. | 1; continue after performance failure. |
+ | 4 `flat_lateral_probe` | Flat; `[0,0.25,0]` m/s, half the pinned initial positive lateral range. | 2,500 / [100,2,500). | Lateral-axis MAE gate; forward displacement and yaw excursion each <=0.30; absolute lateral safety limit remains 1.50 m. Screens the lateral input channel with margin to its configured range. | 1; continue after performance failure. |
+@@ -119,7 +122,11 @@ route compliance, and maximum goal-hold ticks, including failed cases.
+   lateral displacement above 1.5 m. No later case runs.
+ - `INTEGRITY_STOP`: a prepared bundle, source identity, scene fingerprint, or
+   campaign claim changes after readiness, or a declared deterministic trace
+-  comparison disagrees. No retry or continuation.
++  comparison disagrees. The `flat_reference` trace must match the sealed #166
++  qpos/qvel/target/applied digest exactly. A mismatch overrides performance
++  classification, preserves the observed digest and raw trace, consumes only
++  the already-started sentinel attempt, and prevents every dependent case from
++  running. No retry or continuation.
+ - `UNSUPPORTED_SCENE_PREFLIGHT_FAILURE` / `PREFLIGHT_FAILURE`: a scene does not
+   match its declared world-geometry contract or another required qualification,
+   review, identity, environment, or fresh-preflight gate fails. No scientific
+@@ -168,8 +175,9 @@ python -m tools.substrate.baseline verify \
+ ```
+ 
+ The task file pins the current logical task branch, protocol hash, and parent
+-commit. A later Praxis task must bind the final design commit and its own logical
+-identity before capture. This design task authorizes no capture.
++commit. The capability-map integrity task updates that binding alongside this
++digest. A later Praxis task must bind the final design commit and its own
++logical identity before capture. This design task authorizes no capture.
+ 
+ ## Self-review
+ 
+@@ -192,6 +200,13 @@ The review identified three issues and repaired them before this freeze:
+    sends each case's declared three-axis command through the shape check and
+    verifies the live `MjData` and time remain unchanged. The preparation test
+    runs under the zero-step guard.
++4. The flat sentinel now binds the exact deterministic qpos/qvel/target/applied
++   digest sealed by formal #166. Both preserved #166 traces independently
++   reproduce the protocol digest under the historical schema-1 canonicalization
++   and match row-by-row on those four fields. Capture classifies a mismatch as
++   `INTEGRITY_STOP`; offline verification recomputes the raw trace digest and
++   checks the same expected protocol digest before accepting the stored result.
++   Schema-1 protocols without this binding keep their historical behavior.
+ 
+ Historical schema-1 analysis remains on its original code path. The sealed
+ baseline and shared-transfer results are not rewritten or rerun.
+diff --git a/docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md b/docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md
+new file mode 100644
+index 0000000..2ec9cb0
+--- /dev/null
++++ b/docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md
+@@ -0,0 +1,58 @@
++# RL capability-map integrity r2 closeout — 2026-09-24
++
++## Result
++
++**PASS.** The frozen capability-map design now binds its `flat_reference`
++sentinel to the exact sealed #166 qpos/qvel/target/applied trace digest. The
++change is prospective and leaves the nine-case matrix, thresholds, retry
++policy, and all #166 artifacts unchanged. No MuJoCo plant integration or
++scientific campaign was run: `physics_steps=0`, `scientific_attempts=0`. [E1, E3, E4]
++
++The Praxis task identity is issue **#177**, branch
++`research/rl-capability-map-integrity-r2-20260924`, starting HEAD
++`42e92806f1b5b96057298d98b30b2611e470ddc4`. The task config now binds this
++branch, the updated protocol hash
++`0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803`, and the
++frozen parent `754ceb38e2bd8b1c60ff9c63db0f8326943b17f2`. [E5]
++
++## Sealed reference audit
++
++The committed #166 `RESULTS.md` and publication evidence identify both
++`combined_1` and `combined_2` as PASS with the same digest. Independent
++recomputation from both preserved 6,001-row raw traces, using the exact
++historical schema-1 canonicalization over only `qpos`, `qvel`, `target`, and
++`applied`, returns
++`1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484` for each.
++The four streams also match row-by-row. The capture protocol binds the flat
++scene, shared-home reset, adapter, tick-10 first inference, `[1.0, 0.0, 0.0]`
++command, source commit and checkpoint hash. The qualification evidence records
++the shared `go2.xml` and `phase2_flat.xml` hashes and physical model fingerprint.
++The offline #166 closeout reports `VERIFIED`, two consumed attempts, and zero
++physics steps. [E1, E2]
++
++## Repair and stop behavior
++
++The schema-2 `flat_reference` case now declares the sealed digest. Protocol
++validation requires exactly one well-formed binding on the first case. Capture
++compares its recomputed trajectory digest after writing and syncing the raw
++trace; mismatch records the expected and observed digests, classifies the case
++as `INTEGRITY_STOP`, preserves the started sentinel attempt, and exits before
++any dependent case. The offline verifier independently recomputes the raw
++trajectory and applies the same expected-digest check before comparing the
++stored result. Schema-1 cases without the binding remain on their historical
++path. [E3]
++
++Focused tests cover protocol binding validation, matching and mismatching
++digests, mismatch precedence over performance failure, one started sentinel
++claim, dependent-case suppression, and schema-1 no-binding behavior. The
++relevant static/zero-physics suite passed: 65 tests ran, with three native
++source-asset tests skipped because their required native source assets were
++unavailable. The selected-scene parser tests ran with the zero-step guard.
++[E4]
++
++## Scope
++
++No scientific attempts were made. The immutable #166 results, raw capture,
++ledger, and source artifacts were copied into the Praxis evidence package for
++this review; the source artifacts were not modified. No retry, threshold
++change, case change, or MuJoCo integration was introduced. [E1, E5]
+diff --git a/tools/substrate/baseline.py b/tools/substrate/baseline.py
+index 584b1ae..136830e 100644
+--- a/tools/substrate/baseline.py
++++ b/tools/substrate/baseline.py
+@@ -12,6 +12,8 @@ from .baseline_episode import (
+     UnsupportedSceneError,
+     analyze,
+     command_at,
++    expected_reference_digest,
++    enforce_reference_digest,
+     episode,
+     make_policy,
+     reference_inputs,
+@@ -69,6 +71,7 @@ def validate_capability_protocol(protocol):
+     ids = [case.get("id") for case in cases]
+     if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
+         raise ValueError("capability-map cases must have unique IDs and lead with reference")
++    expected_reference_digest(protocol)
+     ranges = protocol["engineering_probe_envelope"]
+     bounds = {
+         "vx": ranges["vx_mps"],
+@@ -466,6 +469,7 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
+                     rows = [strict_json(line) for line in raw.read_text().splitlines()]
+                     result = analyze(rows, case, protocol)
+                     result["elapsed_s"] = time.monotonic() - started
++                    result = enforce_reference_digest(result, case)
+                     reference_case = repeat_reference(case)
+                     if (
+                         reference_case is not None
+diff --git a/tools/substrate/baseline_episode.py b/tools/substrate/baseline_episode.py
+index b654d5e..aad234a 100644
+--- a/tools/substrate/baseline_episode.py
++++ b/tools/substrate/baseline_episode.py
+@@ -295,6 +295,44 @@ def repeat_reference(case):
+     return None
+ 
+ 
++def expected_reference_digest(protocol):
++    """Return the frozen schema-2 reference digest and reject missing bindings."""
++    if protocol.get("schema") != 2:
++        return None
++    cases = protocol.get("cases", [])
++    if not cases or cases[0].get("id") != "flat_reference":
++        raise ValueError("sealed reference must be the first capability case")
++    expected = cases[0].get("reference_trace_sha256")
++    if (
++        not isinstance(expected, str)
++        or len(expected) != 64
++        or any(char not in "0123456789abcdef" for char in expected)
++        or any("reference_trace_sha256" in case for case in cases[1:])
++    ):
++        raise ValueError("invalid sealed reference trace digest")
++    return expected
++
++
++def enforce_reference_digest(result, case, expected=None):
++    """Classify a changed sealed reference after independently hashing its trace."""
++    if expected is None:
++        expected = case.get("reference_trace_sha256")
++    if expected is None:
++        return result
++    observed = result["trace_sha256"]
++    matched = observed == expected
++    result["reference_integrity"] = {
++        "expected_trace_sha256": expected,
++        "observed_trace_sha256": observed,
++        "matches": matched,
++    }
++    if not matched:
++        result["verdict"] = "INTEGRITY_STOP"
++        result["integrity_failure"] = "sealed_reference_trace_mismatch"
++        result["failure_classes"] = ["INTEGRITY_STOP"]
++    return result
++
++
+ def stop_after(protocol, verdict):
+     if verdict in ("SAFETY_STOP", "INTEGRITY_STOP"):
+         return True
+diff --git a/tools/substrate/baseline_verify.py b/tools/substrate/baseline_verify.py
+index 8588f34..b34684d 100644
+--- a/tools/substrate/baseline_verify.py
++++ b/tools/substrate/baseline_verify.py
+@@ -9,6 +9,8 @@ from .baseline_episode import (
+     SourcePolicy,
+     analyze,
+     command_at,
++    expected_reference_digest,
++    enforce_reference_digest,
+     repeat_reference,
+     safety,
+     stop_after,
+@@ -397,6 +399,7 @@ def verify(capture, prepared_path, output):
+             protocol == strict_json((prepared_path / "protocol.json").read_text()),
+             "protocol mismatch",
+         )
++        sealed_reference = expected_reference_digest(protocol)
+         reference = strict_json((capture / "preparation-reference.json").read_text())
+         require(
+             reference["manifest_sha256"] == digest(prepared_path / "manifest.json"),
+@@ -496,6 +499,11 @@ def verify(capture, prepared_path, output):
+                     prepared["source_inputs"][".substrate/rl/policy.pt"],
+                 )
+             result, audit = audit_rows(rows, plant, policy, case, protocol)
++            result = enforce_reference_digest(
++                result,
++                case,
++                sealed_reference if case["id"] == "flat_reference" else None,
++            )
+             reference_case = repeat_reference(case)
+             if (
+                 reference_case is not None
+diff --git a/tools/substrate/protocols/rl_capability_map_v1.json b/tools/substrate/protocols/rl_capability_map_v1.json
+index 07eb085..10af6d2 100644
+--- a/tools/substrate/protocols/rl_capability_map_v1.json
++++ b/tools/substrate/protocols/rl_capability_map_v1.json
+@@ -30,6 +30,7 @@
+       "track_axes": ["vx"],
+       "flat_probe": true,
+       "reference_gate": true,
++      "reference_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+       "requires": [],
+       "measurement_delay_ticks": 1000
+     },
+diff --git a/tools/substrate/tasks/rl_capability_map_v1.json b/tools/substrate/tasks/rl_capability_map_v1.json
+index 6aaebab..aa11376 100644
+--- a/tools/substrate/tasks/rl_capability_map_v1.json
++++ b/tools/substrate/tasks/rl_capability_map_v1.json
+@@ -1,7 +1,7 @@
+ {
+   "schema": 1,
+-  "branch": "research/rl-capability-map-design-20260924",
++  "branch": "research/rl-capability-map-integrity-r2-20260924",
+   "protocol": "tools/substrate/protocols/rl_capability_map_v1.json",
+-  "protocol_sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+-  "diff_base": "1139827bd7faf9efd05a25c2ee0ce46dd78c833e"
++  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
++  "diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2"
+ }
+diff --git a/tools/substrate/test_baseline.py b/tools/substrate/test_baseline.py
+index 807570e..2aa9831 100644
+--- a/tools/substrate/test_baseline.py
++++ b/tools/substrate/test_baseline.py
+@@ -13,6 +13,8 @@ from .baseline_episode import (
+     UnsupportedSceneError,
+     analyze,
+     command_at,
++    enforce_reference_digest,
++    expected_reference_digest,
+     episode,
+     safety,
+ )
+@@ -370,6 +372,108 @@ class BaselineContractTests(unittest.TestCase):
+         with self.assertRaisesRegex(ValueError, "probe envelope"):
+             validate_capability_protocol(invalid)
+ 
++    def test_capability_reference_digest_is_required_and_schema_one_stays_unbound(self):
++        expected = "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484"
++        self.assertEqual(expected_reference_digest(CAPABILITY_PROTOCOL), expected)
++        self.assertIsNone(expected_reference_digest(COMBINED_PROTOCOL))
++        missing = {
++            **CAPABILITY_PROTOCOL,
++            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
++        }
++        del missing["cases"][0]["reference_trace_sha256"]
++        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
++            validate_capability_protocol(missing)
++        misplaced = {
++            **CAPABILITY_PROTOCOL,
++            "cases": [dict(c) for c in CAPABILITY_PROTOCOL["cases"]],
++        }
++        misplaced["cases"][1]["reference_trace_sha256"] = expected
++        with self.assertRaisesRegex(ValueError, "sealed reference trace digest"):
++            validate_capability_protocol(misplaced)
++        legacy = {"verdict": "PASS", "trace_sha256": expected}
++        self.assertEqual(
++            enforce_reference_digest(legacy.copy(), COMBINED_PROTOCOL["cases"][0]),
++            legacy,
++        )
++
++    def test_sealed_reference_digest_match_and_performance_mismatch_classification(self):
++        case = CAPABILITY_PROTOCOL["cases"][0]
++        matched = enforce_reference_digest(
++            {
++                "verdict": "PASS",
++                "failure": None,
++                "failure_classes": [],
++                "trace_sha256": case["reference_trace_sha256"],
++            },
++            case,
++        )
++        self.assertEqual(matched["verdict"], "PASS")
++        self.assertTrue(matched["reference_integrity"]["matches"])
++        performance_failure = enforce_reference_digest(
++            {
++                "verdict": "PERFORMANCE_FAIL",
++                "failure": None,
++                "failure_classes": ["TRACKING_FAILURE"],
++                "trace_sha256": "0" * 64,
++            },
++            case,
++            expected_reference_digest(CAPABILITY_PROTOCOL),
++        )
++        self.assertEqual(performance_failure["verdict"], "INTEGRITY_STOP")
++        self.assertEqual(performance_failure["failure_classes"], ["INTEGRITY_STOP"])
++        self.assertEqual(performance_failure["trace_sha256"], "0" * 64)
++
++    def test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents(self):
++        sentinel = {
++            **CAPABILITY_PROTOCOL["cases"][0],
++            "horizon_ticks": 1,
++            "first_inference_tick": 10,
++            "measurement_delay_ticks": 0,
++        }
++        rows, claims = [], []
++        episode(
++            FakePlant(),
++            FakePolicy(),
++            sentinel,
++            CAPABILITY_PROTOCOL,
++            rows.append,
++            lambda: claims.append(sentinel["id"]),
++        )
++        self.assertEqual(claims, ["flat_reference"])
++        self.assertTrue(trace_consumed(rows))
++        raw_result = analyze(rows, sentinel, CAPABILITY_PROTOCOL)
++        self.assertNotEqual(
++            raw_result["trace_sha256"], sentinel["reference_trace_sha256"]
++        )
++        mismatched = enforce_reference_digest(raw_result, sentinel)
++        self.assertEqual(mismatched["verdict"], "INTEGRITY_STOP")
++        self.assertEqual(
++            mismatched["integrity_failure"], "sealed_reference_trace_mismatch"
++        )
++        self.assertEqual(mismatched["failure_classes"], ["INTEGRITY_STOP"])
++        self.assertTrue(stop_after(CAPABILITY_PROTOCOL, mismatched["verdict"]))
++        self.assertEqual(
++            mismatched["reference_integrity"]["observed_trace_sha256"],
++            raw_result["trace_sha256"],
++        )
++        self.assertFalse(mismatched["reference_integrity"]["matches"])
++        later_case = CAPABILITY_PROTOCOL["cases"][1]
++        self.assertFalse(
++            all(
++                {"flat_reference": mismatched}.get(name, {}).get("verdict") == "PASS"
++                for name in later_case["requires"]
++            )
++        )
++        attempts = [
++            {"case": sentinel["id"], "status": mismatched["verdict"]},
++            {"case": later_case["id"], "status": "NOT_RUN"},
++        ]
++        self.assertEqual(
++            [item["status"] for item in attempts], ["INTEGRITY_STOP", "NOT_RUN"]
++        )
++        self.assertEqual(len(claims), 1)
++        self.assertFalse(campaign_characterized(attempts, CAPABILITY_PROTOCOL))
++
+     def test_capability_progression_retains_performance_and_stops_integrity(self):
+         self.assertFalse(stop_after(CAPABILITY_PROTOCOL, "PERFORMANCE_FAIL"))
+         self.assertTrue(stop_after(CAPABILITY_PROTOCOL, "SAFETY_STOP"))

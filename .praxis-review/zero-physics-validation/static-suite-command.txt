@@ -1,0 +1,1 @@
+python3 -m unittest -v tools.substrate.test_baseline tools.substrate.test_launch

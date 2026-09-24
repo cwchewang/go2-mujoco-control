@@ -1,0 +1,70 @@
+test_base_collision_stops (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_analyzer_separates_tracking_and_goal_failures (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_progression_retains_performance_and_stops_integrity (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_protocol_freezes_three_axis_commands_and_budget (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_reference_digest_is_required_and_schema_one_stays_unbound (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_capability_yaw_probe_does_not_gate_requested_yaw_excursion (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_claim_before_step_and_source_cadence (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_analyzer_applies_reference_mean_gate (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_protocol_freezes_the_minimal_full_transfer (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_startup_cadence_runs_synthetically (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_combination_uses_declared_repeat_and_first_nonpass (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_emit_failure_prevents_step (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_failed_preflight_cannot_verify (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_independent_three_axis_projection_and_adapter_replay (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_initial_safety_stop_does_not_consume (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_metrics_body_frame_and_half_open_window (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_no_unused_terminal_inference (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_nonunit_terminal_orientation_preserves_metric_polynomial (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_protocol_source_identity_is_bound_to_existing_locks (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_safety_stops_without_extra_step (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_scene_and_preparation_failures_are_not_scientific_outcomes (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_schedule_transition_exact (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_sealed_reference_digest_match_and_performance_mismatch_classification (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_sealed_reference_mismatch_consumes_one_sentinel_and_stops_dependents (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_stairs_allow_high_world_height (tools.substrate.test_baseline.BaselineContractTests) ... ok
+test_nonworld_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_preparation_probe_checks_command_without_stepping_plant (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_selected_scenes_parse_and_match_world_collision_contracts (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_unlisted_collision_geometry_is_unsupported_at_preflight (tools.substrate.test_baseline.CapabilityMapSceneTests) ... ok
+test_all_models_zero_step_and_limit_location (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+test_source_adapter_initial_history_equivalence (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+test_telemetry_does_not_modify_live_data (tools.substrate.test_baseline.NativeBaselineTests) ... skipped 'native source assets required'
+test_detached_head_still_requires_clean_worktree (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_with_exact_praxis_binding_passes (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_with_incomplete_binding_fails (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_with_wrong_praxis_branch_fails (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_with_wrong_praxis_commit_fails (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_with_wrong_praxis_repository_fails (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_detached_head_without_praxis_binding_fails (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_named_expected_branch_still_passes (tools.substrate.test_launch.CurrentIdentityTests) ... ok
+test_analyzer_detects_stale_pd_even_when_torque_sum_valid (tools.substrate.test_launch.LaunchTests) ... ok
+test_analyzer_does_not_promote_endpoint_metric_failure (tools.substrate.test_launch.LaunchTests) ... ok
+test_analyzer_rejects_out_of_cadence_policy_update (tools.substrate.test_launch.LaunchTests) ... ok
+test_analyzer_rejects_truncation_duplicates_and_label_edits (tools.substrate.test_launch.LaunchTests) ... ok
+test_bad_quaternion_terminal_is_preserved_and_classified (tools.substrate.test_launch.LaunchTests) ... ok
+test_campaign_stops_after_first_failure_without_replacement (tools.substrate.test_launch.LaunchTests) ... ok
+test_campaign_three_passes_and_independent_reanalysis (tools.substrate.test_launch.LaunchTests) ... ok
+test_capture_rejects_unapproved_input_before_plant (tools.substrate.test_launch.LaunchTests) ... ok
+test_clock_drift_rejected (tools.substrate.test_launch.LaunchTests) ... ok
+test_command_boundaries (tools.substrate.test_launch.LaunchTests) ... ok
+test_entire_frozen_horizon_synthetic (tools.substrate.test_launch.LaunchTests) ... ok
+test_formal_verifier_requires_authorization_and_correct_consumption (tools.substrate.test_launch.LaunchTests) ... ok
+test_independent_watchdog_kills_signal_ignoring_owner (tools.substrate.test_launch.LaunchTests) ... ok
+test_initial_failure_never_consumes_attempt (tools.substrate.test_launch.LaunchTests) ... ok
+test_nonfoot_contact_stops (tools.substrate.test_launch.LaunchTests) ... ok
+test_outer_timeout_reaps_term_ignoring_test_group (tools.substrate.test_launch.LaunchTests) ... ok
+test_pd_recomputed_between_policy_updates (tools.substrate.test_launch.LaunchTests) ... ok
+test_posture_stops_before_next_step (tools.substrate.test_launch.LaunchTests) ... ok
+test_preparation_is_not_start_authorization (tools.substrate.test_launch.LaunchTests) ... ok
+test_repeatability_is_not_inferred_from_three_metric_passes (tools.substrate.test_launch.LaunchTests) ... ok
+test_review_is_exact_and_independent (tools.substrate.test_launch.LaunchTests) ... ok
+test_streaming_digest_matches_frozen_canonical_json_bytes (tools.substrate.test_launch.LaunchTests) ... ok
+test_wall_alarm_interrupts_stalled_backend (tools.substrate.test_launch.LaunchTests) ... ok
+test_wall_timeout_stops (tools.substrate.test_launch.LaunchTests) ... ok
+test_zero_step_guard_covers_all_integrators_without_calling_them (tools.substrate.test_launch.LaunchTests) ... ok
+
+----------------------------------------------------------------------
+Ran 65 tests in 6.160s
+
+OK (skipped=3)

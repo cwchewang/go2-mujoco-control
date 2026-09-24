@@ -1,0 +1,20 @@
+{
+  "expected_changed_paths": [
+    "docs/research/RL_CAPABILITY_MAP_20260924.md",
+    "docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md",
+    "tools/substrate/baseline.py",
+    "tools/substrate/baseline_episode.py",
+    "tools/substrate/baseline_verify.py",
+    "tools/substrate/protocols/rl_capability_map_v1.json",
+    "tools/substrate/tasks/rl_capability_map_v1.json",
+    "tools/substrate/test_baseline.py"
+  ],
+  "no_live_capture": true,
+  "physics_steps": 0,
+  "protocol_only_change": "flat_reference.reference_trace_sha256",
+  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "scientific_attempts": 0,
+  "status": "PASS",
+  "task_branch": "research/rl-capability-map-integrity-r2-20260924",
+  "task_diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2"
+}

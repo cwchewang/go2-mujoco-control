@@ -1,0 +1,12 @@
+{
+  "diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "git_diff_check": "PASS",
+  "logical_branch": "research/rl-capability-map-integrity-r2-20260924",
+  "origin_task_branch_tip": "42e92806f1b5b96057298d98b30b2611e470ddc4",
+  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "reference_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+  "starting_head": "42e92806f1b5b96057298d98b30b2611e470ddc4",
+  "status": "PASS",
+  "task_path": "tools/substrate/tasks/rl_capability_map_v1.json",
+  "task_sha256": "7d4f1ac94765bc05fea0fcdb7f3d1e55d515d3371641bef203baf794d69be2a1"
+}
