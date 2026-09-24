@@ -1,10 +1,10 @@
 {
   "branch": "main",
-  "title": "Public RL source baseline",
-  "task": "docs/research/TASK_RL_BASELINE_20260923.md",
-  "result": "docs/validation/rl_baseline_20260923/RESULTS.md",
-  "stage": "source baseline characterized and sealed; ten cases consumed",
-  "scientific_status": "source 1m/s flat repeat/interface verified; low speed and drift limitations; stairs base-contact stop; full Gate 0 incomplete",
-  "last_live_head": "f0eaa4417d384f24dd31ab22c1bd70abfea76b25",
-  "next": "prospectively confirm the shared-model/home/ten-step-start/adapter combination; preserve the closed ten-case campaign"
+  "title": "Shared-transfer formal v2",
+  "task": "docs/research/TASK_SHARED_TRANSFER_FORMAL_V2_20260923.md",
+  "result": "docs/validation/shared_transfer_combination_formal_v2_20260923/RESULTS.md",
+  "stage": "shared model/home/ten-step-start/adapter combination confirmed; two-case formal campaign sealed",
+  "scientific_status": "1m/s flat shared-transfer capability verified twice; low-speed, terrain and general robustness remain incomplete; full Gate 0 incomplete",
+  "last_live_head": "9e82e56ac2a5db63d7834e86ce402d542bf10ae8",
+  "next": "extend the verified shared deployment into bounded terrain/direction capability mapping, then continue MJPC and targeted DIAL portions of Gate 0"
 }
