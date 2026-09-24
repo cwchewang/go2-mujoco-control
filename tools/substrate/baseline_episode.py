@@ -623,6 +623,7 @@ def analyze_capability_map(rows, case, protocol):
             flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
                 "flat_cross_axis_max"
             ]
+    flat_cross_axis_pass = bool(flat_cross_axis_pass)
 
     reference_pass = True
     reference_mean_vx = None
