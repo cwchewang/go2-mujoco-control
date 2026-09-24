@@ -1,0 +1,53 @@
+{
+  "cause": "baseline_verify.audit_preflight compares the recorded actual detached Git branch (empty) to the task logical branch; the capture preflight correctly records actual branch as empty and validates the logical branch in the detached Praxis identity.",
+  "captured_git_identity": {
+    "branch": "",
+    "head": "e40b0933572345f23b37e3bb06350518fde63e76"
+  },
+  "validated_detached_identity": {
+    "mode": "detached",
+    "actual_branch": "",
+    "expected_branch": "research/rl-capability-map-successor-20260924",
+    "actual_head": "e40b0933572345f23b37e3bb06350518fde63e76",
+    "expected_head": "e40b0933572345f23b37e3bb06350518fde63e76",
+    "head_matches": true,
+    "pass": true,
+    "praxis_binding": {
+      "present": true,
+      "complete": true,
+      "expected_transport_identity_complete": true,
+      "valid": true,
+      "check_pass": true,
+      "missing": [],
+      "mismatches": {}
+    }
+  },
+  "in_memory_only": true,
+  "persistent_source_or_bundle_modified": false,
+  "status": "DETACHED_IDENTITY_ADAPTER_VALIDATED",
+  "verifier": "tools.substrate.baseline_verify.verify",
+  "source_sha256": "f3da78d28ff2b9f99fa6750d57383ba855ab73e279f61cefba96d9af99f829ea",
+  "capture_manifest_sha256": "ef68bc0ae9161b2b2b616096a66a0fad6bbcf333ed987b44fb0471984c9498c7",
+  "prepared_manifest_sha256": "158f2bdafda8401a89a792d132d38000ae92741db7e2de122cc7f7cea977101d",
+  "result": {
+    "status": "VERIFIED",
+    "consumed": 9,
+    "physics_steps": 0
+  },
+  "sealed_reference_recomputed": {
+    "expected_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+    "matches": true,
+    "observed_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484"
+  },
+  "per_case_physics_steps": {
+    "flat_half_speed": 0,
+    "flat_lateral_probe": 0,
+    "flat_reference": 0,
+    "flat_reverse_probe": 0,
+    "flat_yaw_probe": 0,
+    "low_friction_cross": 0,
+    "repeated_steps_cross": 0,
+    "step_10cm_cross": 0,
+    "step_5cm_cross": 0
+  }
+}

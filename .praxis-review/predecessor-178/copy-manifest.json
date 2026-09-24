@@ -1,0 +1,543 @@
+{
+  "source_evidence_root": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-178/20260924T070418Z-0de58642d110",
+  "source_task_results_path": "docs/validation/rl_capability_map_formal_20260924/RESULTS.md",
+  "status": "BYTE_IDENTICAL_COPY_VERIFIED",
+  "files": [
+    {
+      "path": "RESULTS.md",
+      "sha256": "7fa35109540c286907017dd69f096f601f3db297027d0b988f25fe5ac074b845",
+      "bytes": 4858
+    },
+    {
+      "path": "capture-01/admission.json",
+      "sha256": "b7a93d78b5931ca4ab9e550888015051abb1d3906125fe43897cc8c1ce14998f",
+      "bytes": 1173
+    },
+    {
+      "path": "capture-01/authorization.json",
+      "sha256": "051ca0604a7a025ca618234c4bb529af483fe2cb928616f503aabe0883736be9",
+      "bytes": 378
+    },
+    {
+      "path": "capture-01/campaign-claim.json",
+      "sha256": "445d814db5208be91fce6f92030fe455784b24477d85b88439a781385a16a928",
+      "bytes": 277
+    },
+    {
+      "path": "capture-01/flat_reference.jsonl",
+      "sha256": "e9fdf647b55e69e8194687c6636ce3a02afba06b755f6d7011314973a122d494",
+      "bytes": 13985115
+    },
+    {
+      "path": "capture-01/flat_reference_claim.json",
+      "sha256": "a30571677b83d3e175b383bd6ef62d9cb0b0f74363efddc4a8355aa358769edb",
+      "bytes": 305
+    },
+    {
+      "path": "capture-01/manifest.json",
+      "sha256": "90d054c2acb590d1cb7ba4fafa256e27b66b97e47c3d3d50acd06ee3b983dcb0",
+      "bytes": 1010
+    },
+    {
+      "path": "capture-01/preflight.json",
+      "sha256": "a3860748802bcb029a1773cb8acb7e426882239e4adb812f9548a56741986aec",
+      "bytes": 7835
+    },
+    {
+      "path": "capture-01/preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "capture-01/preflight.stdout",
+      "sha256": "a3860748802bcb029a1773cb8acb7e426882239e4adb812f9548a56741986aec",
+      "bytes": 7835
+    },
+    {
+      "path": "capture-01/preparation-reference.json",
+      "sha256": "ec2fbde040c3cfa2f08c2af90208f4793136933b93aca42388b7a131d2098af3",
+      "bytes": 222
+    },
+    {
+      "path": "capture-01/protocol.json",
+      "sha256": "54c88799593a18b8374ce15750e35bed5080d9e25b1856b4bfe8ed1378d38531",
+      "bytes": 6865
+    },
+    {
+      "path": "capture-01/started.json",
+      "sha256": "3d7ff5d331f2b56fa11af7c85053d0238ed5855184d8a2c59f22f3c49ddeb2cd",
+      "bytes": 105
+    },
+    {
+      "path": "ledger-copy/SHA256SUMS",
+      "sha256": "04a7d52a643b9824bf6f1f5415e947b7d806100051b57fc3f13a19955322f9d3",
+      "bytes": 166
+    },
+    {
+      "path": "ledger-copy/campaign.json",
+      "sha256": "445d814db5208be91fce6f92030fe455784b24477d85b88439a781385a16a928",
+      "bytes": 277
+    },
+    {
+      "path": "ledger-copy/copy-report.json",
+      "sha256": "a4f526f1d87017ba6ad241034b541f7b04c09ba361a3c8b1ab14940b34787814",
+      "bytes": 474
+    },
+    {
+      "path": "ledger-copy/flat_reference.json",
+      "sha256": "a30571677b83d3e175b383bd6ef62d9cb0b0f74363efddc4a8355aa358769edb",
+      "bytes": 305
+    },
+    {
+      "path": "precheck/PRECHECK_PASS.json",
+      "sha256": "122947578b53505ec0114c2de11a25a81d954dcf3b193cda6a0f97c3e20395a6",
+      "bytes": 2152
+    },
+    {
+      "path": "prepared-01/admission.json",
+      "sha256": "1e25e87fd20c97760a87ab6dffd3c836b3354fa6437dc8d988dfee9ac0928645",
+      "bytes": 43492
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/rl/policy.pt",
+      "sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+      "bytes": 5208824
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/configs/go2.yaml",
+      "sha256": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+      "bytes": 1876
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/deploy_go2.py",
+      "sha256": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+      "bytes": 10959
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/utils.py",
+      "sha256": "58e576d2c285a16b491f62e55f75c49b15177d4b879cb1731180b47ca4a2d2b4",
+      "bytes": 4364
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_config.py",
+      "sha256": "0597eabb0aa9422240ea408e7bd3aa0ebc9ec36cc781d1e5fb26773ca3579362",
+      "bytes": 963
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_task.py",
+      "sha256": "bbfbb77ae8f90b0383af6003b554c47de75bea75b9f77e29a548cff123306330",
+      "bytes": 4469
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot.py",
+      "sha256": "8440d9a07e77039f82328fc572f10103c12fb23a0e72ab7a5e6123ac6417444d",
+      "bytes": 79288
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot_config.py",
+      "sha256": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+      "bytes": 17574
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config.py",
+      "sha256": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+      "bytes": 14073
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_fast_flat_move.py",
+      "sha256": "aa13e218835a5484a576c9cc1119bf9afd159e4f8643d045c94d10758e47967b",
+      "bytes": 15690
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla.py",
+      "sha256": "dde2daedff703aa9ded1cda58d36b5f9604288f5909a5e599134f70742060fbf",
+      "bytes": 14654
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla_with_dynamic_cmd.py",
+      "sha256": "000aa6d6d90131e988833ca222b3c5db0d6664f4a4b999f43b963076d11c55df",
+      "bytes": 14604
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_env.py",
+      "sha256": "0179982b0e832f08503f1cfaf5e9f4301358475daa32f30a0173ab0f3308165b",
+      "bytes": 3996
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/legged_gym/utils/helpers.py",
+      "sha256": "10ee7a59afd423e2d785df997fbca4075668ee845409eddff9779ad2fa63f6f5",
+      "bytes": 8029
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_0.obj",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "bytes": 1330465
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_1.obj",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "bytes": 811791
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_2.obj",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "bytes": 294090
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_3.obj",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "bytes": 379093
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_4.obj",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "bytes": 7776234
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_0.obj",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "bytes": 877174
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_1.obj",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "bytes": 326865
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_0.obj",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "bytes": 876538
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_1.obj",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "bytes": 327261
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/foot.obj",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "bytes": 1144729
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/height_field.png",
+      "sha256": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+      "bytes": 3258
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_0.obj",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "bytes": 2863864
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_1.obj",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "bytes": 2767918
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_0.obj",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "bytes": 2841868
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_1.obj",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "bytes": 1491320
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_0.obj",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "bytes": 2817674
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_1.obj",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "bytes": 1482261
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/wood.png",
+      "sha256": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+      "bytes": 941355
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_slope.xml",
+      "sha256": "f3b2f330897f219df6b243a8226ff6b4f2e9f9fee8f8d140c7b24dbdc7d4b941",
+      "bytes": 5103
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_stairs.xml",
+      "sha256": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+      "bytes": 11803
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/base.dae",
+      "sha256": "e52bebbb5c7ff1f6aedee620c9b5b349f6e965360ecc63a9bb743eeff2d0be64",
+      "bytes": 10727399
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf.dae",
+      "sha256": "29872fa1a435b92bc2b395fdfa7f0aee26101db3c494681896bd4ef24ee7883c",
+      "bytes": 1125517
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf_mirror.dae",
+      "sha256": "79c66be7ed06760bd5001c067a1fb0ac517f639d8b1a5f89be471903b3f359e1",
+      "bytes": 1125457
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/foot.dae",
+      "sha256": "ffbd95fd641866ce9bd277aa249b92dafc9148d70131fa2c52709a35ce5b710b",
+      "bytes": 506988
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/hip.dae",
+      "sha256": "8735e10617afe252cef0844c1d139d15bc6d4c653660d742fea9fe05c2704d8f",
+      "bytes": 4666421
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh.dae",
+      "sha256": "a622381ae308897ff143b8bbf02f075457c342b22984205040424a5a983246fa",
+      "bytes": 3884136
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh_mirror.dae",
+      "sha256": "c7bae0b0565c2aa4b7cc15a538d795e9153e0f10c821cc18429e92693172bdc6",
+      "bytes": 3896575
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml",
+      "sha256": "0ad2696c6c53701dbba34f1a9a2158e1c1e4f491eb114263b0f86ecadc9e40ac",
+      "bytes": 855
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/go2.xml",
+      "sha256": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+      "bytes": 11565
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_1.png",
+      "sha256": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+      "bytes": 2201
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_10.png",
+      "sha256": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+      "bytes": 2655
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_4.png",
+      "sha256": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+      "bytes": 2423
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_7.png",
+      "sha256": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+      "bytes": 2272
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/race_track.xml",
+      "sha256": "b5f5d9995429f71e38b7b37e98588c7ac8eb035a87ea1a62931fa91d0e5cc79c",
+      "bytes": 48500
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/stairs.xml",
+      "sha256": "d3e43ab7e11bf7a7320c45a5cbd42fd5991bca813452cb026da28cc8cf5ce922",
+      "bytes": 18890
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/resources/robots/go2/urdf/go2.urdf",
+      "sha256": "4f306754e9b3d73930ac8362aa456eb8912f2e886665618e7eced9627c1704a4",
+      "bytes": 24170
+    },
+    {
+      "path": "prepared-01/inputs/.substrate/upstream-go2-30e74dc5/rsl_rl/rsl_rl/modules/actor_critic_moe_cts.py",
+      "sha256": "ff3689a3cfdaf80246e7be76b9c5eae54054112f2d4b5750798980a8033e7d58",
+      "bytes": 5139
+    },
+    {
+      "path": "prepared-01/inputs/tools/substrate/rl_reference.lock.json",
+      "sha256": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b",
+      "bytes": 5841
+    },
+    {
+      "path": "prepared-01/inputs/tools/substrate/sources.lock.json",
+      "sha256": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+      "bytes": 885
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/base_0.obj",
+      "sha256": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+      "bytes": 1330465
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/base_1.obj",
+      "sha256": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+      "bytes": 811791
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/base_2.obj",
+      "sha256": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+      "bytes": 294090
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/base_3.obj",
+      "sha256": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+      "bytes": 379093
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/base_4.obj",
+      "sha256": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+      "bytes": 7776234
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/calf_0.obj",
+      "sha256": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+      "bytes": 877174
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/calf_1.obj",
+      "sha256": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+      "bytes": 326865
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/calf_mirror_0.obj",
+      "sha256": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+      "bytes": 876538
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/calf_mirror_1.obj",
+      "sha256": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+      "bytes": 327261
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/foot.obj",
+      "sha256": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+      "bytes": 1144729
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/hip_0.obj",
+      "sha256": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+      "bytes": 2863864
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/hip_1.obj",
+      "sha256": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+      "bytes": 2767918
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/thigh_0.obj",
+      "sha256": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+      "bytes": 2841868
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/thigh_1.obj",
+      "sha256": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+      "bytes": 1491320
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/thigh_mirror_0.obj",
+      "sha256": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+      "bytes": 2817674
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/assets/thigh_mirror_1.obj",
+      "sha256": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+      "bytes": 1482261
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/go2.xml",
+      "sha256": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+      "bytes": 15711
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/phase2_flat.xml",
+      "sha256": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+      "bytes": 860
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/phase2_repeated_steps.xml",
+      "sha256": "07635f42395b5a5637da74829cd1a93d7ce257cd9d2b7056dc9a515e33fbd90a",
+      "bytes": 798
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/phase2_step_10cm.xml",
+      "sha256": "a7cca7c2d614b5ccf92ee5de686022a7999c11b2269d4c10fa0ed285a6080bc2",
+      "bytes": 620
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/phase2_step_5cm.xml",
+      "sha256": "ab2106afe65c86827aae02158e3b35b5ebb61e2b14d3665ddbd7c971e7573b0e",
+      "bytes": 619
+    },
+    {
+      "path": "prepared-01/inputs/unitree_robots/go2/scene_low_friction_patch.xml",
+      "sha256": "80c64a12b6326575307ae29e017e07b76bbb2efada0580a7bfe4570dfbbe8073",
+      "bytes": 1365
+    },
+    {
+      "path": "prepared-01/manifest.json",
+      "sha256": "de4a3db8216cf19ec2ae8b43934edb30ad751ad67aa723ffa5014e0a8192908d",
+      "bytes": 11053
+    },
+    {
+      "path": "prepared-01/preflight.json",
+      "sha256": "8f2a7758962fd3d0a6fe1eb42afac178039d92341154628cf2df46886708b3c8",
+      "bytes": 7852
+    },
+    {
+      "path": "prepared-01/preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "prepared-01/preflight.stdout",
+      "sha256": "8f2a7758962fd3d0a6fe1eb42afac178039d92341154628cf2df46886708b3c8",
+      "bytes": 7852
+    },
+    {
+      "path": "prepared-01/protocol.json",
+      "sha256": "54c88799593a18b8374ce15750e35bed5080d9e25b1856b4bfe8ed1378d38531",
+      "bytes": 6865
+    },
+    {
+      "path": "prepared-01/started.json",
+      "sha256": "a39a892d0995bfaba9fa6f74879c6a448742c70c2a1516fa31eca14721664f5f",
+      "bytes": 114
+    },
+    {
+      "path": "reviews/original_execution/review-task.md",
+      "sha256": "685da0a8e04f99e5efcd75128954a7dae4f426e86ab9efdb4a882a56dda9f7bb",
+      "bytes": 1977
+    },
+    {
+      "path": "reviews/original_execution/review.json",
+      "sha256": "5ffbf3bb2d8145a7dc4d7ec5eb2bb807cc9f66c3cb99e52e39020b678af66652",
+      "bytes": 3239
+    },
+    {
+      "path": "reviews/original_science/review-task.md",
+      "sha256": "818551a2efc78be277f040edb4dd103d23761445f2b8d33a0df1dd25b3e32b3b",
+      "bytes": 1550
+    },
+    {
+      "path": "reviews/original_science/review.json",
+      "sha256": "69b25fe24f106abe923393b6734b8198b314e2223d05a3ba81ddf0b13b41211a",
+      "bytes": 2609
+    },
+    {
+      "path": "verification-02/SHA256SUMS",
+      "sha256": "12023bb54387dd28f2de9a37ef2c1befb344fadfecfc4844575130ab0b9ff555",
+      "bytes": 167
+    },
+    {
+      "path": "verification-02/manifest.json",
+      "sha256": "7b082cb2966eb0adcdc8026c32b271efcb6256ab43bf2bacf3b326303e8f8684",
+      "bytes": 783
+    },
+    {
+      "path": "verification-02/raw-trace-audit.json",
+      "sha256": "8a495ff94d0011e64d0c2fd25dfa2fd66c6de92930d1c4885a3abadb3daf1632",
+      "bytes": 2940
+    }
+  ],
+  "total_bytes": 103366879
+}

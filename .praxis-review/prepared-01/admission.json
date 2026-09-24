@@ -1,0 +1,1573 @@
+{
+  "capability_status": "NOT_RUN",
+  "errors": [],
+  "head": "e40b0933572345f23b37e3bb06350518fde63e76",
+  "live_runs": 0,
+  "max_attempts": 9,
+  "models": {
+    "flat_half_speed": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            20
+          ],
+          [
+            0,
+            32
+          ],
+          [
+            0,
+            44
+          ],
+          [
+            0,
+            56
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "flat_lateral_probe": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            20
+          ],
+          [
+            0,
+            32
+          ],
+          [
+            0,
+            44
+          ],
+          [
+            0,
+            56
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "flat_reference": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            20
+          ],
+          [
+            0,
+            32
+          ],
+          [
+            0,
+            44
+          ],
+          [
+            0,
+            56
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "flat_reverse_probe": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            20
+          ],
+          [
+            0,
+            32
+          ],
+          [
+            0,
+            44
+          ],
+          [
+            0,
+            56
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "flat_yaw_probe": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            20
+          ],
+          [
+            0,
+            32
+          ],
+          [
+            0,
+            44
+          ],
+          [
+            0,
+            56
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "low_friction_cross": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.269,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            21
+          ],
+          [
+            21,
+            1
+          ],
+          [
+            0,
+            33
+          ],
+          [
+            33,
+            1
+          ],
+          [
+            0,
+            45
+          ],
+          [
+            0,
+            57
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.001,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "5f8b1cdb2533201759aec60bd9f917c306aaef3bfad82ac7e9f2ca8832d2d20d",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "repeated_steps_cross": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            23
+          ],
+          [
+            0,
+            35
+          ],
+          [
+            0,
+            47
+          ],
+          [
+            0,
+            59
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "8cf3c7551365bf776123a54ac5a29e94779bb8f5757091d2cfef600818f09de3",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "step_10cm_cross": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            21
+          ],
+          [
+            0,
+            33
+          ],
+          [
+            0,
+            45
+          ],
+          [
+            0,
+            57
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "4aa1a5b4b4865f72f4b1a9ada69c970a78a91bb5e8e625d86fc4167aa23097fe",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "step_5cm_cross": {
+      "aids": [
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        9,
+        10,
+        11,
+        6,
+        7,
+        8
+      ],
+      "initial": {
+        "actuator_force_previous_ctrl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_contacts": [],
+        "clearance": 0.27,
+        "feet": [
+          [
+            0.19215678006345865,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            0.19215678006345865,
+            -0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            0.14200000000000002,
+            0.003627499697442027
+          ],
+          [
+            -0.1946432199365413,
+            -0.14200000000000002,
+            0.003627499697442027
+          ]
+        ],
+        "ground_contacts": [
+          [
+            0,
+            21
+          ],
+          [
+            0,
+            33
+          ],
+          [
+            0,
+            45
+          ],
+          [
+            0,
+            57
+          ]
+        ],
+        "qpos": [
+          0.0,
+          0.0,
+          0.27,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8,
+          0.0,
+          0.9,
+          -1.8
+        ],
+        "qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "terrain_height": 0.0,
+        "tick": 0,
+        "time": 0.0,
+        "warnings": 0
+      },
+      "physical_sha256": "c36236a9978069ce60b026defb5d6f4eea3db1df7b23235484a26359e783eb7f",
+      "qadr": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "vadr": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    }
+  },
+  "physics_steps": 0,
+  "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "qualification_reference": {
+    "fingerprint": "0e4330a12e72442d394580f8ec54cdcaa9ac1e5bafb5ffa68e4726e837fa9895",
+    "manifest_sha256": "b43789b4e4eb65e337b2f44f32b91c6660c49e333b5ab862d686443775d19f2d",
+    "path": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-189/20260924T101659Z-e40b09335723/qualification",
+    "producer_head": "e40b0933572345f23b37e3bb06350518fde63e76"
+  },
+  "readiness": "READY_AWAITING_START",
+  "review": {
+    "execution": {
+      "evidence": "Exact-head owner PRECHECK PASS is recorded at precheck/PRECHECK_PASS.json. Supporting machine evidence includes precheck/launch-surface.json, precheck/repaired-sentinel-replay.json, precheck/identity-preflight-tests.log, precheck/locked-assets.json, qualification/manifest.json, and prepared-01/manifest.json; the final pass is only complete after clean qualification and zero-step preparation succeed.",
+      "reviewer": "ChatGPT project owner deterministic precheck",
+      "verdict": "APPROVED"
+    },
+    "head": "e40b0933572345f23b37e3bb06350518fde63e76",
+    "science": {
+      "evidence": "Original approved r2 science review is preserved at predecessor-178/reviews/original_science/review.json and targets reviewed base de5e396331e01576a2bfd0fe1ccdf662835aa15a. The exact-head owner precheck at precheck/PRECHECK_PASS.json will bind unchanged protocol bytes/hash and the sole mechanical analyzer bool-normalization plus regression test to this prospective task.",
+      "reviewer": "OpenAI Codex science r2 \u2014 inherited semantic approval",
+      "verdict": "APPROVED"
+    }
+  },
+  "runtime": {
+    "excluded_generated_bytecode_rows": 7875,
+    "isolated": true,
+    "lock_sha256": "02f170cc1b64df7d21839a961bfb2f1b33ecaddd1755740272954df5e2d68d88",
+    "packages": {
+      "absl-py": "2.5.0",
+      "etils": "1.13.0",
+      "filelock": "4.0.1",
+      "fsspec": "2026.9.0",
+      "glfw": "2.10.2",
+      "importlib-resources": "7.1.0",
+      "jinja2": "3.1.6",
+      "markupsafe": "3.0.3",
+      "mpmath": "1.3.0",
+      "mujoco": "3.3.6",
+      "networkx": "3.4.2",
+      "numpy": "2.2.6",
+      "pyopengl": "3.1.10",
+      "sympy": "1.13.1",
+      "torch": "2.6.0+cpu",
+      "typing-extensions": "4.16.0",
+      "zipp": "4.1.0"
+    },
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "verified_payload_files": 17610,
+    "wheel_records": {
+      "absl-py": "7a49a1424bb3d3f51008d2229522725e28c60a44083da89c5ac0206888eeb56d",
+      "etils": "bf88829d30687e56f7b68f74c63301d56f1cbc35971877c14d4650146821fa6f",
+      "filelock": "893fcb25b969ea80d6dae36e6725742f71b554512c4959ad6626963eb89cd4fe",
+      "fsspec": "acd66e648fe9da8b85d14a260d35f183954cbca8076ed1d8b140121dca8b46ce",
+      "glfw": "19bf33bf9be4bd590fbb0661bd6318c4cf6cddf727c6f2f98874e023df570269",
+      "importlib-resources": "43752f959f739dc5a8ceca271404426c68c744e728d45bd729d166ddedae83a1",
+      "jinja2": "9daedf9d206d502afb03082ab8167f8743adadd67d1c34d89efe54624e4331ac",
+      "markupsafe": "e48ec065bc2b7ecc37793d3a6e49a275d64f2d0776d2608061dbbadbdb71fa27",
+      "mpmath": "a6d5d71b394d3a02cc27d82122d2e3b52e76d0845a0c3a57877a8b2e99f16466",
+      "mujoco": "6647fe65ec092ab5a453ec286bd8df7e62301b39b9c903b9f14641210e29618a",
+      "networkx": "c306ae4ecdaea5527231aea3890fc946c893978eed58a8c2304547c4c2546e5d",
+      "numpy": "2bc6efd1bd91a5d9f5f7a15179b8500052aff49babb38c5c809d416aacd1981c",
+      "pyopengl": "8242ac10ab323d7d5a0766c41c266d45bf8077ccceec78765fcfe72a5cedf73b",
+      "sympy": "88a2f9d39096b3c359c6ea4ed1786678fdac8fc8cddff34a3f972060b25f34a0",
+      "torch": "86989efdaf05f2d3a875399e09f96187bde52c8d0e5774f6ddff8850807b254e",
+      "typing-extensions": "3c1348bad9c1a2623f0a9af87752f0fb8d9745c3951ca55b19a15fe733961847",
+      "zipp": "aa8bd42d7f891b6c46c5bd897becbbf8b8483665290228afdfe2f0e0334fb508"
+    }
+  },
+  "scope": "offline_engineering_admission",
+  "source_files": {
+    "tools/research/identity.py": "59794cd86bcd48cf1b16a22adb0b38c7ececb48fafc423815fe55a1ea3e899d0",
+    "tools/research/preflight.py": "3c4df8c7806069dbc317a195390e8d40e06c4730ef6cc93254b3a0bc98ceb7d1",
+    "tools/research/test_preflight.py": "86199357441170e55b13e04616f6ed34d1dc64bdc1bd383c86dd8f921c687c0d",
+    "tools/research/test_preflight_integration.py": "835c94d8763db6769326331751a2589078179a200523a95c6334495df352ca1a",
+    "tools/research/workspace.py": "3684ac64c6652e319efabb5c6acd0efeca0a87c3e7e6e3e4ffea40a90ed8a276",
+    "tools/substrate/__init__.py": "21d11ab6c567e3c2047880b40932a104ecf6a62f34a0f5f0a0c72f70875c28da",
+    "tools/substrate/admit.py": "683770802897d48a121ddb26fa617f2446015289c130de5cf080ebe315ea43ad",
+    "tools/substrate/analyze_capture.py": "53a590f27ebd2c922b039362d91e85c1719885f40f1d765fb938ea2f3b20d7f1",
+    "tools/substrate/baseline.py": "a64f205c4f11cf99e5a0fe8d11c6fa9760aa89b858c4c4e5b5d896aa16d2dfb5",
+    "tools/substrate/baseline_episode.py": "38764406d292e7dbc30b0387ce8cf309c20651b1a907b7e343083e8249b171b3",
+    "tools/substrate/baseline_verify.py": "f3da78d28ff2b9f99fa6750d57383ba855ab73e279f61cefba96d9af99f829ea",
+    "tools/substrate/bootstrap.py": "ef96cda40f697d6187f2267a8637fde475763d37d79dfd6de20c6e9a7d0f762e",
+    "tools/substrate/build_identity.py": "3e87e53258f3204efbc9624cc5ff9426610bb42d8dc3629cada50da1ced1e224",
+    "tools/substrate/capture.template.json": "b447ab3e6d25a0e05510aed9c44edd72bad50f0f7d14f3390256f30cb65497fb",
+    "tools/substrate/clock.py": "171047ffaf07b18cd995ee22a2a3e5629d376609dcfa566034aaf547f718d8b3",
+    "tools/substrate/contracts.py": "6eb689775fd77273f3de9f319157c41fa227a6523ba46c802dff3cdfa6ba2b44",
+    "tools/substrate/diagnose.py": "a1e6f1cf75ceccb5af71a88476007ffb47963b1491e46c5994c71a866ef2f0bf",
+    "tools/substrate/environment.py": "2f60733f004edadc01a95db2e93e3a05dd9925497ee72d5f7b03fc11203e512a",
+    "tools/substrate/episode.py": "f3e39aa5248cd0f1cbfe0bf8b53afa5254efd564e161dff303446d15cbdc7af3",
+    "tools/substrate/evidence.py": "a6d6caef1a4af4b75feeb423f2cf68b68c7022922cad190fc6367c6558845505",
+    "tools/substrate/fetch_reference.py": "e304ad7b43a708799cba048a10710002d4a55fff2ffa443ce5058d652a9fc8f5",
+    "tools/substrate/guards.py": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+    "tools/substrate/integrity.py": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+    "tools/substrate/launch.py": "135407d9dd6aae9579f3e41cc9ba47e843bcd5342fafee5bd43f06be99a9eb9b",
+    "tools/substrate/model.py": "3dfd63472e55bb9f89cde1975418a5225ad5a94049b6ef001e63d8ac0c130dbb",
+    "tools/substrate/native/CMakeLists.txt": "1017f22701e82576a1f052137fc36ed75810489c54d5c3a063ef0491445bfa3b",
+    "tools/substrate/native/admit.cc": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+    "tools/substrate/oracle.py": "fc29254e44f6fa08ef7e5af8a12b8fb26977d1469811a8ccadf25225a17b5828",
+    "tools/substrate/plot_baseline.py": "8f123f0ce469fb47ee646d6d69b162aaf22b73fcb902c5707e70f6eea1769df1",
+    "tools/substrate/policy_sensitivity.py": "d0c4089334825ccb2242262d9adf83086c651f649e8711f04269adcd825643a2",
+    "tools/substrate/protocols/rl_capability_map_v1.json": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+    "tools/substrate/protocols/rl_flat_v1.json": "d8ae529b39207a1fcb4450b163bc0a8b71955513260f0cd6959911705e0d5f35",
+    "tools/substrate/protocols/rl_shared_transfer_combination_v1.json": "2d23131cb104be50aeb163737e3cfbf10f5a9291acf7726c2eda75e3fa5e9b32",
+    "tools/substrate/protocols/rl_source_v1.json": "62f241d3bf191f13d2a49c95e5430c8bc7122e1ff856db5793465775349e2585",
+    "tools/substrate/qualification.py": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009",
+    "tools/substrate/qualify.py": "2948f0ce140bd863003aaf1a7cc5d7f969bca96b81571c47250c9a5391c58b4f",
+    "tools/substrate/readiness.py": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+    "tools/substrate/requirements-linux-py310.lock": "02f170cc1b64df7d21839a961bfb2f1b33ecaddd1755740272954df5e2d68d88",
+    "tools/substrate/requirements.in": "e409937536ff5b09e6ca96229847d0d25bc7ca7e6ca7dc1b9734bae693ace38c",
+    "tools/substrate/rl.py": "2182d643e5a26d5038f52359634f777223d875a2ed81fc84c4a97eff05d4a09c",
+    "tools/substrate/rl_reference.lock.json": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b",
+    "tools/substrate/sources.lock.json": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+    "tools/substrate/task.py": "74f2636521e92bd236d639b4195a1cfc287a08f6a6fa4fe874a3178da1cd764e",
+    "tools/substrate/tasks/governance_zero_step.json": "404b199de2fabd67bed1b6cf98c8c3ae773842e56070c3085d708dab6af9df0a",
+    "tools/substrate/tasks/rl_capability_map_successor_v1.json": "6b9e3dd44e6b879294ddf8fa1a04c964a3034f9f2b1bfa59f13b73dcdfccf68c",
+    "tools/substrate/tasks/rl_capability_map_v1.json": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+    "tools/substrate/tasks/rl_flat_v1.json": "5a09def0d287587c465043df2a1ae40a58ce3ae9ae90df44b66a71cb85294581",
+    "tools/substrate/tasks/rl_shared_transfer_combination_v1.json": "6b54478c9c6c261de81dc5dbc9aa8117781478a004550c1deb78ec10a126b53f",
+    "tools/substrate/tasks/rl_source_v1.json": "4da6c34cab24c6881aaf8216b32615e38af737fb1bd2b782522e328dd7ddce04",
+    "tools/substrate/test_baseline.py": "e486ae392eb24976287a33c94d8488507a005658b79181afb97a4f11a5623fa0",
+    "tools/substrate/test_clock.py": "37b0733f6ee4adc400e919a00ff46bcf70b2ba3985724a7ec3365a06dd6053ff",
+    "tools/substrate/test_launch.py": "6004ed183f829e925cf6e8c4095ab78f05dfe10818e7bbe205602b9aabfdd594",
+    "tools/substrate/test_native_boundary.py": "40477510795bfe86bbe6c26324fa9044e811968c20628aeec3c2adf621b44b0a",
+    "tools/substrate/test_policy_runtime.py": "291f5b90be3b6eddab6d07e215abbbb2dc0696d8b74ce0b3139d6f4aa7a61615",
+    "tools/substrate/test_qualification.py": "ddf366284104171b463f9339854530e7a7c8f62194cccd25abe5819d24a71d9c",
+    "tools/substrate/test_reliability.py": "da3cf5c969d6e6ba17dd542d51a252dc06f2671ff97ec6e797657c56cca32738",
+    "tools/substrate/test_substrate.py": "dace5f4e061962429a46684e5f65bac0fcc77ef57f7eb71b90d94019f8ab5d55",
+    "tools/substrate/verify.py": "6834f001d595a8006ac1461c255e7349620c0b8284e6843e39857256f55760c4",
+    "tools/substrate/verify_capture.py": "95ff478deba5ae8bf4a62627d2cbe4c8c3064f12eafa719e074f45513518dade",
+    "tools/substrate/watchdog.py": "190befd476f2bfd5d3a6682b9edafa319a11ef533e45a74412783edb408ae855"
+  },
+  "source_inputs": {
+    ".substrate/rl/policy.pt": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+    ".substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/configs/go2.yaml": "cc7ffcde15c4e9535a1ec8eacf3470e810ceac6192da3077078f8f580c7fe58f",
+    ".substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/deploy_go2.py": "e4041905aca1c92ac37538f8ee224f1417903ea9333ae285bdc59df689380203",
+    ".substrate/upstream-go2-30e74dc5/deploy/deploy_mujoco/utils.py": "58e576d2c285a16b491f62e55f75c49b15177d4b879cb1731180b47ca4a2d2b4",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_config.py": "0597eabb0aa9422240ea408e7bd3aa0ebc9ec36cc781d1e5fb26773ca3579362",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/base/base_task.py": "bbfbb77ae8f90b0383af6003b554c47de75bea75b9f77e29a548cff123306330",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot.py": "8440d9a07e77039f82328fc572f10103c12fb23a0e72ab7a5e6123ac6417444d",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/base/legged_robot_config.py": "96e302a848ad66a79383b441915790187ab7cacea64ccd6cf65230cd831b0bbe",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config.py": "cef4093b79823c15525cf20b198bdd6c7a8cb131f587e915626ae9bdf1d09c97",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_fast_flat_move.py": "aa13e218835a5484a576c9cc1119bf9afd159e4f8643d045c94d10758e47967b",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla.py": "dde2daedff703aa9ded1cda58d36b5f9604288f5909a5e599134f70742060fbf",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_config_vanilla_with_dynamic_cmd.py": "000aa6d6d90131e988833ca222b3c5db0d6664f4a4b999f43b963076d11c55df",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/envs/go2/go2_env.py": "0179982b0e832f08503f1cfaf5e9f4301358475daa32f30a0173ab0f3308165b",
+    ".substrate/upstream-go2-30e74dc5/legged_gym/utils/helpers.py": "10ee7a59afd423e2d785df997fbca4075668ee845409eddff9779ad2fa63f6f5",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/height_field.png": "07008d95a54dc2f602c88482342544eddf1da88fb5097b7ceb3c4a73f75d79f0",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/assets/wood.png": "5462a14bf51dba188dbb07404ab7a4448dc70d7abbf7bf8c462d507baa392d44",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_slope.xml": "f3b2f330897f219df6b243a8226ff6b4f2e9f9fee8f8d140c7b24dbdc7d4b941",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/cross_stairs.xml": "1215c8a3013f175472d2b7c08357d4958fe79bdfdc09de4d1923d7c8050477fd",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/base.dae": "e52bebbb5c7ff1f6aedee620c9b5b349f6e965360ecc63a9bb743eeff2d0be64",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf.dae": "29872fa1a435b92bc2b395fdfa7f0aee26101db3c494681896bd4ef24ee7883c",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/calf_mirror.dae": "79c66be7ed06760bd5001c067a1fb0ac517f639d8b1a5f89be471903b3f359e1",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/foot.dae": "ffbd95fd641866ce9bd277aa249b92dafc9148d70131fa2c52709a35ce5b710b",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/hip.dae": "8735e10617afe252cef0844c1d139d15bc6d4c653660d742fea9fe05c2704d8f",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh.dae": "a622381ae308897ff143b8bbf02f075457c342b22984205040424a5a983246fa",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/dae/thigh_mirror.dae": "c7bae0b0565c2aa4b7cc15a538d795e9153e0f10c821cc18429e92693172bdc6",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/flat.xml": "0ad2696c6c53701dbba34f1a9a2158e1c1e4f491eb114263b0f86ecadc9e40ac",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/go2.xml": "ff15ca7849a759e54b2d3606dc9733b9301980d5fdfe9edf68b1cc108247b2f1",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_1.png": "5b70b5cbd2191730ab9e33580c9ff6ce5518f19b5c71ee4a0d5a7a0cdd69b140",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_10.png": "74c4ef761389886f034b2752806ab9acadacb7768c1c263c71a9cff50f017527",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_4.png": "5969c2ea50a92b6ce595f7be33061b4ca412c036f1ba898dc67e6e6d16f7784d",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/imgs/label_7.png": "fbd2c8e991414371f4eb719667d34986e7b203dcb614bd59e0879258a916079d",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/race_track.xml": "b5f5d9995429f71e38b7b37e98588c7ac8eb035a87ea1a62931fa91d0e5cc79c",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/stairs.xml": "d3e43ab7e11bf7a7320c45a5cbd42fd5991bca813452cb026da28cc8cf5ce922",
+    ".substrate/upstream-go2-30e74dc5/resources/robots/go2/urdf/go2.urdf": "4f306754e9b3d73930ac8362aa456eb8912f2e886665618e7eced9627c1704a4",
+    ".substrate/upstream-go2-30e74dc5/rsl_rl/rsl_rl/modules/actor_critic_moe_cts.py": "ff3689a3cfdaf80246e7be76b9c5eae54054112f2d4b5750798980a8033e7d58",
+    "tools/substrate/rl_reference.lock.json": "30877e8038c34d6f5ca93d972eb732d378b0a0c724d2edae55d8e42edfc8960b",
+    "tools/substrate/sources.lock.json": "e9c76e69061df78cc8bcbe04fb48b8a81e641161fba9163f06e721a319790bb0",
+    "unitree_robots/go2/assets/base_0.obj": "8cdc53719002a5ee737d867904e534a6d6fa930b616bdcc1b3131e577d4e46c0",
+    "unitree_robots/go2/assets/base_1.obj": "39d2f4724ff64dd5a0640c308fd98902a2946660a8d033ec8dbf368fd5af0dd6",
+    "unitree_robots/go2/assets/base_2.obj": "29cae463f95d678e4ede863c36c9b19b0d356b8340412add10670d70bdcc3095",
+    "unitree_robots/go2/assets/base_3.obj": "f51ba43bf300e68957a0c1aa83eaf3e4926f4ac7e64a0d6c33ae5d21fcbcf5f6",
+    "unitree_robots/go2/assets/base_4.obj": "49ddec0129546e5dd2075d5beacf7f207baa2860aeff7626818e64d2efbf3821",
+    "unitree_robots/go2/assets/calf_0.obj": "4a818cd563c5b7e2a271504442d05fd777d38cbaa028d4a10ad29c9f87bb355e",
+    "unitree_robots/go2/assets/calf_1.obj": "51950c3a153ae3208592df86ea11c9d6756f8f645ebca5caf6910c61aeb03817",
+    "unitree_robots/go2/assets/calf_mirror_0.obj": "6dc0406207a1c08a5953fd5962aca1a270fd06593d30d100205e05c1b32d4af2",
+    "unitree_robots/go2/assets/calf_mirror_1.obj": "f84f5af90b914633165beb3a5493ee499169144c5797dcf04c6eb5842f74b31a",
+    "unitree_robots/go2/assets/foot.obj": "df9e78a7c0110d02557439010f2a5f11f0ec4fd907b32704145dbd6aa7affc0b",
+    "unitree_robots/go2/assets/hip_0.obj": "cc29932ab4d251ce3f72389ec4c1f757e44eee138b87e772b648c2bc76b506cd",
+    "unitree_robots/go2/assets/hip_1.obj": "3fd5bd9b2ef6abe622c0739d3c67eaa1679b19b47132951972c4892a779ea7cf",
+    "unitree_robots/go2/assets/thigh_0.obj": "bb3edfe6a7b04f4f4dff1ce7b05d426ddce941e276cc6372fb542055893c71ec",
+    "unitree_robots/go2/assets/thigh_1.obj": "3a631822f9f7d2114b1b79dcdff5abf95103630abb7d91d1f3b8b18117132ed2",
+    "unitree_robots/go2/assets/thigh_mirror_0.obj": "07abaedce761f1dd48647384ac14ba1959276bc78d5a2a62051e8f1c6093933b",
+    "unitree_robots/go2/assets/thigh_mirror_1.obj": "db984a3e983eabbc9b38183427cca9ab0bb3bdb049f9eab030e06edda36579d6",
+    "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+    "unitree_robots/go2/phase2_flat.xml": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+    "unitree_robots/go2/phase2_repeated_steps.xml": "07635f42395b5a5637da74829cd1a93d7ce257cd9d2b7056dc9a515e33fbd90a",
+    "unitree_robots/go2/phase2_step_10cm.xml": "a7cca7c2d614b5ccf92ee5de686022a7999c11b2269d4c10fa0ed285a6080bc2",
+    "unitree_robots/go2/phase2_step_5cm.xml": "ab2106afe65c86827aae02158e3b35b5ebb61e2b14d3665ddbd7c971e7573b0e",
+    "unitree_robots/go2/scene_low_friction_patch.xml": "80c64a12b6326575307ae29e017e07b76bbb2efada0580a7bfe4570dfbbe8073"
+  },
+  "status": "ENGINEERING_ADMITTED",
+  "task": {
+    "configuration": {
+      "branch": "research/rl-capability-map-successor-20260924",
+      "diff_base": "00d694dde213fb6862a161374e423261d13ab42b",
+      "praxis": {
+        "issue_number": 189,
+        "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md"
+      },
+      "protocol": "tools/substrate/protocols/rl_capability_map_v1.json",
+      "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "schema": 1
+    },
+    "path": "tools/substrate/tasks/rl_capability_map_successor_v1.json",
+    "sha256": "6b9e3dd44e6b879294ddf8fa1a04c964a3034f9f2b1bfa59f13b73dcdfccf68c"
+  }
+}

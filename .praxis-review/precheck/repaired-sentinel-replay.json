@@ -1,0 +1,56 @@
+{
+  "status": "REPAIRED_ANALYZER_REPLAY_PASS",
+  "scope": "preserved #178 flat_reference trace only; no recapture and no physics integration",
+  "raw_trace_sha256": "e9fdf647b55e69e8194687c6636ce3a02afba06b755f6d7011314973a122d494",
+  "raw_rows": 6001,
+  "sealed_reference_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+  "repaired_analyzer_json_serializable": true,
+  "flat_cross_axis_pass_type": "bool",
+  "case_result": {
+    "verdict": "PASS",
+    "complete": true,
+    "steps": 6000,
+    "failure": null,
+    "failure_classes": [],
+    "tracking_pass": true,
+    "flat_cross_axis_pass": true,
+    "reference_pass": true,
+    "reference_mean_vx": 0.885882509707172,
+    "progress_m": 10.486111570522883,
+    "windows": [
+      {
+        "start_tick": 0,
+        "end_tick": 6000,
+        "axes": {
+          "vx": {
+            "command": 1.0,
+            "samples": 5000,
+            "mean": 0.885882509707172,
+            "mae": 0.11411749029282788,
+            "rmse": 0.11919403374163151
+          }
+        }
+      }
+    ]
+  },
+  "unchanged_metrics_compared_with_prior_zero_physics_audit": [
+    "verdict",
+    "complete",
+    "steps",
+    "failure",
+    "failure_classes",
+    "tracking_pass",
+    "flat_cross_axis_pass",
+    "reference_pass",
+    "reference_mean_vx",
+    "windows"
+  ],
+  "prior_independent_audit": {
+    "policy_updates_replayed": 599,
+    "max_target_error": 0.0,
+    "contact_frames_rebuilt": 6001,
+    "physics_steps": 0
+  },
+  "raw_trace_unchanged_during_replay": true,
+  "serialized_result_sha256": "36be1d798efc4546cd6f0a5656117022521856f6df9954ea19dc023887c8ffb4"
+}

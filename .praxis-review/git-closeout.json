@@ -1,0 +1,19 @@
+{
+  "status": "FINAL_COMMIT_VERIFIED",
+  "commit": "de21d8c3267e1c985cb57ed2d02004c686d05bd1",
+  "parent": "e40b0933572345f23b37e3bb06350518fde63e76",
+  "detached_head": true,
+  "tracked_worktree_clean": true,
+  "changed_tracked_files": [
+    "docs/validation/rl_capability_map_successor_20260924/RESULTS.md"
+  ],
+  "results_sha256": "df3d67fcf98cc2e53bc8d558085874fd779c0656e1bbe3d08fa3149fb04e5242",
+  "results_evidence_copy": "RESULTS.md.copy",
+  "capture_status": "CAPTURE_COMPLETE",
+  "capability_status": "CHARACTERIZED",
+  "verified_consumed_attempts": 9,
+  "verification_physics_steps": 0,
+  "external_ledger_checked": true,
+  "permanent_ledger_copy_status": "PERMANENT_LEDGER_COPY_BYTE_IDENTICAL",
+  "push_performed": false
+}

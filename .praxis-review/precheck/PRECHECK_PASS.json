@@ -1,0 +1,125 @@
+{
+  "status": "PRECHECK_PASS",
+  "issue_number": 189,
+  "repository": "cwchewang/go2-mujoco-control",
+  "logical_branch": "research/rl-capability-map-successor-20260924",
+  "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md",
+  "head": "e40b0933572345f23b37e3bb06350518fde63e76",
+  "detached_head": true,
+  "tracked_worktree_clean": true,
+  "reviewed_science_base": "de5e396331e01576a2bfd0fe1ccdf662835aa15a",
+  "checks": {
+    "allowlisted_diff_from_178_closeout": {
+      "result": "PASS",
+      "changed_files": [
+        "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md",
+        "tools/substrate/baseline_episode.py",
+        "tools/substrate/tasks/rl_capability_map_successor_v1.json",
+        "tools/substrate/test_baseline.py"
+      ],
+      "analyzer_added_line": "    flat_cross_axis_pass = bool(flat_cross_axis_pass)"
+    },
+    "protocol_unchanged": {
+      "result": "PASS",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "cases": [
+        "flat_reference",
+        "flat_half_speed",
+        "flat_reverse_probe",
+        "flat_lateral_probe",
+        "flat_yaw_probe",
+        "step_5cm_cross",
+        "step_10cm_cross",
+        "repeated_steps_cross",
+        "low_friction_cross"
+      ],
+      "max_attempts": 9,
+      "retry": "none"
+    },
+    "strict_task_loader_and_praxis_identity": {
+      "result": "PASS",
+      "task_config": {
+        "path": "tools/substrate/tasks/rl_capability_map_successor_v1.json",
+        "sha256": "6b9e3dd44e6b879294ddf8fa1a04c964a3034f9f2b1bfa59f13b73dcdfccf68c",
+        "issue_number": 189,
+        "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md",
+        "branch": "research/rl-capability-map-successor-20260924"
+      },
+      "identity": {
+        "repository": "cwchewang/go2-mujoco-control",
+        "issue_number": "189",
+        "branch": "research/rl-capability-map-successor-20260924",
+        "task_commit": "e40b0933572345f23b37e3bb06350518fde63e76",
+        "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md"
+      }
+    },
+    "preflight_integration_and_current_identity": {
+      "result": "PASS",
+      "count": 35,
+      "wrong_issue_path_and_incomplete_bindings_fail_closed": true,
+      "evidence": "precheck/identity-preflight-tests.log"
+    },
+    "preserved_178_sentinel_replay": {
+      "result": "PASS",
+      "raw_trace_sha256": "e9fdf647b55e69e8194687c6636ce3a02afba06b755f6d7011314973a122d494",
+      "sealed_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+      "mean_vx_mps": 0.885882509707172,
+      "progress_m": 10.486111570522883,
+      "native_bool_json_serialization": true,
+      "metrics_unchanged": true,
+      "physics_steps": 0
+    },
+    "locked_runtime_and_ignored_assets": {
+      "result": "PASS",
+      "evidence": "precheck/locked-assets.json",
+      "downloads_installations_or_training_performed": false
+    },
+    "clean_non_development_qualification": {
+      "result": "PASS",
+      "status": "ENGINEERING_ADMITTED",
+      "head": "e40b0933572345f23b37e3bb06350518fde63e76",
+      "clean_head": true,
+      "development": false,
+      "checks": {
+        "controller_build": 0,
+        "controller_configure": 0,
+        "controller_tests": 0,
+        "diff_check": 0,
+        "preflight_tests": 0,
+        "quality": 0,
+        "substrate_tests": 0,
+        "tooling_tests": 0
+      }
+    },
+    "zero_step_preparation": {
+      "result": "PASS",
+      "readiness": "READY_AWAITING_START",
+      "head": "e40b0933572345f23b37e3bb06350518fde63e76",
+      "physics_steps": 0,
+      "scientific_attempts_consumed_before_capture": 0,
+      "prepared_manifest_sha256": "158f2bdafda8401a89a792d132d38000ae92741db7e2de122cc7f7cea977101d",
+      "campaign_ledger_present": false
+    }
+  },
+  "review_bundle": {
+    "path": "reviews/runtime-review-bundle.json",
+    "science_reviewer": "OpenAI Codex science r2 — inherited semantic approval",
+    "execution_reviewer": "ChatGPT project owner deterministic precheck"
+  },
+  "preparation_manifest_sha256": "158f2bdafda8401a89a792d132d38000ae92741db7e2de122cc7f7cea977101d",
+  "qualification_manifest_sha256": "b43789b4e4eb65e337b2f44f32b91c6660c49e333b5ab862d686443775d19f2d",
+  "evidence": [
+    "precheck/launch-surface.json",
+    "precheck/repaired-sentinel-replay.json",
+    "precheck/identity-preflight-tests.log",
+    "precheck/locked-assets.json",
+    "qualification/admission.json",
+    "qualification/manifest.json",
+    "prepared-01/admission.json",
+    "prepared-01/preflight.json",
+    "prepared-01/manifest.json",
+    "predecessor-178/reviews/original_science/review.json",
+    "predecessor-178/reviews/original_execution/review.json",
+    "predecessor-178/copy-manifest.json"
+  ]
+}

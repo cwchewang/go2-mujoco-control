@@ -1,0 +1,197 @@
+{
+  "status": "complete",
+  "summary": "The new #189 rl-capability-map-v1 campaign completed all nine frozen cases once, passed zero-physics independent verification with the exact sealed reference digest, and committed the per-case results document.",
+  "completed": [
+    "Passed the exact-head owner precheck, clean non-development qualification, and zero-step preparation; preparation returned READY_AWAITING_START with physics_steps=0 and no campaign ledger.",
+    "Created user-authorized START_FORMAL_CAPTURE authorization bound to the frozen launch HEAD, protocol hash, prepared-manifest hash, and max_attempts=9.",
+    "Issued one formal capture invocation; all nine cases completed and their raw traces, analyses, claims, and permanent ledger were preserved.",
+    "Ran the offline verifier against the same prepared/capture bundles; final result VERIFIED, external ledger checked, nine attempts consumed, physics_steps=0, and the sealed reference digest independently recomputed.",
+    "Committed exactly docs/validation/rl_capability_map_successor_20260924/RESULTS.md in commit de21d8c3267e1c985cb57ed2d02004c686d05bd1, with parent e40b0933572345f23b37e3bb06350518fde63e76; left the worktree clean and detached for Praxis publication."
+  ],
+  "not_completed": [],
+  "observations": [
+    {
+      "text": "The owner precheck passed all eight frozen gates on exact launch HEAD e40b0933572345f23b37e3bb06350518fde63e76; the protocol hash remained 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "text": "All 35 targeted preflight integration and CurrentIdentity tests passed, including detached exact-binding success and wrong issue, wrong task path, and incomplete binding fail-closed cases.",
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "text": "The copied #178 sentinel bytes remained unchanged; the repaired analyzer JSON-serialized a native bool and retained PASS, sealed digest 1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484, mean vx 0.885882509707172 m/s, and progress 10.486111570522883 m.",
+      "evidence_ids": [
+        "E3",
+        "E13"
+      ]
+    },
+    {
+      "text": "Clean qualification was ENGINEERING_ADMITTED with all eight checks returning 0; zero-step preparation returned READY_AWAITING_START with physics_steps=0 and the permanent campaign ledger absent.",
+      "evidence_ids": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "The single capture completed as CAPTURE_COMPLETE / CHARACTERIZED with nine consumed case records. flat_reference, step_5cm_cross, step_10cm_cross, repeated_steps_cross, and low_friction_cross were PASS; flat_half_speed, flat_reverse_probe, flat_lateral_probe, and flat_yaw_probe were PERFORMANCE_FAIL; no safety or integrity stop occurred.",
+      "evidence_ids": [
+        "E6"
+      ]
+    },
+    {
+      "text": "The evidence-package ledger copy is byte-identical to the permanent task-local ledger and its campaign and per-case claims match the capture bundle.",
+      "evidence_ids": [
+        "E7"
+      ]
+    },
+    {
+      "text": "The first unmodified baseline verify attempt stopped before row replay with ValueError: preflight identity mismatch; that failure bundle is preserved.",
+      "evidence_ids": [
+        "E8"
+      ]
+    },
+    {
+      "text": "The completed offline verification returned VERIFIED, checked the external ledger, consumed 9 attempts, integrated zero physics steps, and independently recomputed the sealed flat_reference digest.",
+      "evidence_ids": [
+        "E9",
+        "E10"
+      ]
+    },
+    {
+      "text": "The committed RESULTS.md is the only file in the final commit; its parent is the frozen launch HEAD and the tracked worktree is clean and detached.",
+      "evidence_ids": [
+        "E11",
+        "E12"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "The initial verification failure is caused by the verifier comparing the correct empty actual branch of a detached worktree with the task logical branch. The transient adapter revalidated all five Praxis fields before mapping only that empty branch value in memory; the captured bundle and verifier source stayed unchanged.",
+      "evidence_ids": [
+        "E8",
+        "E10"
+      ]
+    },
+    {
+      "text": "The classifications characterize only the frozen checkpoint, adapter, reset, scenes, and command set; they do not establish hardware behavior or general robustness.",
+      "evidence_ids": [
+        "E6",
+        "E11"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "Issue #189 is a completed prospective successor campaign, not a retry of #178: one invocation consumed the nine frozen cases and the permanent ledger was preserved.",
+      "evidence_ids": [
+        "E1",
+        "E6",
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "text": "Under the unchanged frozen protocol, the exact flat reference and four terrain cases pass; the half-speed, reverse, lateral, and yaw probes are performance failures. Independent offline verification confirms the case records and sealed reference digest.",
+      "evidence_ids": [
+        "E6",
+        "E9",
+        "E11"
+      ]
+    },
+    {
+      "text": "The required per-case results are committed in a single tracked file at de21d8c3267e1c985cb57ed2d02004c686d05bd1; no push was performed.",
+      "evidence_ids": [
+        "E11",
+        "E12"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "Behavior outside the protocol’s specified model, reset, scenes, and commands remains unmeasured; no hardware or broader robustness claim follows from this campaign.",
+      "evidence_ids": [
+        "E6",
+        "E11"
+      ]
+    },
+    {
+      "text": "The unmodified baseline verifier’s detached-branch comparison remains a source-level limitation; this campaign’s successful verification used the disclosed process-local identity adapter after the standard invocation failed.",
+      "evidence_ids": [
+        "E8",
+        "E10"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "precheck/PRECHECK_PASS.json",
+      "description": "Final exact-head owner precheck with all eight gates and frozen task identity."
+    },
+    {
+      "id": "E2",
+      "path": "precheck/identity-preflight-tests.log",
+      "description": "35 targeted integration and CurrentIdentity test results."
+    },
+    {
+      "id": "E3",
+      "path": "precheck/repaired-sentinel-replay.json",
+      "description": "Repaired analyzer JSON serialization and unchanged #178 sentinel digest and metrics."
+    },
+    {
+      "id": "E4",
+      "path": "qualification/admission.json",
+      "description": "Clean non-development exact-head qualification result and all eight check return codes."
+    },
+    {
+      "id": "E5",
+      "path": "prepared-01",
+      "description": "Zero-step prepared bundle, manifest, and exact-head preflight."
+    },
+    {
+      "id": "E6",
+      "path": "capture-01",
+      "description": "Complete raw capture bundle with all nine per-case traces, claims, analysis, and manifest."
+    },
+    {
+      "id": "E7",
+      "path": "campaign-ledger",
+      "description": "Byte-identical evidence copy of the permanent campaign and nine case claims with SHA256SUMS."
+    },
+    {
+      "id": "E8",
+      "path": "verification-01/admission.json",
+      "description": "Preserved initial standard verifier failure before row replay."
+    },
+    {
+      "id": "E9",
+      "path": "verification-02",
+      "description": "Successful offline verification bundle with analysis, audits, manifest, and zero physics steps."
+    },
+    {
+      "id": "E10",
+      "path": "precheck/detached-verifier-adapter.json",
+      "description": "Exact five-field detached identity validation and documented in-memory verifier adaptation."
+    },
+    {
+      "id": "E11",
+      "path": "RESULTS.md.copy",
+      "description": "Byte-identical evidence copy of the committed per-case results document."
+    },
+    {
+      "id": "E12",
+      "path": "git-closeout.json",
+      "description": "Final commit, parent, single-file scope, clean detached state, and no-push verification."
+    },
+    {
+      "id": "E13",
+      "path": "predecessor-178/copy-manifest.json",
+      "description": "Byte-identical copy manifest for the predecessor sentinel, prepared inputs, ledger, reviews, and prior audit."
+    }
+  ]
+}
