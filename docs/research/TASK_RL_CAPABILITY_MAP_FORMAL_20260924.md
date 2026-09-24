@@ -44,14 +44,14 @@ Any digest mismatch is `INTEGRITY_STOP`, consumes only the already-started senti
 Before qualification or plant physics, retrieve and validate:
 
 Science review branch:
-`review/rl-capability-map-formal-science-20260924`
+`review/rl-capability-map-formal-science-r2-20260924`
 Result:
-`docs/validation/rl_capability_map_formal_science_review_20260924/review.json`
+`docs/validation/rl_capability_map_formal_science_review_r2_20260924/review.json`
 
 Execution review branch:
-`review/rl-capability-map-formal-execution-20260924`
+`review/rl-capability-map-formal-execution-r2-20260924`
 Result:
-`docs/validation/rl_capability_map_formal_execution_review_20260924/review.json`
+`docs/validation/rl_capability_map_formal_execution_review_r2_20260924/review.json`
 
 Each must be `APPROVED`, bind `target_head == PRAXIS_TASK_COMMIT`, contain a nonempty reviewer identity and evidence, and have different reviewer identities. If either is absent/stale/vetoed/ambiguous, stop before qualification and before physics.
 
