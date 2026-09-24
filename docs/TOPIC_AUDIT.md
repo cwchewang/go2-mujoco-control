@@ -1,6 +1,6 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-09-23**
+> **最后更新：2026-09-24**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
@@ -8,8 +8,7 @@
 
 ## 0. [CURRENT | SNAPSHOT]
 
-2026-09-23 项目基础建设完成后，用户恢复实际研究，优先建立可靠且能力明确的
-公开 RL 策略基线。以下候选账本保留；本轮不新增或晋级论文题。
+2026-09-24，公开 RL 策略的完整 shared model/home/ten-step-start/adapter 组合已在冻结 1 m/s 平地协议下两次正式 PASS，解决了此前“单因素通过但组合未确认”的部署未决点。下一阶段进入 terrain/direction capability mapping；以下候选账本保留，本轮仍不新增或晋级论文题。
 方法/权重先按任务需要确定其证据等级，不能把工程默认选项写成已选定最优方案。
 具体阶段和下一步跟随 PROJECT_RECORD 与 CURRENT。
 
@@ -109,9 +108,7 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 第一阶段优先使用公开 checkpoint，不从头训练。
 
-2026-09-23 已建立冻结1 m/s源条件平地参考，重复和接口轨迹一致；低速、横漂
-与23 cm楼梯机身接触边界已记录。当前只够支持有限能力对照，不足以宣布强
-地形天花板、跨控制器共同瓶颈或晋级论文题。详见 PROJECT_RECORD。
+2026-09-23 已建立冻结 1 m/s 源条件平地参考；2026-09-24 又完成完整 shared-transfer 组合的两次正式 PASS（各 6000 steps，mean vx 0.8858825097 m/s，repeat trace hash 完全一致）。因此 1 m/s 平地 deployment compatibility 已从未决项升级为 VERIFIED。低速、横漂与 23 cm 楼梯机身接触边界仍只属于 bounded observations；尚不足以宣布 terrain 天花板、跨控制器共同瓶颈或晋级论文题。详见 PROJECT_RECORD。
 
 ## 6. [CANDIDATE LEDGER]
 
@@ -156,16 +153,11 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 ## 9. [CURRENT | NEXT AUDIT]
 
-2026-09-22 首轮正式平地 RL 移植验收完整采集但未达位移和速度误差门槛，
-结果见 `docs/validation/substrate_first_capture_20260922/RESULTS.md`。这是单次
-部署兼容性失败，尚未完成因果归因；不改变候选排序，也不能晋级为论文问题。
-保留轨迹与锁定部署语义的离线诊断已经完成，见
-[诊断结果](validation/governance_diagnosis_20260922/RESULTS.md)。当前按新任务
-推进源条件复现与受控测试；能力结果不足时，不把部署差异升级为选题。
+shared-transfer 完整组合在冻结 1 m/s 平地条件下已经正式确认，因此不再把“部署组合本身是否破坏能力”作为开放问题。下一轮应把已验证 RL deployment 放进统一 terrain × direction/speed benchmark，与 MJPC capability/failure map 对照；只有在 step / stairs / obstacle 等任务中出现稳定且可复现、并能跨强 baseline 或明确归因于特定机制的 failure，才进入候选晋级。
 
-先读 `docs/PROJECT_RECORD.md` 的 Substrate Gate 结果，再问：
+此前 0.15 m/s 不足、横漂与 23 cm 楼梯 base-contact stop 继续保留为观察边界，不直接升格为论文问题。先读 PROJECT_RECORD 的 Gate 结果，再问：
 
-> 解除 fixed-gait / SRBD architectural bias 后，强 WBMPC substrate 与强 learned baseline 仍共同暴露哪些稳定 terrain-locomotion failure？
+> 解除 fixed-gait / SRBD architectural bias 后，强 WBMPC substrate 与已验证 shared RL baseline 仍共同暴露哪些稳定 terrain-locomotion failure？
 
 Gate 未完成前，不得从某个历史候选直接继续补方法。
 
