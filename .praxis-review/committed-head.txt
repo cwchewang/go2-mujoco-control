@@ -1,0 +1,7 @@
+commit 5a900dfc71e23c51b46cc43bc2ac89383f602ab4
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 10:42:11 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 10:42:11 2026 +0800
+
+    review: approve capability map formal science

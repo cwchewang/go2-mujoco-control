@@ -1,0 +1,48 @@
+{
+  "design_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+  "repaired_integrity_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+  "review_target_commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+  "integrity_protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "target_protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "protocol_sha256_expected": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+  "integrity_and_target_protocol_bytes_identical": true,
+  "integrity_and_target_capability_map_bytes_identical": true,
+  "protocol_case_count": 9,
+  "protocol_case_ids": [
+    "flat_reference",
+    "flat_half_speed",
+    "flat_reverse_probe",
+    "flat_lateral_probe",
+    "flat_yaw_probe",
+    "step_5cm_cross",
+    "step_10cm_cross",
+    "repeated_steps_cross",
+    "low_friction_cross"
+  ],
+  "protocol_attempt_cap": 9,
+  "protocol_retry": "none",
+  "protocol_progression": "performance_continue_safety_integrity_stop",
+  "reference_trace_sha256": "1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484",
+  "task_config_changed_fields": {
+    "branch": {
+      "integrity": "research/rl-capability-map-integrity-r2-20260924",
+      "target": "research/rl-capability-map-formal-20260924"
+    },
+    "diff_base": {
+      "integrity": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+      "target": "00d694dde213fb6862a161374e423261d13ab42b"
+    },
+    "praxis": {
+      "integrity": null,
+      "target": {
+        "issue_number": 178,
+        "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+      }
+    }
+  },
+  "interpretation_notes": [
+    "The integrity-to-target protocol and capability-map document are byte-identical.",
+    "The formal task/config delta binds the operational issue, task document, logical branch, and repaired diff base.",
+    "No protocol, case, command, scene, threshold, terrain-goal, safety, progression, or scientific-scope delta is present after the repaired integrity result."
+  ]
+}

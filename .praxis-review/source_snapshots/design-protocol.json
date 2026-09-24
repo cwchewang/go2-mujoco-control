@@ -1,0 +1,188 @@
+{
+  "schema": 2,
+  "id": "rl-capability-map-v1",
+  "mode": "exploratory",
+  "max_attempts": 9,
+  "physics_period_s": 0.002,
+  "decimation": 10,
+  "wall_timeout_s": 300,
+  "seed": 0,
+  "source_identity": {
+    "commit": "30e74dc507bec7a642a8c98be26081f2c6f0822d",
+    "checkpoint": "deploy/pre_train/go2/go2_moe_cts_high_slope_thre_164k_0.6715.pt",
+    "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d"
+  },
+  "engineering_probe_envelope": {
+    "vx_mps": [-0.5, 0.5],
+    "vy_mps": [-0.5, 0.5],
+    "wz_rps": [-1.0, 1.0]
+  },
+  "cases": [
+    {
+      "id": "flat_reference",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "scene_geoms": ["phase2_floor"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 1.0, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "flat_probe": true,
+      "reference_gate": true,
+      "requires": [],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "flat_half_speed",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "scene_geoms": ["phase2_floor"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 0.5, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "flat_probe": true,
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "flat_reverse_probe",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "scene_geoms": ["phase2_floor"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, -0.5, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "flat_probe": true,
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000
+    },
+    {
+      "id": "flat_lateral_probe",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "scene_geoms": ["phase2_floor"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 2500,
+      "commands": [[0, 0.0, 0.25, 0.0]],
+      "track_axes": ["vy"],
+      "flat_probe": true,
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 100
+    },
+    {
+      "id": "flat_yaw_probe",
+      "scene": "unitree_robots/go2/phase2_flat.xml",
+      "scene_geoms": ["phase2_floor"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 2500,
+      "commands": [[0, 0.0, 0.0, 0.5]],
+      "track_axes": ["wz"],
+      "flat_probe": true,
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 100
+    },
+    {
+      "id": "step_5cm_cross",
+      "scene": "unitree_robots/go2/phase2_step_5cm.xml",
+      "scene_geoms": ["phase2_floor", "phase2_step_5cm"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 1.0, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000,
+      "terrain_goal": {
+        "terrain_x_min": 0.7,
+        "terrain_x_max": 1.2,
+        "base_clearance_m": 0.1881,
+        "foot_clearance_m": 0.022,
+        "route_lateral_max_m": 0.55,
+        "hold_ticks": 250
+      }
+    },
+    {
+      "id": "step_10cm_cross",
+      "scene": "unitree_robots/go2/phase2_step_10cm.xml",
+      "scene_geoms": ["phase2_floor", "phase2_step_10cm"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 1.0, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000,
+      "terrain_goal": {
+        "terrain_x_min": 0.7,
+        "terrain_x_max": 1.2,
+        "base_clearance_m": 0.1881,
+        "foot_clearance_m": 0.022,
+        "route_lateral_max_m": 0.55,
+        "hold_ticks": 250
+      }
+    },
+    {
+      "id": "repeated_steps_cross",
+      "scene": "unitree_robots/go2/phase2_repeated_steps.xml",
+      "scene_geoms": ["phase2_floor", "phase2_step_a", "phase2_step_b", "phase2_step_c"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 1.0, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000,
+      "terrain_goal": {
+        "terrain_x_min": 0.7,
+        "terrain_x_max": 2.2,
+        "base_clearance_m": 0.1881,
+        "foot_clearance_m": 0.022,
+        "route_lateral_max_m": 0.55,
+        "hold_ticks": 250
+      }
+    },
+    {
+      "id": "low_friction_cross",
+      "scene": "unitree_robots/go2/scene_low_friction_patch.xml",
+      "scene_geoms": ["floor", "low_friction_patch"],
+      "adapter": true,
+      "reset": "shared_home",
+      "first_inference_tick": 10,
+      "horizon_ticks": 6000,
+      "commands": [[0, 1.0, 0.0, 0.0]],
+      "track_axes": ["vx"],
+      "requires": ["flat_reference"],
+      "measurement_delay_ticks": 1000,
+      "terrain_goal": {
+        "terrain_x_min": 0.0,
+        "terrain_x_max": 1.6,
+        "base_clearance_m": 0.1881,
+        "foot_clearance_m": 0.022,
+        "route_lateral_max_m": 0.4,
+        "hold_ticks": 250
+      }
+    }
+  ],
+  "reference_mean_min": 0.8,
+  "tracking_absolute_tolerance": 0.05,
+  "tracking_relative_tolerance": 0.2,
+  "flat_cross_axis_max": 0.3,
+  "safety": {
+    "tilt_max": 1.2,
+    "clearance_min": 0.06,
+    "lateral_max": 1.5
+  },
+  "retry": "none",
+  "progression": "performance_continue_safety_integrity_stop"
+}

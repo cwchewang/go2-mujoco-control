@@ -1,0 +1,2 @@
+A	docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md
+M	tools/substrate/tasks/rl_capability_map_v1.json

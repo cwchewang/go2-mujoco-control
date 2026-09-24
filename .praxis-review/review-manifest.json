@@ -1,0 +1,191 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E14",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 179,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "2773f10366bfa1fce18630ecde3363b307ddf6ccb140b34ca24f9c2599a08c90",
+      "size": 6946
+    },
+    {
+      "path": "index.json",
+      "sha256": "d8fa0375b99df01db4f1da35a0ba007409b8f7f9755b47a7f371036ae0c52110",
+      "size": 9880
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "1b939efb0ccc525f709119cd996d81a3de2cc03b19abd27448553d87db98f688",
+      "size": 513
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/design-capability-map.md",
+      "sha256": "b9f7989f3135346dce6e4e36ee8b0b45f6a087f2aae85bc0f809d45778325e5d",
+      "size": 14955
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/design-protocol.json",
+      "sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+      "size": 5653
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/design-results.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "size": 6301
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/design-task.json",
+      "sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+      "size": 293
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/integrity-capability-map.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "size": 16163
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/integrity-protocol.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/integrity-results.md",
+      "sha256": "420f6171fa13fe16ed48c46ae7ed8f61f4f1e3d5b76c9443b8f755623d653332",
+      "size": 3066
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/integrity-task.json",
+      "sha256": "7d4f1ac94765bc05fea0fcdb7f3d1e55d515d3371641bef203baf794d69be2a1",
+      "size": 299
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/integrity-task.md",
+      "sha256": "de3cd181e584e6f3e21f19d02ccbebb7e137b7d1bcb62ca1efcda66a916e2a84",
+      "size": 2250
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/target-capability-map.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "size": 16163
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/target-formal-task.md",
+      "sha256": "fd4bc7ff0069bc91293c51fb5039deb25342a4d98b6ccd9e1c512a1b26bf5c9b",
+      "size": 6555
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/target-protocol.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "evidence_id": "E1",
+      "path": "source_snapshots/target-task.json",
+      "sha256": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+      "size": 412
+    },
+    {
+      "evidence_id": "E10",
+      "path": "postcommit-status.txt",
+      "sha256": "ba051334ebc33f3162a4fd5be48615e03c8dac8ec7977e7c2752dbc1cf981841",
+      "size": 20
+    },
+    {
+      "evidence_id": "E11",
+      "path": "review-method.md",
+      "sha256": "bcd7d1480e7962f09f5b375f89d5f1ad269204bc4f44a14abf813c69c7a9cbc1",
+      "size": 581
+    },
+    {
+      "evidence_id": "E14",
+      "path": "final-state.json",
+      "sha256": "8b673ce8dcbd3f04d196249e082eb7d6583f985d1d66c9f2353327077e286440",
+      "size": 481
+    },
+    {
+      "evidence_id": "E2",
+      "path": "source-snapshot-manifest.json",
+      "sha256": "590b138ad2244bbf2384c593abdf6acbd45a3472209ff3ac07b195c7d8cfc9ba",
+      "size": 4186
+    },
+    {
+      "evidence_id": "E3",
+      "path": "protocol-hashes.txt",
+      "sha256": "db8ba34f7a97f47d7e570eb3419b80594b0dfc6c664a33c6a34bd17629f3d39c",
+      "size": 630
+    },
+    {
+      "evidence_id": "E4",
+      "path": "comparison-findings.json",
+      "sha256": "62a038bf7f005556c454082a39f7091018ba62aa94a013e219759f80ad18e3b6",
+      "size": 2049
+    },
+    {
+      "evidence_id": "E5",
+      "path": "integrity-to-target-names.txt",
+      "sha256": "d9bbd6822075d44369835f0abc4921b2572a648d915c8bf097b657035556a565",
+      "size": 108
+    },
+    {
+      "evidence_id": "E6",
+      "path": "integrity-to-target-scoped-diff.txt",
+      "sha256": "e42639f72eccecfc1f29343e337b055bb7020e739f8180758b26d92c3116ad8a",
+      "size": 7771
+    },
+    {
+      "evidence_id": "E7",
+      "path": "review-json-validation.txt",
+      "sha256": "84ce4dd326f522b300f4cf7ffaa10007e28030da4fca23dc45859eecd90b0e1c",
+      "size": 77
+    },
+    {
+      "evidence_id": "E8",
+      "path": "committed-head.txt",
+      "sha256": "de41fd85c30f1612ff6f3b01a4ac642480bb7fc8570c9b9190b7fdae2d8bcd2b",
+      "size": 321
+    },
+    {
+      "evidence_id": "E9",
+      "path": "committed-paths.txt",
+      "sha256": "c16e5362f9bd7e0bd993b6998e1747d843cc8987a9cc8601d29f5a4a16f4f8b3",
+      "size": 77
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "5a900dfc71e23c51b46cc43bc2ac89383f602ab4",
+  "schema_version": 1,
+  "source_index_sha256": "d8fa0375b99df01db4f1da35a0ba007409b8f7f9755b47a7f371036ae0c52110",
+  "task_branch": "review/rl-capability-map-formal-science-20260924",
+  "task_commit": "098da1159a0e65b34b29a492f583035d21d8e951"
+}

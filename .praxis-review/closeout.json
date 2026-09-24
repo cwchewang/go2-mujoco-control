@@ -1,0 +1,173 @@
+{
+  "status": "complete",
+  "summary": "Approved target 6bd0485f25f848d9286ae986ed4f2f7d805a5090 as scientifically equivalent to the repaired capability-map design. Committed the required single-file science review as 5a900dfc71e23c51b46cc43bc2ac89383f602ab4.",
+  "completed": [
+    "Compared the exact target commit with the frozen design and repaired integrity result, including protocol bytes, capability-map document, task config, and formal execution task.",
+    "Verified the required protocol SHA-256, nine-case matrix, no-retry policy, max_attempts=9, and unchanged #166 digest binding.",
+    "Created an APPROVED science review bound to the exact target HEAD and committed only the requested review.json file.",
+    "Preserved source snapshots, diffs, hashes, JSON validation, commit evidence, and closeout records in the evidence directory.",
+    "Ran no qualification, preparation, capture, simulation, tests, or plant physics."
+  ],
+  "not_completed": [],
+  "observations": [
+    {
+      "text": "The integrity and target protocol snapshots are byte-identical and both hash to the frozen SHA-256 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803. The target protocol has nine cases, max_attempts=9, retry=none, the frozen progression, and the #166 digest binding.",
+      "evidence_ids": [
+        "E1",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "The target capability-map document is byte-identical to the repaired integrity version; it retains the bounded lateral/yaw engineering probes, excluded scenes, scope limits, and no-paper-gap statement.",
+      "evidence_ids": [
+        "E1",
+        "E4"
+      ]
+    },
+    {
+      "text": "The integrity-to-target diff contains only the formal execution task addition and task config change. The config delta binds the formal branch, repaired diff base, Praxis issue #178, and task path.",
+      "evidence_ids": [
+        "E5",
+        "E6",
+        "E1"
+      ]
+    },
+    {
+      "text": "The committed change is exactly docs/validation/rl_capability_map_formal_science_review_20260924/review.json, and the post-commit detached worktree is clean.",
+      "evidence_ids": [
+        "E8",
+        "E9",
+        "E10"
+      ]
+    },
+    {
+      "text": "The review was documentary and protocol-based; no qualification, preparation, capture, simulation, tests, or plant physics were run.",
+      "evidence_ids": [
+        "E11"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "Byte identity of the repaired and target protocol and capability-map document means the case matrix, commands, scenes, thresholds, terrain goals, safety semantics, progression, and scientific interpretation did not change after the repaired design.",
+      "evidence_ids": [
+        "E1",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "The observed post-repair delta is formal execution identity/task binding, so it does not introduce a new scientific claim or change the capability-map question.",
+      "evidence_ids": [
+        "E1",
+        "E5",
+        "E6"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "APPROVED: target 6bd0485f25f848d9286ae986ed4f2f7d805a5090 is scientifically equivalent to the frozen and repaired capability-map design under the review criteria.",
+      "evidence_ids": [
+        "E1",
+        "E4",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "The task closeout is complete: the required science review is committed as one tracked file and the evidence package is present.",
+      "evidence_ids": [
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E14"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "This review did not reopen or recompute the historical #166 raw traces; it accepted the frozen integrity result provenance and verified that the exact digest binding remains unchanged in the target protocol.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E4"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "source_snapshots",
+      "description": "Non-empty bundle of exact git-show source snapshots from design result 754ceb3, integrity result 00d694d, and target 6bd0485, including design and integrity closeouts, protocol, task config, capability-map document, and formal execution task."
+    },
+    {
+      "id": "E2",
+      "path": "source-snapshot-manifest.json",
+      "description": "Maps each source snapshot to its source commit and repository path with byte length and SHA-256."
+    },
+    {
+      "id": "E3",
+      "path": "protocol-hashes.txt",
+      "description": "SHA-256 output for design, repaired integrity, and target protocol snapshots."
+    },
+    {
+      "id": "E4",
+      "path": "comparison-findings.json",
+      "description": "Machine-readable comparison of protocol/document byte identity, case identifiers, retry and attempt semantics, digest binding, and task config identity-field changes."
+    },
+    {
+      "id": "E5",
+      "path": "integrity-to-target-names.txt",
+      "description": "Git name-status diff for all paths changed between the repaired integrity result and exact target commit."
+    },
+    {
+      "id": "E6",
+      "path": "integrity-to-target-scoped-diff.txt",
+      "description": "Full diff of the target capability-map, protocol, task config, and added formal execution task against the repaired integrity result."
+    },
+    {
+      "id": "E7",
+      "path": "review-json-validation.txt",
+      "description": "Successful JSON syntax and required-field/target-binding validation for the review artifact."
+    },
+    {
+      "id": "E8",
+      "path": "committed-head.txt",
+      "description": "Full metadata for the final review commit."
+    },
+    {
+      "id": "E9",
+      "path": "committed-paths.txt",
+      "description": "Committed path list confirming the commit contains only the requested review.json."
+    },
+    {
+      "id": "E10",
+      "path": "postcommit-status.txt",
+      "description": "Post-commit status showing a clean detached worktree."
+    },
+    {
+      "id": "E11",
+      "path": "review-method.md",
+      "description": "Review scope and record that no qualification, preparation, capture, simulation, test suite, or plant physics was run."
+    },
+    {
+      "id": "E12",
+      "path": "protocol-analysis.json",
+      "description": "Case-by-case summary of target protocol commands, scenes, horizons, tracking axes, terrain goals, gates, and safety envelope."
+    },
+    {
+      "id": "E13",
+      "path": "design-v-integrity-protocol.txt",
+      "description": "Protocol diff showing the integrity repair introduced the exact #166 reference trace digest binding."
+    },
+    {
+      "id": "E14",
+      "path": "final-state.json",
+      "description": "Final verification of committed HEAD, clean worktree, single committed review path, review binding/verdict, and closeout evidence-path/reference integrity."
+    }
+  ]
+}

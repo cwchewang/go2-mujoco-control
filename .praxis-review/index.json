@@ -1,0 +1,317 @@
+{
+  "files": [
+    {
+      "path": "bootstrap-fetch.txt",
+      "sha256": "b1fa292de70692f1e6c3818f12f6602ca415d3279cabf8bd852e63ba625abb19",
+      "size": 99
+    },
+    {
+      "path": "capability-doc-repaired-v-target.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "capability-files-target.txt",
+      "sha256": "3cc1f17e4515b12035e6bab99994a2a097e4ac3d0739cb37725ab6567ee15688",
+      "size": 75411
+    },
+    {
+      "path": "closeout.json",
+      "sha256": "2773f10366bfa1fce18630ecde3363b307ddf6ccb140b34ca24f9c2599a08c90",
+      "size": 6946
+    },
+    {
+      "path": "codex.ndjson",
+      "sha256": "412b55b6ca9844e7bcc12b6afc16de8d978f2c78f14b3b54037e378f6d7f90ca",
+      "size": 248585
+    },
+    {
+      "path": "codex.stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+      "size": 39
+    },
+    {
+      "path": "commit-diff-check.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "commit-log.txt",
+      "sha256": "7ecf07eaec9fdd1632917b5bcc517c2b2dd05ccf0d854dcd20476dce94c8cd2c",
+      "size": 201
+    },
+    {
+      "path": "commit-stat.txt",
+      "sha256": "b26a2c962c9b09300717d31d8abb2a10e60183f3255fcbbdcb3709025c160c46",
+      "size": 265
+    },
+    {
+      "path": "committed-head.txt",
+      "sha256": "de41fd85c30f1612ff6f3b01a4ac642480bb7fc8570c9b9190b7fdae2d8bcd2b",
+      "size": 321
+    },
+    {
+      "path": "committed-paths.txt",
+      "sha256": "c16e5362f9bd7e0bd993b6998e1747d843cc8987a9cc8601d29f5a4a16f4f8b3",
+      "size": 77
+    },
+    {
+      "path": "comparison-findings.json",
+      "sha256": "62a038bf7f005556c454082a39f7091018ba62aa94a013e219759f80ad18e3b6",
+      "size": 2049
+    },
+    {
+      "path": "design-show.txt",
+      "sha256": "facdc8f050409459f14558b297f42c470ad19c292170eb34ba85ca8fbc27073c",
+      "size": 953
+    },
+    {
+      "path": "design-to-target-names.txt",
+      "sha256": "4a83e5746d10eda85c4d8b4a429d0b59b2ff5d27fb5a5a48c30c1d8dba2825ed",
+      "size": 481
+    },
+    {
+      "path": "design-to-target-stat.txt",
+      "sha256": "ef80ede7bb265c7e40b4665b78cfadea18cd3dd42ae7625ea1da325f4396cf5a",
+      "size": 709
+    },
+    {
+      "path": "design-v-integrity-protocol.txt",
+      "sha256": "7255a11dc231a4c90984d880943aec8977cf4021d16eb86684f6a72d9f38fa19",
+      "size": 645
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "path": "final-state.json",
+      "sha256": "8b673ce8dcbd3f04d196249e082eb7d6583f985d1d66c9f2353327077e286440",
+      "size": 481
+    },
+    {
+      "path": "git-author-ident.txt",
+      "sha256": "4520f590e1f751a7992895d2cf17c59f233c09425fdf0aa1f59ff5ad67ceca29",
+      "size": 73
+    },
+    {
+      "path": "git-commit.txt",
+      "sha256": "7ecf07eaec9fdd1632917b5bcc517c2b2dd05ccf0d854dcd20476dce94c8cd2c",
+      "size": 201
+    },
+    {
+      "path": "git-committer-ident.txt",
+      "sha256": "4520f590e1f751a7992895d2cf17c59f233c09425fdf0aa1f59ff5ad67ceca29",
+      "size": 73
+    },
+    {
+      "path": "head-id.txt",
+      "sha256": "8ec0f0f08db6b63a0309f822bab8c7f9f7846f98c1fd057b2bfd82db439af4fa",
+      "size": 41
+    },
+    {
+      "path": "identity-to-target-names.txt",
+      "sha256": "044aac0076a2325283782cdbe20c5605c445b37703a8a497f781036951a73643",
+      "size": 58
+    },
+    {
+      "path": "integrity-show.txt",
+      "sha256": "353c08df1004d552239dcb6c3c616bc9654d73ced5cb83354bf66a7be6ce3929",
+      "size": 892
+    },
+    {
+      "path": "integrity-to-target-names.txt",
+      "sha256": "d9bbd6822075d44369835f0abc4921b2572a648d915c8bf097b657035556a565",
+      "size": 108
+    },
+    {
+      "path": "integrity-to-target-scoped-diff.txt",
+      "sha256": "e42639f72eccecfc1f29343e337b055bb7020e739f8180758b26d92c3116ad8a",
+      "size": 7771
+    },
+    {
+      "path": "main-current.txt",
+      "sha256": "5c9fc6fd6c51646a4bebc4575efb24bc8ad84bad62055dd46a064f6d1c6c304b",
+      "size": 1017
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "1b939efb0ccc525f709119cd996d81a3de2cc03b19abd27448553d87db98f688",
+      "size": 513
+    },
+    {
+      "path": "postcommit-status.txt",
+      "sha256": "ba051334ebc33f3162a4fd5be48615e03c8dac8ec7977e7c2752dbc1cf981841",
+      "size": 20
+    },
+    {
+      "path": "praxis-identity.txt",
+      "sha256": "31ad377682c668174041266edf15971be5f0f92c215da3f27555c4bb1dc240e5",
+      "size": 412
+    },
+    {
+      "path": "precommit-status.txt",
+      "sha256": "c619b9061e250dcc5a3d5a21f8fa2586ede7239ab86b0a703e1e298e8aeb73e6",
+      "size": 100
+    },
+    {
+      "path": "protocol-analysis.json",
+      "sha256": "757f3f44c31e37fad4f94769ae2e2b5c5f8d16682868c0b86ff9d93892e7052c",
+      "size": 4962
+    },
+    {
+      "path": "protocol-hashes.txt",
+      "sha256": "db8ba34f7a97f47d7e570eb3419b80594b0dfc6c664a33c6a34bd17629f3d39c",
+      "size": 630
+    },
+    {
+      "path": "protocol-repaired-v-target.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "review-commit-history.txt",
+      "sha256": "69feae1029cc90094a580d2158103d6abf6405c8b70268e97df3a9c2f91a626a",
+      "size": 1253
+    },
+    {
+      "path": "review-file.txt",
+      "sha256": "2229190351d634d1587c6d82952e8aaf9e05e85067d8797e40ba52c185a04e3d",
+      "size": 2131
+    },
+    {
+      "path": "review-json-validation.txt",
+      "sha256": "84ce4dd326f522b300f4cf7ffaa10007e28030da4fca23dc45859eecd90b0e1c",
+      "size": 77
+    },
+    {
+      "path": "review-method.md",
+      "sha256": "bcd7d1480e7962f09f5b375f89d5f1ad269204bc4f44a14abf813c69c7a9cbc1",
+      "size": 581
+    },
+    {
+      "path": "source-snapshot-manifest.json",
+      "sha256": "590b138ad2244bbf2384c593abdf6acbd45a3472209ff3ac07b195c7d8cfc9ba",
+      "size": 4186
+    },
+    {
+      "path": "source_snapshots/design-capability-map.md",
+      "sha256": "b9f7989f3135346dce6e4e36ee8b0b45f6a087f2aae85bc0f809d45778325e5d",
+      "size": 14955
+    },
+    {
+      "path": "source_snapshots/design-protocol.json",
+      "sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+      "size": 5653
+    },
+    {
+      "path": "source_snapshots/design-results.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "size": 6301
+    },
+    {
+      "path": "source_snapshots/design-task.json",
+      "sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+      "size": 293
+    },
+    {
+      "path": "source_snapshots/integrity-capability-map.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "size": 16163
+    },
+    {
+      "path": "source_snapshots/integrity-protocol.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "path": "source_snapshots/integrity-results.md",
+      "sha256": "420f6171fa13fe16ed48c46ae7ed8f61f4f1e3d5b76c9443b8f755623d653332",
+      "size": 3066
+    },
+    {
+      "path": "source_snapshots/integrity-task.json",
+      "sha256": "7d4f1ac94765bc05fea0fcdb7f3d1e55d515d3371641bef203baf794d69be2a1",
+      "size": 299
+    },
+    {
+      "path": "source_snapshots/integrity-task.md",
+      "sha256": "de3cd181e584e6f3e21f19d02ccbebb7e137b7d1bcb62ca1efcda66a916e2a84",
+      "size": 2250
+    },
+    {
+      "path": "source_snapshots/target-capability-map.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "size": 16163
+    },
+    {
+      "path": "source_snapshots/target-formal-task.md",
+      "sha256": "fd4bc7ff0069bc91293c51fb5039deb25342a4d98b6ccd9e1c512a1b26bf5c9b",
+      "size": 6555
+    },
+    {
+      "path": "source_snapshots/target-protocol.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "path": "source_snapshots/target-task.json",
+      "sha256": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+      "size": 412
+    },
+    {
+      "path": "staged-diff-check.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "staged-diff-stat.txt",
+      "sha256": "d9cd70e7e529ab2f06e549df486b927e7e347a433388468ad0fd4357a6a5ba5a",
+      "size": 114
+    },
+    {
+      "path": "staged-diff.txt",
+      "sha256": "3b237f0315f275984a1daa37c17cabb267ecffe39b0df332ceaa87e570a7f080",
+      "size": 2489
+    },
+    {
+      "path": "staged-paths.txt",
+      "sha256": "c16e5362f9bd7e0bd993b6998e1747d843cc8987a9cc8601d29f5a4a16f4f8b3",
+      "size": 77
+    },
+    {
+      "path": "target-object.txt",
+      "sha256": "50836eee574ecff79dea3b4fd40673d7d000f7a5f177d8a6a3000b59c78383b8",
+      "size": 7
+    },
+    {
+      "path": "target-parents.txt",
+      "sha256": "934adf61292e9d9f33800b9fa756ac61bdfe7cba6bbd1e103e3d16c24d93c404",
+      "size": 41
+    },
+    {
+      "path": "target-show.txt",
+      "sha256": "5aa33b532d53f23b3bff468c22fa025a03ab1804a9bc75ffa0126bb9b150911a",
+      "size": 437
+    },
+    {
+      "path": "task-json-repaired-v-target.txt",
+      "sha256": "bf15a4c72bcf05d70eaa6448415c3526586e9a24703317f7976471d9904717d3",
+      "size": 925
+    },
+    {
+      "path": "validation-invocation-error.txt",
+      "sha256": "0bc1502ba842b8b4c7465eea5b7e371754c0e8674055a779e405ad50b1073600",
+      "size": 553
+    },
+    {
+      "path": "worktree-state.txt",
+      "sha256": "ba051334ebc33f3162a4fd5be48615e03c8dac8ec7977e7c2752dbc1cf981841",
+      "size": 20
+    }
+  ],
+  "result_commit": "5a900dfc71e23c51b46cc43bc2ac89383f602ab4",
+  "schema_version": 1,
+  "status": "complete"
+}

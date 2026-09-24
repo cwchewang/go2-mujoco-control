@@ -1,0 +1,13 @@
+{
+  "head": "5a900dfc71e23c51b46cc43bc2ac89383f602ab4",
+  "status_porcelain": "",
+  "commit_subject": "review: approve capability map formal science",
+  "committed_paths": [
+    "docs/validation/rl_capability_map_formal_science_review_20260924/review.json"
+  ],
+  "committed_review_verdict": "APPROVED",
+  "review_target_head": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+  "closeout_status": "complete",
+  "evidence_paths_exist": true,
+  "claim_evidence_references_valid": true
+}

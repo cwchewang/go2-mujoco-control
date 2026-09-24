@@ -1,0 +1,96 @@
+{
+  "target_head": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+  "snapshots": [
+    {
+      "path": "source_snapshots/design-capability-map.md",
+      "source_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+      "source_path": "docs/research/RL_CAPABILITY_MAP_20260924.md",
+      "sha256": "b9f7989f3135346dce6e4e36ee8b0b45f6a087f2aae85bc0f809d45778325e5d",
+      "bytes": 14955
+    },
+    {
+      "path": "source_snapshots/integrity-capability-map.md",
+      "source_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+      "source_path": "docs/research/RL_CAPABILITY_MAP_20260924.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "bytes": 16163
+    },
+    {
+      "path": "source_snapshots/target-capability-map.md",
+      "source_commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "source_path": "docs/research/RL_CAPABILITY_MAP_20260924.md",
+      "sha256": "1fb844ddca1d2d6cb5da9ac158fcdf60c337ca3f27d9b2fce39ce4763e04a1bd",
+      "bytes": 16163
+    },
+    {
+      "path": "source_snapshots/design-results.md",
+      "source_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+      "source_path": "docs/validation/rl_capability_map_design_20260924/RESULTS.md",
+      "sha256": "d926594b288ba27f9bba9dc7f207d5ad8b19570954b0454777e72ac43fbe76a0",
+      "bytes": 6301
+    },
+    {
+      "path": "source_snapshots/integrity-results.md",
+      "source_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+      "source_path": "docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md",
+      "sha256": "420f6171fa13fe16ed48c46ae7ed8f61f4f1e3d5b76c9443b8f755623d653332",
+      "bytes": 3066
+    },
+    {
+      "path": "source_snapshots/design-protocol.json",
+      "source_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+      "source_path": "tools/substrate/protocols/rl_capability_map_v1.json",
+      "sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+      "bytes": 5653
+    },
+    {
+      "path": "source_snapshots/integrity-protocol.json",
+      "source_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+      "source_path": "tools/substrate/protocols/rl_capability_map_v1.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "bytes": 5753
+    },
+    {
+      "path": "source_snapshots/target-protocol.json",
+      "source_commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "source_path": "tools/substrate/protocols/rl_capability_map_v1.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "bytes": 5753
+    },
+    {
+      "path": "source_snapshots/design-task.json",
+      "source_commit": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+      "source_path": "tools/substrate/tasks/rl_capability_map_v1.json",
+      "sha256": "2458ef24e0f8a7feea57012b9ac92859367d3db995eed11cd5621a643bcf001e",
+      "bytes": 293
+    },
+    {
+      "path": "source_snapshots/integrity-task.json",
+      "source_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+      "source_path": "tools/substrate/tasks/rl_capability_map_v1.json",
+      "sha256": "7d4f1ac94765bc05fea0fcdb7f3d1e55d515d3371641bef203baf794d69be2a1",
+      "bytes": 299
+    },
+    {
+      "path": "source_snapshots/target-task.json",
+      "source_commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "source_path": "tools/substrate/tasks/rl_capability_map_v1.json",
+      "sha256": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+      "bytes": 412
+    },
+    {
+      "path": "source_snapshots/target-formal-task.md",
+      "source_commit": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "source_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "sha256": "fd4bc7ff0069bc91293c51fb5039deb25342a4d98b6ccd9e1c512a1b26bf5c9b",
+      "bytes": 6555
+    },
+    {
+      "path": "source_snapshots/integrity-task.md",
+      "source_commit": "00d694dde213fb6862a161374e423261d13ab42b",
+      "source_path": "docs/research/TASK_RL_CAPABILITY_MAP_INTEGRITY_R2_20260924.md",
+      "sha256": "de3cd181e584e6f3e21f19d02ccbebb7e137b7d1bcb62ca1efcda66a916e2a84",
+      "bytes": 2250
+    }
+  ]
+}
