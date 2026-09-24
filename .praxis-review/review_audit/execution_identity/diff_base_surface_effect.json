@@ -1,0 +1,46 @@
+{
+  "preflight_effect": "The diff_base changes the source delta used for preflight changed-surface classification. Runner/runtime remain changed; schema becomes part of the prior integrity baseline. Launch passes --requires-sol-review and qualification independently. This affects preflight accounting, not the protocol or capture inputs.",
+  "prior_configuration": {
+    "diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2",
+    "inferred_surfaces": [
+      "runner",
+      "runtime",
+      "schema"
+    ],
+    "path_count": 15,
+    "paths": [
+      "docs/research/RL_CAPABILITY_MAP_20260924.md",
+      "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "docs/research/TASK_RL_CAPABILITY_MAP_INTEGRITY_R2_20260924.md",
+      "docs/validation/rl_capability_map_integrity_r2_20260924/RESULTS.md",
+      "tools/research/identity.py",
+      "tools/research/preflight.py",
+      "tools/substrate/baseline.py",
+      "tools/substrate/baseline_episode.py",
+      "tools/substrate/baseline_verify.py",
+      "tools/substrate/launch.py",
+      "tools/substrate/protocols/rl_capability_map_v1.json",
+      "tools/substrate/task.py",
+      "tools/substrate/tasks/rl_capability_map_v1.json",
+      "tools/substrate/test_baseline.py",
+      "tools/substrate/test_launch.py"
+    ]
+  },
+  "target_configuration": {
+    "diff_base": "00d694dde213fb6862a161374e423261d13ab42b",
+    "inferred_surfaces": [
+      "runner",
+      "runtime"
+    ],
+    "path_count": 7,
+    "paths": [
+      "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "tools/research/identity.py",
+      "tools/research/preflight.py",
+      "tools/substrate/launch.py",
+      "tools/substrate/task.py",
+      "tools/substrate/tasks/rl_capability_map_v1.json",
+      "tools/substrate/test_launch.py"
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 181,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "09a5341deeded83e4d7662d9b637d4af4a26485afc773b99db713112bfc02378",
+      "size": 7061
+    },
+    {
+      "path": "index.json",
+      "sha256": "2157aefd30a110df7e9d6b9dba95c9ddab0560d239603c038f9d2b46fa3798fc",
+      "size": 5414
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "48f2f59c98b2875bf8db47ab6370b0bfacfadfeefea7b6a9dd97b503ecde3904",
+      "size": 519
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_audit/scientific_comparison/formal_task_target.md",
+      "sha256": "8122e3a158f800baace95ab63201a75e3263421983a6eaa1defb63987db73f1d",
+      "size": 6567
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_audit/scientific_comparison/prior_integrity_result.md",
+      "sha256": "420f6171fa13fe16ed48c46ae7ed8f61f4f1e3d5b76c9443b8f755623d653332",
+      "size": 3066
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_audit/scientific_comparison/protocol_comparison.json",
+      "sha256": "0457d07ef8d6679603a6b2b914b92b82ccf9b1b3bca34918e66cc1c2de0a874b",
+      "size": 6997
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_audit/scientific_comparison/protocol_prior.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "evidence_id": "E1",
+      "path": "review_audit/scientific_comparison/protocol_target.json",
+      "sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+      "size": 5753
+    },
+    {
+      "evidence_id": "E10",
+      "path": "review_audit/SHA256SUMS",
+      "sha256": "022315cd65f119ad8a009426d59936056c8c0ac77bca8f7ec83314208ad472f8",
+      "size": 2479
+    },
+    {
+      "evidence_id": "E2",
+      "path": "review_audit/execution_identity/identity_hardening.diff",
+      "sha256": "7821aa6dafef219ea4bb4ee7ae96d4cb6e4567fbc63fbe1894ad523ada4a2216",
+      "size": 8870
+    },
+    {
+      "evidence_id": "E3",
+      "path": "review_audit/review_paths/formal_task_review_location_diff.txt",
+      "sha256": "06510df3cfb38b6ef20458299285c870b78bc5f6394c40863733d62906a01174",
+      "size": 1318
+    },
+    {
+      "evidence_id": "E4",
+      "path": "review_audit/unit_tests/current-identity.log",
+      "sha256": "10c440f65bbea1f3d3d3e4aea29cf065bcddd09759bfba02cbf763ed8f4a094c",
+      "size": 967
+    },
+    {
+      "evidence_id": "E4",
+      "path": "review_audit/unit_tests/preflight-identity.log",
+      "sha256": "851699ca90a2e56f264243bfaa5df662c33774fe6731f232ee030267617b904f",
+      "size": 3599
+    },
+    {
+      "evidence_id": "E5",
+      "path": "review_audit/execution_identity/diff_base_surface_effect.json",
+      "sha256": "0e507f99f9abfb5343feb3c9df0016307a9f24c2fb68ebb62f9b28c78dc88b2b",
+      "size": 1795
+    },
+    {
+      "evidence_id": "E7",
+      "path": "review_audit/committed_review.json",
+      "sha256": "69b25fe24f106abe923393b6734b8198b314e2223d05a3ba81ddf0b13b41211a",
+      "size": 2609
+    },
+    {
+      "evidence_id": "E8",
+      "path": "review_audit/commit_verification.txt",
+      "sha256": "06da8e265db110513e91f2ee9ed1477a6270b2c7e837c13430c8595cb30f0d57",
+      "size": 601
+    },
+    {
+      "evidence_id": "E9",
+      "path": "review_audit/command_scope.txt",
+      "sha256": "a82db60f8d878fc7f96b6774826945706097367bf921a1d8db23d13d31d39728",
+      "size": 765
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "7cceb45baeaafcf2a2b8fc4019f9cd40ca72092b",
+  "schema_version": 1,
+  "source_index_sha256": "2157aefd30a110df7e9d6b9dba95c9ddab0560d239603c038f9d2b46fa3798fc",
+  "task_branch": "review/rl-capability-map-formal-science-r2-20260924",
+  "task_commit": "720126be6c943414c1064fa70b4e628e7872cae5"
+}

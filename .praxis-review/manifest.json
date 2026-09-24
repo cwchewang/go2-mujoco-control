@@ -1,0 +1,13 @@
+{
+  "result_commit": "7cceb45baeaafcf2a2b8fc4019f9cd40ca72092b",
+  "schema_version": 1,
+  "status": "complete",
+  "task": {
+    "branch": "review/rl-capability-map-formal-science-r2-20260924",
+    "issue_number": 181,
+    "repository": "cwchewang/go2-mujoco-control",
+    "task_commit": "720126be6c943414c1064fa70b4e628e7872cae5",
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_SCIENCE_REVIEW_R2_20260924.md"
+  },
+  "worktree": "/home/che/.local/share/praxis-v2/tasks/cwchewang-go2-mujoco-control-181"
+}

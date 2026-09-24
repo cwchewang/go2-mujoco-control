@@ -1,0 +1,14 @@
+HEAD=7cceb45baeaafcf2a2b8fc4019f9cd40ca72092b
+commit_paths=A	docs/validation/rl_capability_map_formal_science_review_r2_20260924/review.json
+worktree_status='clean'
+
+commit 7cceb45baeaafcf2a2b8fc4019f9cd40ca72092b
+Author:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+AuthorDate: Thu Sep 24 11:12:34 2026 +0800
+Commit:     Che Wang <237448565+cwchewang@users.noreply.github.com>
+CommitDate: Thu Sep 24 11:12:34 2026 +0800
+
+    review: approve RL capability map science r2
+
+ .../review.json                                      | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)

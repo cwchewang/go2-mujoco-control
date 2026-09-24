@@ -1,0 +1,6 @@
+Read-only / non-plant review actions recorded in this bundle:
+- Read the frozen review task document before inspecting other files.
+- Inspected the exact target commit, its parent diff, target/prior protocol snapshots, relevant identity source diff, task metadata, and prior integrity closeout.
+- Ran only two non-plant unit suites: `python3 -m unittest -v tools.substrate.test_launch.CurrentIdentityTests` and `python3 -m unittest -v tools.research.test_preflight_integration.ReadinessFixtures`.
+- No qualification, zero-step preparation, capture, simulation, or plant physics command was run.
+- The earlier `python` alias lookup failed because only `python3` is installed; the static extraction was repeated with `python3`. Raw record: `failed_python_alias.txt`.
