@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-09-23**
-> **状态：SOURCE RL FLAT REFERENCE VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
+> **最后更新：2026-09-24**
+> **状态：SOURCE RL FLAT REFERENCE + PINNED SHARED-TRANSFER 1 M/S FLAT COMBINATION VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -22,7 +22,11 @@
 
 用户已恢复实际研究，并明确优先“先把公开策略做成可靠、能力清楚的研究基线”。
 当前任务是上游部署复现、接口等价核验和受控能力/移植测试，不训练或微调；
-任务和进展跟随 CURRENT.md。基础建设已完成，原始失败仍封存。
+任务和进展跟随 CURRENT.md。基础建设已完成，原始失败仍封存。2026-09-24，
+冻结的 shared-transfer formal v2 组合确认已完成：pinned shared deployment
+combination 在 1.0 m/s flat protocol 下两次规定 case 均 PASS；该结论只回答
+这一个冻结组合是否保留源策略的平地能力，不解释因果，也不外推 terrain、
+low-speed、hardware 或 general robustness。
 
 项目以**研究为主**，老师任务是同一路线上的硬约束与早期交付；作品集价值是副产品。短期工程与长期科研不能拆成两条互不相干的线。
 
@@ -42,6 +46,35 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1C. [2026-09-24 | VERIFIED / SEALED] Shared-transfer formal v2
+
+正式结果见 `docs/validation/shared_transfer_combination_formal_v2_20260923/RESULTS.md`，
+Praxis #166 已 COMPLETE / CLOSED。冻结起点
+`9e82e56ac2a5db63d7834e86ce402d542bf10ae8`；结果 commit
+`6f67769851aaffed1c1826d138293e52265dbba7`；Praxis review
+`076f72dfcbab32dbed0c364b5f88f753f500123e`。
+
+campaign 按两次 attempt、无 retry 的冻结协议执行；authoritative ledger 记录恰好
+`combined_1` 与 `combined_2` 两次 consumed attempts。两例均 6000 steps、
+PASS；mean vx 均为 0.8858825 m/s，MAE 0.1141175 m/s，lateral max
+0.0649011 m，yaw max 0.0371946 rad，min clearance 0.27 m。两条 trace
+SHA-256 相同。未出现 PERFORMANCE_FAIL / SAFETY_STOP / INTEGRITY_STOP。
+
+这只确认 pinned shared model/home/start/interface 完整组合在该 1.0 m/s flat
+protocol 下保留目标能力。不能外推低速、地形、实机或总体鲁棒性，也不能从
+PASS 推断此前差异的单一因果根因。
+
+执行后 unmodified offline verifier 曾因 detached HEAD 的空 Git branch 与
+logical Praxis branch 比较而报 `preflight identity mismatch`；完整五字段
+Praxis identity 验证后，使用不修改 capture/preflight/verifier source 的
+in-memory adapter 完成离线验证，结果 `VERIFIED`、`consumed=2`、
+`physics_steps=0`。该兼容性问题属于工程接口 caveat，不改变本轮两例 verdict。
+
+Praxis 随后在 publication 层因目录型 evidence bundle contract mismatch
+false-failed；原 capture/ledger/result 均未失效，也未重跑 scientific attempt。
+Praxis v2 PR #20 修复后仅做 publication salvage，#166 正常封存。因此本 campaign
+**不可续跑、不可补第三次 attempt**。
 
 ## 1B. [2026-09-23 | VERIFIED / BOUNDED] 公开RL源条件基线
 
@@ -182,7 +215,7 @@ Challengers / baselines：
 
 Gate 内容：
 1. MJPC Go2 build/flat/terrain task-cost modification；记录 Atlas 9700X policy update frequency、CPU/RAM。
-2. Go2 RL checkpoint 在 MuJoCo flat / step / stairs / obstacle 的 strong capability baseline。
+2. Go2 RL checkpoint：源条件与 pinned shared-transfer 1 m/s flat combination 已有可信对照；仍需在 MuJoCo step / stairs / obstacle 等形成 strong capability baseline。
 3. DIAL RTX 5080 小规模 seq-jump/crate throughput smoke。
 4. 统一 terrain family、任务目标、成功语义、资源记录，形成 shared benchmark。
 
@@ -212,10 +245,12 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-公开RL源条件复现已完成并封存，当前有可重复的1 m/s平地对照与明确的低速、
-横漂和机身接触边界。下一项前瞻确认共享模型/home/十步启动/接口的组合，
-随后按需求扩展地形与方向覆盖。不要把单因素通过拼成未运行的组合通过，
-也不把接触停止写成摔倒。入口见 CURRENT；历史与本轮campaign均不可续跑。
+公开RL源条件复现与 shared-transfer formal v2 组合确认均已完成并封存。
+现在已有可重复的1 m/s源条件平地参考，以及 pinned shared model/home/start/interface
+完整组合的两次 confirmatory PASS。下一步回到 Gate 0 未完成部分：按前瞻冻结协议
+扩展 terrain / direction / robustness 覆盖，并继续 MJPC 与 challenger 的统一
+benchmark。不得把本轮 flat PASS 外推成 terrain 能力，也不得续跑 #166 campaign
+或追加第三次 attempt。
 
 ## 10. [2026-09-22 | GOVERNANCE] Repo-native 项目记录
 
