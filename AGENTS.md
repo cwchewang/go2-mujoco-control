@@ -46,6 +46,21 @@ from Atlas directories, dated worktrees, old branches, commit messages, or
 archived code. Do not change controller/planner behavior or scientific
 meaning under an infrastructure-only task.
 
+## Reviewer precheck discipline
+
+Before creating any expensive science/execution/evidence reviewer task, the
+project owner must first perform a task-specific deterministic precheck using
+the project's existing parser/loader, identity validator, hashes, targeted
+tests and zero-step/readiness path as applicable. Machine-decidable schema,
+metadata, identity, path/ref/hash and ordinary plumbing failures must be fixed
+and rechecked before a reviewer is dispatched.
+
+A reviewer must not be used as the first schema validator. Record a concise
+`PRECHECK PASS` summary with the checks actually run. This is a workflow rule,
+not a request to build a generic review framework; prefer existing project
+checks and add infrastructure only after repeated evidence that this rule is
+insufficient.
+
 No live experiment is authorized by this file alone. Before any live run,
 follow the task and SOP, verify the exact branch/HEAD and clean worktree, and
 preserve raw evidence. Everything below
