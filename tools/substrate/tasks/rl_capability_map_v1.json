@@ -1,7 +1,11 @@
 {
   "schema": 1,
-  "branch": "research/rl-capability-map-integrity-r2-20260924",
+  "branch": "research/rl-capability-map-formal-20260924",
   "protocol": "tools/substrate/protocols/rl_capability_map_v1.json",
   "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
-  "diff_base": "754ceb38e2bd8b1c60ff9c63db0f8326943b17f2"
+  "diff_base": "00d694dde213fb6862a161374e423261d13ab42b",
+  "praxis": {
+    "issue_number": 178,
+    "task_path": "docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md"
+  }
 }
