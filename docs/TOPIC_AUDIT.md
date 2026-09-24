@@ -8,7 +8,7 @@
 
 ## 0. [CURRENT | SNAPSHOT]
 
-2026-09-24，公开 RL 策略的完整 shared model/home/ten-step-start/adapter 组合已在冻结 1 m/s 平地协议下两次正式 PASS，解决了此前“单因素通过但组合未确认”的部署未决点。下一阶段进入 terrain/direction capability mapping；以下候选账本保留，本轮仍不新增或晋级论文题。
+2026-09-24，公开 RL 策略已完成正式九例 capability map：1 m/s flat reference、5 cm、10 cm、5/15/5 cm repeated steps 与 low-friction crossing PASS；half-speed、reverse、lateral、yaw probes 为 PERFORMANCE_FAIL。该结果把“RL baseline 到底先在哪类 bounded task 失效”从未知变成了可审计 failure map，但它仍只是单一 controller 的结果。下一阶段必须用 MJPC 在对齐 benchmark 上做 cross-controller comparison；本轮仍不新增或晋级论文题。
 方法/权重先按任务需要确定其证据等级，不能把工程默认选项写成已选定最优方案。
 具体阶段和下一步跟随 PROJECT_RECORD 与 CURRENT。
 
@@ -108,7 +108,7 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 第一阶段优先使用公开 checkpoint，不从头训练。
 
-2026-09-23 已建立冻结 1 m/s 源条件平地参考；2026-09-24 又完成完整 shared-transfer 组合的两次正式 PASS（各 6000 steps，mean vx 0.8858825097 m/s，repeat trace hash 完全一致）。因此 1 m/s 平地 deployment compatibility 已从未决项升级为 VERIFIED。低速、横漂与 23 cm 楼梯机身接触边界仍只属于 bounded observations；尚不足以宣布 terrain 天花板、跨控制器共同瓶颈或晋级论文题。详见 PROJECT_RECORD。
+2026-09-23 已建立冻结 1 m/s 源条件平地参考；2026-09-24 完成完整 shared-transfer 两次正式 PASS，并进一步完成 #189 九例正式 capability map。结果显示 1 m/s 的 5 cm、10 cm、5/15/5 cm repeated steps 与 low-friction crossing 均通过，而 half-speed、reverse、lateral、yaw 在冻结性能门槛下失败。这个对比提示“当前 RL checkpoint 的首先暴露边界更偏 command-space 而非这些简单前向 terrain cases”，但尚不足以宣布 terrain 天花板、跨控制器共同瓶颈或论文题。详见 PROJECT_RECORD。
 
 ## 6. [CANDIDATE LEDGER]
 
@@ -153,7 +153,7 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 ## 9. [CURRENT | NEXT AUDIT]
 
-shared-transfer 完整组合在冻结 1 m/s 平地条件下已经正式确认，因此不再把“部署组合本身是否破坏能力”作为开放问题。下一轮应把已验证 RL deployment 放进统一 terrain × direction/speed benchmark，与 MJPC capability/failure map 对照；只有在 step / stairs / obstacle 等任务中出现稳定且可复现、并能跨强 baseline 或明确归因于特定机制的 failure，才进入候选晋级。
+#189 已完成 RL 侧统一 terrain × direction/speed capability map，因此不再把“RL failure map 长什么样”作为开放问题。下一轮直接做 MJPC 对齐比较：优先复现 half-speed / reverse / lateral / yaw 四个 RL PERFORMANCE_FAIL，同时保留 flat reference 与已 PASS 的 5 cm / 10 cm / repeated-step / low-friction 作为 anchor。只有当某个 failure 能跨强 baseline 稳定复现，或形成清晰的 controller-specific mechanism contrast，才进入候选晋级；若 MJPC 的失败指向 local-gradient / nonsmooth-contact / multimodality，再启动 DIAL challenger。
 
 此前 0.15 m/s 不足、横漂与 23 cm 楼梯 base-contact stop 继续保留为观察边界，不直接升格为论文问题。先读 PROJECT_RECORD 的 Gate 结果，再问：
 
