@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "branch": "research/rl-capability-map-design-20260924",
+  "protocol": "tools/substrate/protocols/rl_capability_map_v1.json",
+  "protocol_sha256": "6d62f78e36e2367b9ee6c7b01c62cd7b8aad34476e0a1bcb862d3ab9b37fde00",
+  "diff_base": "1139827bd7faf9efd05a25c2ee0ce46dd78c833e"
+}

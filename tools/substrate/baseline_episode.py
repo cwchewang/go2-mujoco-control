@@ -14,6 +14,10 @@ from .integrity import digest, strict_json
 from .rl import FrozenPolicy, observation45
 
 
+class UnsupportedSceneError(ValueError):
+    """The runner cannot make its declared telemetry claims for this scene."""
+
+
 def reference_inputs(root):
     lock = strict_json((root / "tools/substrate/rl_reference.lock.json").read_text())
     directory = root / ".substrate/upstream-go2-30e74dc5"
@@ -112,6 +116,14 @@ class Plant:
             "base_link",
         ):
             raise ValueError("unknown floating base")
+        self.robot_bodies = set()
+        for body in range(1, m.nbody):
+            parent = body
+            while parent > 0:
+                if parent == self.base:
+                    self.robot_bodies.add(body)
+                    break
+                parent = int(m.body_parentid[parent])
         self.feet = []
         for leg in ("FL", "FR", "RL", "RR"):
             body = mj.mj_name2id(m, mj.mjtObj.mjOBJ_BODY, leg + "_calf")
@@ -133,6 +145,41 @@ class Plant:
         ]
         if self.base < 1 or not self.terrain:
             raise ValueError("missing base/terrain")
+        if "scene_geoms" in case:
+            foreign = [
+                g
+                for g in range(m.ngeom)
+                if m.geom_bodyid[g] != 0
+                and m.geom_bodyid[g] not in self.robot_bodies
+                and (m.geom_contype[g] or m.geom_conaffinity[g])
+            ]
+            if foreign:
+                names = [mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM, g) for g in foreign]
+                raise UnsupportedSceneError(
+                    "collision geometry is attached outside the Go2/world contract: "
+                    + repr(sorted(str(name) for name in names))
+                )
+            actual = {
+                mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM, g)
+                for g in self.terrain
+            }
+            expected = set(case["scene_geoms"])
+            if None in actual or actual != expected:
+                raise UnsupportedSceneError(
+                    "world collision geometry contract mismatch: expected "
+                    + repr(sorted(expected))
+                    + ", got "
+                    + repr(sorted(name for name in actual if name is not None))
+                )
+        for g in self.terrain:
+            if m.geom_type[g] not in (
+                mj.mjtGeom.mjGEOM_PLANE,
+                mj.mjtGeom.mjGEOM_BOX,
+            ):
+                raise UnsupportedSceneError(
+                    "unsupported world terrain geometry: "
+                    + str(mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM, g))
+                )
         if case["reset"] == "source":
             # Source MjData defaults; mapping only matters in the model-only arm.
             d.qpos[:7] = [0, 0, 0.445, 1, 0, 0, 0]
@@ -188,7 +235,7 @@ class Plant:
         for g in self.terrain:
             rotation = t.geom_xmat[g].reshape(3, 3)
             if not np.allclose(rotation[2], [0, 0, 1], atol=1e-12):
-                raise ValueError("unsupported tilted terrain")
+                raise UnsupportedSceneError("unsupported tilted terrain")
             if m.geom_type[g] == self.mj.mjtGeom.mjGEOM_PLANE:
                 height = max(height, float(t.geom_xpos[g, 2]))
             elif m.geom_type[g] == self.mj.mjtGeom.mjGEOM_BOX:
@@ -196,7 +243,7 @@ class Plant:
                 if np.all(np.abs(local[:2]) <= m.geom_size[g, :2]):
                     height = max(height, float(t.geom_xpos[g, 2] + m.geom_size[g, 2]))
             else:
-                raise ValueError("unsupported terrain type")
+                raise UnsupportedSceneError("unsupported terrain type")
         return dict(
             tick=tick,
             time=float(d.time),
@@ -231,11 +278,12 @@ class Plant:
 
 
 def command_at(case, tick):
-    return [
-        next(speed for start, speed in reversed(case["commands"]) if tick >= start),
-        0.0,
-        0.0,
-    ]
+    command = next(row for row in reversed(case["commands"]) if tick >= row[0])
+    if len(command) == 2:
+        return [command[1], 0.0, 0.0]
+    if len(command) == 4:
+        return list(command[1:])
+    raise ValueError("command rows must contain tick plus vx or tick plus vx/vy/wz")
 
 
 def repeat_reference(case):
@@ -326,6 +374,8 @@ def episode(plant, policy, case, protocol, emit, consume):
 
 
 def analyze(rows, case, protocol):
+    if protocol.get("schema") == 2:
+        return analyze_capability_map(rows, case, protocol)
     trajectory = hashlib.sha256()
     for row in rows:
         trajectory.update(
@@ -427,6 +477,192 @@ def analyze(rows, case, protocol):
         yaw_max_rad=max(map(abs, yaw)),
         min_clearance_m=min(r["clearance"] for r in rows),
         goal_pass=goal_pass,
+        policy_updates=len(latency),
+        policy_p50_ms=float(np.median(latency)) * 1000 if latency else None,
+        policy_p99_ms=float(np.quantile(latency, 0.99)) * 1000 if latency else None,
+    )
+
+
+def rotate_world_to_body(quaternion_wxyz, vector):
+    """Use the pinned deployment's inverse-quaternion rotation convention."""
+    w, x, y, z = quaternion_wxyz
+    q = np.asarray([x, y, z], dtype=np.float64)
+    v = np.asarray(vector, dtype=np.float64)
+    return v * (2 * w * w - 1) - 2 * w * np.cross(q, v) + 2 * q * np.dot(q, v)
+
+
+def body_twist(row):
+    q = row["qpos"][3:7]
+    v = row["qvel"]
+    linear = rotate_world_to_body(q, v[:3])
+    angular = rotate_world_to_body(q, v[3:6])
+    return dict(vx=float(linear[0]), vy=float(linear[1]), wz=float(angular[2]))
+
+
+def yaw_series(rows):
+    result = []
+    for row in rows:
+        w, x, y, z = row["qpos"][3:7]
+        result.append(
+            math.atan2(
+                2 * (w * z + x * y),
+                1 - 2 * (y * y + z * z),
+            )
+        )
+    return np.unwrap(result) - result[0]
+
+
+def analyze_capability_map(rows, case, protocol):
+    trajectory = hashlib.sha256()
+    for row in rows:
+        trajectory.update(
+            json.dumps(
+                {k: row[k] for k in ("qpos", "qvel", "target", "applied")},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        )
+    complete = rows[-1]["tick"] == case["horizon_ticks"]
+    twists = [body_twist(row) for row in rows]
+    windows = []
+    for index, command in enumerate(case["commands"]):
+        start = command[0]
+        target = command[1:] if len(command) == 4 else [command[1], 0.0, 0.0]
+        end = (
+            case["commands"][index + 1][0]
+            if index + 1 < len(case["commands"])
+            else case["horizon_ticks"]
+        )
+        selected_indices = [
+            i
+            for i, row in enumerate(rows)
+            if start + case["measurement_delay_ticks"] <= row["tick"] < end
+        ]
+        axes = {}
+        for name, value in zip(("vx", "vy", "wz"), target):
+            if name not in case["track_axes"]:
+                continue
+            actual = np.asarray([twists[i][name] for i in selected_indices])
+            error = actual - value
+            axes[name] = dict(
+                command=float(value),
+                samples=len(actual),
+                mean=float(np.mean(actual)) if len(actual) else None,
+                mae=float(np.mean(np.abs(error))) if len(actual) else None,
+                rmse=float(np.sqrt(np.mean(error**2))) if len(actual) else None,
+            )
+        windows.append(dict(start_tick=start, end_tick=end, axes=axes))
+
+    tracked = [axis for window in windows for axis in window["axes"].values()]
+    tracking_pass = complete and bool(tracked) and all(
+        metric["mae"] is not None
+        and metric["mae"]
+        <= max(
+            protocol["tracking_absolute_tolerance"],
+            protocol["tracking_relative_tolerance"] * abs(metric["command"]),
+        )
+        for metric in tracked
+    )
+    yaw = yaw_series(rows)
+    initial = rows[0]["qpos"]
+    displacement = [
+        [row["qpos"][0] - initial[0], row["qpos"][1] - initial[1]]
+        for row in rows
+    ]
+    flat_cross_axis_pass = True
+    if case.get("flat_probe", False):
+        max_x = max(abs(point[0]) for point in displacement)
+        max_y = max(abs(point[1]) for point in displacement)
+        if "wz" in case["track_axes"]:
+            flat_cross_axis_pass = max(
+                max_x, max_y
+            ) <= protocol["flat_cross_axis_max"]
+        elif "vy" in case["track_axes"]:
+            flat_cross_axis_pass = max_x <= protocol["flat_cross_axis_max"]
+        else:
+            flat_cross_axis_pass = max_y <= protocol["flat_cross_axis_max"]
+        if "wz" not in case["track_axes"]:
+            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
+                "flat_cross_axis_max"
+            ]
+
+    reference_pass = True
+    reference_mean_vx = None
+    if case.get("reference_gate", False):
+        first_window = windows[0]["axes"].get("vx")
+        reference_mean_vx = first_window["mean"] if first_window else None
+        reference_pass = (
+            reference_mean_vx is not None
+            and reference_mean_vx >= protocol["reference_mean_min"]
+        )
+
+    task_goal_pass = None
+    route_pass = None
+    maximum_hold = 0
+    if "terrain_goal" in case:
+        goal = case["terrain_goal"]
+        edge = goal["terrain_x_max"]
+        initial_y = initial[1]
+        hold = 0
+        for row in rows:
+            cleared = (
+                row["qpos"][0] >= edge + goal["base_clearance_m"]
+                and min(foot[0] for foot in row["feet"])
+                >= edge + goal["foot_clearance_m"]
+                and abs(row["qpos"][1] - initial_y)
+                <= goal["route_lateral_max_m"]
+            )
+            hold = hold + 1 if cleared else 0
+            maximum_hold = max(maximum_hold, hold)
+        route_rows = [
+            row
+            for row in rows
+            if goal["terrain_x_min"]
+            <= row["qpos"][0]
+            <= goal["terrain_x_max"]
+        ]
+        route_pass = bool(route_rows) and all(
+            abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
+            for row in route_rows
+        )
+        task_goal_pass = complete and route_pass and maximum_hold >= goal["hold_ticks"]
+
+    failure_classes = []
+    if rows[-1]["failure"]:
+        failure_classes.append("SAFETY_STOP")
+    else:
+        if not tracking_pass or not flat_cross_axis_pass or not reference_pass:
+            failure_classes.append("TRACKING_FAILURE")
+        if task_goal_pass is False:
+            failure_classes.append("TASK_GOAL_FAILURE")
+    if "SAFETY_STOP" in failure_classes:
+        verdict = "SAFETY_STOP"
+    elif failure_classes:
+        verdict = "PERFORMANCE_FAIL"
+    else:
+        verdict = "PASS"
+
+    latency = [row["policy_wall_s"] for row in rows if row["policy_wall_s"] is not None]
+    return dict(
+        verdict=verdict,
+        failure=rows[-1]["failure"],
+        failure_classes=failure_classes,
+        complete=complete,
+        steps=rows[-1]["tick"],
+        trace_sha256=trajectory.hexdigest(),
+        windows=windows,
+        tracked_axes=case["track_axes"],
+        tracking_pass=tracking_pass,
+        flat_cross_axis_pass=flat_cross_axis_pass,
+        reference_mean_vx=reference_mean_vx,
+        reference_pass=reference_pass,
+        task_goal_pass=task_goal_pass,
+        route_pass=route_pass,
+        task_goal_maximum_hold_ticks=maximum_hold,
+        progress_m=rows[-1]["qpos"][0] - initial[0],
+        lateral_max_m=max(abs(row["qpos"][1] - initial[1]) for row in rows),
+        yaw_max_rad=float(max(map(abs, yaw))),
+        min_clearance_m=min(row["clearance"] for row in rows),
         policy_updates=len(latency),
         policy_p50_ms=float(np.median(latency)) * 1000 if latency else None,
         policy_p99_ms=float(np.quantile(latency, 0.99)) * 1000 if latency else None,

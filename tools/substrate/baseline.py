@@ -9,7 +9,9 @@ import time
 from .admit import ROOT
 from .baseline_episode import (
     Plant,
+    UnsupportedSceneError,
     analyze,
+    command_at,
     episode,
     make_policy,
     reference_inputs,
@@ -36,6 +38,14 @@ TASK = ROOT / "tools/substrate/tasks/rl_source_v1.json"
 TRANSPORT = "inprocess"
 
 
+class IntegrityStopError(RuntimeError):
+    """Source or prepared evidence changed after a campaign was qualified."""
+
+
+class PreflightFailureError(RuntimeError):
+    """A required review, qualification, identity, or fresh preflight did not pass."""
+
+
 def validate_source_identity(protocol, reference_lock, source_lock):
     identity = protocol.get("source_identity")
     if identity is None:
@@ -48,6 +58,64 @@ def validate_source_identity(protocol, reference_lock, source_lock):
     }
     if identity != expected:
         raise ValueError("protocol source identity differs from source locks")
+
+
+def validate_capability_protocol(protocol):
+    if protocol.get("id") != "rl-capability-map-v1" or protocol.get("schema") != 2:
+        raise ValueError("unsupported capability-map protocol")
+    cases = protocol.get("cases", [])
+    if len(cases) != protocol.get("max_attempts"):
+        raise ValueError("capability-map attempt budget must equal case count")
+    ids = [case.get("id") for case in cases]
+    if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
+        raise ValueError("capability-map cases must have unique IDs and lead with reference")
+    ranges = protocol["engineering_probe_envelope"]
+    bounds = {
+        "vx": ranges["vx_mps"],
+        "vy": ranges["vy_mps"],
+        "wz": ranges["wz_rps"],
+    }
+    valid_axes = set(bounds)
+    for index, case in enumerate(cases):
+        if case.get("adapter") is not True or case.get("reset") != "shared_home":
+            raise ValueError("all capability-map cases must preserve shared deployment")
+        if not case.get("scene_geoms") or len(case["scene_geoms"]) != len(
+            set(case["scene_geoms"])
+        ):
+            raise ValueError("each capability-map scene needs unique collision geom names")
+        axes = case.get("track_axes")
+        if not axes or len(axes) != len(set(axes)) or not set(axes) <= valid_axes:
+            raise ValueError("invalid capability-map tracking axes")
+        commands = case.get("commands", [])
+        if not commands or any(len(row) != 4 for row in commands):
+            raise ValueError("capability-map commands must be [tick, vx, vy, wz]")
+        ticks = [row[0] for row in commands]
+        if (
+            ticks[0] != 0
+            or ticks != sorted(set(ticks))
+            or ticks[-1] >= case["horizon_ticks"]
+        ):
+            raise ValueError("capability-map command schedule is not bounded and ordered")
+        if case.get("flat_probe") and index > 0:
+            for row in commands:
+                for axis, value in zip(("vx", "vy", "wz"), row[1:]):
+                    if not bounds[axis][0] <= value <= bounds[axis][1]:
+                        raise ValueError("flat probe exceeds source-configured probe envelope")
+        if index > 0 and case.get("requires") != ["flat_reference"]:
+            raise ValueError("all post-sentinel cases must depend on the flat reference")
+        goal = case.get("terrain_goal")
+        if goal is not None and not (
+            0 <= goal["terrain_x_min"] < goal["terrain_x_max"]
+            and goal["base_clearance_m"] > 0
+            and goal["foot_clearance_m"] > 0
+            and goal["route_lateral_max_m"] > 0
+            and goal["hold_ticks"] > 0
+        ):
+            raise ValueError("invalid terrain crossing goal")
+    if protocol.get("retry") != "none":
+        raise ValueError("capability-map protocol must forbid retries")
+    if protocol.get("progression") != "performance_continue_safety_integrity_stop":
+        raise ValueError("capability-map progression must retain performance outcomes")
 
 
 def campaign_characterized(attempts, protocol):
@@ -93,6 +161,8 @@ def inputs(protocol):
         if reference_case is not None and reference_case not in seen:
             raise ValueError("repeat reference must name a preceding case")
         seen.add(case["id"])
+    if protocol.get("schema") == 2:
+        validate_capability_protocol(protocol)
     if protocol["progression"] not in (
         "first_nonpass_stop",
         "performance_continue_safety_integrity_stop",
@@ -102,23 +172,68 @@ def inputs(protocol):
 
 
 def fresh_preflight(lock, head, review, report, fresh, task, qualification, protocol):
-    preflight(
-        lock,
-        head,
-        review,
-        report,
-        fresh,
-        task,
-        qualification,
-        runner=Path(__file__),
-        experiment_id=protocol["id"],
-    )
+    try:
+        preflight(
+            lock,
+            head,
+            review,
+            report,
+            fresh,
+            task,
+            qualification,
+            runner=Path(__file__),
+            experiment_id=protocol["id"],
+        )
+    except UnsupportedSceneError:
+        raise
+    except Exception as exc:
+        raise PreflightFailureError("fresh execution preflight did not pass") from exc
 
 
 def validate_snapshot(path, expected_manifest):
-    verify_bundle(path)
+    try:
+        verify_bundle(path)
+    except Exception as exc:
+        raise IntegrityStopError("prepared snapshot bundle verification failed") from exc
     if digest(path / "manifest.json") != expected_manifest:
-        raise ValueError("prepared snapshot changed")
+        raise IntegrityStopError("prepared snapshot changed")
+
+
+def prepare_probe(plant, policy, case, command):
+    initial = plant.snapshot(0)
+    action = policy.act(plant.observe(), command)
+    target = action.position_target if case["adapter"] else action[1]
+    plant.control(target)
+    if plant.steps or plant.data.time != 0 or plant.snapshot(0) != initial:
+        raise ValueError("prepare modified plant")
+    return initial
+
+
+def failure_result(exc, operation):
+    reason = type(exc).__name__ + ": " + str(exc)
+    if isinstance(exc, UnsupportedSceneError):
+        return {
+            "status": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+            "classification": "UNSUPPORTED_SCENE_PREFLIGHT_FAILURE",
+            "reason": reason,
+        }
+    if isinstance(exc, IntegrityStopError):
+        return {
+            "status": "INTEGRITY_STOP",
+            "classification": "INTEGRITY_STOP",
+            "reason": reason,
+        }
+    if isinstance(exc, PreflightFailureError) or operation == "prepare":
+        return {
+            "status": "PREFLIGHT_FAILURE",
+            "classification": "PREFLIGHT_FAILURE",
+            "reason": reason,
+        }
+    return {
+        "status": "FAILED",
+        "classification": "EXECUTION_OR_EVIDENCE_FAILURE",
+        "reason": reason,
+    }
 
 
 def prepare(output, review_path, qualification_path, task_path=TASK):
@@ -158,16 +273,14 @@ def prepare(output, review_path, qualification_path, task_path=TASK):
             plant = Plant(
                 run.path / "inputs" / case["scene"], case, protocol["physics_period_s"]
             )
-            row = plant.snapshot(0)
             policy = make_policy(
                 run.path / "inputs", case, source_inputs[".substrate/rl/policy.pt"]
             )
             # Validate policy shape/finite output on an isolated object, not live history.
-            action = policy.act(plant.observe(), [1.0, 0.0, 0.0])
-            target = action.position_target if case["adapter"] else action[1]
-            plant.control(target)
-            if plant.steps or plant.data.time != 0 or plant.snapshot(0) != row:
-                raise ValueError("prepare modified plant")
+            probe_command = (
+                command_at(case, 0) if protocol.get("schema") == 2 else [1.0, 0.0, 0.0]
+            )
+            row = prepare_probe(plant, policy, case, probe_command)
             models[case["id"]] = dict(
                 physical_sha256=physical_fingerprint(plant.model),
                 qadr=plant.qadr,
@@ -205,8 +318,8 @@ def prepare(output, review_path, qualification_path, task_path=TASK):
     return {"status": "READY_AWAITING_START", "head": head, "physics_steps": 0}
 
 
-def capture(prepared_path, authorization_path, output, task_path=TASK):
-    with experiment_lock() as lock:
+def capture_readiness(prepared_path, authorization_path, task_path):
+    try:
         prepared = verify_bundle(prepared_path)
         task = load_task(task_path)
         head, sources = current_identity(task)
@@ -220,17 +333,38 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
             or prepared["protocol_sha256"] != digest(protocol_path)
             or prepared["source_inputs"] != inputs(protocol)
         ):
-            raise ValueError("stale preparation")
-        prepared["prepared_manifest_sha256"] = digest(prepared_path / "manifest.json")
+            raise PreflightFailureError("stale preparation")
+        prepared["prepared_manifest_sha256"] = digest(
+            prepared_path / "manifest.json"
+        )
         auth = strict_json(authorization_path.read_text())
         validate_authorization(auth, prepared)
         validate_review(prepared["review"], head)
         qualification = validate_reference(prepared["qualification_reference"])
         verify_environment()
         setup_runtime()
+        return prepared, task, head, sources, protocol_path, protocol, auth, qualification
+    except (PreflightFailureError, UnsupportedSceneError, IntegrityStopError):
+        raise
+    except Exception as exc:
+        raise PreflightFailureError("capture readiness checks did not pass") from exc
+
+
+def capture(prepared_path, authorization_path, output, task_path=TASK):
+    with experiment_lock() as lock:
+        (
+            prepared,
+            task,
+            head,
+            sources,
+            protocol_path,
+            protocol,
+            auth,
+            qualification,
+        ) = capture_readiness(prepared_path, authorization_path, task_path)
         ledger = ROOT / "_runs/substrate_attempts" / protocol["id"]
         if ledger.exists():
-            raise ValueError("campaign already claimed; no retry")
+            raise IntegrityStopError("campaign already claimed; no retry")
         with EvidenceRun(output, {"operation": "baseline_capture"}) as run:
             attempts = [
                 dict(index=i + 1, case=c["id"], status="NOT_RUN")
@@ -279,7 +413,7 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     item["reason"] = "reference_dependency_failed"
                     continue
                 if (head, sources) != current_identity(task):
-                    raise ValueError("source changed")
+                    raise IntegrityStopError("source changed during capture")
                 validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
                 plant = Plant(
                     prepared_path / "inputs" / case["scene"],
@@ -290,7 +424,7 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     physical_fingerprint(plant.model)
                     != prepared["models"][case["id"]]["physical_sha256"]
                 ):
-                    raise ValueError("plant changed")
+                    raise IntegrityStopError("plant changed after preparation")
                 policy = make_policy(
                     prepared_path / "inputs",
                     case,
@@ -340,6 +474,8 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     ):
                         result["verdict"] = "INTEGRITY_STOP"
                         result["failure"] = "trajectory_mismatch"
+                        if "failure_classes" in result:
+                            result["failure_classes"] = ["INTEGRITY_STOP"]
                     write_new(run.path / (case["id"] + "_analysis.json"), result)
                     item.update(status=result["verdict"], analysis=result)
                     completed[case["id"]] = result
@@ -355,10 +491,14 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
                     )
                     raise
             validate_snapshot(prepared_path, prepared["prepared_manifest_sha256"])
-            if (head, sources) != current_identity(task) or inputs(
-                protocol
-            ) != prepared["source_inputs"]:
-                raise ValueError("source changed during capture")
+            try:
+                capture_inputs = inputs(protocol)
+            except Exception as exc:
+                raise IntegrityStopError("source inputs failed capture revalidation") from exc
+            if (head, sources) != current_identity(task) or capture_inputs != prepared[
+                "source_inputs"
+            ]:
+                raise IntegrityStopError("source changed during capture")
             run.result.update(
                 status="CAPTURE_COMPLETE",
                 capability_status="CHARACTERIZED"
@@ -401,11 +541,7 @@ def main():
         print(json.dumps(result))
         return 0
     except (Exception, KeyboardInterrupt) as exc:
-        print(
-            json.dumps(
-                {"status": "FAILED", "reason": type(exc).__name__ + ": " + str(exc)}
-            )
-        )
+        print(json.dumps(failure_result(exc, args.operation)))
         return 1
 
 
