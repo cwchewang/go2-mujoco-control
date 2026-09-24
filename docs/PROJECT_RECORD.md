@@ -234,6 +234,14 @@ Gate 0 前不得从历史候选直接继续造方法。
 - 会改变判断的失败根因；
 - 用户质疑触发的路线修正。
 
+2026-09-24 review 流程事件形成一条长期执行规则：在创建昂贵 science /
+execution / evidence reviewer 前，项目负责人必须先做 task-specific deterministic
+precheck。strict loader、五字段 Praxis identity、path/ref/hash、targeted tests、
+zero-step/readiness 等机器可判定问题应由负责人先发现、修复并重跑，不能交给
+reviewer 首次发现。此前 contract-hash / approval-inheritance prototype PR #183
+已明确不合入 main；当前选择“ChatGPT 负责人现场 precheck + 现有项目检查”的
+轻量方案，只有未来真实反复漏检时才考虑增加极薄 runtime gate。
+
 普通 bug、编译、命令、参数流水不写。
 
 更新顺序：
