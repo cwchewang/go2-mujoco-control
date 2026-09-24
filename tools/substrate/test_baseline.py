@@ -1,6 +1,7 @@
 """Portable schedule/stop tests and optional zero-integration native checks."""
 
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -587,6 +588,26 @@ class BaselineContractTests(unittest.TestCase):
         result = analyze(rows, case, CAPABILITY_PROTOCOL)
         self.assertEqual(result["verdict"], "PASS")
         self.assertGreater(result["yaw_max_rad"], 0.3)
+
+    def test_capability_analysis_result_is_json_serializable(self):
+        case = {
+            **CAPABILITY_PROTOCOL["cases"][0],
+            "horizon_ticks": 2,
+            "measurement_delay_ticks": 0,
+        }
+        rows = []
+        for tick in range(3):
+            row = sample(tick)
+            row.update(
+                target=[0] * 12,
+                applied=[0] * 12,
+                failure=None,
+                policy_wall_s=None,
+            )
+            rows.append(row)
+        result = analyze(rows, case, CAPABILITY_PROTOCOL)
+        self.assertIs(type(result["flat_cross_axis_pass"]), bool)
+        json.dumps(result, allow_nan=False)
 
 
 @unittest.skipUnless(importlib.util.find_spec("mujoco"), "MuJoCo parser required")
