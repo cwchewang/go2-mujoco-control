@@ -46,12 +46,15 @@ def git(*args):
 def current_identity(task=None):
     head, branch = git("rev-parse", "HEAD"), git("branch", "--show-current")
     task = task or load_task(DEFAULT_TASK)
+    praxis = task["configuration"].get("praxis")
     identity = validate_execution_identity(
         branch,
         task["configuration"]["branch"],
         head,
         head,
         os.environ,
+        expected_issue_number=praxis["issue_number"] if praxis else None,
+        expected_task_path=praxis["task_path"] if praxis else None,
     )
     if not identity["pass"]:
         raise ValueError(
@@ -105,6 +108,16 @@ def preflight(
         "--output",
         str(report),
     ]
+    praxis = task["configuration"].get("praxis")
+    if praxis:
+        argv.extend(
+            [
+                "--expected-praxis-issue-number",
+                str(praxis["issue_number"]),
+                "--expected-praxis-task-path",
+                praxis["task_path"],
+            ]
+        )
     # More than the one inner test's 120s limit; TERM is handled by preflight
     # so its independent test process group is reaped before the wrapper exits.
     run_logged(
