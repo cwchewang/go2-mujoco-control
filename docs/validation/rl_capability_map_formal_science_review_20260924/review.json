@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "role": "science",
+  "target_head": "6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+  "reviewer": "OpenAI Codex (GPT-6), independent science reviewer",
+  "verdict": "APPROVED",
+  "summary": "The target preserves the repaired capability-map design and interpretation. Its protocol and capability-map document are unchanged from integrity result 00d694dde213fb6862a161374e423261d13ab42b; the only delta is formal task identity and execution binding.",
+  "evidence": [
+    {
+      "id": "E1",
+      "source": "6bd0485f25f848d9286ae986ed4f2f7d805a5090:tools/substrate/protocols/rl_capability_map_v1.json",
+      "finding": "The target protocol SHA-256 is 0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803, identical to the repaired protocol. The JSON retains the same nine cases, commands, scenes, thresholds, terrain goals, safety gates, progression, max_attempts=9, retry=none, and #166 reference digest 1355515e5749d8aad8822c5e52dc20cdc824ad24f3360112e8d1066edf274484."
+    },
+    {
+      "id": "E2",
+      "source": "6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/RL_CAPABILITY_MAP_20260924.md",
+      "finding": "The target capability-map document is byte-identical to the repaired version. Bounded lateral/yaw engineering probes, excluded scenes, scope limitations, and the explicit no-paper-gap statement are unchanged."
+    },
+    {
+      "id": "E3",
+      "source": "00d694dde213fb6862a161374e423261d13ab42b..6bd0485f25f848d9286ae986ed4f2f7d805a5090",
+      "finding": "The only changed paths are the formal execution task and task config. The task config changes branch/diff base and adds Praxis issue/task-path binding; no scientific protocol or interpretation changes."
+    },
+    {
+      "id": "E4",
+      "source": "6bd0485f25f848d9286ae986ed4f2f7d805a5090:docs/research/TASK_RL_CAPABILITY_MAP_FORMAL_20260924.md",
+      "finding": "The added formal task identifies the frozen design and integrity result, pins the protocol SHA, and states the same nine-case campaign and no-retry policy while prohibiting changes to scientific definitions and claims."
+    }
+  ],
+  "concerns": []
+}
