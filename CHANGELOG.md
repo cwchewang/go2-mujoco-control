@@ -26,7 +26,7 @@
   evidence and can never enter Git. Durable evidence belongs under
   `docs/research/evidence/` with a manifest.
 - The unrelated `v0.1.0` Isaac Lab release/tag was removed from this model-control
-  repository. Its canonical package remains in `kairoi-k/go2-isaaclab-rl`.
+  repository. Its canonical package remains in `cwchewang/go2-isaaclab-rl`.
 - Documentation was consolidated around one authority chain and historical
   leg-lift/multi-step assets were explicitly removed from Phase 2 guidance.
 - `CURRENT.md` now activates the high-ceiling Stage C plan: estimated terrain
@@ -57,7 +57,7 @@
 - README clip for stand-walk-lie.
 - The Isaac Lab velocity-RL snapshot and `model_54950` were part of the former
   combined-repository history. Their canonical package and release are now in
-  [`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl),
+  [`cwchewang/go2-isaaclab-rl`](https://github.com/cwchewang/go2-isaaclab-rl),
   not this repository.
 
 ## 2026-08-13

@@ -31,14 +31,14 @@ Milestone-level research progress.
 **Result.** Isaac Lab velocity curricula reached commanded speeds up to ±3.5 m/s
 with a short-stride gait (`model_54950`). That is a useful speed result and not
 a natural-gait result. The package and evidence now live in the companion
-repository [`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl).
+repository [`cwchewang/go2-isaaclab-rl`](https://github.com/cwchewang/go2-isaaclab-rl).
 
 **Evidence.** The companion repository's README, environment snapshot, clips,
 and checkpoint record.
 
 ## 4. Motion imitation moved to a companion repository
 
-Kine2Go / Genesis imitation, the seam JSON record, and the conditional-AMP negative baseline are in [`kairoi-k/kine2go-research`](https://github.com/kairoi-k/kine2go-research).
+Kine2Go / Genesis imitation, the seam JSON record, and the conditional-AMP negative baseline are in [`cwchewang/kine2go-research`](https://github.com/cwchewang/kine2go-research).
 
 ## 5. Exact-head high-speed running-trot validation
 

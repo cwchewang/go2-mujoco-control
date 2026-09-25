@@ -42,9 +42,9 @@ Entry points: `example/cpp/`, `docs/ARCHITECTURE.md`, `example/cpp/experiments/C
 ## Companion research tracks
 
 Isaac Lab / RSL-RL velocity curricula, their environment snapshot, clips, and
-checkpoint record live in [`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl).
+checkpoint record live in [`cwchewang/go2-isaaclab-rl`](https://github.com/cwchewang/go2-isaaclab-rl).
 Motion imitation, AMP, and seam JSON live in
-[`kairoi-k/kine2go-research`](https://github.com/kairoi-k/kine2go-research).
+[`cwchewang/kine2go-research`](https://github.com/cwchewang/kine2go-research).
 
 ## Evidence policy
 

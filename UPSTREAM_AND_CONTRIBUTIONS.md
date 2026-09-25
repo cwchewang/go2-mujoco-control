@@ -22,7 +22,7 @@ Python versions/wheel hashes and native build identity are documented in the
 licenses; the root license does not relicense externally downloaded code/weights.
 
 Isaac Lab / RSL-RL velocity RL is maintained in the companion repository
-[`kairoi-k/go2-isaaclab-rl`](https://github.com/kairoi-k/go2-isaaclab-rl).
+[`cwchewang/go2-isaaclab-rl`](https://github.com/cwchewang/go2-isaaclab-rl).
 Genesis / Kine2Go imitation is maintained in a separate companion repository.
 
 Original Unitree READMEs: `docs/upstream/`. The repository root README is the research-project README (avoids case-only collisions with `readme.md`).
