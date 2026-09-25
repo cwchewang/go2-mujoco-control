@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
 > **最后更新：2026-09-24**
-> **状态：SHARED-TRANSFER 1M/S FLAT VERIFIED; TERRAIN/ROBUSTNESS INCOMPLETE; GATE 0 INCOMPLETE**
+> **状态：RL CAPABILITY MAP CHARACTERIZED; BOUNDED 1M/S TERRAIN PASS; COMMAND-SPACE FAILURES OBSERVED; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -20,7 +20,7 @@
 
 ## 1. [2026-09-23 | CURRENT | SNAPSHOT] 当前项目
 
-公开 RL 策略的源条件、接口等价与完整 shared-transfer 组合均已形成正式证据。当前已确认共享 model/home/ten-step-start/adapter 在冻结 1 m/s 平地协议下保持能力；下一步转入 bounded terrain/direction capability mapping，并继续完整 Substrate Gate 0。任务和精确执行 frontier 跟随 CURRENT.md。
+公开 RL 策略的源条件、接口等价、完整 shared-transfer 组合与首轮 bounded capability map 均已形成正式证据。#189 在冻结九例协议下完成 9/9 单次执行并通过零物理独立验证：1 m/s flat reference、5 cm step、10 cm step、5/15/5 cm repeated steps 与 low-friction crossing PASS；0.5 m/s、reverse、lateral、yaw probes 为 PERFORMANCE_FAIL。当前下一步不是继续加 RL terrain case，而是让 MJPC 在对齐的 command/terrain benchmark 上形成可比较 failure map；只有跨强 baseline 或可明确归因的 failure 才进入 DIAL/选题诊断。任务和精确执行 frontier 跟随 CURRENT.md。
 
 项目以**研究为主**，老师任务是同一路线上的硬约束与早期交付；作品集价值是副产品。短期工程与长期科研不能拆成两条互不相干的线。
 
@@ -40,6 +40,22 @@ Challengers / baselines：
 - 旧 Raibert + fixed trot + SRBD MPC + ID-WBC：冻结为 legacy hierarchical baseline。
 
 **当前没有锁定论文题。** L9 / L10 / SEFR / FSEF 等旧 hierarchy 候选全部 `HOLD / RE-AUDIT`；只有在新 substrate 上仍稳定存在的 bottleneck 才可重新晋级。
+
+## 1D. [2026-09-24 | VERIFIED / BOUNDED] RL capability map 正式完成
+
+Praxis v2 #189 在 capture HEAD `e40b0933572345f23b37e3bb06350518fde63e76` 上完成冻结 schema-2 `rl-capability-map-v1` campaign。九个 case 各执行一次，authoritative ledger 记录 9/9 scientific attempts，capture 为 `CAPTURE_COMPLETE / CHARACTERIZED`，未发生 retry、SAFETY_STOP 或 INTEGRITY_STOP。独立 offline verifier 最终返回 `VERIFIED`，核对 external ledger、逐 case raw replay 与 sealed flat-reference digest，且 verification `physics_steps=0`。正式 closeout 为 `docs/validation/rl_capability_map_successor_20260924/RESULTS.md`，result commit `de21d8c3267e1c985cb57ed2d02004c686d05bd1`，Praxis review publication commit `35e69f652e986af13c147a6fe4e8fc9eea70c5f1`。
+
+冻结结果：
+- `flat_reference`：PASS，mean vx 0.8858825097 m/s，sealed digest 与 #166 精确一致；
+- `flat_half_speed`：PERFORMANCE_FAIL；纵向 tracking 本身通过，但 flat cross-axis gate 失败，lateral displacement 0.57465 m、yaw 0.24710 rad；
+- `flat_reverse_probe`：PERFORMANCE_FAIL，目标 -0.5 m/s，mean vx -0.35590 m/s；
+- `flat_lateral_probe`：PERFORMANCE_FAIL，目标 vy 0.25 m/s，mean vy 0.16589 m/s；
+- `flat_yaw_probe`：PERFORMANCE_FAIL，目标 wz 0.5 rad/s，mean wz 0.10438 rad/s；
+- `step_5cm_cross`、`step_10cm_cross`、`repeated_steps_cross`、`low_friction_cross`：均 PASS，其中 repeated steps 为冻结 5/15/5 cm profile。
+
+该结果只说明此 checkpoint / adapter / reset / scene / command set 下，**1 m/s 前向 terrain crossing 在这些 bounded cases 中不是最先暴露的弱点；速度与方向 command-space probe 更早出现性能边界。** 不能由此推出“terrain 已解决”“方向控制是论文 gap”或“MJPC 一定更好”。下一步必须在同一 benchmark 语义上跑 MJPC，对比 failure map；若 MJPC 在同一处也失败，再判断是否值得用 DIAL/MPPI 区分 local-gradient、contact-mode 或 multimodality 机制。
+
+标准 verifier 首次因 detached-worktree branch identity 比较限制在 raw replay 前失败；最终只用 documented in-memory identity adapter 纠正 detached actual branch 与逻辑 Praxis branch 的比较，未修改 source、protocol、prepared/capture evidence 或任何 raw trace。该事件属于 verification plumbing，不是科学失败。
 
 ## 1C. [2026-09-24 | VERIFIED / BOUNDED] shared-transfer 正式组合确认
 
@@ -172,7 +188,7 @@ Praxis v2 #166 在精确起始 HEAD `9e82e56ac2a5db63d7834e86ce402d542bf10ae8` �
 ### RL baseline
 优先直接用公开 checkpoint，不从头训练。目标是建立 terrain capability ceiling / failure map，并防止把 learning policy 已轻松解决的问题当科研 gap。
 
-现已接入的 Gym checkpoint 已通过冻结 1 m/s 平地源条件复现、接口等价核验，以及完整 shared model/home/ten-step-start/adapter 组合的两次正式 PASS；因此 1 m/s 平地 shared deployment 可作为可靠对照。它仍未通过跨地形、低速、鲁棒性及横向比较，不能据此宣布强 terrain capability ceiling。默认后端和已投入的工程成本不能替代科学
+现已接入的 Gym checkpoint 已通过冻结 1 m/s 平地源条件复现、接口等价核验、完整 shared model/home/ten-step-start/adapter 组合的两次正式 PASS，以及 #189 九例 capability map。#189 中 5 cm、10 cm、5/15/5 cm repeated steps 与 low-friction 1 m/s crossing 均 PASS，而 half-speed、reverse、lateral、yaw probes 为 PERFORMANCE_FAIL。因此该 shared deployment 已可作为 bounded terrain 与 command-space 对照，但仍不能外推到更高台阶、障碍、hardware 或 general robustness，也不能把这些 RL-only failure 直接升格为跨控制器 bottleneck。默认后端和已投入的工程成本不能替代科学
 选型依据。0.15 m/s 是历史局部兼容性协议的工程设定，没有被论证为全项目目标；
 今后参数先说明需求/来源/假设和对决策的作用，再定义验收。原 FAIL 不追溯改写。
 
@@ -216,7 +232,7 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-1 m/s 平地 shared-transfer 组合确认已完成并封存，不再重复该 campaign。下一阶段以该已验证 shared deployment 为 RL reference，前瞻冻结 bounded terrain/direction capability mapping，优先把 step / stairs / obstacle 与方向/速度覆盖做成可比较 failure map；随后继续 MJPC smoke，并仅在需要诊断 local-gradient / nonsmooth-contact / multimodality 时启用 DIAL challenger。
+RL shared-transfer 与首轮九例 capability map 均已完成并封存，不再重复这些 campaign。下一阶段直接把 MJPC 放到与 #189 对齐的 command/terrain benchmark：至少覆盖 1 m/s reference、0.5 m/s、reverse、lateral、yaw，以及已通过的 step/repeated-step/low-friction anchor。先问 MJPC 是否复现 RL 的 command-space failure、是否在 terrain 上出现不同 failure；只有出现稳定且机制上可分解的差异后，才启用 DIAL challenger 诊断 local-gradient / nonsmooth-contact / multimodality。
 
 低速 0.15 m/s 不足、横漂与 23 cm 楼梯 base-contact stop 仍是已观察边界，但未形成论文问题；必须先在统一 benchmark 与强 baseline 下复现、分离 deployment artifact 与真实 capability bottleneck。Gate 0 前仍不从历史 L9/L10/FSEF 等候选直接造方法。
 
