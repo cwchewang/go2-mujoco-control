@@ -1,5 +1,10 @@
 # RL capability-map successor results — 2026-09-24
 
+> **Semantic erratum (2026-09-28):** [Read the versioned erratum](ERRATUM_20260928.md)
+> before interpreting the `low_friction_cross` PASS or the `flat_yaw_probe`
+> metric. The sealed capture and original case record remain unchanged; the
+> erratum corrects only those two semantics and retains the other case outcomes.
+
 ## Campaign identity and execution
 
 - Praxis issue: **#189**; logical branch: `research/rl-capability-map-successor-20260924`.
