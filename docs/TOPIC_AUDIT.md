@@ -1,42 +1,50 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-09-24**
+> **最后更新：2026-09-28**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
-> **当前 canonical 决策：先完成 clean-slate whole-body Substrate Gate，再重新筛题。**
+> **当前 canonical 决策：MuJoCo 是当前 canonical evaluation physics，MuJoCo/MJX 是目标 substrate；Go2 是第一 testbed；不预选单一 controller，先让对齐 benchmark 和 failure evidence 决定后续方法。**
 
 ## 0. [CURRENT | SNAPSHOT]
 
-2026-09-24，公开 RL 策略已完成正式九例 capability map：1 m/s flat reference、5 cm、10 cm、5/15/5 cm repeated steps 与 low-friction crossing PASS；half-speed、reverse、lateral、yaw probes 为 PERFORMANCE_FAIL。该结果把“RL baseline 到底先在哪类 bounded task 失效”从未知变成了可审计 failure map，但它仍只是单一 controller 的结果。下一阶段必须用 MJPC 在对齐 benchmark 上做 cross-controller comparison；本轮仍不新增或晋级论文题。
-方法/权重先按任务需要确定其证据等级，不能把工程默认选项写成已选定最优方案。
-具体阶段和下一步跟随 PROJECT_RECORD 与 CURRENT。
+2026-09-28，#189 仍是第一张封存 RL capability map，但须按
+[语义勘误](validation/rl_capability_map_successor_20260924/ERRATUM_20260928.md)
+解释：5 cm、10 cm、5/15/5 cm repeated steps 的 bounded terrain conclusions
+保留；v1 `low_friction_cross` 只保留 frozen-scene 几何/task-goal PASS，不是低摩擦
+robustness evidence；修正 body-local qvel-z 后 yaw probe 仍为 PERFORMANCE_FAIL。
+该结果仍只属于一个 checkpoint/controller，不能把任何 case 直接升格为论文 gap。
 
-当前不再围绕 Raibert / fixed-trot / SRBD hierarchy 直接锁题。
+当前 architecture decision：
 
-主 substrate：
+`MuJoCo canonical evaluation physics → MuJoCo/MJX scalable substrate direction → shared task/evaluation semantics → reusable controller families → aligned failure map → mechanism diagnosis`
 
-`Go2 + MuJoCo full-body model → unified task/cost API → whole-body predictive control → pluggable backend/prior`
+- **Go2**：第一 testbed，不是项目 identity。
+- **MuJoCo/MJX**：统一物理与评测的 substrate 方向；MJX scalable path 尚未完全实现。
+- **MJPC/iLQR**：强 gradient-based comparator，不是 privileged default truth。
+- **RL checkpoint**：learning capability baseline / possible teacher or prior。
+- **Sampling/search、contact-implicit/hybrid**：按 task 和 failure evidence 决定是否启用。
+- **成熟 infrastructure**：优先复用；科学 ownership 在 task/information/timing/intervention、diagnostics、比较和 evidence-driven 新机制。
 
-- MJPC/iLQR：default research backend；
-- DIAL/MPPI：sampling challenger；
-- contact-implicit：按问题启用；
-- Go2 RL RobotLab/GYM：capability baseline / teacher / prior；
-- 旧 Raibert+fixed trot+SRBD+WBC：legacy baseline。
+研究问题保持开放：
 
-此前 L9、L10/TimedReach、SEFR、FSEF 等全部 `HOLD / RE-AUDIT`。只有新 substrate 与强 RL baseline 下仍稳定存在的 failure 才能重新晋级。
+> 在统一物理、任务和评测语义下，不同 controller family 在哪些 embodied-control 情况下出现稳定、可复现、机制可解释的 failure；其中哪些确实需要新算法，而不是 tuning、部署差异或成熟方案？
 
-## 1. [ACTIVE PRINCIPLE] Dual-goal 硬约束
+L9、L10/TimedReach、SEFR、FSEF 仍为 `HOLD / RE-AUDIT`。本项目尚无 generic multi-controller evaluation platform。
 
-候选必须同时满足：
-1. 前期工程直接推进 Go2 terrain demo；
-2. 后续有可证伪 scientific gap；
-3. 核心 Gate 可在 Atlas / RTX 5080 完成；
-4. 两周量级能得到继续/停止硬证据；
-5. 负结果也可解释；
-6. 不是旧 hierarchy 人为制造的问题。
+## 1. [SUPERSEDED → REFRAMED] 老师交付与科研架构
 
-老师任务与论文题不允许拆成两套互不相干的系统。
+曾将老师的 Go2 terrain demo 与科研路线绑定为 dual-goal 硬约束，以避免维护两套
+互不相关的系统。现在将其改为最低交付约束：如果成熟开源 controller 能低成本
+满足基本效果，可直接复用。为了看起来“不是 clone”而从零重写成熟控制器，不会
+自动产生科学价值。
+
+新的原则：
+1. 基本 Go2 控制/越障效果是交付要求，不决定科研架构。
+2. 可复用成熟 simulator、solver、controller 和 RL infrastructure。
+3. 项目必须掌握 task、information、timing、intervention、benchmark、diagnostics 和 evidence。
+4. 只有 failure evidence 指向缺失机制时，才实现新 algorithmic component。
+5. 候选仍需可证伪、近期能收缩问题空间、资源可承担，且不是弱 baseline 或旧 decomposition 制造的问题。
 
 ## 2. [HISTORICAL] 选题主线如何演化
 
@@ -68,6 +76,12 @@
 ### Phase D：底座重置
 用户提出“为什么不能推倒重来，换最佳研究底座？”后，优先级改变：若 whole-body predictive control 能自然调整 body/contact/timing，旧候选就不值得围绕 hierarchy 发明中间层。
 
+### Phase E：统一 substrate 与 controller-family 比较
+
+#189 后，项目保留 MuJoCo 作为当前 canonical evaluation physics，把 MuJoCo/MJX 作为
+目标 substrate；不把 Go2 或 MJPC/iLQR 当作项目身份或先验主方法。成熟 solver/controller
+优先复用，研究工作转向任务与信息语义、对齐比较、诊断及由证据支持的新机制。
+
 ## 3. [SUPERSEDED] DIAL 曾作为 default 的原因与撤回
 
 DIAL full-order、torque-level、training-free、sampling-based，且不需要把固定 gait 当硬 constraint，看起来最能解除旧架构天花板。
@@ -79,24 +93,26 @@ DIAL full-order、torque-level、training-free、sampling-based，且不需要�
 
 因此“自由度最高”≠“最适合作为日常研究底座”。
 
-DIAL 当前只做 challenger / diagnostic backend。
+DIAL/MPPI 归于 sampling/search family；只有具体任务的 failure evidence 指向相关
+机制时，才评估它是否适合作为比较对象，不预先赋予 default 或 designated challenger 角色。
 
-## 4. [CURRENT] 为什么 MJPC 是 default
+## 4. [CURRENT] 为什么不预选 MJPC/iLQR 为 default planner
 
-不是因为它“绝对 SOTA”，而是当前约束下综合最好：
-- full-body MuJoCo dynamics；
-- training-free；
-- Go2 路线可施工；
-- task / residual / cost 易改；
-- 机制实验归因清楚；
-- 适合单机 CPU substrate。
+MJPC/iLQR 仍是强 comparator：它使用 full-body MuJoCo dynamics、可修改 task/residual/cost，
+且能支持可解释的 gradient-based whole-body control comparison。这些优点保留。
 
-边界：
-- gait/contact reference 多为 soft residual/cost；
-- iLQR 的 contact mode exploration 本身弱；
-- 不能宣称 MJPC 是 contact-implicit。
+但 physics/evaluation substrate 和 planner family 是不同决策。预先锁定 iLQR 会把问题
+偏向 gradient-based optimization，并可能裁掉 sampling/search、learned controller 或
+contact-mode 方法本来应该解释的 failure。现阶段保留 controller-family 选择空间：
 
-因此 contact-sequence/timing emergence 若成为核心问题，要引入 sampling/contact-implicit challenger，而不是硬让 MJPC承担所有问题。
+- gradient family：MJPC/iLQR 等；
+- sampling/search family：Predictive Sampling/CEM、DIAL/MPPI 等；
+- learning family：公开 RL checkpoint 与按需 learned prior；
+- contact-implicit/hybrid：仅在 contact sequence/timing/mode search 成为问题时。
+
+公平比较优先共享 physical model、initial state、command、scene、terminal metrics 和
+success semantics；controller 内部 cost、information condition 与优化方式不同则显式
+记录。目标是定位 failure mechanism，不是选择永久唯一 controller。
 
 ## 5. [CURRENT] RL baseline 的研究作用
 
@@ -108,7 +124,14 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 第一阶段优先使用公开 checkpoint，不从头训练。
 
-2026-09-23 已建立冻结 1 m/s 源条件平地参考；2026-09-24 完成完整 shared-transfer 两次正式 PASS，并进一步完成 #189 九例正式 capability map。结果显示 1 m/s 的 5 cm、10 cm、5/15/5 cm repeated steps 与 low-friction crossing 均通过，而 half-speed、reverse、lateral、yaw 在冻结性能门槛下失败。这个对比提示“当前 RL checkpoint 的首先暴露边界更偏 command-space 而非这些简单前向 terrain cases”，但尚不足以宣布 terrain 天花板、跨控制器共同瓶颈或论文题。详见 PROJECT_RECORD。
+2026-09-23 已建立冻结 1 m/s 源条件平地参考；2026-09-24 完成完整 shared-transfer
+两次正式 PASS，并进一步完成 #189 九例正式 capability map。5 cm、10 cm、5/15/5 cm
+repeated-step 的 PASS 结论保留；`low_friction_cross` 仅是原 v1 scene 上几何/task-goal
+PASS，不是低摩擦 robustness evidence；half-speed、reverse、lateral、yaw 仍为冻结
+门槛下的 PERFORMANCE_FAIL。yaw 的更正指标为 mean body-local qvel-z 0.1038956543
+rad/s、MAE 0.3961043457 rad/s，仍超过 0.1 tolerance。这个 bounded 结果不足以宣布
+terrain 天花板、跨控制器共同瓶颈或论文题。详见 PROJECT_RECORD 与
+[语义勘误](validation/rl_capability_map_successor_20260924/ERRATUM_20260928.md)。
 
 ## 6. [CANDIDATE LEDGER]
 
@@ -125,21 +148,18 @@ DIAL 当前只做 challenger / diagnostic backend。
 
 ## 7. [CURRENT | GATE] Substrate Gate 0 对选题的作用
 
-当前不直接“找论文题”，而先建立 capability/failure map：
+当前先建立统一评测与 multi-controller failure map：
 
-1. MJPC；
-2. strong Go2 RL checkpoint；
-3. 必要时 DIAL/MPPI；
-4. shared terrain × speed benchmark。
+1. 固定 MuJoCo physical model、scene/reset、command、metrics 与 success/safety semantics。
+2. #189 已完成第一张 RL map；low-friction 和 yaw 解释按 erratum 修正。
+3. 先审计成熟 Go2 whole-body control implementation、MJPC task 和 runner，复用已有闭环能力。
+4. 为选定的 controller families 编写独立对齐任务，并记录信息条件、controller cost/reward 与优化方式。
+5. 只有明确 failure structure 后才启动 sampling/search 或 contact-implicit diagnosis；需要大规模 rollout/learning 时再推进 MJX。
 
-只有同时满足以下条件的 failure 才进入下一轮：
-- 跨强 baseline 稳定；
-- 可复现；
-- 有明确机制假设；
-- 近期强前作不能直接覆盖；
-- 有 falsifier / stop condition；
-- 资源可承担；
-- 实现直接推进 Go2 demo。
+值得进入研究筛选的 failure 必须稳定可复现，且不是 deployment/tuning/benchmark
+artifact；它应有 falsifier、机制假设、资源边界和近期 continue/stop evidence。跨强
+baseline failure 或清晰的 controller-specific contrast 都可能有价值。全部通过则从
+候选中删除。
 
 ## 8. [TRACEABILITY] 关键质疑
 
@@ -148,18 +168,21 @@ DIAL 当前只做 challenger / diagnostic backend。
 - “为什么是 trot / 5 cm？” → capability frontier。
 - “老师任务和论文题不能拆” → dual-goal。
 - “为什么不能推倒重来？” → whole-body substrate reset。
-- “DIAL 太重且仓库不活跃” → DIAL 降为 challenger。
+- “DIAL 太重且仓库不活跃” → 撤销 DIAL default；本轮架构决策进一步取消预设的单一 challenger 角色。
 - “这领域发展这么快，别拿 2018 当当下” → 选题必须以近两年强工作重新审计。
 
 ## 9. [CURRENT | NEXT AUDIT]
 
-#189 已完成 RL 侧统一 terrain × direction/speed capability map，因此不再把“RL failure map 长什么样”作为开放问题。下一轮直接做 MJPC 对齐比较：优先复现 half-speed / reverse / lateral / yaw 四个 RL PERFORMANCE_FAIL，同时保留 flat reference 与已 PASS 的 5 cm / 10 cm / repeated-step / low-friction 作为 anchor。只有当某个 failure 能跨强 baseline 稳定复现，或形成清晰的 controller-specific mechanism contrast，才进入候选晋级；若 MJPC 的失败指向 local-gradient / nonsmooth-contact / multimodality，再启动 DIAL challenger。
+#189 的 RL failure map 不重跑。下一步先审计成熟 Go2 whole-body control implementation
+能提供哪些 pinned controller、task/cost、runner 和可复用 gait/contact infrastructure，
+避免从零实现已有闭环方案。之后再定义 MuJoCo 上的对齐比较：1 m/s flat reference、
+command-space probes、5 cm/10 cm/repeated-step anchors；若需要 low-friction case，须使用
+语义修正后的 v2 fixture，并由新任务前瞻授权，不能接续 #189 的 sealed result。
 
-此前 0.15 m/s 不足、横漂与 23 cm 楼梯 base-contact stop 继续保留为观察边界，不直接升格为论文问题。先读 PROJECT_RECORD 的 Gate 结果，再问：
-
-> 解除 fixed-gait / SRBD architectural bias 后，强 WBMPC substrate 与已验证 shared RL baseline 仍共同暴露哪些稳定 terrain-locomotion failure？
-
-Gate 未完成前，不得从某个历史候选直接继续补方法。
+随后让 learning、gradient MPC、sampling/search 按证据进入 benchmark。判读要区分
+controller-specific issue、共同 failure、成熟方案/tuning 和 deployment artifact。只有
+可证伪且不能由已有方法直接覆盖的机制才进入新方法任务；此处不授予 live run 或新
+scientific attempt。
 
 ## 10. [2026-09-22 | GOVERNANCE]
 
