@@ -70,7 +70,9 @@ def validate_capability_protocol(protocol):
         raise ValueError("capability-map attempt budget must equal case count")
     ids = [case.get("id") for case in cases]
     if len(ids) != len(set(ids)) or not ids or ids[0] != "flat_reference":
-        raise ValueError("capability-map cases must have unique IDs and lead with reference")
+        raise ValueError(
+            "capability-map cases must have unique IDs and lead with reference"
+        )
     expected_reference_digest(protocol)
     ranges = protocol["engineering_probe_envelope"]
     bounds = {
@@ -85,7 +87,9 @@ def validate_capability_protocol(protocol):
         if not case.get("scene_geoms") or len(case["scene_geoms"]) != len(
             set(case["scene_geoms"])
         ):
-            raise ValueError("each capability-map scene needs unique collision geom names")
+            raise ValueError(
+                "each capability-map scene needs unique collision geom names"
+            )
         axes = case.get("track_axes")
         if not axes or len(axes) != len(set(axes)) or not set(axes) <= valid_axes:
             raise ValueError("invalid capability-map tracking axes")
@@ -98,14 +102,20 @@ def validate_capability_protocol(protocol):
             or ticks != sorted(set(ticks))
             or ticks[-1] >= case["horizon_ticks"]
         ):
-            raise ValueError("capability-map command schedule is not bounded and ordered")
+            raise ValueError(
+                "capability-map command schedule is not bounded and ordered"
+            )
         if case.get("flat_probe") and index > 0:
             for row in commands:
                 for axis, value in zip(("vx", "vy", "wz"), row[1:]):
                     if not bounds[axis][0] <= value <= bounds[axis][1]:
-                        raise ValueError("flat probe exceeds source-configured probe envelope")
+                        raise ValueError(
+                            "flat probe exceeds source-configured probe envelope"
+                        )
         if index > 0 and case.get("requires") != ["flat_reference"]:
-            raise ValueError("all post-sentinel cases must depend on the flat reference")
+            raise ValueError(
+                "all post-sentinel cases must depend on the flat reference"
+            )
         goal = case.get("terrain_goal")
         if goal is not None and not (
             0 <= goal["terrain_x_min"] < goal["terrain_x_max"]
@@ -197,7 +207,9 @@ def validate_snapshot(path, expected_manifest):
     try:
         verify_bundle(path)
     except Exception as exc:
-        raise IntegrityStopError("prepared snapshot bundle verification failed") from exc
+        raise IntegrityStopError(
+            "prepared snapshot bundle verification failed"
+        ) from exc
     if digest(path / "manifest.json") != expected_manifest:
         raise IntegrityStopError("prepared snapshot changed")
 
@@ -337,16 +349,23 @@ def capture_readiness(prepared_path, authorization_path, task_path):
             or prepared["source_inputs"] != inputs(protocol)
         ):
             raise PreflightFailureError("stale preparation")
-        prepared["prepared_manifest_sha256"] = digest(
-            prepared_path / "manifest.json"
-        )
+        prepared["prepared_manifest_sha256"] = digest(prepared_path / "manifest.json")
         auth = strict_json(authorization_path.read_text())
         validate_authorization(auth, prepared)
         validate_review(prepared["review"], head)
         qualification = validate_reference(prepared["qualification_reference"])
         verify_environment()
         setup_runtime()
-        return prepared, task, head, sources, protocol_path, protocol, auth, qualification
+        return (
+            prepared,
+            task,
+            head,
+            sources,
+            protocol_path,
+            protocol,
+            auth,
+            qualification,
+        )
     except (PreflightFailureError, UnsupportedSceneError, IntegrityStopError):
         raise
     except Exception as exc:
@@ -498,7 +517,9 @@ def capture(prepared_path, authorization_path, output, task_path=TASK):
             try:
                 capture_inputs = inputs(protocol)
             except Exception as exc:
-                raise IntegrityStopError("source inputs failed capture revalidation") from exc
+                raise IntegrityStopError(
+                    "source inputs failed capture revalidation"
+                ) from exc
             if (head, sources) != current_identity(task) or capture_inputs != prepared[
                 "source_inputs"
             ]:

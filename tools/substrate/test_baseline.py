@@ -353,9 +353,7 @@ class BaselineContractTests(unittest.TestCase):
     def test_schema_two_analyzer_uses_local_free_joint_angular_qvel(self):
         case = {
             **next(
-                c
-                for c in CAPABILITY_PROTOCOL["cases"]
-                if c["id"] == "flat_yaw_probe"
+                c for c in CAPABILITY_PROTOCOL["cases"] if c["id"] == "flat_yaw_probe"
             ),
             "horizon_ticks": 2,
             "measurement_delay_ticks": 0,
@@ -381,9 +379,7 @@ class BaselineContractTests(unittest.TestCase):
     def test_schema_two_independent_verifier_uses_local_free_joint_angular_qvel(self):
         case = {
             **next(
-                c
-                for c in CAPABILITY_PROTOCOL["cases"]
-                if c["id"] == "flat_yaw_probe"
+                c for c in CAPABILITY_PROTOCOL["cases"] if c["id"] == "flat_yaw_probe"
             ),
             "horizon_ticks": 2,
             "measurement_delay_ticks": 0,
@@ -414,9 +410,7 @@ class BaselineContractTests(unittest.TestCase):
         self.assertEqual(CAPABILITY_PROTOCOL["max_attempts"], 9)
         self.assertEqual(len(CAPABILITY_PROTOCOL["cases"]), 9)
         cases = {case["id"]: case for case in CAPABILITY_PROTOCOL["cases"]}
-        self.assertEqual(
-            command_at(cases["flat_lateral_probe"], 0), [0.0, 0.25, 0.0]
-        )
+        self.assertEqual(command_at(cases["flat_lateral_probe"], 0), [0.0, 0.25, 0.0])
         self.assertEqual(command_at(cases["flat_yaw_probe"], 0), [0.0, 0.0, 0.5])
         self.assertEqual(command_at(PROTOCOL["cases"][0], 0), [1, 0.0, 0.0])
         scheduled = {
@@ -473,7 +467,9 @@ class BaselineContractTests(unittest.TestCase):
             legacy,
         )
 
-    def test_sealed_reference_digest_match_and_performance_mismatch_classification(self):
+    def test_sealed_reference_digest_match_and_performance_mismatch_classification(
+        self,
+    ):
         case = CAPABILITY_PROTOCOL["cases"][0]
         matched = enforce_reference_digest(
             {
@@ -638,7 +634,9 @@ class BaselineContractTests(unittest.TestCase):
         goal_only = analyze(rows(clear=False), base, CAPABILITY_PROTOCOL)
         self.assertNotIn("TRACKING_FAILURE", goal_only["failure_classes"])
         self.assertIn("TASK_GOAL_FAILURE", goal_only["failure_classes"])
-        _audit_capability_metrics(rows(clear=False), base, CAPABILITY_PROTOCOL, goal_only)
+        _audit_capability_metrics(
+            rows(clear=False), base, CAPABILITY_PROTOCOL, goal_only
+        )
 
     def test_capability_yaw_probe_does_not_gate_requested_yaw_excursion(self):
         case = {
@@ -695,9 +693,7 @@ class CapabilityMapSceneTests(unittest.TestCase):
                 self.assertEqual(plant.steps, 0)
                 self.assertEqual(plant.data.time, 0)
                 actual = {
-                    plant.mj.mj_id2name(
-                        plant.model, plant.mj.mjtObj.mjOBJ_GEOM, geom
-                    )
+                    plant.mj.mj_id2name(plant.model, plant.mj.mjtObj.mjOBJ_GEOM, geom)
                     for geom in plant.terrain
                 }
                 self.assertEqual(actual, set(case["scene_geoms"]))
@@ -756,8 +752,9 @@ class CapabilityMapSceneTests(unittest.TestCase):
             **CAPABILITY_PROTOCOL["cases"][0],
             "scene_geoms": ["a_different_geom"],
         }
-        with zero_step_guard(), self.assertRaisesRegex(
-            UnsupportedSceneError, "contract mismatch"
+        with (
+            zero_step_guard(),
+            self.assertRaisesRegex(UnsupportedSceneError, "contract mismatch"),
         ):
             Plant(ROOT / case["scene"], case, 0.002)
 
@@ -782,8 +779,9 @@ class CapabilityMapSceneTests(unittest.TestCase):
             stream.write(source)
             scene = Path(stream.name)
         try:
-            with zero_step_guard(), self.assertRaisesRegex(
-                UnsupportedSceneError, "attached outside"
+            with (
+                zero_step_guard(),
+                self.assertRaisesRegex(UnsupportedSceneError, "attached outside"),
             ):
                 Plant(scene, case, 0.002)
         finally:

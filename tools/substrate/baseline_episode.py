@@ -159,10 +159,7 @@ class Plant:
                     "collision geometry is attached outside the Go2/world contract: "
                     + repr(sorted(str(name) for name in names))
                 )
-            actual = {
-                mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM, g)
-                for g in self.terrain
-            }
+            actual = {mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM, g) for g in self.terrain}
             expected = set(case["scene_geoms"])
             if None in actual or actual != expected:
                 raise UnsupportedSceneError(
@@ -593,37 +590,39 @@ def analyze_capability_map(rows, case, protocol):
         windows.append(dict(start_tick=start, end_tick=end, axes=axes))
 
     tracked = [axis for window in windows for axis in window["axes"].values()]
-    tracking_pass = complete and bool(tracked) and all(
-        metric["mae"] is not None
-        and metric["mae"]
-        <= max(
-            protocol["tracking_absolute_tolerance"],
-            protocol["tracking_relative_tolerance"] * abs(metric["command"]),
+    tracking_pass = (
+        complete
+        and bool(tracked)
+        and all(
+            metric["mae"] is not None
+            and metric["mae"]
+            <= max(
+                protocol["tracking_absolute_tolerance"],
+                protocol["tracking_relative_tolerance"] * abs(metric["command"]),
+            )
+            for metric in tracked
         )
-        for metric in tracked
     )
     yaw = yaw_series(rows)
     initial = rows[0]["qpos"]
     displacement = [
-        [row["qpos"][0] - initial[0], row["qpos"][1] - initial[1]]
-        for row in rows
+        [row["qpos"][0] - initial[0], row["qpos"][1] - initial[1]] for row in rows
     ]
     flat_cross_axis_pass = True
     if case.get("flat_probe", False):
         max_x = max(abs(point[0]) for point in displacement)
         max_y = max(abs(point[1]) for point in displacement)
         if "wz" in case["track_axes"]:
-            flat_cross_axis_pass = max(
-                max_x, max_y
-            ) <= protocol["flat_cross_axis_max"]
+            flat_cross_axis_pass = max(max_x, max_y) <= protocol["flat_cross_axis_max"]
         elif "vy" in case["track_axes"]:
             flat_cross_axis_pass = max_x <= protocol["flat_cross_axis_max"]
         else:
             flat_cross_axis_pass = max_y <= protocol["flat_cross_axis_max"]
         if "wz" not in case["track_axes"]:
-            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
-                "flat_cross_axis_max"
-            ]
+            flat_cross_axis_pass = (
+                flat_cross_axis_pass
+                and max(map(abs, yaw)) <= protocol["flat_cross_axis_max"]
+            )
     flat_cross_axis_pass = bool(flat_cross_axis_pass)
 
     reference_pass = True
@@ -649,17 +648,14 @@ def analyze_capability_map(rows, case, protocol):
                 row["qpos"][0] >= edge + goal["base_clearance_m"]
                 and min(foot[0] for foot in row["feet"])
                 >= edge + goal["foot_clearance_m"]
-                and abs(row["qpos"][1] - initial_y)
-                <= goal["route_lateral_max_m"]
+                and abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
             )
             hold = hold + 1 if cleared else 0
             maximum_hold = max(maximum_hold, hold)
         route_rows = [
             row
             for row in rows
-            if goal["terrain_x_min"]
-            <= row["qpos"][0]
-            <= goal["terrain_x_max"]
+            if goal["terrain_x_min"] <= row["qpos"][0] <= goal["terrain_x_max"]
         ]
         route_pass = bool(route_rows) and all(
             abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]

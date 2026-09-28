@@ -225,9 +225,7 @@ def audit_rows(rows, plant, policy, case, protocol):
             if values:
                 require(
                     abs(
-                        math.fsum(
-                            abs(v - window["command"]) for v in values
-                        )
+                        math.fsum(abs(v - window["command"]) for v in values)
                         / len(values)
                         - window["mae"]
                     )
@@ -243,15 +241,9 @@ def audit_rows(rows, plant, policy, case, protocol):
 
 
 def _audit_capability_metrics(rows, case, protocol, result):
-    actual = [
-        independent_body_twist(row["qpos"][3:7], row["qvel"]) for row in rows
-    ]
+    actual = [independent_body_twist(row["qpos"][3:7], row["qvel"]) for row in rows]
     for window in result["windows"]:
-        commands = [
-            row
-            for row in case["commands"]
-            if row[0] == window["start_tick"]
-        ]
+        commands = [row for row in case["commands"] if row[0] == window["start_tick"]]
         require(len(commands) == 1, "unknown capability command window")
         command = commands[0][1:]
         selected = [
@@ -314,9 +306,10 @@ def _audit_capability_metrics(rows, case, protocol, result):
         else:
             flat_cross_axis_pass = dy <= protocol["flat_cross_axis_max"]
         if "wz" not in case["track_axes"]:
-            flat_cross_axis_pass = flat_cross_axis_pass and max(map(abs, yaw)) <= protocol[
-                "flat_cross_axis_max"
-            ]
+            flat_cross_axis_pass = (
+                flat_cross_axis_pass
+                and max(map(abs, yaw)) <= protocol["flat_cross_axis_max"]
+            )
     require(
         result["flat_cross_axis_pass"] == flat_cross_axis_pass,
         "flat cross-axis gate mismatch",
@@ -343,17 +336,14 @@ def _audit_capability_metrics(rows, case, protocol, result):
                 row["qpos"][0] >= edge + goal["base_clearance_m"]
                 and min(foot[0] for foot in row["feet"])
                 >= edge + goal["foot_clearance_m"]
-                and abs(row["qpos"][1] - initial_y)
-                <= goal["route_lateral_max_m"]
+                and abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
             )
             holds = holds + 1 if reached else 0
             maximum = max(maximum, holds)
         route = [
             row
             for row in rows
-            if goal["terrain_x_min"]
-            <= row["qpos"][0]
-            <= goal["terrain_x_max"]
+            if goal["terrain_x_min"] <= row["qpos"][0] <= goal["terrain_x_max"]
         ]
         route_pass = bool(route) and all(
             abs(row["qpos"][1] - initial_y) <= goal["route_lateral_max_m"]
@@ -373,7 +363,11 @@ def _audit_capability_metrics(rows, case, protocol, result):
     if rows[-1]["failure"]:
         failure_classes.append("SAFETY_STOP")
     else:
-        if not tracking_pass or not flat_cross_axis_pass or not result["reference_pass"]:
+        if (
+            not tracking_pass
+            or not flat_cross_axis_pass
+            or not result["reference_pass"]
+        ):
             failure_classes.append("TRACKING_FAILURE")
         if task_goal_pass is False:
             failure_classes.append("TASK_GOAL_FAILURE")
