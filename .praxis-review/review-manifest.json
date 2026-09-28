@@ -1,0 +1,161 @@
+{
+  "claim_evidence_ids": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E14",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E20",
+    "E21",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "issue_number": 194,
+  "local_full_evidence_retained": true,
+  "omitted": [],
+  "published": [
+    {
+      "path": "closeout.json",
+      "sha256": "09f7b77270eda26817eeed5140797a8098091b805859fc6ed75247491976fe57",
+      "size": 11130
+    },
+    {
+      "path": "index.json",
+      "sha256": "ac84d643b3908ae2f57c8e28b4832c094209eb282a2d68aea11bcb48f10768b2",
+      "size": 5295
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "ad07b134e27747b117a88acac51501da1117b21fb07e12902b7630684704bf3b",
+      "size": 491
+    },
+    {
+      "path": "environment.json",
+      "sha256": "7a25c2aa6bcbe5833c06483077005ec808110cfb86ff1051dae93f20df0058d2",
+      "size": 496
+    },
+    {
+      "evidence_id": "E1",
+      "path": "task-entry.json",
+      "sha256": "4a4fec863dd7ce364759a74a138bdb51a730897db661cec04f592f4ac0a9d393",
+      "size": 538
+    },
+    {
+      "evidence_id": "E10",
+      "path": "current-preflight-tests.log",
+      "sha256": "59fbacb36270479f3032764437a2a4de5cbbca8e3c32ba73e7039b32e8286f90",
+      "size": 135
+    },
+    {
+      "evidence_id": "E11",
+      "path": "fresh-schema2-portable-tests.log",
+      "sha256": "adae30825b1f793869aef64ea089253fa9ab46dba889ccc9c789b5a5cbc585d8",
+      "size": 148
+    },
+    {
+      "evidence_id": "E12",
+      "path": "fresh-current-preflight-tests.log",
+      "sha256": "eb1c55a7b4e5bb81cb815eabb4e0a55a5d35d7d5341fa896e218ae4d288eeac6",
+      "size": 135
+    },
+    {
+      "evidence_id": "E14",
+      "path": "acceptance-results.json",
+      "sha256": "eebc19c8b3056cd5638e8acab087d0b725be6c6d57ac0bc3c5883276d91b37b7",
+      "size": 3038
+    },
+    {
+      "evidence_id": "E16",
+      "path": "style-check.log",
+      "sha256": "7ba4e9a659bf8f4c3af7ea91271e7c3d3c54f870d128b9a37c7694be97a61953",
+      "size": 7432
+    },
+    {
+      "evidence_id": "E17",
+      "path": "r189-hash-domain-mismatch.json",
+      "sha256": "b09ecbe8b229225af80a10c11c278aa7a24f3742b15869ef6a956bb63c6f30d0",
+      "size": 1729
+    },
+    {
+      "evidence_id": "E18",
+      "path": "commit-validation.json",
+      "sha256": "b3b545d97b32d55c569f3cad73d51df92b25a7453ecd730484b3a1386ddf87cb",
+      "size": 2490
+    },
+    {
+      "evidence_id": "E19",
+      "path": "recompute_yaw.py",
+      "sha256": "bdd63a7086f51c9f948d3c78068b912613992bf283f175d6174bc12f0413621e",
+      "size": 3193
+    },
+    {
+      "evidence_id": "E20",
+      "path": "praxis-identity-check.json",
+      "sha256": "910d917b8de6633712e551e21d614aaf3b0ee3f98a5bef4238c77aab5fc0c5cb",
+      "size": 1024
+    },
+    {
+      "evidence_id": "E21",
+      "path": "final-state-check.json",
+      "sha256": "8f0b5495a8258ea1ab6f581cee443b95868b87e0381a6756f0ca7db1f81b54a9",
+      "size": 380
+    },
+    {
+      "evidence_id": "E3",
+      "path": "low-friction-v1-contact-audit.json",
+      "sha256": "6a74b980ddb7628aa2a769667461d3c9a212e428edc1865e205232abc63b92c8",
+      "size": 2655
+    },
+    {
+      "evidence_id": "E4",
+      "path": "low-friction-v2-contact-audit.json",
+      "sha256": "e39f3c272b275a77046a76a331d1d70c6822ff88ab1cf50207113c770495d7ef",
+      "size": 2081
+    },
+    {
+      "evidence_id": "E5",
+      "path": "yaw-recomputation.json",
+      "sha256": "17615bc9a40630d833559423e5014bde45c5aabec33a8eab44bfe6500f46dce3",
+      "size": 1094
+    },
+    {
+      "evidence_id": "E6",
+      "path": "r189-case-reconciliation.json",
+      "sha256": "7bb6610cb835bf8dc2bb667c9f7aa5169053e24fb9132c4247385623b8ea7658",
+      "size": 2466
+    },
+    {
+      "evidence_id": "E7",
+      "path": "r189-raw-integrity-check.json",
+      "sha256": "cac6064f1ddf436a890153b83fcaea950518b299e0e0949f3015d45d54e09a59",
+      "size": 2632
+    },
+    {
+      "evidence_id": "E8",
+      "path": "targeted-semantic-tests.log",
+      "sha256": "7ba0d1092436808a10e3cc59aa4e827e3de3464e090c09cb6cb419ff4a3c5ca1",
+      "size": 102
+    },
+    {
+      "evidence_id": "E9",
+      "path": "schema2-portable-tests.log",
+      "sha256": "4b20d209d2e0370e2569ea740070559227867e548e95856321dabbd9c0666bfe",
+      "size": 148
+    }
+  ],
+  "repository": "cwchewang/go2-mujoco-control",
+  "result_commit": "aec4c655cd9d7c4975059cc707c760f7b7af3351",
+  "schema_version": 1,
+  "source_index_sha256": "ac84d643b3908ae2f57c8e28b4832c094209eb282a2d68aea11bcb48f10768b2",
+  "task_branch": "repair/research-semantic-r0-20260928",
+  "task_commit": "9d9340b1f449d2b2018474fba9633221af760691"
+}

@@ -1,0 +1,26 @@
+{
+  "operation": "offline raw-trajectory recomputation; no MuJoCo import or physics integration",
+  "source_evidence_bundle_relative_to_evidence_root": "cwchewang-go2-mujoco-control-189/20260924T101659Z-e40b09335723",
+  "source_trace": "capture-01/flat_yaw_probe.jsonl",
+  "source_protocol": "capture-01/protocol.json",
+  "source_trace_sha256_before": "4b87f690d9c2e1a88e1dd99f3234574b7adc40b83c1700a3517e50bebe479697",
+  "source_trace_sha256_after": "4b87f690d9c2e1a88e1dd99f3234574b7adc40b83c1700a3517e50bebe479697",
+  "source_trace_unchanged": true,
+  "source_rows": 2501,
+  "selected_rows": 2400,
+  "measurement_window": {
+    "start_tick_inclusive": 100,
+    "end_tick_exclusive": 2500
+  },
+  "frozen_command_wz_rad_s": 0.5,
+  "corrected_body_local_qvel_z_mean_rad_s": 0.10389565426144981,
+  "corrected_mae_rad_s": 0.3961043457385502,
+  "frozen_tracking_tolerance_rad_s": 0.1,
+  "corrected_classification": "PERFORMANCE_FAIL",
+  "historical_schema2_analysis": {
+    "mean": 0.10438385495279155,
+    "mae": 0.39561614504720843,
+    "verdict": "PERFORMANCE_FAIL"
+  },
+  "physics_steps": 0
+}

@@ -1,0 +1,125 @@
+{
+  "scene": "unitree_robots/go2/scene_low_friction_patch_v2.xml",
+  "operation": "mj_forward only",
+  "physics_steps": 0,
+  "geom_properties": {
+    "FL": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "FR": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "RL": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "RR": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "normal_floor_approach": {
+      "priority": 0,
+      "condim": 3,
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ]
+    },
+    "normal_floor_exit": {
+      "priority": 0,
+      "condim": 3,
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ]
+    },
+    "low_friction_patch_v2": {
+      "priority": 2,
+      "condim": 6,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0005
+      ]
+    }
+  },
+  "contacts": [
+    {
+      "geom1": "FL",
+      "geom2": "low_friction_patch_v2",
+      "dist": -0.0003725003025580112,
+      "dim": 6,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0005,
+        0.0005
+      ]
+    },
+    {
+      "geom1": "FR",
+      "geom2": "low_friction_patch_v2",
+      "dist": -0.0003725003025580112,
+      "dim": 6,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0005,
+        0.0005
+      ]
+    },
+    {
+      "geom1": "RL",
+      "geom2": "low_friction_patch_v2",
+      "dist": -0.0003725003025580112,
+      "dim": 6,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0005,
+        0.0005
+      ]
+    },
+    {
+      "geom1": "RR",
+      "geom2": "low_friction_patch_v2",
+      "dist": -0.0003725003025580112,
+      "dim": 6,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0005,
+        0.0005
+      ]
+    }
+  ],
+  "time": 0.0
+}

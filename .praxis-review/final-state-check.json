@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "final_commit": "aec4c655cd9d7c4975059cc707c760f7b7af3351",
+  "parent": "9d9340b1f449d2b2018474fba9633221af760691",
+  "task_worktree_detached": true,
+  "task_worktree_clean": true,
+  "fresh_checkout_removed": true,
+  "closeout_schema_and_evidence_paths_valid": true,
+  "progress_checkpoint_schema_valid": true,
+  "exported_praxis_identity_matches": true
+}

@@ -1,0 +1,64 @@
+{
+  "source": {
+    "capture_commit": "e40b0933572345f23b37e3bb06350518fde63e76",
+    "protocol_sha256": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+    "evidence_bundle_relative_to_evidence_root": "cwchewang-go2-mujoco-control-189/20260924T101659Z-e40b09335723",
+    "starting_results_sha256": "df3d67fcf98cc2e53bc8d558085874fd779c0656e1bbe3d08fa3149fb04e5242"
+  },
+  "frozen_protocol": {
+    "case_count": 9,
+    "max_attempts": 9,
+    "retry": "none"
+  },
+  "case_reconciliation": {
+    "step_5cm_cross": {
+      "original_verdict": "PASS",
+      "original_trace_sha256": "81e441638915d124e186dbecda00ecf354daad54807e2e95d8d66bc968c248b4",
+      "original_yaw_metric": null,
+      "original_task_goal_pass": true,
+      "original_route_pass": true
+    },
+    "step_10cm_cross": {
+      "original_verdict": "PASS",
+      "original_trace_sha256": "b730d737fa575ba309c8331a4879c32240c9d26724743871fc0adccebde8c6d0",
+      "original_yaw_metric": null,
+      "original_task_goal_pass": true,
+      "original_route_pass": true
+    },
+    "repeated_steps_cross": {
+      "original_verdict": "PASS",
+      "original_trace_sha256": "a2081dbf9eb98bf26a00660b95a725a1b4262235a9d29c7c94f8d336329c520d",
+      "original_yaw_metric": null,
+      "original_task_goal_pass": true,
+      "original_route_pass": true
+    },
+    "low_friction_cross": {
+      "original_verdict": "PASS",
+      "original_trace_sha256": "494cd5d5abd15823b55fe99e88a205c9b0ca98aa62792dbde0400a80d008587e",
+      "original_yaw_metric": null,
+      "original_task_goal_pass": true,
+      "original_route_pass": true
+    },
+    "flat_yaw_probe": {
+      "original_verdict": "PERFORMANCE_FAIL",
+      "original_trace_sha256": "ac2e35d9bea75c45ce8f4847445914972afd983ada18c8b0c72918d1bd09f6a7",
+      "original_yaw_metric": {
+        "command": 0.5,
+        "mae": 0.39561614504720843,
+        "mean": 0.10438385495279155,
+        "rmse": 0.4025020751487876,
+        "samples": 2400
+      },
+      "original_task_goal_pass": null,
+      "original_route_pass": null
+    }
+  },
+  "disposition": {
+    "step_5cm_cross": "PASS retained",
+    "step_10cm_cross": "PASS retained",
+    "repeated_steps_cross": "PASS retained",
+    "low_friction_cross": "original geometric/task-goal PASS retained; low-friction robustness interpretation withdrawn",
+    "flat_yaw_probe": "PERFORMANCE_FAIL retained; corrected metrics in yaw-recomputation.json"
+  },
+  "raw_files_copied_or_modified": false
+}

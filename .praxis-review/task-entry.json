@@ -1,0 +1,14 @@
+{
+  "task": "R0 scientific-semantic repair, issue #194",
+  "frozen_branch": "repair/research-semantic-r0-20260928",
+  "frozen_start": "9d9340b1f449d2b2018474fba9633221af760691",
+  "observed_head": "9d9340b1f449d2b2018474fba9633221af760691",
+  "fetched_task_ref": "9d9340b1f449d2b2018474fba9633221af760691",
+  "worktree_state": "detached HEAD; clean at entry",
+  "scope_constraints": [
+    "documentation and engineering repair only",
+    "no physics integration",
+    "no campaign rerun",
+    "do not edit sealed #189 raw evidence"
+  ]
+}

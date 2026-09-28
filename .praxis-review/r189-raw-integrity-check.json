@@ -1,0 +1,44 @@
+{
+  "source_evidence_bundle_relative_to_evidence_root": "cwchewang-go2-mujoco-control-189/20260924T101659Z-e40b09335723",
+  "manifest_path": "capture-01/manifest.json",
+  "cases_checked": {
+    "step_5cm_cross": {
+      "sealed_manifest_file_sha256": "72844e90a8792d227bf9d1026a808ce3e8a4f5dc4df307c3ca3d72be85a50155",
+      "raw_file_sha256_actual": "72844e90a8792d227bf9d1026a808ce3e8a4f5dc4df307c3ca3d72be85a50155",
+      "matches_sealed_manifest": true,
+      "analysis_trajectory_digest": "81e441638915d124e186dbecda00ecf354daad54807e2e95d8d66bc968c248b4",
+      "hash_domains_are_distinct": true
+    },
+    "step_10cm_cross": {
+      "sealed_manifest_file_sha256": "bbcbb85cc3f9b2fb355eedb678e05db80657f88fd70bc27b17c55cb42837aaf7",
+      "raw_file_sha256_actual": "bbcbb85cc3f9b2fb355eedb678e05db80657f88fd70bc27b17c55cb42837aaf7",
+      "matches_sealed_manifest": true,
+      "analysis_trajectory_digest": "b730d737fa575ba309c8331a4879c32240c9d26724743871fc0adccebde8c6d0",
+      "hash_domains_are_distinct": true
+    },
+    "repeated_steps_cross": {
+      "sealed_manifest_file_sha256": "f7ad2d92bca64a43758082c8bea612057949e35f5c90b41013f48060f7a40408",
+      "raw_file_sha256_actual": "f7ad2d92bca64a43758082c8bea612057949e35f5c90b41013f48060f7a40408",
+      "matches_sealed_manifest": true,
+      "analysis_trajectory_digest": "a2081dbf9eb98bf26a00660b95a725a1b4262235a9d29c7c94f8d336329c520d",
+      "hash_domains_are_distinct": true
+    },
+    "low_friction_cross": {
+      "sealed_manifest_file_sha256": "d91ea89f1ff7f6bf528afb10d43e762253f8a14200908073b0bfe58d65d5b46d",
+      "raw_file_sha256_actual": "d91ea89f1ff7f6bf528afb10d43e762253f8a14200908073b0bfe58d65d5b46d",
+      "matches_sealed_manifest": true,
+      "analysis_trajectory_digest": "494cd5d5abd15823b55fe99e88a205c9b0ca98aa62792dbde0400a80d008587e",
+      "hash_domains_are_distinct": true
+    },
+    "flat_yaw_probe": {
+      "sealed_manifest_file_sha256": "4b87f690d9c2e1a88e1dd99f3234574b7adc40b83c1700a3517e50bebe479697",
+      "raw_file_sha256_actual": "4b87f690d9c2e1a88e1dd99f3234574b7adc40b83c1700a3517e50bebe479697",
+      "matches_sealed_manifest": true,
+      "analysis_trajectory_digest": "ac2e35d9bea75c45ce8f4847445914972afd983ada18c8b0c72918d1bd09f6a7",
+      "hash_domains_are_distinct": true
+    }
+  },
+  "all_raw_file_hashes_match_sealed_manifest": true,
+  "raw_files_copied_or_modified": false,
+  "note": "The earlier r189-hash-domain-mismatch.json compares byte-level JSONL hashes with semantic trajectory digests; those are different hash domains. This corrected check compares byte-level hashes to the sealed capture manifest."
+}

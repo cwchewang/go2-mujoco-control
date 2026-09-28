@@ -1,0 +1,37 @@
+{
+  "source_bundle_relative_to_evidence_root": "cwchewang-go2-mujoco-control-189/20260924T101659Z-e40b09335723",
+  "cases_checked": {
+    "step_5cm_cross": {
+      "trace_sha256_actual": "72844e90a8792d227bf9d1026a808ce3e8a4f5dc4df307c3ca3d72be85a50155",
+      "trace_sha256_expected": "81e441638915d124e186dbecda00ecf354daad54807e2e95d8d66bc968c248b4",
+      "matches_original_analysis": false,
+      "trace_bytes": 13967188
+    },
+    "step_10cm_cross": {
+      "trace_sha256_actual": "bbcbb85cc3f9b2fb355eedb678e05db80657f88fd70bc27b17c55cb42837aaf7",
+      "trace_sha256_expected": "b730d737fa575ba309c8331a4879c32240c9d26724743871fc0adccebde8c6d0",
+      "matches_original_analysis": false,
+      "trace_bytes": 13949277
+    },
+    "repeated_steps_cross": {
+      "trace_sha256_actual": "f7ad2d92bca64a43758082c8bea612057949e35f5c90b41013f48060f7a40408",
+      "trace_sha256_expected": "a2081dbf9eb98bf26a00660b95a725a1b4262235a9d29c7c94f8d336329c520d",
+      "matches_original_analysis": false,
+      "trace_bytes": 13979602
+    },
+    "low_friction_cross": {
+      "trace_sha256_actual": "d91ea89f1ff7f6bf528afb10d43e762253f8a14200908073b0bfe58d65d5b46d",
+      "trace_sha256_expected": "494cd5d5abd15823b55fe99e88a205c9b0ca98aa62792dbde0400a80d008587e",
+      "matches_original_analysis": false,
+      "trace_bytes": 13993725
+    },
+    "flat_yaw_probe": {
+      "trace_sha256_actual": "4b87f690d9c2e1a88e1dd99f3234574b7adc40b83c1700a3517e50bebe479697",
+      "trace_sha256_expected": "ac2e35d9bea75c45ce8f4847445914972afd983ada18c8b0c72918d1bd09f6a7",
+      "matches_original_analysis": false,
+      "trace_bytes": 5910047
+    }
+  },
+  "all_hashes_match_original_analysis": false,
+  "source_raw_files_modified": false
+}

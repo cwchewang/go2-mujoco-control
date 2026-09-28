@@ -1,0 +1,86 @@
+{
+  "status": "PASS_WITH_ENVIRONMENT_LIMITATION",
+  "deterministic_checks": [
+    {
+      "name": "targeted analyzer/verifier/task/contact tests",
+      "status": "PASS",
+      "summary": "4 tests",
+      "evidence": "targeted-semantic-tests.log"
+    },
+    {
+      "name": "schema-2 portable suite in task worktree",
+      "status": "PASS",
+      "summary": "37 tests, 3 skipped",
+      "evidence": "schema2-portable-tests.log"
+    },
+    {
+      "name": "current preflight and identity suites in task worktree",
+      "status": "PASS",
+      "summary": "36 tests",
+      "evidence": "current-preflight-tests.log"
+    },
+    {
+      "name": "schema-2 portable suite in fresh detached checkout",
+      "status": "PASS",
+      "summary": "37 tests, 3 skipped",
+      "evidence": "fresh-schema2-portable-tests.log"
+    },
+    {
+      "name": "current preflight and identity suites in fresh detached checkout",
+      "status": "PASS",
+      "summary": "36 tests",
+      "evidence": "fresh-current-preflight-tests.log"
+    },
+    {
+      "name": "standard quality and repository hygiene",
+      "status": "PASS",
+      "summary": "175 tracked source files checked",
+      "evidence": "quality-standard.log"
+    },
+    {
+      "name": "generated CURRENT consistency in task worktree",
+      "status": "PASS",
+      "evidence": "workspace-check.log"
+    },
+    {
+      "name": "generated CURRENT consistency in fresh detached checkout",
+      "status": "PASS",
+      "evidence": "fresh-workspace-check.log"
+    },
+    {
+      "name": "git diff whitespace checks",
+      "status": "PASS",
+      "evidence": "git-diff-check-staged.log"
+    },
+    {
+      "name": "schema-2 import/protocol/task descriptor binding",
+      "status": "PASS",
+      "summary": "9-case protocol and both task JSON references/hashes loaded",
+      "evidence": "schema2-import-loader-check.json"
+    },
+    {
+      "name": "yaw recomputation and v1/v2 runtime contact audits",
+      "status": "PASS",
+      "summary": "offline or mj_forward only; zero physics steps",
+      "evidence": "yaw-recomputation.json"
+    },
+    {
+      "name": "exported Praxis logical task identity",
+      "status": "PASS",
+      "summary": "repository, issue, task branch, task commit, task path, and evidence directory all match the frozen identity",
+      "evidence": "praxis-identity-check.json"
+    }
+  ],
+  "environment_limited_check": {
+    "name": "Ruff lint/format via tools.check_quality --style",
+    "status": "NOT_RUN_TO_COMPLETION",
+    "reason": "Ruff module is not installed in the available Python environment; the script completed syntax and hygiene checks before failing at the Ruff invocation.",
+    "evidence": "style-check.log"
+  },
+  "preserved_audit_failure": {
+    "name": "initial raw trace hash comparison",
+    "status": "INVALID_COMPARISON",
+    "reason": "Compared byte-level JSONL hashes to semantic trajectory digests; corrected check compares raw file SHA-256 values with the sealed capture manifest.",
+    "evidence": "r189-hash-domain-mismatch.json"
+  }
+}

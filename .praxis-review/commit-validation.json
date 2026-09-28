@@ -1,0 +1,36 @@
+{
+  "commit": "aec4c655cd9d7c4975059cc707c760f7b7af3351",
+  "parent": "9d9340b1f449d2b2018474fba9633221af760691",
+  "expected_start": "9d9340b1f449d2b2018474fba9633221af760691",
+  "detached_head": true,
+  "worktree_clean": true,
+  "changed_file_count": 15,
+  "committed_file_sha256": {
+    "CURRENT.md": "8e4a4661e096a3ef6b53a4de02189e0aa0d7c78a1fab8067a3eb8f645a35a31e",
+    "docs/PROJECT_RECORD.md": "4c0d73c56e5db58eeca4d74bd69df95b9a1d3058e9fe6736d1fbdf2d17115ba0",
+    "docs/TOPIC_AUDIT.md": "e5640e1c8c3d651fe021ea033e5eecabd3ab4d02c1db0b685224bb7aa41f19b3",
+    "docs/adr/ADR-0001-mujoco-mjx-evaluation-substrate.md": "5d9a573cd596acd22c580389c14425a22a8ab85602345ea2068a2001df0ce761",
+    "docs/research/current.json": "2b7a11fa3070c38d2e6449a49b499f16d9f4a1f2610b92ae62081b2f2e86310c",
+    "docs/validation/rl_capability_map_successor_20260924/ERRATUM_20260928.md": "5ee4f870163c9ca0075bd0b93e25b8bc294a8d8b33f37cee7c03bce09568e7af",
+    "docs/validation/rl_capability_map_successor_20260924/RESULTS.md": "012978381e7417313d2b783d127e7f72b0dca82a469e4a73bfa4d9856929f0b6",
+    "tools/substrate/baseline.py": "a64f205c4f11cf99e5a0fe8d11c6fa9760aa89b858c4c4e5b5d896aa16d2dfb5",
+    "tools/substrate/baseline_episode.py": "62f1538708b80ac24dd1b060dda611c961dc70ce62fbcc84efc9ed3a1c3bbcce",
+    "tools/substrate/baseline_verify.py": "f7331aa87cad06936aee2f2082eff117af96c73e6b0e1db164c656dcfa1e1321",
+    "tools/substrate/protocols/rl_capability_map_v1.json": "0eda1a046d4d9c456a3ee5a281cc183eaf188b0ff9db9fe0767bc5f6011dc803",
+    "tools/substrate/tasks/rl_capability_map_successor_v1.json": "6b9e3dd44e6b879294ddf8fa1a04c964a3034f9f2b1bfa59f13b73dcdfccf68c",
+    "tools/substrate/tasks/rl_capability_map_v1.json": "719b7622f45260c498a754a9e2db95822ca8ebf40237f5d25b6af8c20757ab48",
+    "tools/substrate/test_baseline.py": "5c1a881d064a45bbc43c02cf33cde02d9ecd76226e2f5541a077ed372f2b352e",
+    "unitree_robots/go2/scene_low_friction_patch_v2.xml": "19b3873e083b3351bd27bba129b8f8d1edd2cbe80371fbf7878af6f1b19227e9"
+  },
+  "v1_scene_sha256_parent": "80c64a12b6326575307ae29e017e07b76bbb2efada0580a7bfe4570dfbbe8073",
+  "v1_scene_sha256_final": "80c64a12b6326575307ae29e017e07b76bbb2efada0580a7bfe4570dfbbe8073",
+  "v1_scene_unchanged": true,
+  "fresh_checkout": {
+    "path": "/tmp/praxis-r0-fresh-aec4c65",
+    "head": "aec4c655cd9d7c4975059cc707c760f7b7af3351",
+    "detached": true,
+    "clean_after_tests": true,
+    "removed_after_verification": true
+  },
+  "physics_steps": 0
+}

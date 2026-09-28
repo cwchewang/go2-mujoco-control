@@ -1,0 +1,167 @@
+{
+  "scene": "unitree_robots/go2/scene_low_friction_patch.xml",
+  "operation": "mj_forward only",
+  "physics_steps": 0,
+  "geom_properties": {
+    "FL": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "FR": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "RL": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "RR": {
+      "priority": 1,
+      "condim": 6,
+      "friction": [
+        0.8,
+        0.02,
+        0.01
+      ]
+    },
+    "floor": {
+      "priority": 0,
+      "condim": 3,
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ]
+    },
+    "low_friction_patch": {
+      "priority": 0,
+      "condim": 3,
+      "friction": [
+        0.0001,
+        0.0001,
+        0.0005
+      ]
+    }
+  },
+  "contacts": [
+    {
+      "geom1": "floor",
+      "geom2": "FL",
+      "dist": -0.01837250030255797,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "FL",
+      "geom2": "low_friction_patch",
+      "dist": -0.019372500302557973,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "floor",
+      "geom2": "FR",
+      "dist": -0.01837250030255797,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "FR",
+      "geom2": "low_friction_patch",
+      "dist": -0.019372500302557973,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "floor",
+      "geom2": "RL",
+      "dist": -0.01837250030255797,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "RL",
+      "geom2": "low_friction_patch",
+      "dist": -0.019372500302557973,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "floor",
+      "geom2": "RR",
+      "dist": -0.01837250030255797,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    },
+    {
+      "geom1": "RR",
+      "geom2": "low_friction_patch",
+      "dist": -0.019372500302557973,
+      "dim": 6,
+      "friction": [
+        0.8,
+        0.8,
+        0.02,
+        0.01,
+        0.01
+      ]
+    }
+  ]
+}

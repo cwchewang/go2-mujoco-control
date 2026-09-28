@@ -1,0 +1,266 @@
+{
+  "status": "complete",
+  "summary": "R0 scientific-semantic repair completed and committed at aec4c655cd9d7c4975059cc707c760f7b7af3351 on detached HEAD. The #189 capture and raw evidence remain unchanged; no campaign or physics integration was run.",
+  "completed": [
+    "Added a versioned #189 erratum and prominent RESULTS link. Retained the 5 cm, 10 cm, and repeated-step PASS conclusions; scoped the low_friction_cross PASS to its frozen geometric/task-goal checks; corrected the yaw metric while retaining PERFORMANCE_FAIL.",
+    "Restored the seven listed schema-2 maintenance files from historical capture commit e40b0933572345f23b37e3bb06350518fde63e76 without cherry-picking the historical branch.",
+    "Fixed analyzer and independent-verifier free-joint angular-velocity semantics and added permanent regression tests for both.",
+    "Added scene_low_friction_patch_v2.xml and a runtime mj_forward test of patch support, effective friction/condim, and absence of normal-floor support.",
+    "Added ADR-0001 and synchronized PROJECT_RECORD, TOPIC_AUDIT, current.json, and generated CURRENT with planned architecture, executable surface, and verified results explicitly separated.",
+    "Passed targeted semantic tests, schema-2 portable tests, current preflight/identity tests, standard quality/hygiene checks, generated CURRENT consistency checks, and the same suites/checks from a fresh detached checkout.",
+    "Committed all 15 intended tracked files directly to the prepared detached worktree; the committed worktree is clean."
+  ],
+  "not_completed": [
+    "The Ruff lint/format stage of tools.check_quality --style could not complete because Ruff is absent from the available Python environment; the standard-library quality and repository hygiene checks passed.",
+    "No capability experiment was run on the v2 low-friction fixture, as required by the frozen task."
+  ],
+  "observations": [
+    {
+      "text": "In the compiled v1 scene at the representative pose, all four feet had both normal-floor and patch contacts. Each foot-patch mjContact had dim=6 and friction [0.8, 0.8, 0.02, 0.01, 0.01]; foot geom priority was 1 and patch priority was 0.",
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "text": "The corrected yaw recomputation selected ticks [100, 2500) from 2,501 raw rows. The raw trace SHA-256 was unchanged; command wz=0.5, mean body-local qvel-z=0.10389565426144981 rad/s, MAE=0.3961043457385502 rad/s, tolerance=0.1 rad/s, and physics_steps=0.",
+      "evidence_ids": [
+        "E5",
+        "E19"
+      ]
+    },
+    {
+      "text": "The original #189 analyses record PASS for step_5cm_cross, step_10cm_cross, repeated_steps_cross, and low_friction_cross; flat_yaw_probe is PERFORMANCE_FAIL. The frozen protocol has nine cases, max_attempts=9, and retry=none.",
+      "evidence_ids": [
+        "E6"
+      ]
+    },
+    {
+      "text": "The v2 fixture produced four foot-to-patch contacts and no foot-to-normal-floor contact under mj_forward. Every observed patch contact had dim=6 and friction [0.0001, 0.0001, 0.0001, 0.0005, 0.0005]; simulation time remained 0.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    },
+    {
+      "text": "The restored schema-2 suite passed 37 tests with 3 skipped; the current preflight/identity suite passed 36 tests. The same results were reproduced in a fresh detached checkout at the final commit.",
+      "evidence_ids": [
+        "E9",
+        "E10",
+        "E11",
+        "E12"
+      ]
+    },
+    {
+      "text": "The initial raw-trace hash check compared byte-level JSONL hashes against semantic trajectory digests and reported mismatches. The corrected audit compares byte-level hashes to the sealed capture manifest, and all five checked raw traces match it.",
+      "evidence_ids": [
+        "E7",
+        "E17"
+      ]
+    },
+    {
+      "text": "The final commit is aec4c655cd9d7c4975059cc707c760f7b7af3351, parent 9d9340b1f449d2b2018474fba9633221af760691; the task worktree is detached and clean. The v1 scene hash matches its parent commit.",
+      "evidence_ids": [
+        "E18"
+      ]
+    },
+    {
+      "text": "All six exported logical Praxis identity values (repository, issue, branch, starting commit, task path, and evidence directory) match the frozen task identity; Git remained detached.",
+      "evidence_ids": [
+        "E18",
+        "E20"
+      ]
+    },
+    {
+      "text": "Final evidence validation found the closeout and progress schemas valid, every cited evidence path present, and the committed task worktree detached and clean.",
+      "evidence_ids": [
+        "E18",
+        "E21"
+      ]
+    }
+  ],
+  "inferences": [
+    {
+      "text": "Because v1 selects foot friction for foot-patch contacts and simultaneously permits normal-floor support, the frozen low_friction_cross PASS does not provide evidence of low-friction robustness.",
+      "evidence_ids": [
+        "E3",
+        "E6"
+      ]
+    },
+    {
+      "text": "Because corrected yaw MAE 0.3961043457 rad/s exceeds the frozen 0.1 rad/s tolerance, the yaw case remains PERFORMANCE_FAIL despite the corrected mean differing slightly from the original report.",
+      "evidence_ids": [
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "The v2 test establishes intended compiled/runtime contact semantics only; it does not establish robot performance or low-friction robustness on that scene.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "text": "Retain the 5 cm, 10 cm, and repeated 5/15/5 cm PASS conclusions. Retain the original low_friction_cross output classification only as a frozen-scene geometric/task-goal PASS, and withdraw its low-friction-robustness interpretation.",
+      "evidence_ids": [
+        "E6",
+        "E7"
+      ]
+    },
+    {
+      "text": "Retain flat_yaw_probe as PERFORMANCE_FAIL under the frozen tolerance using corrected body-local qvel-z metrics.",
+      "evidence_ids": [
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "The canonical architecture now describes MuJoCo as current evaluation physics, MuJoCo/MJX as planned but incomplete, Go2 as the first testbed, and MJPC/iLQR as a strong comparator. Existing capabilities remain task-specific; no generic multi-controller platform or cross-controller scientific bottleneck is claimed.",
+      "evidence_ids": [
+        "E18",
+        "E14"
+      ]
+    },
+    {
+      "text": "R0 is complete: required tracked changes are committed, acceptance evidence is preserved, and no new scientific attempt was consumed.",
+      "evidence_ids": [
+        "E1",
+        "E9",
+        "E11",
+        "E18"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "text": "No capability experiment was run on the v2 fixture, so its effect on locomotion performance and robustness remains unmeasured.",
+      "evidence_ids": [
+        "E4",
+        "E8"
+      ]
+    },
+    {
+      "text": "Ruff-specific lint and formatting remain unverified because Ruff was unavailable; standard syntax, quality, whitespace, and repository hygiene checks passed.",
+      "evidence_ids": [
+        "E14",
+        "E16"
+      ]
+    },
+    {
+      "text": "The first raw-hash comparison was invalid because it mixed byte-level and semantic hash domains; the corrected manifest comparison passes and the failed attempt is retained for audit.",
+      "evidence_ids": [
+        "E7",
+        "E17"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "task-entry.json",
+      "description": "Frozen task identity, exact entry HEAD/ref, detached clean worktree, and prohibitions."
+    },
+    {
+      "id": "E2",
+      "path": "schema2-restoration.json",
+      "description": "The seven restored schema-2 files, source commit, and before/source hashes."
+    },
+    {
+      "id": "E3",
+      "path": "low-friction-v1-contact-audit.json",
+      "description": "Zero-step compiled/runtime contact audit of the unchanged v1 scene."
+    },
+    {
+      "id": "E4",
+      "path": "low-friction-v2-contact-audit.json",
+      "description": "Zero-step mj_forward contact audit of v2 patch support and effective contact parameters."
+    },
+    {
+      "id": "E5",
+      "path": "yaw-recomputation.json",
+      "description": "Corrected offline metrics and unchanged raw-trace byte hash."
+    },
+    {
+      "id": "E6",
+      "path": "r189-case-reconciliation.json",
+      "description": "Original #189 case classifications, trace digests, and retained/corrected dispositions."
+    },
+    {
+      "id": "E7",
+      "path": "r189-raw-integrity-check.json",
+      "description": "Five relevant #189 raw JSONL byte hashes matched to the sealed capture manifest."
+    },
+    {
+      "id": "E8",
+      "path": "targeted-semantic-tests.log",
+      "description": "Four targeted analyzer, verifier, task descriptor, and v2 contact tests passed."
+    },
+    {
+      "id": "E9",
+      "path": "schema2-portable-tests.log",
+      "description": "Full restored schema-2 portable test suite result."
+    },
+    {
+      "id": "E10",
+      "path": "current-preflight-tests.log",
+      "description": "Existing current identity/preflight regression suite result."
+    },
+    {
+      "id": "E11",
+      "path": "fresh-schema2-portable-tests.log",
+      "description": "Schema-2 suite result from a fresh detached checkout at the final commit."
+    },
+    {
+      "id": "E12",
+      "path": "fresh-current-preflight-tests.log",
+      "description": "Preflight/identity suite result from the same fresh checkout."
+    },
+    {
+      "id": "E13",
+      "path": "schema2-import-loader-check.json",
+      "description": "Module imports and strict protocol/task JSON hash-binding check."
+    },
+    {
+      "id": "E14",
+      "path": "acceptance-results.json",
+      "description": "Deterministic acceptance results, return states, and evidence log paths."
+    },
+    {
+      "id": "E15",
+      "path": "quality-standard.log",
+      "description": "Standard-library syntax and repository hygiene checks passed."
+    },
+    {
+      "id": "E16",
+      "path": "style-check.log",
+      "description": "Ruff style check stopped because the Ruff module is unavailable."
+    },
+    {
+      "id": "E17",
+      "path": "r189-hash-domain-mismatch.json",
+      "description": "Preserved initial invalid raw-hash comparison and mismatching hash domains."
+    },
+    {
+      "id": "E18",
+      "path": "commit-validation.json",
+      "description": "Commit, parent, detached clean states, committed file hashes, fresh checkout identity, and v1 scene immutability."
+    },
+    {
+      "id": "E19",
+      "path": "recompute_yaw.py",
+      "description": "Reproducible zero-physics recomputation script for the existing #189 yaw trajectory."
+    },
+    {
+      "id": "E20",
+      "path": "praxis-identity-check.json",
+      "description": "Exported PRAXIS_* logical identity fields matched the frozen task identity."
+    },
+    {
+      "id": "E21",
+      "path": "final-state-check.json",
+      "description": "Final clean detached commit, progress/closeout schema, evidence paths, and Praxis identity validation."
+    }
+  ]
+}

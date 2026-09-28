@@ -1,0 +1,20 @@
+{
+  "logical_identity_source": "exported PRAXIS_* variables",
+  "observed": {
+    "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+    "PRAXIS_ISSUE_NUMBER": "194",
+    "PRAXIS_TASK_BRANCH": "repair/research-semantic-r0-20260928",
+    "PRAXIS_TASK_COMMIT": "9d9340b1f449d2b2018474fba9633221af760691",
+    "PRAXIS_TASK_PATH": "docs/research/TASK_R0_SCIENTIFIC_SEMANTIC_REPAIR_20260928.md",
+    "PRAXIS_EVIDENCE_DIR": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-194/20260928T130155Z-9d9340b1f449"
+  },
+  "expected": {
+    "PRAXIS_REPOSITORY": "cwchewang/go2-mujoco-control",
+    "PRAXIS_ISSUE_NUMBER": "194",
+    "PRAXIS_TASK_BRANCH": "repair/research-semantic-r0-20260928",
+    "PRAXIS_TASK_COMMIT": "9d9340b1f449d2b2018474fba9633221af760691",
+    "PRAXIS_TASK_PATH": "docs/research/TASK_R0_SCIENTIFIC_SEMANTIC_REPAIR_20260928.md",
+    "PRAXIS_EVIDENCE_DIR": "/home/che/.local/share/praxis-v2/evidence/cwchewang-go2-mujoco-control-194/20260928T130155Z-9d9340b1f449"
+  },
+  "all_match": true
+}
