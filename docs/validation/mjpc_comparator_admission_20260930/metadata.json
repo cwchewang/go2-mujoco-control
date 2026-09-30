@@ -1,0 +1,121 @@
+{
+  "source_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+  "mujoco_version": "3.3.6",
+  "compiler": "GNU 11.4.0",
+  "compiler_flags": [
+    "-fno-strict-aliasing"
+  ],
+  "task": "QuadrupedFlat",
+  "model": {
+    "nq": 19,
+    "nv": 18,
+    "nu": 12,
+    "plant_timestep_s": 0.002
+  },
+  "compatibility": {
+    "source_validated": true,
+    "source_gainprm": 60,
+    "source_biasprm": [
+      0,
+      -60,
+      -5
+    ],
+    "source_biastype": "mjBIAS_NONE",
+    "correction": "actuator biastype=mjBIAS_AFFINE",
+    "correction_scope": "ephemeral comparator model copy only",
+    "canonical_evaluation_plant_modified": false
+  },
+  "command": {
+    "mode": "Walk",
+    "gait_switch": "Manual",
+    "gait": "Trot",
+    "walk_speed_mps": 1,
+    "walk_turn_radps": 0,
+    "argv": [
+      "/tmp/mjpc-comparator-admission-r3-build/go2_mjpc_comparator_probe",
+      "/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml"
+    ],
+    "working_directory": "/home/che/dev/go2-praxis/tasks/ed23bd62c2ab524e"
+  },
+  "home_hold": {
+    "steps": 500,
+    "simulated_seconds": 1.0000000000000007,
+    "uncorrected_force_max": 108,
+    "corrected_force_max": 0,
+    "height_min_m": 0.24581650755425283,
+    "height_max_m": 0.27,
+    "xy_displacement_m": 0.021431118935246924,
+    "max_joint_error_rad": 0.1180235574391788,
+    "finite": true,
+    "passed": true
+  },
+  "agent_probe": {
+    "planning_updates": 50,
+    "plant_steps": 250,
+    "simulated_seconds": 0.5000000000000003,
+    "wall_seconds": 2.440529219,
+    "planning_wall_seconds": 2.4305915010000003,
+    "height_initial_m": 0.27,
+    "height_min_m": 0.25614461704915414,
+    "height_max_m": 0.36620515012036126,
+    "height_final_m": 0.25614461704915414,
+    "displacement_x_m": -0.33353025172822964,
+    "displacement_y_m": 1.217841476874249e-05,
+    "displacement_xy_m": 0.33353025195056896,
+    "plan_time_p50_ms": 47.79809,
+    "plan_time_p95_ms": 65.872206,
+    "plan_time_max_ms": 67.157021,
+    "mode_walk": true,
+    "finite": true
+  },
+  "timing": {
+    "home_hold_simulated_seconds": 1.0000000000000007,
+    "agent_probe_simulated_seconds": 0.5000000000000003,
+    "agent_probe_wall_seconds": 2.440529219,
+    "planning_wall_seconds": 2.4305915010000003
+  },
+  "nonfinite_status": "all_checked_values_finite",
+  "schema_version": 1,
+  "source": {
+    "repository": "https://github.com/johnzhang3/mujoco_mpc.git",
+    "commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4"
+  },
+  "task_model": {
+    "task": "QuadrupedFlat",
+    "task_xml": "mjpc/mjpc/tasks/quadruped/task_flat.xml",
+    "task_xml_sha256": "a99762b6209d3a71e9004d49643cc861340b00188bfc7ceae58bf7a0f1c798e1",
+    "go2_xml": "mjpc/mjpc/tasks/quadruped/go2.xml",
+    "go2_xml_sha256": "e45356dd7bccbd17a837a7e2e201da46129953a48b431feff767f4edd5cc65ab",
+    "nq": 19,
+    "nv": 18,
+    "nu": 12,
+    "plant_timestep_s": 0.002
+  },
+  "python_resources": {
+    "mujoco": "3.3.6",
+    "numpy": "2.2.6"
+  },
+  "sdk": {
+    "header": "/home/che/.mujoco/mujoco-3.3.6/include/mujoco/mujoco.h",
+    "header_sha256": "3190fd17711cf25b6b7605802df353571e4329ca3849485e56643e49925208cd",
+    "library": "/home/che/.mujoco/mujoco-3.3.6/lib/libmujoco.so",
+    "library_sha256": "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495"
+  },
+  "build": {
+    "compiler": "GNU 11.4.0",
+    "compiler_path": "/usr/bin/c++",
+    "build_type": "Release",
+    "flags": [
+      "-fno-strict-aliasing"
+    ],
+    "strict_aliasing_flag_verified": true,
+    "relevant_compile_commands": {
+      "agent.cc": "/usr/bin/c++ -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_agent.dir/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/agent.cc.o -c /home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/agent.cc",
+      "quadruped.cc": "/usr/bin/c++ -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_agent.dir/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/quadruped.cc.o -c /home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/quadruped.cc",
+      "comparator_probe.cc": "/usr/bin/c++ -DGO2_CXX_COMPILER_ID=\\\"GNU\\\" -DGO2_CXX_COMPILER_VERSION=\\\"11.4.0\\\" -DGO2_MJPC_SOURCE_COMMIT=\\\"e00c47a5adb9856af2e0f24231bb3a60d5be23c4\\\" -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_comparator_probe.dir/comparator_probe.cc.o -c /home/che/dev/go2-praxis/tasks/ed23bd62c2ab524e/tools/substrate/native/comparator_probe.cc"
+    },
+    "compile_commands_sha256": "8a074afd73cc29e704a1d3a36fcd353ef02df2092743103bdd7e2d4ab260d7cf"
+  },
+  "engineering_status": "PASS",
+  "admission_wall_seconds": 3.6909902570005215
+}

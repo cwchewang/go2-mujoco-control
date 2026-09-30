@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-09-28**
-> **状态：MUJOCO/MJX ARCHITECTURE REFRAMED; #189 SEMANTIC ERRATUM RECORDED; GATE 0 INCOMPLETE**
+> **最后更新：2026-09-30**
+> **状态：MJPC COMPARATOR ENGINEERING ADMISSION RECORDED; #189 SEMANTIC ERRATUM RECORDED; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -27,6 +27,11 @@
 v1 low-friction PASS 仅是冻结场景中的几何/任务目标 PASS，不是低摩擦鲁棒性
 证据；yaw 仍为冻结阈值下的 PERFORMANCE_FAIL。
 
+2026-09-30 的 source-conditioned MJPC admission 已用 pinned upstream Agent +
+QuadrupedFlat 完成 bounded engineering checks。编译和 actuator correction 只绑定
+comparator 的临时模型副本；canonical evaluation plant 未修改。该结果不消耗
+scientific attempt，也不评价 locomotion capability；Gate 0 仍未完成。
+
 ### Planned architecture
 
 MuJoCo 是当前项目 canonical evaluation physics；MuJoCo/MJX 是目标 scalable
@@ -45,8 +50,10 @@ boundary。该 contract 仍是 planned architecture；实现留待本轮语义�
 ### Currently executable capabilities
 
 当前可执行面是 task-specific：仓库有 MuJoCo Go2 assets、恢复后的 schema-2
-公开 RL execution/analyzer/offline verifier，以及 MJPC/iLQG static admission
-utilities。后者不是闭环 locomotion comparison。当前尚无通用
+公开 RL execution/analyzer/offline verifier、MJPC/iLQG static admission
+utilities，以及 source-conditioned upstream Agent + QuadrupedFlat engineering
+admission。该 admission 是 bounded engineering probe，不是 aligned closed-loop
+locomotion comparison。当前尚无通用
 Task/Scenario/Information/Timing API，也没有已经实现的 generic multi-controller
 evaluation platform。
 
@@ -54,7 +61,8 @@ evaluation platform。
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
 #189 九例 map。原始轨迹与尝试账本未改写；语义修正见 erratum。没有证据证明
-跨 controller bottleneck、普遍低摩擦鲁棒性或论文 gap；Gate 0 仍未完成。
+跨 controller bottleneck、普遍低摩擦鲁棒性或论文 gap；MJPC admission 不含科学
+attempt 或 capability conclusion；Gate 0 仍未完成。
 执行 frontier 跟随 `CURRENT.md`。
 
 ## 1D. [2026-09-24 | VERIFIED / BOUNDED; 2026-09-28 ERRATUM] RL capability map 正式完成
@@ -73,6 +81,25 @@ Praxis v2 #189 在 capture HEAD `e40b0933572345f23b37e3bb06350518fde63e76` 上�
 该结果只说明此 checkpoint / adapter / reset / scene / command set 下，**1 m/s 的 5/10/repeated-step 几何任务在冻结条件下通过，command probes 出现性能边界；低摩擦 robustness 未被验证。** 不能由此推出“terrain 已解决”“方向控制是论文 gap”或“MJPC 一定更好”。先审计成熟 Go2 whole-body control implementation 可复用面，再为对齐比较定义独立任务。
 
 标准 verifier 首次因 detached-worktree branch identity 比较限制在 raw replay 前失败；最终只用 documented in-memory identity adapter 纠正 detached actual branch 与逻辑 Praxis branch 的比较，未修改 source、protocol、prepared/capture evidence 或任何 raw trace。该事件属于 verification plumbing，不是科学失败。
+
+## 1E. [2026-09-30 | VERIFIED / ENGINEERING] MJPC comparator admission
+
+R3 在冻结 task HEAD `ed23bd62c2ab524e41dd441b0721cfbf3daa5258` 上，为 pinned
+`johnzhang3/mujoco_mpc@e00c47a5adb9856af2e0f24231bb3a60d5be23c4` 增加 GUI-free
+upstream `mjpc::Agent` + `QuadrupedFlat` admission。GCC 11.4.0 Release 的相关编译单元
+显式使用 `-fno-strict-aliasing`。源 XML 中 12 个 general actuator 均验证为
+`gainprm[0]=60`、`biasprm="0 -60 -5"`、`biastype=mjBIAS_NONE`；只有临时 comparator
+model copy 改为 `mjBIAS_AFFINE`，未写入或修改 canonical evaluation plant。
+
+MuJoCo 3.3.6 / NumPy 2.2.6 的 bounded engineering checks 均通过：零 MPC home hold
+500 步（1.0 s）有限，最大未修正 actuator force 108，修正后 home setpoint force 0，
+最小 trunk height 0.2458 m、平面位移 0.0214 m、最大关节偏差 0.1180 rad；upstream
+Agent 以 Manual / Trot / Walk、1 m/s、0 turn 完成 50 次 planning update 和 250 个
+physics step（0.5 s），所有检查值有限。观测 X 位移为 -0.3335 m；本 engineering
+probe 不将该值分类为 controller performance。完整 command、identity、timing、metric
+与 machine metadata 见 [R3 results](validation/mjpc_comparator_admission_20260930/RESULTS.md)
+和 [metadata](validation/mjpc_comparator_admission_20260930/metadata.json)。本 admission
+消耗 0 scientific attempts，不构成 aligned benchmark 或 capability claim。
 
 ## 1C. [2026-09-24 | VERIFIED / BOUNDED] shared-transfer 正式组合确认
 
@@ -237,8 +264,8 @@ hardware 或 general robustness。0.15 m/s 仍是历史局部兼容性设定，�
 阶段边界：
 1. 任务化定义共享 model / scenario / reset / metrics / success and safety semantics。
 2. #189 已提供第一张 RL map；其 low-friction / yaw 解释按 erratum 修正。
-3. 下一步先审计可复用的 Go2 whole-body controller/MJPC implementation、任务和 runner，避免从零重写已有闭环能力。
-4. 随后为所选 comparator families 写独立的对齐任务；cost、信息和优化差异均须显式记录。MJPC/iLQG、sampling/search 或 learning family 都不享有先验 truth 地位。
+3. 已完成 pinned MJPC Agent + QuadrupedFlat 的 source-conditioned engineering admission；其 actuator/compiler 条件是 comparator reuse facts，不是 canonical plant 决策。
+4. 下一步为所选 comparator families 写独立的 prospective aligned comparison task；共享 model、scenario、reset、metrics 和 success/safety semantics，并显式记录 cost、information 与 optimization 差异。MJPC/iLQG、sampling/search 或 learning family 都不享有先验 truth 地位。
 5. 需要大规模 rollout / learning 时再实现 MuJoCo/MJX 扩展，不为“统一外观”提前宣称 GPU substrate 已完成。
 
 Gate 目的不是选“永远唯一 controller”，而是定位可复现 failure，再决定成熟方案、
@@ -268,9 +295,11 @@ Gate 0 前不得从历史候选直接继续造方法。
 
 ## 9. [CURRENT | NEXT]
 
-RL shared-transfer 与首轮九例 capability map 已完成封存，不重跑。先审计成熟 Go2
-whole-body control implementation 是否已有可复用的闭环 task/controller/runner。完成该
-审计后，再定义 MuJoCo 上对齐的 command/terrain comparison：保留平地 reference、
+RL shared-transfer 与首轮九例 capability map 已完成封存，不重跑。R3 已完成 pinned
+MJPC Agent + QuadrupedFlat 的 bounded source-conditioned admission，但未建立 comparison
+semantics。下一步定义独立的 prospective MuJoCo aligned multi-controller task；其
+command/terrain cases、共享 metrics、安全语义、controller information/timing 与 stopping
+须在任何 scientific attempt 前冻结：保留平地 reference、
 half-speed/reverse/lateral/yaw probes、5 cm/10 cm/repeated-step anchors；low-friction
 anchor 在修正后的 v2 scene 上只能由新 task 前瞻授权，不能接续 #189 或由本次
 engineering task 自动启动。若需要 scale-up，再评估 MJX。
