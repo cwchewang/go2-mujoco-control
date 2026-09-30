@@ -42,3 +42,52 @@ target_link_libraries(go2_mjpc_core PUBLIC "${MUJOCO_LIBRARY}" Threads::Threads
   absl::random_random absl::span)
 add_executable(go2_mjpc_admit admit.cc)
 target_link_libraries(go2_mjpc_admit PRIVATE go2_mjpc_core)
+
+# The upstream Agent registry constructs every planner and estimator even when
+# this admission selects only the XML-declared iLQG planner. Build that source
+# subset directly so the executable does not inherit the interactive app's
+# GLFW/window-system dependency.
+set(MJPC_AGENT_FILES
+  agent.cc
+  planners/include.cc
+  planners/cross_entropy/planner.cc
+  planners/robust/robust_planner.cc
+  planners/sample_gradient/planner.cc
+  planners/sampling/planner.cc
+  planners/sampling/policy.cc
+  planners/gradient/gradient.cc
+  planners/gradient/planner.cc
+  planners/gradient/policy.cc
+  planners/gradient/spline_mapping.cc
+  planners/ilqs/planner.cc
+  planners/shooting/planner.cc
+  planners/shooting/policy.cc
+  planners/shooting/gauss_newton.cc
+  estimators/include.cc
+  estimators/batch.cc
+  estimators/kalman.cc
+  estimators/unscented.cc
+  direct/direct.cc
+  direct/model_parameters.cc
+  spline/spline.cc
+  tasks/quadruped/quadruped.cc)
+list(TRANSFORM MJPC_AGENT_FILES PREPEND "${MJPC_SOURCE_DIR}/mjpc/")
+add_library(go2_mjpc_agent STATIC ${MJPC_AGENT_FILES})
+target_include_directories(go2_mjpc_agent PUBLIC "${MJPC_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
+target_link_libraries(go2_mjpc_agent PUBLIC go2_mjpc_core Threads::Threads
+  absl::any_invocable absl::check absl::flat_hash_map absl::log
+  absl::random_random absl::span)
+
+add_executable(go2_mjpc_comparator_probe comparator_probe.cc)
+target_link_libraries(go2_mjpc_comparator_probe PRIVATE go2_mjpc_agent)
+target_compile_definitions(go2_mjpc_comparator_probe PRIVATE
+  GO2_MJPC_SOURCE_COMMIT="${MJPC_COMMIT}"
+  GO2_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}"
+  GO2_CXX_COMPILER_VERSION="${CMAKE_CXX_COMPILER_VERSION}")
+
+# QuadrupedFlat stores enum selections in doubles via reinterpretation. The
+# selected upstream source crashes under GCC Release with strict aliasing on;
+# keep this compatibility flag visible on every comparator compilation unit.
+foreach(target go2_mjpc_core go2_mjpc_agent go2_mjpc_comparator_probe)
+  target_compile_options(${target} PRIVATE -fno-strict-aliasing)
+endforeach()

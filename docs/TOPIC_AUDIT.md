@@ -1,6 +1,6 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-09-28**
+> **最后更新：2026-09-30**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
@@ -14,6 +14,13 @@
 保留；v1 `low_friction_cross` 只保留 frozen-scene 几何/task-goal PASS，不是低摩擦
 robustness evidence；修正 body-local qvel-z 后 yaw probe 仍为 PERFORMANCE_FAIL。
 该结果仍只属于一个 checkpoint/controller，不能把任何 case 直接升格为论文 gap。
+
+2026-09-30，pinned MJPC upstream Agent + QuadrupedFlat source-conditioned admission
+完成 bounded engineering checks。GCC strict-aliasing 与 nominal actuator bias 的
+兼容修正只作用于临时 comparator model copy；这不是 aligned comparison、能力结论或
+canonical evaluation plant 变更。Gate 0 仍 incomplete。
+完整 source identity 和 engineering evidence 见
+[R3 closeout](validation/mjpc_comparator_admission_20260930/RESULTS.md)。
 
 当前 architecture decision：
 
@@ -114,6 +121,12 @@ contact-mode 方法本来应该解释的 failure。现阶段保留 controller-fa
 success semantics；controller 内部 cost、information condition 与优化方式不同则显式
 记录。目标是定位 failure mechanism，不是选择永久唯一 controller。
 
+R3 已验证 pinned upstream Agent + QuadrupedFlat 可在 headless build 中执行 bounded
+engineering probe，并记录 `-fno-strict-aliasing` 与经校验的 `mjBIAS_AFFINE` comparator
+model correction。Probe 的 0.5 s X displacement 为 -0.3335 m；该读数没有预设的
+performance threshold，不作成功/失败或 capability 解释。后续 aligned task 仍须在
+canonical evaluation semantics 上前瞻定义。
+
 ## 5. [CURRENT] RL baseline 的研究作用
 
 公开 Go2 RL policy 不只是“另一个 controller”，而是能力对照：
@@ -152,8 +165,8 @@ terrain 天花板、跨控制器共同瓶颈或论文题。详见 PROJECT_RECORD
 
 1. 固定 MuJoCo physical model、scene/reset、command、metrics 与 success/safety semantics。
 2. #189 已完成第一张 RL map；low-friction 和 yaw 解释按 erratum 修正。
-3. 先审计成熟 Go2 whole-body control implementation、MJPC task 和 runner，复用已有闭环能力。
-4. 为选定的 controller families 编写独立对齐任务，并记录信息条件、controller cost/reward 与优化方式。
+3. 已完成 pinned MJPC Agent + QuadrupedFlat 的 source-conditioned engineering admission，记录可复用的 source/compiler/actuator 条件。
+4. 下一步为选定的 controller families 编写独立 prospective aligned task，并记录共享 task semantics、信息条件、controller cost/reward、timing 与优化方式。
 5. 只有明确 failure structure 后才启动 sampling/search 或 contact-implicit diagnosis；需要大规模 rollout/learning 时再推进 MJX。
 
 值得进入研究筛选的 failure 必须稳定可复现，且不是 deployment/tuning/benchmark
@@ -173,10 +186,11 @@ baseline failure 或清晰的 controller-specific contrast 都可能有价值。
 
 ## 9. [CURRENT | NEXT AUDIT]
 
-#189 的 RL failure map 不重跑。下一步先审计成熟 Go2 whole-body control implementation
-能提供哪些 pinned controller、task/cost、runner 和可复用 gait/contact infrastructure，
-避免从零实现已有闭环方案。之后再定义 MuJoCo 上的对齐比较：1 m/s flat reference、
-command-space probes、5 cm/10 cm/repeated-step anchors；若需要 low-friction case，须使用
+#189 的 RL failure map 不重跑。R3 已完成 pinned MJPC Agent + QuadrupedFlat 的 bounded
+source-conditioned admission，但没有给出 capability 判断。下一步建立独立的 prospective
+MuJoCo aligned multi-controller task，冻结 canonical model、reset、metrics、安全语义、
+controller information/timing 与 stopping，再比较 1 m/s flat reference、command-space
+probes、5 cm/10 cm/repeated-step anchors；若需要 low-friction case，须使用
 语义修正后的 v2 fixture，并由新任务前瞻授权，不能接续 #189 的 sealed result。
 
 随后让 learning、gradient MPC、sampling/search 按证据进入 benchmark。判读要区分

@@ -99,6 +99,50 @@ objective, and its tiny improvement cannot establish useful gait optimization.
 MJPC has known-model access; RL receives ideal proprioception. Shared physics
 does not make these information conditions equivalent.
 
+## Source-conditioned MJPC comparator admission
+
+The R3 admission builds the unchanged upstream `mjpc::Agent` with upstream
+`QuadrupedFlat` from the source pinned in `sources.lock.json`. It does not use
+the interactive app, GLFW, hardware, or the canonical evaluation plant. GCC
+Release builds compile the Agent, QuadrupedFlat, and admission executable with
+`-fno-strict-aliasing`, required by the pinned selection encoding.
+
+After the bootstrap has materialized the pinned source, reliable Python, and
+pinned Abseil checkout, configure and build the headless Agent target:
+
+```sh
+cmake -S tools/substrate/native -B .substrate/headless-comparator -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DMJPC_SOURCE_DIR=.substrate/mjpc \
+  -DFETCHCONTENT_SOURCE_DIR_ABSEIL=.substrate/headless-reliable/_deps/abseil-src
+cmake --build .substrate/headless-comparator \
+  --target go2_mjpc_comparator_probe -j 4
+```
+
+Run one fresh bounded engineering admission (the output directory must not
+already exist):
+
+```sh
+flock -n /tmp/go2_mujoco_experiment.lock \
+  .substrate/venv-reliable/bin/python -m tools.substrate.mjpc_comparator \
+  --source-root .substrate \
+  --mujoco-root ~/.mujoco/mujoco-3.3.6 \
+  --build-dir .substrate/headless-comparator \
+  --binary .substrate/headless-comparator/go2_mjpc_comparator_probe \
+  --output example/cpp/experiments/_runs/mjpc_comparator_admission/fresh_01
+```
+
+The wrapper fails closed if the source commit, MuJoCo/NumPy versions, model
+dimensions, nominal actuator gain/bias/type, or relevant compile flags drift.
+The source XML is read unchanged. Only an ephemeral comparator model copy gets
+`mjBIAS_AFFINE` after validation; the canonical evaluation plant is untouched.
+The zero-MPC check verifies the corrected PD setpoint and a 1 s home hold. The
+Agent probe applies Manual gait switching, Trot, Walk mode, 1 m/s speed, and
+zero turn for 0.5 s. These durations bound engineering checks; their measured
+displacement and timing are not capability thresholds or a controller
+comparison. The wrapper preserves the invocation logs and emits validated
+machine-readable `metadata.json` in the new output directory.
+
 ## Formal experiment boundary
 
 The SOP preflight entry `tools/research/preflight.py` is restored from historical
