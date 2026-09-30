@@ -32,11 +32,12 @@
     "walk_speed_mps": 1,
     "walk_turn_radps": 0,
     "argv": [
-      "/tmp/mjpc-comparator-admission-r3-build/go2_mjpc_comparator_probe",
+      "/tmp/mjpc-comparator-feedback-repair-build/go2_mjpc_comparator_probe",
       "/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml"
     ],
-    "working_directory": "/home/che/dev/go2-praxis/tasks/ed23bd62c2ab524e"
+    "working_directory": "/home/che/dev/go2-praxis/tasks/c529d99e43cc3480"
   },
+  "action_feedback_state": "current_agent_state",
   "home_hold": {
     "steps": 500,
     "simulated_seconds": 1.0000000000000007,
@@ -53,8 +54,8 @@
     "planning_updates": 50,
     "plant_steps": 250,
     "simulated_seconds": 0.5000000000000003,
-    "wall_seconds": 2.440529219,
-    "planning_wall_seconds": 2.4305915010000003,
+    "wall_seconds": 2.431789178,
+    "planning_wall_seconds": 2.422233766000002,
     "height_initial_m": 0.27,
     "height_min_m": 0.25614461704915414,
     "height_max_m": 0.36620515012036126,
@@ -62,17 +63,17 @@
     "displacement_x_m": -0.33353025172822964,
     "displacement_y_m": 1.217841476874249e-05,
     "displacement_xy_m": 0.33353025195056896,
-    "plan_time_p50_ms": 47.79809,
-    "plan_time_p95_ms": 65.872206,
-    "plan_time_max_ms": 67.157021,
+    "plan_time_p50_ms": 48.966936000000004,
+    "plan_time_p95_ms": 60.377087,
+    "plan_time_max_ms": 62.53980200000001,
     "mode_walk": true,
     "finite": true
   },
   "timing": {
     "home_hold_simulated_seconds": 1.0000000000000007,
     "agent_probe_simulated_seconds": 0.5000000000000003,
-    "agent_probe_wall_seconds": 2.440529219,
-    "planning_wall_seconds": 2.4305915010000003
+    "agent_probe_wall_seconds": 2.431789178,
+    "planning_wall_seconds": 2.422233766000002
   },
   "nonfinite_status": "all_checked_values_finite",
   "schema_version": 1,
@@ -112,10 +113,37 @@
     "relevant_compile_commands": {
       "agent.cc": "/usr/bin/c++ -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_agent.dir/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/agent.cc.o -c /home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/agent.cc",
       "quadruped.cc": "/usr/bin/c++ -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_agent.dir/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/quadruped.cc.o -c /home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/quadruped.cc",
-      "comparator_probe.cc": "/usr/bin/c++ -DGO2_CXX_COMPILER_ID=\\\"GNU\\\" -DGO2_CXX_COMPILER_VERSION=\\\"11.4.0\\\" -DGO2_MJPC_SOURCE_COMMIT=\\\"e00c47a5adb9856af2e0f24231bb3a60d5be23c4\\\" -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_comparator_probe.dir/comparator_probe.cc.o -c /home/che/dev/go2-praxis/tasks/ed23bd62c2ab524e/tools/substrate/native/comparator_probe.cc"
+      "comparator_probe.cc": "/usr/bin/c++ -DGO2_CXX_COMPILER_ID=\\\"GNU\\\" -DGO2_CXX_COMPILER_VERSION=\\\"11.4.0\\\" -DGO2_MJPC_SOURCE_COMMIT=\\\"e00c47a5adb9856af2e0f24231bb3a60d5be23c4\\\" -I/home/che/dev/go2-workspace/current/.substrate/mjpc -I/home/che/.mujoco/mujoco-3.3.6/include -I/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src -O3 -DNDEBUG -fno-strict-aliasing -std=gnu++20 -o CMakeFiles/go2_mjpc_comparator_probe.dir/comparator_probe.cc.o -c /home/che/dev/go2-praxis/tasks/c529d99e43cc3480/tools/substrate/native/comparator_probe.cc"
     },
-    "compile_commands_sha256": "8a074afd73cc29e704a1d3a36fcd353ef02df2092743103bdd7e2d4ab260d7cf"
+    "compile_commands_sha256": "f35fda9c91280e2603802e22191defa69b9818af2cff27cb05fec34867a2ef0a"
   },
   "engineering_status": "PASS",
-  "admission_wall_seconds": 3.6909902570005215
+  "admission_wall_seconds": 4.018017818001681,
+  "feedback_repair_revision": {
+    "task_branch": "research/mjpc-comparator-feedback-repair-20260930",
+    "task_head": "c529d99e43cc348054a9d906838c2c709fd01964",
+    "raw_run": "example/cpp/experiments/_runs/mjpc_comparator_feedback_repair_20260930/run_01",
+    "raw_sha256": {
+      "metadata.json": "75635c8bbb67dc96ec314a198c4d3a5d7e635133b246a6f02b4d19da83493ba4",
+      "started.json": "4cb81a19d48433cf82a8e85127250111104a28d4b7b2f639ed2872d6b7672a2a",
+      "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout.log": "d994fe662c5e58ee5f5307862679de887720b30db75cae5f256c0c59a1b42214",
+      "terminal.json": "f2a0933750ee12e910ac9c13fbc906e7efe8ba6df0dd11a0da714d01080a0b28"
+    },
+    "supersedes_r3_probe_interpretation": {
+      "task_head": "ed23bd62c2ab524e41dd441b0721cfbf3daa5258",
+      "action_feedback_state": "null_state",
+      "planar_displacement_m": 0.33353025195056896,
+      "raw_run": "example/cpp/experiments/_runs/mjpc_comparator_admission_20260930/run_01",
+      "interpretation": "historical engineering evidence; descriptive only; no locomotion capability classification",
+      "raw_sha256_recorded_by_parent": {
+        "started.json": "f7c754fc818a7b5db8074040c73ecfb84a67d3ae76fdcf74442ee439e587c74e",
+        "stdout.log": "55f1cc4a9eda6fa0cadb331212680229cd60309de6e2c9d885edb6ecadabc72e",
+        "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "terminal.json": "935eb21051d693b2fc33ed89fd3f3949e5d1ce35c3adab00c5188f33a13c247c",
+        "metadata.json": "960917354fb48ab5301bbc9da1d716cbad1b37c0352f018fb8fb89877f49bb7e"
+      }
+    },
+    "interpretation": "bounded engineering admission only; no locomotion capability classification"
+  }
 }

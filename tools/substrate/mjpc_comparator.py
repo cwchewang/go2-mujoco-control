@@ -76,6 +76,10 @@ def validate_actuator_semantics(
 
 def validate_compatibility_metadata(metadata: dict) -> None:
     """Reject evidence that omits any frozen identity or compatibility fact."""
+    if metadata.get("action_feedback_state") != "current_agent_state":
+        raise ValueError(
+            "metadata does not confirm current Agent state for iLQG feedback"
+        )
     if metadata.get("source_commit") != EXPECTED_SOURCE_COMMIT:
         raise ValueError("metadata is missing the pinned MJPC source commit")
     if metadata.get("mujoco_version") != EXPECTED_MUJOCO_VERSION:

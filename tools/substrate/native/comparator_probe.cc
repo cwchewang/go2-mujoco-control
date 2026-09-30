@@ -156,6 +156,7 @@ struct ProbeResult {
   double plan_time_max_ms = 0.0;
   bool finite = true;
   bool mode_walk = false;
+  bool action_feedback_state_is_current = true;
 };
 
 double Percentile(std::vector<double> values, double fraction) {
@@ -230,7 +231,12 @@ ProbeResult RunAgentProbe(const mjModel* model) {
     plan_times_ms.push_back(1000.0 * plan_elapsed);
 
     double action[kActuatorCount] = {};
-    agent.ActivePlanner().ActionFromPolicy(action, nullptr, data->time, false);
+    const double* action_feedback_state = agent.state.state().data();
+    result.action_feedback_state_is_current =
+        result.action_feedback_state_is_current && action_feedback_state &&
+        action_feedback_state == agent.state.state().data();
+    agent.ActivePlanner().ActionFromPolicy(action, action_feedback_state,
+                                           data->time, false);
     for (int actuator = 0; actuator < model->nu; ++actuator) {
       if (!std::isfinite(action[actuator]) ||
           action[actuator] < model->actuator_ctrlrange[2 * actuator] - 1.0e-9 ||
@@ -336,6 +342,11 @@ int main(int argc, char** argv) {
               << ",\"command\":{\"mode\":\"Walk\",\"gait_switch\":\"Manual\""
               << ",\"gait\":\"Trot\",\"walk_speed_mps\":1"
               << ",\"walk_turn_radps\":0}"
+              << ",\"action_feedback_state\":\""
+              << (probe.action_feedback_state_is_current
+                      ? "current_agent_state"
+                      : "invalid_or_null")
+              << "\""
               << ",\"home_hold\":{\"steps\":" << kHomeHoldSteps
               << ",\"simulated_seconds\":" << hold.simulated_seconds
               << ",\"uncorrected_force_max\":" << hold.uncorrected_force_max
@@ -372,7 +383,10 @@ int main(int argc, char** argv) {
               << (all_finite ? "all_checked_values_finite" : "nonfinite_detected")
               << "\"}\n";
 
-    return hold.passed && probe.finite && probe.mode_walk ? 0 : 1;
+    return hold.passed && probe.finite && probe.mode_walk &&
+                   probe.action_feedback_state_is_current
+               ? 0
+               : 1;
   } catch (const std::exception& exc) {
     std::cerr << "comparator admission failed: " << exc.what() << "\n";
     return 2;

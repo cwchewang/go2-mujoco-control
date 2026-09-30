@@ -1,4 +1,6 @@
 import copy
+from pathlib import Path
+import re
 import unittest
 
 from tools.substrate.mjpc_comparator import (
@@ -23,6 +25,7 @@ def actuator_fixture():
 def metadata_fixture():
     return {
         "schema_version": 1,
+        "action_feedback_state": "current_agent_state",
         "source_commit": EXPECTED_SOURCE_COMMIT,
         "mujoco_version": EXPECTED_MUJOCO_VERSION,
         "compiler_flags": [STRICT_ALIASING_FLAG],
@@ -106,6 +109,32 @@ class MjpcComparatorTests(unittest.TestCase):
 
     def test_required_compatibility_metadata_is_complete(self):
         validate_compatibility_metadata(metadata_fixture())
+
+    def test_metadata_requires_current_agent_feedback_state(self):
+        for value in (None, "null_state", "other_state"):
+            with self.subTest(value=value):
+                metadata = metadata_fixture()
+                metadata["action_feedback_state"] = value
+                with self.assertRaisesRegex(ValueError, "current Agent state"):
+                    validate_compatibility_metadata(metadata)
+
+        metadata = metadata_fixture()
+        del metadata["action_feedback_state"]
+        with self.assertRaisesRegex(ValueError, "current Agent state"):
+            validate_compatibility_metadata(metadata)
+
+    def test_probe_passes_the_current_agent_state_vector(self):
+        source = (Path(__file__).with_name("native") / "comparator_probe.cc").read_text()
+        self.assertRegex(
+            source,
+            re.compile(
+                r"agent\.SetState\(data\.get\(\)\);[\s\S]*?"
+                r"const double\* action_feedback_state\s*=\s*"
+                r"agent\.state\.state\(\)\.data\(\);[\s\S]*?"
+                r"ActionFromPolicy\(\s*action,\s*action_feedback_state,\s*"
+                r"data->time,\s*false\)",
+            ),
+        )
 
     def test_metadata_rejects_missing_aliasing_flag(self):
         metadata = metadata_fixture()
