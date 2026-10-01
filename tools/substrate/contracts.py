@@ -1,6 +1,8 @@
 """Named boundaries; no simulator handles are exposed to proprioceptive policies."""
 
 from dataclasses import dataclass
+import json
+from typing import Protocol, runtime_checkable
 import numpy as np
 
 POLICY_JOINTS = tuple(
@@ -115,3 +117,115 @@ class TorqueCommand:
             "ctrl": np.clip(total, lo, hi),
             "saturated": (total < lo) | (total > hi),
         }
+
+
+@dataclass(frozen=True)
+class PositionPDActuatorSpec:
+    """Source-controller position action semantics, independent of the evaluation plant."""
+
+    joint_names: tuple
+    position_lower: np.ndarray
+    position_upper: np.ndarray
+    kp: np.ndarray
+    kd: np.ndarray
+
+    def __post_init__(self):
+        object.__setattr__(self, "joint_names", tuple(self.joint_names))
+        if (
+            len(self.joint_names) != 12
+            or len(set(self.joint_names)) != 12
+            or set(self.joint_names) != set(POLICY_JOINTS)
+        ):
+            raise ValueError("unexpected position-controller joint set")
+        for name in ("position_lower", "position_upper", "kp", "kd"):
+            value = vector(getattr(self, name), 12, name)
+            object.__setattr__(
+                self, name, np.frombuffer(value.tobytes(), dtype=np.float64)
+            )
+        if (self.position_lower >= self.position_upper).any():
+            raise ValueError("invalid source position range")
+        if (self.kp <= 0).any() or (self.kd < 0).any():
+            raise ValueError("invalid source PD gain")
+
+    def command(self, position_target):
+        raw = vector(position_target, 12, "position target")
+        clipped = np.clip(raw, self.position_lower, self.position_upper)
+        return (
+            TorqueCommand(
+                self.joint_names,
+                np.zeros(12),
+                clipped,
+                np.zeros(12),
+                self.kp,
+                self.kd,
+            ),
+            {
+                "position_target_unclipped": raw,
+                "position_target": clipped,
+                "position_saturated": (raw < self.position_lower)
+                | (raw > self.position_upper),
+            },
+        )
+
+
+@runtime_checkable
+class ControllerAdapter(Protocol):
+    """Minimal evaluator-facing controller boundary."""
+
+    def reset(self, observation): ...
+
+    def step(self, observation, command): ...
+
+    def diagnostics(self): ...
+
+
+class PositionTargetControllerAdapter:
+    """Wrap a controller whose native action is desired joint position."""
+
+    def __init__(self, controller, actuator_spec, action_joint_names):
+        self.controller = controller
+        self.actuator_spec = actuator_spec
+        self.action_joint_names = tuple(action_joint_names)
+        reorder(np.zeros(12), self.action_joint_names, actuator_spec.joint_names)
+        self._diagnostics = {}
+
+    def reset(self, observation):
+        observation.validate()
+        reset = getattr(self.controller, "reset", None)
+        if reset is not None:
+            reset(observation)
+        self._diagnostics = {}
+
+    def step(self, observation, command):
+        observation.validate()
+        raw = vector(
+            self.controller.step(observation, command), 12, "controller action"
+        )
+        ordered = reorder(raw, self.action_joint_names, self.actuator_spec.joint_names)
+        torque, actuator = self.actuator_spec.command(ordered)
+        self._diagnostics = {
+            "source_action_joint_names": self.action_joint_names,
+            "source_actuator_joint_names": self.actuator_spec.joint_names,
+            **actuator,
+        }
+        return torque
+
+    def diagnostics(self):
+        result = {}
+        diagnostics = getattr(self.controller, "diagnostics", None)
+        if diagnostics is not None:
+            value = diagnostics()
+            if not isinstance(value, dict):
+                raise ValueError("controller diagnostics must be a dict")
+            try:
+                json.dumps(value)
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    "controller diagnostics must be JSON-serializable"
+                ) from error
+            result["controller"] = dict(value)
+        result["adapter"] = {
+            key: value.tolist() if isinstance(value, np.ndarray) else value
+            for key, value in self._diagnostics.items()
+        }
+        return result

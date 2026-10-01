@@ -126,6 +126,58 @@ def physical_fingerprint(model):
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
+def position_pd_actuator_spec(model):
+    """Extract fail-closed affine position-PD semantics from a source controller model."""
+
+    import mujoco
+    from .contracts import POLICY_JOINTS, PositionPDActuatorSpec
+
+    names, lower, upper, kp, kd = [], [], [], [], []
+    if model.nu != 12:
+        raise ValueError("position-PD source requires 12 actuators")
+    for actuator in range(model.nu):
+        if (
+            model.actuator_trntype[actuator] != mujoco.mjtTrn.mjTRN_JOINT
+            or model.actuator_gaintype[actuator] != mujoco.mjtGain.mjGAIN_FIXED
+            or model.actuator_biastype[actuator] != mujoco.mjtBias.mjBIAS_AFFINE
+            or model.actuator_dyntype[actuator] != mujoco.mjtDyn.mjDYN_NONE
+            or not model.actuator_ctrllimited[actuator]
+            or model.actuator_forcelimited[actuator]
+            or not np.array_equal(model.actuator_gear[actuator], [1, 0, 0, 0, 0, 0])
+        ):
+            raise ValueError("source actuator is not affine joint position-PD")
+        gain = float(model.actuator_gainprm[actuator, 0])
+        bias = model.actuator_biasprm[actuator]
+        if (
+            gain <= 0
+            or abs(float(bias[0])) > 1e-12
+            or abs(float(bias[1]) + gain) > 1e-12
+            or float(bias[2]) > 1e-12
+            or not np.allclose(
+                model.actuator_gainprm[actuator, 1:], 0, rtol=0, atol=1e-12
+            )
+            or not np.allclose(bias[3:], 0, rtol=0, atol=1e-12)
+        ):
+            raise ValueError("source affine actuator does not encode q_des PD")
+        joint = int(model.actuator_trnid[actuator, 0])
+        if model.jnt_type[joint] != mujoco.mjtJoint.mjJNT_HINGE:
+            raise ValueError("source position-PD requires hinge joints")
+        names.append(mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, joint))
+        lower.append(float(model.actuator_ctrlrange[actuator, 0]))
+        upper.append(float(model.actuator_ctrlrange[actuator, 1]))
+        kp.append(gain)
+        kd.append(-float(bias[2]))
+    if len(set(names)) != 12 or set(names) != set(POLICY_JOINTS):
+        raise ValueError("unexpected source position-PD joint set")
+    return PositionPDActuatorSpec(
+        tuple(names),
+        np.asarray(lower),
+        np.asarray(upper),
+        np.asarray(kp),
+        np.asarray(kd),
+    )
+
+
 def joint_layout(model):
     import mujoco
     from .contracts import POLICY_JOINTS

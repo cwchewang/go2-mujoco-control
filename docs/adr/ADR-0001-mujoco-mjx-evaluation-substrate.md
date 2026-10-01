@@ -45,3 +45,19 @@ comparison.
 The verified #189 conclusions and their semantic corrections are recorded in
 the [versioned erratum](../validation/rl_capability_map_successor_20260924/ERRATUM_20260928.md).
 They do not yet establish a cross-controller bottleneck or a paper topic.
+
+## First concrete controller boundary
+
+The first implemented adapter boundary keeps the evaluation plant direct-torque.
+A controller that natively emits joint-position targets must declare and validate
+its source actuator semantics before entering the evaluator. For an affine
+position-PD source model, the adapter extracts joint order, target limits, Kp
+and Kd, clips the source position target exactly as the source model would,
+then emits the existing TorqueCommand contract. The canonical plant still
+receives torque; source-controller actuator defaults cannot silently redefine
+evaluation physics.
+
+The extractor fails closed unless MuJoCo reports an affine joint actuator with
+unit transmission, fixed positive gain, bias [0, -Kp, -Kd, ...], finite
+control range, and no secondary force limit. This specifically prevents a
+biasprm declaration with a non-affine biastype from being treated as PD.
