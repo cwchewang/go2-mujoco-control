@@ -73,3 +73,17 @@ the added base position or linear velocity fields.
 Controller comparison must therefore record the information regime explicitly.
 Sharing the evaluation plant does not imply that a learned proprioceptive policy
 and a model-based predictive controller receive identical observations.
+
+## Explicit information and timing specs
+
+InformationSpec records the dynamic observation regime, declared predictive-model
+access, fixed observation latency, and noise model. Delivered observations carry
+sample, availability, and controller times so observation age is evidence rather
+than an implicit assumption. Noise other than none is rejected until implemented.
+
+TimingSpec distinguishes offline_unbounded computation from real_time computation.
+The former cannot claim a solve budget or timeout behavior. Real-time semantics
+require a solve budget no larger than the control period and an explicit overrun
+policy (hold_previous or fail). Both currently use zero-order hold. This contract
+does not by itself claim that the existing synchronous episode runner emulates
+real-time plant evolution during solver computation.
