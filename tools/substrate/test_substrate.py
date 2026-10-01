@@ -6,6 +6,9 @@ from .contracts import (
     POLICY_JOINTS as P,
     MOTOR_JOINTS as M,
     Proprioception,
+    PositionPDActuatorSpec,
+    PositionTargetControllerAdapter,
+    ControllerAdapter,
     TorqueCommand,
     reorder,
 )
@@ -60,6 +63,43 @@ class Boundaries(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             cmd.resolve(self.obs(), np.ones(12), np.zeros(12), M)
+
+    def test_position_target_controller_adapter_is_explicit_pd(self):
+        class Source:
+            def reset(self, observation):
+                self.reset_called = True
+
+            def step(self, observation, command):
+                return np.arange(12.0) - 5
+
+            def diagnostics(self):
+                return {"backend": "fake-position-controller"}
+
+        spec = PositionPDActuatorSpec(
+            M,
+            np.full(12, -1.0),
+            np.full(12, 1.0),
+            np.full(12, 60.0),
+            np.full(12, 5.0),
+        )
+        source = Source()
+        adapter = PositionTargetControllerAdapter(source, spec, M)
+        self.assertIsInstance(adapter, ControllerAdapter)
+        observation = self.obs()
+        adapter.reset(observation)
+        command = adapter.step(observation, {"vx": 0.0})
+        self.assertTrue(source.reset_called)
+        self.assertEqual(command.joint_names, M)
+        np.testing.assert_array_equal(
+            command.position_target, np.clip(np.arange(12.0) - 5, -1, 1)
+        )
+        np.testing.assert_array_equal(command.kp, np.full(12, 60.0))
+        np.testing.assert_array_equal(command.kd, np.full(12, 5.0))
+        diagnostics = adapter.diagnostics()
+        self.assertEqual(
+            diagnostics["controller"]["backend"], "fake-position-controller"
+        )
+        self.assertTrue(diagnostics["adapter"]["position_saturated"].any())
 
     def test_policy_observation_golden(self):
         o = self.obs()
