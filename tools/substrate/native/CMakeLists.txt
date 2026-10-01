@@ -64,3 +64,7 @@ enable_testing()
 add_executable(go2_mjpc_ground_test ground_test.cc)
 target_link_libraries(go2_mjpc_ground_test PRIVATE go2_mjpc_core)
 add_test(NAME ground_miss_zero_integration COMMAND go2_mjpc_ground_test)
+
+add_executable(go2_mjpc_fresh_plan_test fresh_plan_test.cc)
+target_link_libraries(go2_mjpc_fresh_plan_test PRIVATE go2_mjpc_core)
+add_test(NAME fresh_plan_zero_integration COMMAND go2_mjpc_fresh_plan_test)

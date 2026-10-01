@@ -351,3 +351,12 @@ review; this does not establish trajectory neutrality or controller performance.
 v1 remains permanently closed. A separately identified v2 retains the frozen
 canonical anchor and awaits exact-head independent reviews and explicit START;
 scientific attempts remain 0 and Gate 0 remains incomplete.
+
+### 2026-10-01 | Exact-head review HOLD repaired, not scientifically approved
+
+The 73fae9b independent review held readiness on four runtime/qualification
+findings. Those findings were confirmed and repaired with source-bound tests;
+see [HOLD repair](validation/mjpc_hold_repair_v2_20261001/RESULTS.md).
+The new runtime requires independent exact-head rereview. Canonical steps remain
+0 in engineering acceptance; private planning integrates private rollouts.
+Scientific attempts remain 0; v1 is closed and live v2 has not started.

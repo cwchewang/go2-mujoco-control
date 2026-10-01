@@ -1,3 +1,4 @@
+#include "fresh_plan.h"
 // Persistent headless controller for the pinned Go2 MJPC QuadrupedFlat+iLQG.
 // It produces source-model position targets and never steps the evaluation plant.
 #include <chrono>
@@ -139,6 +140,7 @@ class Controller {
               << ",\"gait_switch\":\"Manual\",\"gait\":\"Trot\""
               << ",\"ground_miss_handling\":\"rollout_warning_failure\""
               << ",\"warning_channel\":\"stderr\""
+              << ",\"policy_freshness\":\"current_candidate_required\""
               << ",\"joint_names\":[";
     for (int i = 0; i < model_->nu; ++i) {
       if (i) std::cout << ',';
@@ -242,6 +244,7 @@ class Controller {
     long long planning_elapsed = 0;
     if (replan) {
       has_policy_ = false;
+      InvalidateCurrentRollouts(planner_);
       MakePlanningModelDifferentiable();
       auto planning_start = std::chrono::steady_clock::now();
       try {
@@ -257,7 +260,10 @@ class Controller {
       RestoreSolimp();
     }
 
-    const mjpc::Trajectory* best = planner_.BestTrajectory();
+    const mjpc::Trajectory* best =
+        replan ? RequireFreshPlan(planner_, state_.state().data(),
+                                  model_->nq + model_->nv + model_->na, time_s)
+               : planner_.BestTrajectory();
     if (!best || best->failure || !std::isfinite(best->total_return)) {
       throw std::runtime_error("MJPC rollout failed");
     }
@@ -285,6 +291,7 @@ class Controller {
               << ",\"vx\":" << vx << ",\"wz\":" << wz
               << ",\"cost\":" << best->total_return
               << ",\"replanned\":" << (replan ? "true" : "false")
+              << ",\"current_rollout_valid\":true"
               << ",\"planning_compute_us\":" << planning_elapsed
               << ",\"action_compute_us\":" << action_elapsed
               << ",\"q_des\":[";

@@ -1,0 +1,13 @@
+{
+  "raw_root": "/home/che/dev/go2-workspace/current/_runs/mjpc_hold_repair_20261001T223127",
+  "parent_hold_head": "73fae9beb73ada145410e62c8db86674271992e5",
+  "canonical_physics_steps": 0,
+  "canonical_time_s": 0,
+  "private_planning_rollouts_executed": true,
+  "scientific_attempts": 0,
+  "all_substrate_tests": 189,
+  "native_ctests": 2,
+  "final_clean_receipt": "/home/che/dev/go2-workspace/current/_runs/mjpc_hold_repair_20261001T223127/qualification_clean",
+  "review_status": "REREVIEW_REQUIRED",
+  "live_v2": "NOT_RUN"
+}

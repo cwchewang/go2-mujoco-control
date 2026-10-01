@@ -10,11 +10,66 @@ from .aligned_capture import (
     prepare,
     validate_capture_plan,
     validate_external_start,
+    validate_start_files,
 )
 from .integrity import digest, experiment_lock, verify_bundle
 
 
 class AlignedCaptureTest(unittest.TestCase):
+    def setUp(self):
+        self.qualification = {
+            "path": "fixture-qualified",
+            "manifest_sha256": "q" * 64,
+            "producer_head": "p" * 40,
+            "fingerprint": "f" * 64,
+        }
+        for name in ("validate_qualification", "validate_reference"):
+            patcher = mock.patch(
+                "tools.substrate.aligned_capture." + name,
+                return_value=self.qualification,
+            )
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_start_revalidates_receipt_before_review_or_plan_loading(self):
+        with (
+            mock.patch(
+                "tools.substrate.aligned_capture.verify_bundle",
+                return_value={"qualification": self.qualification},
+            ),
+            mock.patch(
+                "tools.substrate.aligned_capture.current_head", return_value="h"
+            ),
+            mock.patch(
+                "tools.substrate.aligned_capture.validate_reference",
+                side_effect=ValueError("qualification reference mismatch"),
+            ) as receipt,
+            mock.patch("tools.substrate.aligned_capture.load_capture_plan") as plan,
+        ):
+            with self.assertRaisesRegex(ValueError, "qualification reference mismatch"):
+                validate_start_files("fixture", "review", "auth")
+            receipt.assert_called_once_with(self.qualification)
+            plan.assert_not_called()
+
+    def test_prepare_requires_receipt_before_creating_any_plant(self):
+        with mock.patch("tools.substrate.aligned_capture.MujocoPlant") as plant:
+            with self.assertRaisesRegex(ValueError, "qualification receipt"):
+                prepare(Path("unused"))
+            plant.assert_not_called()
+
+    def test_failed_qualification_blocks_prepare_before_plant(self):
+        with (
+            mock.patch("tools.substrate.aligned_capture.experiment_lock"),
+            mock.patch(
+                "tools.substrate.aligned_capture.validate_qualification",
+                side_effect=ValueError("stale qualification fingerprint"),
+            ),
+            mock.patch("tools.substrate.aligned_capture.MujocoPlant") as plant,
+        ):
+            with self.assertRaisesRegex(ValueError, "stale qualification"):
+                prepare(Path("unused"), qualification_path="stale")
+            plant.assert_not_called()
+
     def test_plan_is_self_unauthorized_and_bounded(self):
         plan = load_capture_plan()
         raw = plan["raw"]
@@ -106,10 +161,11 @@ class AlignedCaptureTest(unittest.TestCase):
                     return_value="d" * 40,
                 ),
             ):
-                result = prepare(output)
+                result = prepare(output, qualification_path="fixture")
             self.assertEqual(result["physics_steps"], 0)
             self.assertEqual(result["scientific_attempts"], 0)
             admitted = verify_bundle(output)
+            self.assertEqual(admitted["qualification"], self.qualification)
             self.assertEqual(admitted["max_attempts"], 2)
             self.assertEqual(admitted["planned_arms"], ["rl", "mjpc"])
             self.assertEqual(admitted["physics_steps"], 0)
@@ -133,7 +189,7 @@ class AlignedCaptureTest(unittest.TestCase):
                     side_effect=lambda: experiment_lock(root / "experiment.lock"),
                 ),
             ):
-                prepare(prepared_dir)
+                prepare(prepared_dir, qualification_path="fixture")
 
             prepared = verify_bundle(prepared_dir)
             manifest = digest(prepared_dir / "manifest.json")

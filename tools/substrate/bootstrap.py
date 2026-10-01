@@ -127,6 +127,8 @@ def main():
             "--target",
             "go2_mjpc_admit",
             "go2_mjpc_controller",
+            "go2_mjpc_ground_test",
+            "go2_mjpc_fresh_plan_test",
             "-j",
             "4",
         )

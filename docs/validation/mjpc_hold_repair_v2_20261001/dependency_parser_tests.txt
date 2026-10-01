@@ -1,0 +1,8 @@
+test_generated_translation_unit_and_actual_header_are_byte_bound (tools.substrate.test_build_identity_sources.CompilationIdentityTest) ... ok
+test_missing_dependency_fails_closed (tools.substrate.test_build_identity_sources.CompilationIdentityTest) ... ok
+test_planned_compiler_dependencies_handle_make_continuations (tools.substrate.test_build_identity_sources.CompilationIdentityTest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+OK

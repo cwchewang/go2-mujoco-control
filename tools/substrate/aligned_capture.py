@@ -24,6 +24,7 @@ from .model import dependency_manifest, physical_fingerprint
 from .native_mjpc import NativeMJPCController
 from .readiness import validate_authorization, validate_review
 from .rl import FrozenPolicy
+from .qualification import validate as validate_qualification, validate_reference
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PLAN = Path(__file__).with_name("protocols") / "aligned_flat_capture_v1.json"
@@ -82,9 +83,12 @@ def current_head():
     return head
 
 
-def prepare(directory, plan_path=DEFAULT_PLAN):
+def prepare(directory, plan_path=DEFAULT_PLAN, *, qualification_path=None):
     directory = Path(directory)
+    if qualification_path is None:
+        raise ValueError("clean qualification receipt required")
     with experiment_lock(), zero_step_guard():
+        qualification = validate_qualification(qualification_path)
         plan = load_capture_plan(plan_path)
         anchor = plan["anchor"]
         head = current_head()
@@ -115,6 +119,7 @@ def prepare(directory, plan_path=DEFAULT_PLAN):
                     "status": "ENGINEERING_ADMITTED",
                     "readiness": "AWAITING_EXACT_HEAD_REVIEWS_AND_USER_START",
                     "head": head,
+                    "qualification": qualification,
                     "protocol_sha256": digest(Path(plan_path)),
                     "anchor_sha256": digest(ROOT / plan["raw"]["anchor"]),
                     "max_attempts": plan["raw"]["max_attempts"],
@@ -156,6 +161,7 @@ def validate_start_files(
     prepared_dir = Path(prepared_dir)
     prepared = verify_bundle(prepared_dir)
     head = current_head()
+    validate_reference(prepared.get("qualification"))
     plan = load_capture_plan(plan_path)
     if prepared.get("protocol_sha256") != digest(Path(plan_path)):
         raise ValueError("capture plan changed since preparation")
@@ -197,14 +203,16 @@ def _setup_runtime():
     torch.manual_seed(0)
 
 
-def _make_controller(name, anchor, prepared):
+def _make_controller(name, anchor, prepared, *, stderr_log_path=None):
     if name == "rl":
         _setup_runtime()
         policy = FrozenPolicy(CHECKPOINT, prepared["rl_checkpoint_sha256"])
         return ProprioceptivePolicyAdapter(policy), lambda: None
     if name == "mjpc":
         native = NativeMJPCController(
-            MJPC_BINARY, anchor["controllers"]["mjpc"]["timing"]
+            MJPC_BINARY,
+            anchor["controllers"]["mjpc"]["timing"],
+            stderr_log_path=stderr_log_path,
         )
         adapter = PositionTargetControllerAdapter(
             native, native.actuator_spec, native.joint_names
@@ -292,6 +300,7 @@ def capture(
                 if current_head() != head:
                     raise ValueError("capture HEAD changed during campaign")
                 verify_bundle(prepared_dir)
+                validate_reference(prepared.get("qualification"))
                 if digest(CHECKPOINT) != prepared["rl_checkpoint_sha256"]:
                     raise ValueError("RL checkpoint changed during capture")
                 native_identity = verify_controller(MJPC_BINARY)
@@ -304,7 +313,12 @@ def capture(
 
                 plant = MujocoPlant(prepared_dir / "inputs" / anchor["scenario"].scene)
                 validate_canonical_model(anchor, plant.model)
-                controller, close = _make_controller(name, anchor, prepared)
+                controller, close = _make_controller(
+                    name,
+                    anchor,
+                    prepared,
+                    stderr_log_path=run.path / (name + ".native.stderr.log"),
+                )
                 raw = run.path / (name + ".jsonl")
                 item["status"] = "BOOTING"
                 consumed = False
