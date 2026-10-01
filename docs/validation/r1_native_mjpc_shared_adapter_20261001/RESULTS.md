@@ -6,6 +6,8 @@ The project now has a persistent headless bridge to the pinned author Go2 MJPC i
 
 Source compatibility is explicit. The pinned task has gain 60 and bias 0 -60 -5 while biastype is mjBIAS_NONE. The controller validates that nominal source fact before changing only its private planning-model copy to mjBIAS_AFFINE. The canonical evaluation plant is not modified. Manual/Trot Walk selection and current-agent-state iLQG feedback are explicit.
 
+The successful zero-step smoke was rerun on tracked bridge code commit ba12f3bd7ad376eb92395018c045c9e21ab1ac72 after the selection-parameter repair was committed.
+
 A sealed Release controller binary was built from the pinned source. Final observed binary SHA-256:
 56e631591c60f15630cee76dd5e24386e8ce1f27ed8d5e5c2753cff4bf0ab1ac
 
@@ -13,7 +15,7 @@ Zero-canonical-step integration smoke:
 - command: vx=1.0 m/s, vy=0, wz=0;
 - canonical plant steps: 0;
 - canonical plant time: 0.0 s;
-- planner compute time: 0.028024 s in the final reset-aligned smoke;
+- planner compute time: 0.029837 s in the final exact-code smoke;
 - iLQG reported cost: 0.08976081533117637;
 - resolved canonical torque: finite;
 - saturated motors: 0;
