@@ -133,3 +133,263 @@ def prepare(directory, plan_path=DEFAULT_PLAN):
         "scientific_attempts": 0,
         "output": str(directory),
     }
+
+
+def validate_external_start(prepared, review, authorization, head, manifest_sha256):
+    if prepared.get("readiness") != "AWAITING_EXACT_HEAD_REVIEWS_AND_USER_START":
+        raise ValueError("aligned capture preparation is not start-ready")
+    if prepared.get("head") != head:
+        raise ValueError("aligned capture preparation head is stale")
+    value = dict(prepared)
+    value["prepared_manifest_sha256"] = manifest_sha256
+    validate_review(review, head)
+    validate_authorization(authorization, value)
+    return True
+
+
+def validate_start_files(prepared_dir, review_path, authorization_path):
+    prepared_dir = Path(prepared_dir)
+    prepared = verify_bundle(prepared_dir)
+    head = current_head()
+    plan = load_capture_plan()
+    if prepared.get("protocol_sha256") != digest(DEFAULT_PLAN):
+        raise ValueError("capture plan changed since preparation")
+    if prepared.get("anchor_sha256") != digest(ROOT / plan["raw"]["anchor"]):
+        raise ValueError("anchor changed since preparation")
+    lock = strict_json(LOCK.read_text())
+    if digest(CHECKPOINT) != prepared.get("rl_checkpoint_sha256"):
+        raise ValueError("RL checkpoint changed since preparation")
+    native = verify_controller(MJPC_BINARY)
+    if (
+        native["binary_sha256"] != prepared.get("mjpc_binary_sha256")
+        or native["inputs"]["mjpc"]["head"] != prepared.get("mjpc_source_commit")
+        or native["inputs"]["mjpc"]["head"] != lock["mjpc"]["commit"]
+    ):
+        raise ValueError("MJPC identity changed since preparation")
+    review = strict_json(Path(review_path).read_text())
+    authorization = strict_json(Path(authorization_path).read_text())
+    validate_external_start(
+        prepared,
+        review,
+        authorization,
+        head,
+        digest(prepared_dir / "manifest.json"),
+    )
+    return {
+        "head": head,
+        "prepared": prepared,
+        "review": review,
+        "authorization": authorization,
+    }
+
+
+def _setup_runtime():
+    import torch
+
+    torch.set_num_threads(1)
+    torch.set_num_interop_threads(1)
+    torch.use_deterministic_algorithms(True)
+    torch.manual_seed(0)
+
+
+def _make_controller(name, anchor, prepared):
+    if name == "rl":
+        _setup_runtime()
+        policy = FrozenPolicy(CHECKPOINT, prepared["rl_checkpoint_sha256"])
+        return ProprioceptivePolicyAdapter(policy), lambda: None
+    if name == "mjpc":
+        native = NativeMJPCController(
+            MJPC_BINARY, anchor["controllers"]["mjpc"]["timing"]
+        )
+        adapter = PositionTargetControllerAdapter(
+            native, native.actuator_spec, native.joint_names
+        )
+        return adapter, native.close
+    raise ValueError("unknown aligned capture controller")
+
+
+def _validate_output(plan, output):
+    output = Path(output).absolute()
+    root = (ROOT / plan["raw"]["output_root"]).absolute()
+    if output.parent != root or not output.name.startswith("run_"):
+        raise ValueError(
+            "capture output must be a fresh run_* child of frozen output_root"
+        )
+    return output
+
+
+def capture(prepared_dir, review_path, authorization_path, output):
+    """Run exactly one RL arm and one MJPC arm after external authorization."""
+
+    prepared_dir = Path(prepared_dir)
+    with experiment_lock():
+        # This gate must complete before output/plant/controller creation.
+        start = validate_start_files(prepared_dir, review_path, authorization_path)
+        prepared = start["prepared"]
+        head = start["head"]
+        plan = load_capture_plan()
+        anchor = plan["anchor"]
+        raw_plan = plan["raw"]
+        output = _validate_output(plan, output)
+
+        ledger = ROOT / "_runs/substrate_attempts" / raw_plan["id"]
+        if ledger.exists():
+            raise ValueError(
+                "aligned capture campaign already claimed; no retry or replacement"
+            )
+
+        with EvidenceRun(output, {"operation": "formal_aligned_capture"}) as run:
+            attempts = [
+                {"index": index + 1, "controller": name, "status": "NOT_RUN"}
+                for index, name in enumerate(raw_plan["capture_order"])
+            ]
+            run.result.update(
+                {
+                    "scope": "formal_aligned_engineering_capture",
+                    "status": "FAILED",
+                    "integration_status": "INCOMPLETE",
+                    "head": head,
+                    "attempts": attempts,
+                    "live_runs": 0,
+                    "scientific_attempts": 0,
+                }
+            )
+            write_new(run.path / "review.json", start["review"])
+            write_new(run.path / "authorization.json", start["authorization"])
+            write_new(run.path / "capture-plan.json", raw_plan)
+            write_new(run.path / "anchor.json", anchor["raw"])
+            write_new(
+                run.path / "preparation-reference.json",
+                {
+                    "path": str(prepared_dir.resolve()),
+                    "manifest_sha256": digest(prepared_dir / "manifest.json"),
+                },
+            )
+
+            ledger.mkdir(parents=True, exist_ok=False)
+            campaign = {
+                "head": head,
+                "output": str(run.path.resolve()),
+                "protocol_sha256": prepared["protocol_sha256"],
+                "anchor_sha256": prepared["anchor_sha256"],
+                "capture_order": raw_plan["capture_order"],
+            }
+            write_new(ledger / "campaign.json", campaign)
+            write_new(run.path / "campaign-claim.json", campaign)
+
+            results = {}
+            for item in attempts:
+                name = item["controller"]
+                if current_head() != head:
+                    raise ValueError("capture HEAD changed during campaign")
+                verify_bundle(prepared_dir)
+                if digest(CHECKPOINT) != prepared["rl_checkpoint_sha256"]:
+                    raise ValueError("RL checkpoint changed during capture")
+                native_identity = verify_controller(MJPC_BINARY)
+                if (
+                    native_identity["binary_sha256"]
+                    != prepared["mjpc_binary_sha256"]
+                    or native_identity["inputs"]["mjpc"]["head"]
+                    != prepared["mjpc_source_commit"]
+                ):
+                    raise ValueError("MJPC identity changed during capture")
+
+                plant = MujocoPlant(
+                    prepared_dir / "inputs" / anchor["scenario"].scene
+                )
+                validate_canonical_model(anchor, plant.model)
+                controller, close = _make_controller(name, anchor, prepared)
+                raw = run.path / (name + ".jsonl")
+                item["status"] = "BOOTING"
+                consumed = False
+
+                def consume():
+                    nonlocal consumed
+                    if consumed:
+                        raise ValueError("attempt consumed more than once")
+                    claim = {
+                        "index": item["index"],
+                        "controller": name,
+                        "head": head,
+                        "raw": str(raw.resolve()),
+                        "boundary": "first_post_handoff_state_control_sample",
+                    }
+                    write_new(ledger / (name + ".json"), claim)
+                    write_new(run.path / (name + "_claim.json"), claim)
+                    item["status"] = "CAPTURING"
+                    run.result["live_runs"] += 1
+                    consumed = True
+
+                started = time.monotonic()
+                try:
+                    with raw.open("x", encoding="utf-8") as stream:
+
+                        def emit(row):
+                            stream.write(
+                                json.dumps(
+                                    row,
+                                    allow_nan=False,
+                                    separators=(",", ":"),
+                                    sort_keys=True,
+                                )
+                                + "\n"
+                            )
+                            stream.flush()
+
+                        with wall_deadline(raw_plan["wall_timeout_s"]):
+                            episode_result = run_aligned_episode(
+                                plant,
+                                controller,
+                                anchor["task"],
+                                anchor["controllers"][name]["information"],
+                                anchor["controllers"][name]["timing"],
+                                emit,
+                                consume,
+                            )
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                finally:
+                    close()
+
+                rows = [
+                    strict_json(line)
+                    for line in raw.read_text().splitlines()
+                    if line
+                ]
+                replay = replay_aligned_rows(
+                    rows, anchor["task"], anchor["physics_period_s"]
+                )
+                analysis = {
+                    "controller": name,
+                    "elapsed_s": time.monotonic() - started,
+                    "episode": episode_result,
+                    "replay": replay,
+                    "frames": len(rows),
+                    "physics_steps": plant.steps,
+                    "controller_updates": sum(
+                        1 for row in rows if row.get("controller_update")
+                    ),
+                }
+                write_new(run.path / (name + "_analysis.json"), analysis)
+                item.update(status=replay["verdict"], analysis=analysis)
+                results[name] = analysis
+
+            if run.result["live_runs"] != len(raw_plan["capture_order"]):
+                raise ValueError("capture attempt accounting mismatch")
+            run.result.update(
+                {
+                    "status": "CAPTURE_COMPLETE",
+                    "integration_status": "CHARACTERIZED",
+                    "controller_results": results,
+                }
+            )
+
+    return {
+        "status": run.result["status"],
+        "integration_status": run.result["integration_status"],
+        "head": head,
+        "live_runs": run.result["live_runs"],
+        "scientific_attempts": 0,
+        "output": str(output),
+        "results": results,
+    }
