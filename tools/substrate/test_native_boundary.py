@@ -6,6 +6,7 @@ from pathlib import Path
 import mujoco
 import numpy as np
 from .contracts import MOTOR_JOINTS, Proprioception
+from .episode import MujocoPlant
 from .model import (
     physical_fingerprint,
     joint_layout,
@@ -61,6 +62,16 @@ class NativeBoundary(unittest.TestCase):
             + "</worldbody><actuator>"
             + "".join(actuators)
             + "</actuator></mujoco>"
+        )
+
+    def test_canonical_plant_whole_body_state_roundtrip(self):
+        plant = MujocoPlant(SCENE)
+        state = plant.whole_body_state()
+        np.testing.assert_array_equal(state.qpos(plant.names), plant.data.qpos)
+        np.testing.assert_array_equal(state.qvel(plant.names), plant.data.qvel)
+        self.assertEqual(state.time_s, plant.data.time)
+        np.testing.assert_array_equal(
+            state.proprioception.position, plant.observe().position
         )
 
     def test_position_pd_source_semantics_match_mujoco_force(self):

@@ -73,6 +73,52 @@ class Proprioception:
 
 
 @dataclass(frozen=True)
+class WholeBodyState:
+    """Explicit full-state information packet for model-based controllers."""
+
+    proprioception: Proprioception
+    base_position_world: np.ndarray
+    linear_velocity_world: np.ndarray
+    time_s: float
+
+    def __post_init__(self):
+        self.proprioception.validate()
+        for name in ("base_position_world", "linear_velocity_world"):
+            value = vector(getattr(self, name), 3, name)
+            object.__setattr__(
+                self, name, np.frombuffer(value.tobytes(), dtype=np.float64)
+            )
+        if (
+            isinstance(self.time_s, (bool, np.bool_))
+            or not isinstance(self.time_s, (int, float, np.integer, np.floating))
+            or not np.isfinite(self.time_s)
+            or self.time_s < 0
+        ):
+            raise ValueError("time_s must be a finite nonnegative scalar")
+        object.__setattr__(self, "time_s", float(self.time_s))
+
+    def qpos(self, target_joint_names):
+        p = self.proprioception
+        return np.concatenate(
+            (
+                self.base_position_world,
+                p.quaternion_wxyz,
+                reorder(p.position, p.joint_names, target_joint_names),
+            )
+        )
+
+    def qvel(self, target_joint_names):
+        p = self.proprioception
+        return np.concatenate(
+            (
+                self.linear_velocity_world,
+                p.angular_velocity_body,
+                reorder(p.velocity, p.joint_names, target_joint_names),
+            )
+        )
+
+
+@dataclass(frozen=True)
 class TorqueCommand:
     joint_names: tuple
     feedforward: np.ndarray
