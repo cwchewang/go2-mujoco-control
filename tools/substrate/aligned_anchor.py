@@ -7,6 +7,7 @@ import numpy as np
 from .clock import TimingSpec
 from .contracts import InformationSpec
 from .integrity import strict_json
+from .model import joint_layout
 from .specs import ScenarioSpec, TaskSpec, TaskThresholds
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -169,10 +170,26 @@ def load_anchor(path=DEFAULT_ANCHOR):
     return validate_anchor(raw, lock)
 
 
+def validate_canonical_reset(model):
+    import mujoco
+
+    home = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home")
+    if home != 0:
+        raise ValueError("canonical home key identity drifted")
+    base = np.asarray(model.key_qpos[home, :7], dtype=np.float64)
+    if base.shape != (7,) or not np.isfinite(base).all():
+        raise ValueError("canonical home base pose is invalid")
+    if not np.allclose(base[3:7], [1.0, 0.0, 0.0, 0.0], rtol=0, atol=1e-12):
+        raise ValueError("canonical home heading no longer aligns with world +x")
+    return True
+
+
 def validate_canonical_model(anchor, model):
     anchor["scenario"].verify_model(model)
     if not np.isclose(
         model.opt.timestep, anchor["physics_period_s"], rtol=0, atol=1e-12
     ):
         raise ValueError("compiled canonical timestep drifted")
+    validate_canonical_reset(model)
+    joint_layout(model)
     return True
