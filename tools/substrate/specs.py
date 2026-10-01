@@ -83,8 +83,12 @@ class TaskSpec:
         object.__setattr__(self, "stop_on", stops)
         if not isinstance(self.thresholds, TaskThresholds):
             raise ValueError("thresholds must be TaskThresholds")
-        if self.longitudinal_metric != "world_vx":
+        if self.longitudinal_metric not in ("world_vx", "body_vx"):
             raise ValueError("unsupported longitudinal metric")
+        if self.command_frame == "world" and self.longitudinal_metric != "world_vx":
+            raise ValueError("world-frame command requires world_vx metric")
+        if self.command_frame == "body" and self.longitudinal_metric != "body_vx":
+            raise ValueError("body-frame command requires body_vx metric")
 
     def command_at(self, tick):
         if type(tick) is not int or tick < 0:

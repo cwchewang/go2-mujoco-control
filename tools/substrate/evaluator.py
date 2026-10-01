@@ -72,6 +72,19 @@ class CanonicalEvaluator:
             return "lateral"
         return None
 
+    def longitudinal_velocity(self, qpos, qvel):
+        if self.task.longitudinal_metric == "world_vx":
+            return float(qvel[0])
+        w, x, y, z = qpos[3:7]
+        body_x_world = np.array(
+            [
+                1 - 2 * (y * y + z * z),
+                2 * (x * y + w * z),
+                2 * (x * z - w * y),
+            ]
+        )
+        return float(body_x_world @ qvel[:3])
+
     def evaluate(self, rows):
         if not rows:
             raise ValueError("empty evaluation evidence")
@@ -99,6 +112,7 @@ class CanonicalEvaluator:
             ):
                 raise ValueError("evaluation clock mismatch")
             reason = self.failure(row, initial_y)
+            qpos = None if reason == "nonfinite" else vector(row["qpos"], 19, "qpos")
             qvel = None if reason == "nonfinite" else vector(row["qvel"], 18, "qvel")
             if first_failure is None and reason is not None:
                 first_failure = {"tick": tick, "reason": reason}
@@ -110,7 +124,10 @@ class CanonicalEvaluator:
             supports.update(raw_supports)
             if tick >= self.task.measurement_start_tick and qvel is not None:
                 errors.append(
-                    abs(float(qvel[0]) - float(self.task.command_at(tick)[0]))
+                    abs(
+                        self.longitudinal_velocity(qpos, qvel)
+                        - float(self.task.command_at(tick)[0])
+                    )
                 )
             last_tick = tick
             if first_failure is not None:

@@ -85,6 +85,24 @@ class EvaluatorContractTest(unittest.TestCase):
         result = CanonicalEvaluator(task, 0.002).evaluate(rows)
         self.assertEqual((result.verdict, result.missing_supports), ("FAIL", ("top",)))
 
+    def test_body_frame_metric_rotates_world_linear_velocity(self):
+        task = self.task(command_frame="body", longitudinal_metric="body_vx")
+        q = [0.0, 0.0, 0.27, 2**-0.5, 0.0, 0.0, 2**-0.5] + [0.0] * 12
+        rows = [
+            self.row(0, 0.0, 0.0, qpos=q, qvel=[0.0, 0.0, 0.0] + [0.0] * 15),
+            self.row(
+                1, 0.6, 0.0, qpos=[0.6] + q[1:], qvel=[0.0, 1.0, 0.0] + [0.0] * 15
+            ),
+            self.row(
+                2, 1.2, 0.0, qpos=[1.2] + q[1:], qvel=[0.0, 1.0, 0.0] + [0.0] * 15
+            ),
+        ]
+        result = CanonicalEvaluator(task, 0.002).evaluate(rows)
+        self.assertAlmostEqual(result.vx_mae_mps, 0.0)
+        self.assertEqual(result.verdict, "PASS")
+        with self.assertRaisesRegex(ValueError, "body-frame"):
+            self.task(command_frame="body", longitudinal_metric="world_vx")
+
     def test_legacy_protocol_mapping_preserves_schedule(self):
         from pathlib import Path
 
