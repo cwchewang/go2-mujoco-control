@@ -339,3 +339,15 @@ reviewer 首次发现。此前 contract-hash / approval-inheritance prototype PR
 4. 被替代结论标 `SUPERSEDED`；
 5. topic 变化同步 `docs/TOPIC_AUDIT.md`；
 6. 顶层 frontier 变化才同步 Library `RESEARCH_INDEX.md`。
+
+## 2026-10-01 | MJPC Ground/IPC engineering hardening
+
+The inherited source-locked Ground repair has passed zero-integration native
+regression and zero-canonical-step IPC/torque/reset acceptance, together with
+175 substrate tests and style checks. See
+[engineering acceptance](validation/mjpc_ground_hardening_v2_20261001/RESULTS.md).
+The private invalid-rollout handling is an intervention requiring independent
+review; this does not establish trajectory neutrality or controller performance.
+v1 remains permanently closed. A separately identified v2 retains the frozen
+canonical anchor and awaits exact-head independent reviews and explicit START;
+scientific attempts remain 0 and Gate 0 remains incomplete.

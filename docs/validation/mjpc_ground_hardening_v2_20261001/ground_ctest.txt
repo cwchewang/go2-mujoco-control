@@ -1,0 +1,10 @@
+[1/2] Building CXX object CMakeFiles/go2_mjpc_ground_test.dir/ground_test.cc.o
+[2/2] Linking CXX executable go2_mjpc_ground_test
+Internal ctest changing into directory: /home/che/dev/go2-workspace/current/.substrate/headless-reliable
+Test project /home/che/dev/go2-workspace/current/.substrate/headless-reliable
+    Start 1: ground_miss_zero_integration
+1/1 Test #1: ground_miss_zero_integration .....   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec

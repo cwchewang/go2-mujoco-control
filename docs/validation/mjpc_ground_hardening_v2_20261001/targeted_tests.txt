@@ -1,0 +1,15 @@
+test_exact_block_replacement_preserves_surrounding_source (tools.substrate.test_mjpc_patch.MJPCPatchTest) ... ok
+test_missing_or_duplicate_ground_block_fails_closed (tools.substrate.test_mjpc_patch.MJPCPatchTest) ... ok
+test_patch_contract_is_narrow_and_source_locked (tools.substrate.test_mjpc_patch.MJPCPatchTest) ... ok
+test_command_is_sampled_only_on_replan_ticks (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_planning_and_feedback_cadence_are_distinct (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_metadata_builds_explicit_pd_spec (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_rejects_compatibility_or_gain_drift (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_rejects_ground_failure_or_warning_channel_drift (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_step_packet_reconstructs_source_joint_order (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_step_response_separates_plan_and_feedback_cost (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.017s
+
+OK

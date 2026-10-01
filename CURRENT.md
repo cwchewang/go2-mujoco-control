@@ -6,13 +6,13 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 ## Active research frontier
 
-Branch: `main`.
-Task: [Aligned flat capture v1 infrastructure stop](docs/research/TASK_ALIGNED_FLAT_CAPTURE_V1_20261001.md).
-Closeout: [Aligned flat capture v1 infrastructure stop results](docs/validation/aligned_flat_capture_v1_20261001/RESULTS.md).
-Stage: The first real shared closed-loop capture executed. RL completed 500 canonical steps and passed the broad 1 s engineering anchor; MJPC consumed its one attempt and stopped after 140 canonical steps at a tick-140 replan due an internal Ground/raycast error surfaced as a native JSON-IPC failure. v1 is closed with no retry.
-Scientific status: This is engineering integration evidence only. RL has a complete broad-anchor PASS; MJPC has no canonical terminal verdict, so the cross-controller comparison is incomplete. No controller ranking, real-time result, cross-controller bottleneck or paper gap is established; scientific attempts remain 0.
+Branch: `infra/mjpc-ground-hardening-v2-20261001`.
+Task: [MJPC Ground/IPC hardening passed; v2 awaits independent review](docs/research/TASK_ALIGNED_FLAT_CAPTURE_V2_20261001.md).
+Closeout: [MJPC Ground/IPC hardening passed; v2 awaits independent review results](docs/validation/mjpc_ground_hardening_v2_20261001/RESULTS.md).
+Stage: Pinned native build, exact Ground miss zero-integration CTest, zero-canonical-step IPC/reset smoke, 175 substrate tests and style checks passed. v2 has an isolated campaign identity and unchanged frozen canonical anchor; live v2 has not started.
+Scientific status: Engineering evidence only. Sealed v1 remains RL 500-step PASS and MJPC 140-step infrastructure stop. Scientific attempts remain 0; no controller ranking, locomotion claim or scientific bottleneck is established.
 Last live HEAD: `e40b0933572345f23b37e3bb06350518fde63e76`.
-Next: Close v1 permanently, diagnose the MJPC Ground/raycast and stdout-IPC failure without canonical physics, harden the native boundary, and prepare a separately versioned v2. Do not run v2 physics without a new exact-head review and explicit user START authorization.
+Next: Validate clean-head qualification and zero-step v2 preparation, then obtain independent science/execution review of exact HEAD and explicit user START before any new live physics.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The
