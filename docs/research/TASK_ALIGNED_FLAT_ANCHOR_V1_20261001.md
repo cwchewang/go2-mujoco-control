@@ -16,6 +16,9 @@ Frozen shared semantics:
 - 50 zero-command ticks, 100 ramp ticks, 500 total ticks;
 - measurement begins at tick 250;
 - longitudinal metric: body_vx;
+- world-x progress/world-y lateral gates are valid only because the frozen home
+  key 0 has identity quaternion, so initial body forward/left align with world
+  +x/+y; review preflight must fail closed if that reset geometry drifts;
 - integration guardrails: progress >= 0.05 m, vx MAE <= 2.0 m/s,
   lateral <= 0.4 m, tilt <= 0.8 rad, height in [0.12, 0.55] m.
 
