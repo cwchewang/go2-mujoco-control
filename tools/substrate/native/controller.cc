@@ -51,6 +51,19 @@ bool Finite(const std::vector<double>& values) {
   return true;
 }
 
+int FeatureParameterIndex(const mjModel* model, const std::string& exact_name) {
+  int shift = 0;
+  for (int i = 0; i < model->nnumeric; ++i) {
+    const char* raw = mj_id2name(model, mjOBJ_NUMERIC, i);
+    if (!raw) continue;
+    std::string name(raw);
+    if (name.rfind("residual_", 0) != 0) continue;
+    if (name == exact_name) return shift;
+    ++shift;
+  }
+  return -1;
+}
+
 void PrintError(const std::string& message) {
   std::cout << "{\"ok\":false,\"error\":\"";
   for (char c : message) {
