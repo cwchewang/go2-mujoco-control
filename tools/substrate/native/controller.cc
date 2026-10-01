@@ -227,11 +227,11 @@ class Controller {
           throw std::runtime_error("unexpected source bias parameters");
         }
       }
-      const double* gear = model_->actuator_gear + mjNGEAR * i;
+      const double* gear = model_->actuator_gear + kActuatorGearDim * i;
       if (std::abs(gear[0] - 1) > 1e-12) {
         throw std::runtime_error("non-unit source actuator gear");
       }
-      for (int k = 1; k < mjNGEAR; ++k) {
+      for (int k = 1; k < kActuatorGearDim; ++k) {
         if (std::abs(gear[k]) > 1e-12) {
           throw std::runtime_error("non-unit source actuator gear");
         }
