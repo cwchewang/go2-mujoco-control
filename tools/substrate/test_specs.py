@@ -37,7 +37,12 @@ class InformationAndTimingSpecTest(unittest.TestCase):
     def test_timing_offline_and_realtime(self):
         offline = TimingSpec(0.002, 0.02)
         self.assertEqual(offline.decimation, 10)
+        self.assertEqual(offline.feedback_decimation, 10)
         self.assertEqual(offline.solve_outcome(100.0), "unbounded_offline")
+        split = TimingSpec(0.002, 0.02, feedback_period_s=0.002)
+        self.assertEqual(split.decimation, 10)
+        self.assertEqual(split.feedback_decimation, 1)
+        self.assertTrue(split.feedback_clock().observe(0, 0.0))
         realtime = TimingSpec(0.002, 0.02, "real_time", 0.01, "hold_previous")
         self.assertEqual(realtime.solve_outcome(0.009), "fresh_action")
         self.assertEqual(realtime.solve_outcome(0.011), "hold_previous")
@@ -59,6 +64,12 @@ class InformationAndTimingSpecTest(unittest.TestCase):
                 overrun_behavior="fail",
             ),
             dict(physics_period_s=0.002, control_period_s=0.02, solve_budget_s=0.01),
+            dict(
+                physics_period_s=0.002, control_period_s=0.02, feedback_period_s=0.003
+            ),
+            dict(
+                physics_period_s=0.002, control_period_s=0.02, feedback_period_s=0.006
+            ),
         )
         for kwargs in bad:
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):

@@ -126,7 +126,7 @@ class Controller {
     SaveSolimp();
     Reset();
 
-    std::cout << "{\"ready\":true,\"protocol\":2,\"nq\":19,\"nv\":18,\"nu\":12,"
+    std::cout << "{\"ready\":true,\"protocol\":3,\"nq\":19,\"nv\":18,\"nu\":12,"
               << "\"planner\":\"MJPC iLQG\",\"planner_dt\":" << planner_dt_
               << ",\"horizon_steps\":" << horizon_
               << ",\"source_nominal_biastype\":\"mjBIAS_NONE\""
@@ -167,11 +167,14 @@ class Controller {
     planner_.Reset(mjpc::kMaxTrajectoryHorizon, data_->ctrl);
     state_.Reset();
     first_step_ = true;
+    has_policy_ = false;
+    planned_vx_ = 0;
+    planned_wz_ = 0;
     last_time_ = -1;
     last_action_.assign(data_->ctrl, data_->ctrl + model_->nu);
   }
 
-  void Step(double time_s, double vx, double vy, double wz,
+  void Step(bool replan, double time_s, double vx, double vy, double wz,
             const std::vector<double>& qpos,
             const std::vector<double>& qvel) {
     if (!std::isfinite(time_s) || time_s < 0 || !std::isfinite(vx) ||
@@ -189,8 +192,19 @@ class Controller {
     if (vx < 0 || vx > 4 || wz < -2 || wz > 2) {
       throw std::runtime_error("command outside source Walk envelope");
     }
-    if (last_time_ >= 0 && time_s + 1e-12 < last_time_) {
-      throw std::runtime_error("controller time moved backwards; reset required");
+    if (last_time_ >= 0 && time_s <= last_time_ + 1e-12) {
+      throw std::runtime_error(
+          "controller time must increase strictly; reset required");
+    }
+    if (!replan) {
+      if (!has_policy_) {
+        throw std::runtime_error("MJPC policy unavailable; replan required");
+      }
+      if (std::abs(vx - planned_vx_) > 1e-12 ||
+          std::abs(wz - planned_wz_) > 1e-12) {
+        throw std::runtime_error(
+            "controller command changed outside a replan tick");
+      }
     }
 
     mju_copy(data_->qpos, qpos.data(), model_->nq);
@@ -205,36 +219,51 @@ class Controller {
       task_.Transition(model_.get(), data_.get());
       first_step_ = false;
     }
+    if (replan) {
+      planned_vx_ = vx;
+      planned_wz_ = wz;
+    }
     task_.mode = 2;  // validated task_transition index: Walk
     task_.parameters[gait_switch_index_] = manual_gait_switch_;
     task_.parameters[gait_index_] = trot_gait_;
-    task_.parameters[speed_index_] = vx;
-    task_.parameters[turn_index_] = wz;
+    task_.parameters[speed_index_] = planned_vx_;
+    task_.parameters[turn_index_] = planned_wz_;
     task_.Transition(model_.get(), data_.get());
 
     state_.Set(model_.get(), data_.get());
     planner_.SetState(state_);
 
-    MakePlanningModelDifferentiable();
-    auto start = std::chrono::steady_clock::now();
-    try {
-      planner_.OptimizePolicy(horizon_, pool_);
-    } catch (...) {
+    long long planning_elapsed = 0;
+    if (replan) {
+      has_policy_ = false;
+      MakePlanningModelDifferentiable();
+      auto planning_start = std::chrono::steady_clock::now();
+      try {
+        planner_.OptimizePolicy(horizon_, pool_);
+      } catch (...) {
+        RestoreSolimp();
+        throw;
+      }
+      planning_elapsed =
+          std::chrono::duration_cast<std::chrono::microseconds>(
+              std::chrono::steady_clock::now() - planning_start)
+              .count();
       RestoreSolimp();
-      throw;
     }
-    const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
-        std::chrono::steady_clock::now() - start)
-                             .count();
-    RestoreSolimp();
 
     const mjpc::Trajectory* best = planner_.BestTrajectory();
     if (!best || best->failure || !std::isfinite(best->total_return)) {
       throw std::runtime_error("MJPC rollout failed");
     }
+    if (replan) has_policy_ = true;
     std::vector<double> action(model_->nu, 0.0);
+    const auto action_start = std::chrono::steady_clock::now();
     planner_.ActionFromPolicy(
         action.data(), state_.state().data(), state_.time(), false);
+    const auto action_elapsed =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::steady_clock::now() - action_start)
+            .count();
     for (int i = 0; i < model_->nu; ++i) {
       if (!std::isfinite(action[i]) ||
           action[i] < model_->actuator_ctrlrange[2 * i] - 1e-9 ||
@@ -249,7 +278,10 @@ class Controller {
               << "{\"ok\":true,\"time_s\":" << time_s
               << ",\"vx\":" << vx << ",\"wz\":" << wz
               << ",\"cost\":" << best->total_return
-              << ",\"compute_us\":" << elapsed << ",\"q_des\":[";
+              << ",\"replanned\":" << (replan ? "true" : "false")
+              << ",\"planning_compute_us\":" << planning_elapsed
+              << ",\"action_compute_us\":" << action_elapsed
+              << ",\"q_des\":[";
     for (int i = 0; i < model_->nu; ++i) {
       if (i) std::cout << ',';
       std::cout << action[i];
@@ -374,6 +406,9 @@ class Controller {
   double manual_gait_switch_ = 0;
   double trot_gait_ = 0;
   bool first_step_ = true;
+  bool has_policy_ = false;
+  double planned_vx_ = 0;
+  double planned_wz_ = 0;
   double last_time_ = -1;
   std::vector<double> last_action_;
   std::vector<double> position_lower_;
@@ -414,15 +449,19 @@ int main(int argc, char** argv) {
           continue;
         }
         if (operation != "step") throw std::runtime_error("unknown operation");
+        int replan_flag;
         double time_s, vx, vy, wz;
-        if (!(stream >> time_s >> vx >> vy >> wz)) {
+        if (!(stream >> replan_flag >> time_s >> vx >> vy >> wz)) {
           throw std::runtime_error("truncated step header");
+        }
+        if (replan_flag != 0 && replan_flag != 1) {
+          throw std::runtime_error("invalid replan flag");
         }
         auto qpos = ReadVector(stream, 19);
         auto qvel = ReadVector(stream, 18);
         std::string extra;
         if (stream >> extra) throw std::runtime_error("extra step fields");
-        controller.Step(time_s, vx, vy, wz, qpos, qvel);
+        controller.Step(replan_flag == 1, time_s, vx, vy, wz, qpos, qvel);
       } catch (const std::exception& error) {
         PrintError(error.what());
       }
