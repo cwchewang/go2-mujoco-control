@@ -144,3 +144,21 @@ the canonical evaluator is explicitly a prospective shared adaptation, not a
 claim about the author's native feedback frequency. The first prospective anchor
 uses offline_unbounded compute semantics until timing evidence supports a
 real-time claim.
+
+## First prospective aligned anchor: prepared, not executed
+
+The first aligned flat anchor is frozen as an engineering integration anchor with
+canonical physics execution disabled. RL and MJPC share TaskSpec, ScenarioSpec,
+canonical direct-torque action realization, and CanonicalEvaluator semantics, but
+their InformationSpec and TimingSpec remain explicitly different rather than
+being hidden behind a false fairness claim.
+
+The task uses a body-frame 1 m/s forward command and body_vx longitudinal metric.
+RL remains proprioceptive with a 20 ms policy/feedback update. MJPC receives
+WholeBodyState plus its controller-private model, replans at 20 ms, and uses the
+prospective 2 ms shared feedback adaptation. Both are offline_unbounded.
+
+This anchor is an interface/evaluator integration check with broad guardrails,
+not a controller ranking. Its protocol keeps physics_step_authorized false and
+scientific_attempts_authorized at zero. Independent review is required before a
+separate capture task may authorize canonical physics.
