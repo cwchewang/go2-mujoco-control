@@ -218,7 +218,7 @@ class PositionTargetControllerAdapter:
                 raise ValueError("controller diagnostics must be a dict")
             result["controller"] = dict(value)
         result["adapter"] = {
-            key: value.copy() if isinstance(value, np.ndarray) else value
+            key: value.tolist() if isinstance(value, np.ndarray) else value
             for key, value in self._diagnostics.items()
         }
         return result

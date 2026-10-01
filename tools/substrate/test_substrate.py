@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -99,7 +100,8 @@ class Boundaries(unittest.TestCase):
         self.assertEqual(
             diagnostics["controller"]["backend"], "fake-position-controller"
         )
-        self.assertTrue(diagnostics["adapter"]["position_saturated"].any())
+        self.assertTrue(any(diagnostics["adapter"]["position_saturated"]))
+        json.dumps(diagnostics)
 
     def test_policy_observation_golden(self):
         o = self.obs()
