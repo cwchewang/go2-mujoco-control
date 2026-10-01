@@ -1,0 +1,343 @@
+// Persistent headless controller for the pinned Go2 MJPC QuadrupedFlat+iLQG.
+// It produces source-model position targets and never steps the evaluation plant.
+#include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include <mujoco/mujoco.h>
+
+#include "mjpc/planners/ilqg/planner.h"
+#include "mjpc/states/state.h"
+#include "mjpc/task.h"
+#include "mjpc/tasks/quadruped/quadruped.h"
+#include "mjpc/threadpool.h"
+#include "mjpc/utilities.h"
+
+namespace {
+mjpc::Task* g_task = nullptr;
+
+void ResidualSensor(const mjModel* model, mjData* data, int stage) {
+  if (g_task && stage == mjSTAGE_ACC) {
+    g_task->Residual(model, data, data->sensordata);
+  }
+}
+
+bool Finite(const std::vector<double>& values) {
+  for (double value : values) {
+    if (!std::isfinite(value)) return false;
+  }
+  return true;
+}
+
+void PrintError(const std::string& message) {
+  std::cout << "{\"ok\":false,\"error\":\"";
+  for (char c : message) {
+    if (c == '"' || c == '\\') std::cout << '\\';
+    std::cout << ((c == '\n' || c == '\r') ? ' ' : c);
+  }
+  std::cout << "\"}" << std::endl;
+}
+
+class Controller {
+ public:
+  explicit Controller(const char* task_xml)
+      : model_(Load(task_xml), mj_deleteModel),
+        data_(mj_makeData(model_.get()), mj_deleteData),
+        pool_(4) {
+    if (mj_version() != 336) throw std::runtime_error("requires MuJoCo 3.3.6");
+    if (model_->nq != 19 || model_->nv != 18 || model_->nu != 12 ||
+        model_->nkey < 1 || mj_name2id(model_.get(), mjOBJ_KEY, "home") != 0) {
+      throw std::runtime_error("unexpected Go2 source model dimensions");
+    }
+    ValidateActuators();
+    const char* transitions =
+        mjpc::GetCustomTextData(model_.get(), "task_transition");
+    if (!transitions ||
+        std::string(transitions) != "Quadruped|Biped|Walk|Scramble|Flip") {
+      throw std::runtime_error("unexpected QuadrupedFlat mode table");
+    }
+
+    planner_dt_ =
+        mjpc::GetNumberOrDefault(0.01, model_.get(), "agent_timestep");
+    const double horizon_s =
+        mjpc::GetNumberOrDefault(0.35, model_.get(), "agent_horizon");
+    if (!(planner_dt_ > 0) || !(horizon_s > 0)) {
+      throw std::runtime_error("invalid source planner timing");
+    }
+    horizon_ = std::max(2, static_cast<int>(horizon_s / planner_dt_ + 1.0));
+    model_->opt.timestep = planner_dt_;
+    speed_index_ = mjpc::ParameterIndex(model_.get(), "Walk speed");
+    turn_index_ = mjpc::ParameterIndex(model_.get(), "Walk turn");
+    if (speed_index_ < 0 || turn_index_ < 0) {
+      throw std::runtime_error("Walk command parameters missing");
+    }
+
+    task_.Reset(model_.get());
+    g_task = &task_;
+    mjcb_sensor = ResidualSensor;
+    state_.Allocate(model_.get());
+    planner_.Initialize(model_.get(), task_);
+    planner_.Allocate();
+    SaveSolimp();
+    Reset();
+
+    std::cout << "{\"ready\":true,\"protocol\":1,\"nq\":19,\"nv\":18,\"nu\":12,"
+              << "\"planner\":\"MJPC iLQG\",\"planner_dt\":" << planner_dt_
+              << ",\"horizon_steps\":" << horizon_ << ",\"joint_names\":[";
+    for (int i = 0; i < model_->nu; ++i) {
+      if (i) std::cout << ',';
+      int joint = model_->actuator_trnid[2 * i];
+      const char* name = mj_id2name(model_.get(), mjOBJ_JOINT, joint);
+      std::cout << '"' << (name ? name : "") << '"';
+    }
+    std::cout << "]}" << std::endl;
+  }
+
+  ~Controller() {
+    mjcb_sensor = nullptr;
+    g_task = nullptr;
+  }
+
+  void Reset() {
+    task_.Reset(model_.get());
+    mj_resetDataKeyframe(model_.get(), data_.get(), 0);
+    mju_zero(data_->qvel, model_->nv);
+    mj_forward(model_.get(), data_.get());
+    planner_.Reset(horizon_, data_->ctrl);
+    first_step_ = true;
+    last_time_ = -1;
+    last_action_.assign(data_->ctrl, data_->ctrl + model_->nu);
+  }
+
+  void Step(double time_s, double vx, double vy, double wz,
+            const std::vector<double>& qpos,
+            const std::vector<double>& qvel) {
+    if (!std::isfinite(time_s) || time_s < 0 || !std::isfinite(vx) ||
+        !std::isfinite(vy) || !std::isfinite(wz) || !Finite(qpos) ||
+        !Finite(qvel)) {
+      throw std::runtime_error("nonfinite controller input");
+    }
+    if (qpos.size() != 19 || qvel.size() != 18) {
+      throw std::runtime_error("invalid state dimensions");
+    }
+    if (std::abs(vy) > 1e-12) {
+      throw std::runtime_error(
+          "QuadrupedFlat source has no lateral velocity command");
+    }
+    if (vx < 0 || vx > 4 || wz < -2 || wz > 2) {
+      throw std::runtime_error("command outside source Walk envelope");
+    }
+    if (last_time_ >= 0 && time_s + 1e-12 < last_time_) {
+      throw std::runtime_error("controller time moved backwards; reset required");
+    }
+
+    mju_copy(data_->qpos, qpos.data(), model_->nq);
+    mju_copy(data_->qvel, qvel.data(), model_->nv);
+    mju_copy(data_->ctrl, last_action_.data(), model_->nu);
+    data_->time = time_s;
+    mj_forward(model_.get(), data_.get());
+
+    if (first_step_) {
+      // Fresh task state forces its first transition to Quadruped. Complete
+      // that transition before requesting the validated Walk mode.
+      task_.Transition(model_.get(), data_.get());
+      first_step_ = false;
+    }
+    task_.mode = 2;  // validated task_transition index: Walk
+    task_.parameters[speed_index_] = vx;
+    task_.parameters[turn_index_] = wz;
+    task_.Transition(model_.get(), data_.get());
+
+    state_.Set(model_.get(), data_.get());
+    planner_.SetState(state_);
+
+    MakePlanningModelDifferentiable();
+    auto start = std::chrono::steady_clock::now();
+    planner_.OptimizePolicy(horizon_, pool_);
+    const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::steady_clock::now() - start)
+                             .count();
+    RestoreSolimp();
+
+    const mjpc::Trajectory* best = planner_.BestTrajectory();
+    if (!best || best->failure || !std::isfinite(best->total_return)) {
+      throw std::runtime_error("MJPC rollout failed");
+    }
+    std::vector<double> action(model_->nu, 0.0);
+    planner_.ActionFromPolicy(
+        action.data(), state_.state().data(), state_.time(), false);
+    for (int i = 0; i < model_->nu; ++i) {
+      if (!std::isfinite(action[i]) ||
+          action[i] < model_->actuator_ctrlrange[2 * i] - 1e-9 ||
+          action[i] > model_->actuator_ctrlrange[2 * i + 1] + 1e-9) {
+        throw std::runtime_error("MJPC action outside source actuator range");
+      }
+    }
+    last_action_ = action;
+    last_time_ = time_s;
+
+    std::cout << std::setprecision(17)
+              << "{\"ok\":true,\"time_s\":" << time_s
+              << ",\"vx\":" << vx << ",\"wz\":" << wz
+              << ",\"cost\":" << best->total_return
+              << ",\"compute_us\":" << elapsed << ",\"q_des\":[";
+    for (int i = 0; i < model_->nu; ++i) {
+      if (i) std::cout << ',';
+      std::cout << action[i];
+    }
+    std::cout << "]}" << std::endl;
+  }
+
+ private:
+  static mjModel* Load(const char* path) {
+    char error[2048] = {};
+    mjModel* model = mj_loadXML(path, nullptr, error, sizeof(error));
+    if (!model) throw std::runtime_error(error);
+    return model;
+  }
+
+  void ValidateActuators() {
+    for (int i = 0; i < model_->nu; ++i) {
+      const double gain = model_->actuator_gainprm[mjNGAIN * i];
+      const double* bias = model_->actuator_biasprm + mjNBIAS * i;
+      if (model_->actuator_trntype[i] != mjTRN_JOINT ||
+          model_->actuator_gaintype[i] != mjGAIN_FIXED ||
+          model_->actuator_biastype[i] != mjBIAS_AFFINE ||
+          model_->actuator_dyntype[i] != mjDYN_NONE ||
+          !model_->actuator_ctrllimited[i] ||
+          model_->actuator_forcelimited[i] ||
+          std::abs(bias[0]) > 1e-12 ||
+          std::abs(bias[1] + gain) > 1e-12 || bias[2] > 1e-12 ||
+          gain <= 0) {
+        throw std::runtime_error("source actuator is not affine position-PD");
+      }
+      for (int k = 1; k < mjNGAIN; ++k) {
+        if (std::abs(model_->actuator_gainprm[mjNGAIN * i + k]) > 1e-12) {
+          throw std::runtime_error("unexpected source gain parameters");
+        }
+      }
+      for (int k = 3; k < mjNBIAS; ++k) {
+        if (std::abs(bias[k]) > 1e-12) {
+          throw std::runtime_error("unexpected source bias parameters");
+        }
+      }
+      const double* gear = model_->actuator_gear + mjNGEAR * i;
+      if (std::abs(gear[0] - 1) > 1e-12) {
+        throw std::runtime_error("non-unit source actuator gear");
+      }
+      for (int k = 1; k < mjNGEAR; ++k) {
+        if (std::abs(gear[k]) > 1e-12) {
+          throw std::runtime_error("non-unit source actuator gear");
+        }
+      }
+      int joint = model_->actuator_trnid[2 * i];
+      if (model_->jnt_type[joint] != mjJNT_HINGE) {
+        throw std::runtime_error("source actuator must drive hinge joint");
+      }
+    }
+  }
+
+  void SaveSolimp() {
+    jnt_solimp_.resize(model_->njnt);
+    geom_solimp_.resize(model_->ngeom);
+    pair_solimp_.resize(model_->npair);
+    for (int i = 0; i < model_->njnt; ++i) {
+      jnt_solimp_[i] = model_->jnt_solimp[mjNIMP * i];
+    }
+    for (int i = 0; i < model_->ngeom; ++i) {
+      geom_solimp_[i] = model_->geom_solimp[mjNIMP * i];
+    }
+    for (int i = 0; i < model_->npair; ++i) {
+      pair_solimp_[i] = model_->pair_solimp[mjNIMP * i];
+    }
+  }
+
+  void MakePlanningModelDifferentiable() {
+    RestoreSolimp();
+    mjpc::MakeDifferentiable(model_.get());
+  }
+
+  void RestoreSolimp() {
+    for (int i = 0; i < model_->njnt; ++i) {
+      model_->jnt_solimp[mjNIMP * i] = jnt_solimp_[i];
+    }
+    for (int i = 0; i < model_->ngeom; ++i) {
+      model_->geom_solimp[mjNIMP * i] = geom_solimp_[i];
+    }
+    for (int i = 0; i < model_->npair; ++i) {
+      model_->pair_solimp[mjNIMP * i] = pair_solimp_[i];
+    }
+  }
+
+  std::unique_ptr<mjModel, decltype(&mj_deleteModel)> model_;
+  std::unique_ptr<mjData, decltype(&mj_deleteData)> data_;
+  mjpc::QuadrupedFlat task_;
+  mjpc::State state_;
+  mjpc::iLQGPlanner planner_;
+  mjpc::ThreadPool pool_;
+  int horizon_ = 0;
+  double planner_dt_ = 0;
+  int speed_index_ = -1;
+  int turn_index_ = -1;
+  bool first_step_ = true;
+  double last_time_ = -1;
+  std::vector<double> last_action_;
+  std::vector<double> jnt_solimp_;
+  std::vector<double> geom_solimp_;
+  std::vector<double> pair_solimp_;
+};
+
+std::vector<double> ReadVector(std::istringstream& stream, int size) {
+  std::vector<double> values(size);
+  for (double& value : values) {
+    if (!(stream >> value)) throw std::runtime_error("truncated step packet");
+  }
+  return values;
+}
+}  // namespace
+
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    std::cerr << "usage: go2_mjpc_controller TASK_XML\n";
+    return 2;
+  }
+  try {
+    Controller controller(argv[1]);
+    std::string line;
+    while (std::getline(std::cin, line)) {
+      try {
+        std::istringstream stream(line);
+        std::string operation;
+        if (!(stream >> operation)) continue;
+        if (operation == "quit") return 0;
+        if (operation == "reset") {
+          controller.Reset();
+          std::cout << "{\"ok\":true,\"reset\":true}" << std::endl;
+          continue;
+        }
+        if (operation != "step") throw std::runtime_error("unknown operation");
+        double time_s, vx, vy, wz;
+        if (!(stream >> time_s >> vx >> vy >> wz)) {
+          throw std::runtime_error("truncated step header");
+        }
+        auto qpos = ReadVector(stream, 19);
+        auto qvel = ReadVector(stream, 18);
+        std::string extra;
+        if (stream >> extra) throw std::runtime_error("extra step fields");
+        controller.Step(time_s, vx, vy, wz, qpos, qvel);
+      } catch (const std::exception& error) {
+        PrintError(error.what());
+      }
+    }
+  } catch (const std::exception& error) {
+    std::cerr << error.what() << '\n';
+    return 2;
+  }
+  return 0;
+}
