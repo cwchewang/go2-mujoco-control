@@ -83,6 +83,14 @@ def run_aligned_episode(plant, controller, task, information, timing, emit, cons
         )
         if failure is not None or tick == task.horizon_ticks:
             row["terminal_reason"] = failure or "horizon"
+            if failure == "nonfinite":
+                # JSON null preserves invalid state positions without nonfinite JSON.
+                # The canonical replay converts those nulls back to nonfinite floats.
+                for field in ("qpos", "qvel"):
+                    row[field] = [
+                        float(value) if math.isfinite(float(value)) else None
+                        for value in row[field]
+                    ]
             emit(row)
             return {
                 "terminal_reason": row["terminal_reason"],

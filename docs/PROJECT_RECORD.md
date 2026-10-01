@@ -360,3 +360,14 @@ see [HOLD repair](validation/mjpc_hold_repair_v2_20261001/RESULTS.md).
 The new runtime requires independent exact-head rereview. Canonical steps remain
 0 in engineering acceptance; private planning integrates private rollouts.
 Scientific attempts remain 0; v1 is closed and live v2 has not started.
+
+### 2026-10-01 | Science campaign-stop HOLD S1 repaired, rereview required
+
+Science review of c0c6e40 held v2 because canonical safety failure did not stop
+the whole campaign. The separate execution approval does not override that
+HOLD. The bounded repair now seals safety/execution/evidence stops and explicitly
+predeclares only horizon metric failure continuation; see
+[campaign-stop repair](validation/science_campaign_stop_v2_20261001/RESULTS.md).
+200 guarded substrate tests passed with canonical steps 0. Private C++ planning
+is a distinct integration surface. Both roles must review the new exact HEAD;
+scientific attempts remain 0, Gate 0 incomplete and live v2 NOT_RUN.

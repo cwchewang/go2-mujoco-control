@@ -17,5 +17,9 @@
   "replay": "CanonicalEvaluator",
   "self_authorizes_physics": false,
   "self_authorized_scientific_attempts": 0,
-  "output_root": "example/cpp/experiments/_runs/aligned_flat_capture_v2"
+  "output_root": "example/cpp/experiments/_runs/aligned_flat_capture_v2",
+  "wall_timeout_scope": "per_arm_episode",
+  "safety_failure_policy": "stop_campaign",
+  "execution_evidence_failure_policy": "stop_campaign",
+  "horizon_performance_failure_policy": "retain_and_continue"
 }

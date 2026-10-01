@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import json
+import math
 import os
 import subprocess
 import time
@@ -60,6 +61,15 @@ def validate_capture_plan(raw, plan_path=DEFAULT_PLAN):
     for key, value in expected.items():
         if raw.get(key) != value:
             raise ValueError("aligned capture plan drifted: " + key)
+    if raw["id"] == "aligned-flat-capture-v2":
+        for key, expected_value in (
+            ("wall_timeout_scope", "per_arm_episode"),
+            ("safety_failure_policy", "stop_campaign"),
+            ("execution_evidence_failure_policy", "stop_campaign"),
+            ("horizon_performance_failure_policy", "retain_and_continue"),
+        ):
+            if raw.get(key) != expected_value:
+                raise ValueError("aligned capture plan drifted: " + key)
     anchor_path = ROOT / raw["anchor"]
     if not anchor_path.is_file() or raw.get("anchor_sha256") != digest(anchor_path):
         raise ValueError("aligned capture anchor identity drifted")
@@ -231,10 +241,37 @@ def _validate_output(plan, output):
     return output
 
 
+def _arm_outcome(episode, replay, raw_plan):
+    """Safety always stops; only predeclared horizon metric failure may continue."""
+    failure = replay["first_failure"]
+    if replay["terminal_reason"] != episode["terminal_reason"]:
+        raise ValueError("episode/replay terminal mismatch")
+    if failure is not None:
+        if failure["tick"] != episode["steps"] or replay["verdict"] != "FAIL":
+            raise ValueError("invalid safety terminal evidence")
+        return "SAFETY_STOP"
+    if replay["terminal_reason"] != "horizon":
+        raise ValueError("incomplete episode evidence")
+    if replay["missing_supports"]:
+        raise ValueError("unsupported horizon support failure")
+    if any(
+        type(replay[key]) not in (int, float) or not math.isfinite(replay[key])
+        for key in ("progress_m", "vx_mae_mps")
+    ):
+        raise ValueError("missing or invalid horizon performance metrics")
+    if replay["verdict"] == "PASS":
+        return "PASS"
+    if replay["verdict"] != "FAIL":
+        raise ValueError("unknown replay verdict")
+    if raw_plan.get("horizon_performance_failure_policy") == "retain_and_continue":
+        return "PERFORMANCE_FAIL"
+    return "PERFORMANCE_STOP"
+
+
 def capture(
     prepared_dir, review_path, authorization_path, output, *, plan_path=DEFAULT_PLAN
 ):
-    """Run exactly one RL arm and one MJPC arm after external authorization."""
+    """Run bounded arms; safety/execution/evidence failure seals the campaign."""
 
     prepared_dir = Path(prepared_dir)
     with experiment_lock():
@@ -295,112 +332,146 @@ def capture(
             write_new(run.path / "campaign-claim.json", campaign)
 
             results = {}
+            run.result["controller_results"] = results
             for item in attempts:
                 name = item["controller"]
-                if current_head() != head:
-                    raise ValueError("capture HEAD changed during campaign")
-                verify_bundle(prepared_dir)
-                validate_reference(prepared.get("qualification"))
-                if digest(CHECKPOINT) != prepared["rl_checkpoint_sha256"]:
-                    raise ValueError("RL checkpoint changed during capture")
-                native_identity = verify_controller(MJPC_BINARY)
-                if (
-                    native_identity["binary_sha256"] != prepared["mjpc_binary_sha256"]
-                    or native_identity["inputs"]["mjpc"]["head"]
-                    != prepared["mjpc_source_commit"]
-                ):
-                    raise ValueError("MJPC identity changed during capture")
-
-                plant = MujocoPlant(prepared_dir / "inputs" / anchor["scenario"].scene)
-                validate_canonical_model(anchor, plant.model)
-                controller, close = _make_controller(
-                    name,
-                    anchor,
-                    prepared,
-                    stderr_log_path=run.path / (name + ".native.stderr.log"),
-                )
-                raw = run.path / (name + ".jsonl")
+                plant = None
                 item["status"] = "BOOTING"
-                consumed = False
-
-                def consume():
-                    nonlocal consumed
-                    if consumed:
-                        raise ValueError("attempt consumed more than once")
-                    claim = {
-                        "index": item["index"],
-                        "controller": name,
-                        "head": head,
-                        "raw": str(raw.resolve()),
-                        "boundary": "first_post_handoff_state_control_sample",
-                    }
-                    write_new(ledger / (name + ".json"), claim)
-                    write_new(run.path / (name + "_claim.json"), claim)
-                    item["status"] = "CAPTURING"
-                    run.result["live_runs"] += 1
-                    consumed = True
-
-                started = time.monotonic()
                 try:
-                    with raw.open("x", encoding="utf-8") as stream:
+                    if current_head() != head:
+                        raise ValueError("capture HEAD changed during campaign")
+                    verify_bundle(prepared_dir)
+                    validate_reference(prepared.get("qualification"))
+                    if digest(CHECKPOINT) != prepared["rl_checkpoint_sha256"]:
+                        raise ValueError("RL checkpoint changed during capture")
+                    native_identity = verify_controller(MJPC_BINARY)
+                    if (
+                        native_identity["binary_sha256"]
+                        != prepared["mjpc_binary_sha256"]
+                        or native_identity["inputs"]["mjpc"]["head"]
+                        != prepared["mjpc_source_commit"]
+                    ):
+                        raise ValueError("MJPC identity changed during capture")
 
-                        def emit(row):
-                            stream.write(
-                                json.dumps(
-                                    row,
-                                    allow_nan=False,
-                                    separators=(",", ":"),
-                                    sort_keys=True,
+                    plant = MujocoPlant(
+                        prepared_dir / "inputs" / anchor["scenario"].scene
+                    )
+                    validate_canonical_model(anchor, plant.model)
+                    controller, close = _make_controller(
+                        name,
+                        anchor,
+                        prepared,
+                        stderr_log_path=run.path / (name + ".native.stderr.log"),
+                    )
+                    raw = run.path / (name + ".jsonl")
+                    consumed = False
+
+                    def consume():
+                        nonlocal consumed
+                        if consumed:
+                            raise ValueError("attempt consumed more than once")
+                        claim = {
+                            "index": item["index"],
+                            "controller": name,
+                            "head": head,
+                            "raw": str(raw.resolve()),
+                            "boundary": "first_post_handoff_state_control_sample",
+                        }
+                        write_new(ledger / (name + ".json"), claim)
+                        item["status"] = "CAPTURING"
+                        run.result["live_runs"] += 1
+                        consumed = True
+                        write_new(run.path / (name + "_claim.json"), claim)
+
+                    started = time.monotonic()
+                    try:
+                        with raw.open("x", encoding="utf-8") as stream:
+
+                            def emit(row):
+                                stream.write(
+                                    json.dumps(
+                                        row,
+                                        allow_nan=False,
+                                        separators=(",", ":"),
+                                        sort_keys=True,
+                                    )
+                                    + "\n"
                                 )
-                                + "\n"
-                            )
-                            stream.flush()
+                                stream.flush()
 
-                        with wall_deadline(raw_plan["wall_timeout_s"]):
-                            episode_result = run_aligned_episode(
-                                plant,
-                                controller,
-                                anchor["task"],
-                                anchor["controllers"][name]["information"],
-                                anchor["controllers"][name]["timing"],
-                                emit,
-                                consume,
-                            )
-                        stream.flush()
-                        os.fsync(stream.fileno())
-                finally:
-                    close()
+                            try:
+                                with wall_deadline(raw_plan["wall_timeout_s"]):
+                                    episode_result = run_aligned_episode(
+                                        plant,
+                                        controller,
+                                        anchor["task"],
+                                        anchor["controllers"][name]["information"],
+                                        anchor["controllers"][name]["timing"],
+                                        emit,
+                                        consume,
+                                    )
+                            finally:
+                                stream.flush()
+                                os.fsync(stream.fileno())
+                    finally:
+                        close()
 
-                rows = [
-                    strict_json(line) for line in raw.read_text().splitlines() if line
-                ]
-                replay = replay_aligned_rows(
-                    rows, anchor["task"], anchor["physics_period_s"]
+                    rows = [
+                        strict_json(line)
+                        for line in raw.read_text().splitlines()
+                        if line
+                    ]
+                    replay = replay_aligned_rows(
+                        rows, anchor["task"], anchor["physics_period_s"]
+                    )
+                    analysis = {
+                        "controller": name,
+                        "elapsed_s": time.monotonic() - started,
+                        "episode": episode_result,
+                        "replay": replay,
+                        "frames": len(rows),
+                        "physics_steps": plant.steps,
+                        "controller_updates": sum(
+                            1 for row in rows if row.get("controller_update")
+                        ),
+                    }
+                    outcome = _arm_outcome(episode_result, replay, raw_plan)
+                    analysis["classification"] = outcome
+                    write_new(run.path / (name + "_analysis.json"), analysis)
+                    item.update(status=outcome, analysis=analysis)
+                    results[name] = analysis
+
+                    if outcome in ("SAFETY_STOP", "PERFORMANCE_STOP"):
+                        run.result.update(
+                            status=outcome,
+                            integration_status="INCOMPLETE",
+                            stopped_controller=name,
+                            stop_reason=episode_result["terminal_reason"],
+                        )
+                        break
+                except (Exception, KeyboardInterrupt) as error:
+                    item["status"] = "EXECUTION_EVIDENCE_STOP"
+                    failure = {
+                        "controller": name,
+                        "error_type": type(error).__name__,
+                        "error": str(error),
+                        "physics_steps": plant.steps if plant is not None else 0,
+                        "attempt_consumed": (ledger / (name + ".json")).exists(),
+                    }
+                    write_new(run.path / (name + "_failure.json"), failure)
+                    run.result.update(
+                        integration_status="INCOMPLETE",
+                        stopped_controller=name,
+                        stop_reason="execution_or_evidence_failure",
+                    )
+                    raise
+
+            if run.result["status"] not in ("SAFETY_STOP", "PERFORMANCE_STOP"):
+                if run.result["live_runs"] != len(raw_plan["capture_order"]):
+                    raise ValueError("capture attempt accounting mismatch")
+                run.result.update(
+                    status="CAPTURE_COMPLETE", integration_status="CHARACTERIZED"
                 )
-                analysis = {
-                    "controller": name,
-                    "elapsed_s": time.monotonic() - started,
-                    "episode": episode_result,
-                    "replay": replay,
-                    "frames": len(rows),
-                    "physics_steps": plant.steps,
-                    "controller_updates": sum(
-                        1 for row in rows if row.get("controller_update")
-                    ),
-                }
-                write_new(run.path / (name + "_analysis.json"), analysis)
-                item.update(status=replay["verdict"], analysis=analysis)
-                results[name] = analysis
-
-            if run.result["live_runs"] != len(raw_plan["capture_order"]):
-                raise ValueError("capture attempt accounting mismatch")
-            run.result.update(
-                {
-                    "status": "CAPTURE_COMPLETE",
-                    "integration_status": "CHARACTERIZED",
-                    "controller_results": results,
-                }
-            )
 
     return {
         "status": run.result["status"],
