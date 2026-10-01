@@ -20,6 +20,7 @@
 #include "mjpc/utilities.h"
 
 namespace {
+constexpr int kActuatorGearDim = 6;
 mjpc::Task* g_task = nullptr;
 
 void ResidualSensor(const mjModel* model, mjData* data, int stage) {
