@@ -1,6 +1,7 @@
 """Named boundaries; no simulator handles are exposed to proprioceptive policies."""
 
 from dataclasses import dataclass
+import json
 from typing import Protocol, runtime_checkable
 import numpy as np
 
@@ -216,6 +217,12 @@ class PositionTargetControllerAdapter:
             value = diagnostics()
             if not isinstance(value, dict):
                 raise ValueError("controller diagnostics must be a dict")
+            try:
+                json.dumps(value)
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    "controller diagnostics must be JSON-serializable"
+                ) from error
             result["controller"] = dict(value)
         result["adapter"] = {
             key: value.tolist() if isinstance(value, np.ndarray) else value

@@ -103,6 +103,10 @@ class Boundaries(unittest.TestCase):
         self.assertTrue(any(diagnostics["adapter"]["position_saturated"]))
         json.dumps(diagnostics)
 
+        source.diagnostics = lambda: {"bad": np.zeros(1)}
+        with self.assertRaisesRegex(ValueError, "JSON-serializable"):
+            adapter.diagnostics()
+
     def test_policy_observation_golden(self):
         o = self.obs()
         o = Proprioception(

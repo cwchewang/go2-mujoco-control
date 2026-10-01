@@ -153,8 +153,10 @@ def position_pd_actuator_spec(model):
             or abs(float(bias[0])) > 1e-12
             or abs(float(bias[1]) + gain) > 1e-12
             or float(bias[2]) > 1e-12
-            or not np.allclose(model.actuator_gainprm[actuator, 1:], 0)
-            or not np.allclose(bias[3:], 0)
+            or not np.allclose(
+                model.actuator_gainprm[actuator, 1:], 0, rtol=0, atol=1e-12
+            )
+            or not np.allclose(bias[3:], 0, rtol=0, atol=1e-12)
         ):
             raise ValueError("source affine actuator does not encode q_des PD")
         joint = int(model.actuator_trnid[actuator, 0])
