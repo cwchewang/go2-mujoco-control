@@ -4,7 +4,7 @@ import math
 import time
 import numpy as np
 from .clock import ControlClock
-from .contracts import Proprioception
+from .contracts import Proprioception, WholeBodyState
 from .model import joint_layout
 
 
@@ -71,6 +71,15 @@ class MujocoPlant:
         d = self.data
         return Proprioception(
             self.names, d.qpos[self.qadr], d.qvel[self.vadr], d.qpos[3:7], d.qvel[3:6]
+        )
+
+    def whole_body_state(self):
+        d = self.data
+        return WholeBodyState(
+            self.observe(),
+            d.qpos[:3],
+            d.qvel[:3],
+            d.time,
         )
 
     def snapshot(self, tick):

@@ -10,6 +10,7 @@ from .contracts import (
     PositionPDActuatorSpec,
     PositionTargetControllerAdapter,
     ControllerAdapter,
+    WholeBodyState,
     TorqueCommand,
     reorder,
 )
@@ -37,6 +38,33 @@ class Boundaries(unittest.TestCase):
         ):
             with self.subTest(source=source), self.assertRaises(ValueError):
                 reorder(values, source, M)
+
+    def test_whole_body_state_named_roundtrip(self):
+        p = self.obs()
+        state = WholeBodyState(
+            p,
+            np.array([1.0, 2.0, 3.0]),
+            np.array([0.4, 0.5, 0.6]),
+            1.25,
+        )
+        qpos = state.qpos(M)
+        qvel = state.qvel(M)
+        np.testing.assert_array_equal(qpos[:3], [1.0, 2.0, 3.0])
+        np.testing.assert_array_equal(qpos[3:7], p.quaternion_wxyz)
+        np.testing.assert_array_equal(qpos[7:], reorder(p.position, P, M))
+        np.testing.assert_array_equal(qvel[:3], [0.4, 0.5, 0.6])
+        np.testing.assert_array_equal(qvel[3:6], p.angular_velocity_body)
+        np.testing.assert_array_equal(qvel[6:], reorder(p.velocity, P, M))
+        self.assertEqual(state.time_s, 1.25)
+
+    def test_whole_body_state_rejects_invalid_privileged_fields(self):
+        p = self.obs()
+        with self.assertRaises(ValueError):
+            WholeBodyState(p, [0, 0], [0, 0, 0], 0)
+        with self.assertRaises(ValueError):
+            WholeBodyState(p, [0, 0, 0], [0, 0, 0], -1)
+        with self.assertRaises(ValueError):
+            WholeBodyState(p, [0, 0, 0], [0, 0, 0], float("nan"))
 
     def test_torque_pd_sum_before_model_limit(self):
         o = self.obs()

@@ -61,3 +61,15 @@ The extractor fails closed unless MuJoCo reports an affine joint actuator with
 unit transmission, fixed positive gain, bias [0, -Kp, -Kd, ...], finite
 control range, and no secondary force limit. This specifically prevents a
 biasprm declaration with a non-affine biastype from being treated as PD.
+
+## First concrete information boundary
+
+The canonical plant now exposes a simulator-handle-free WholeBodyState packet for
+model-based controllers: base world position, base world linear velocity, body
+quaternion, body-frame angular velocity, named joint position/velocity, and
+simulation time. The existing RL path remains proprioceptive and does not receive
+the added base position or linear velocity fields.
+
+Controller comparison must therefore record the information regime explicitly.
+Sharing the evaluation plant does not imply that a learned proprioceptive policy
+and a model-based predictive controller receive identical observations.
