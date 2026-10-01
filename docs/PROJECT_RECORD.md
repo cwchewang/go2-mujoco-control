@@ -64,6 +64,11 @@ anchor 仍必须标记 offline_unbounded。这些都不是 locomotion capability
 与 MJPC source/binary identity 均已离线核对。该 anchor 当前
 physics_step_authorized=false、scientific attempts=0、状态 PREPARED / NOT_RUN，
 必须先独立审查，不能据此产生任何 locomotion 或 controller 排名结论。
+该独立语义审查已于 2026-10-01 完成：确认 broad integration guardrails 不等同
+于 #189 flat_reference；冻结 home key 0 的 identity quaternion 使 world-x/world-y
+guardrails 与初始 body forward/left 对齐，并将该前提及 canonical direct-torque
+actuator 边界加入 fail-closed preflight。状态提升为 REVIEWED / NOT_RUN，但
+physics_step_authorized 仍为 false、scientific attempts 仍为 0。
 
 ### Scientifically verified results
 
