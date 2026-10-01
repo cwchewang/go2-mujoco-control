@@ -47,6 +47,7 @@ class TimingSpec:
     solve_budget_s: float | None = None
     overrun_behavior: str = "not_applicable"
     feedback: str = "zero_order_hold"
+    feedback_period_s: float | None = None
 
     def __post_init__(self):
         for name in ("physics_period_s", "control_period_s"):
@@ -66,6 +67,33 @@ class TimingSpec:
             raise ValueError(
                 "control period must be an integer number of physics ticks"
             )
+        feedback_period = (
+            self.control_period_s
+            if self.feedback_period_s is None
+            else self.feedback_period_s
+        )
+        if (
+            type(feedback_period) not in (float, int)
+            or isinstance(feedback_period, bool)
+            or not math.isfinite(feedback_period)
+            or feedback_period <= 0
+        ):
+            raise ValueError("feedback period must be finite positive")
+        feedback_ratio = Fraction(str(feedback_period)) / Fraction(
+            str(self.physics_period_s)
+        )
+        if feedback_ratio.denominator != 1:
+            raise ValueError(
+                "feedback period must be an integer number of physics ticks"
+            )
+        control_feedback_ratio = Fraction(str(self.control_period_s)) / Fraction(
+            str(feedback_period)
+        )
+        if control_feedback_ratio.denominator != 1:
+            raise ValueError(
+                "control period must be an integer number of feedback ticks"
+            )
+        object.__setattr__(self, "feedback_period_s", float(feedback_period))
         if self.feedback != "zero_order_hold":
             raise ValueError("unsupported feedback semantics")
         if self.compute_semantics == "offline_unbounded":
@@ -98,6 +126,15 @@ class TimingSpec:
         return int(
             Fraction(str(self.control_period_s)) / Fraction(str(self.physics_period_s))
         )
+
+    @property
+    def feedback_decimation(self):
+        return int(
+            Fraction(str(self.feedback_period_s)) / Fraction(str(self.physics_period_s))
+        )
+
+    def feedback_clock(self):
+        return ControlClock(self.physics_period_s, self.feedback_period_s)
 
     def solve_outcome(self, elapsed_s):
         if (

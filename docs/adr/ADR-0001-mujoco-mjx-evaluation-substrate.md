@@ -83,8 +83,12 @@ than an implicit assumption. Noise other than none is rejected until implemented
 
 TimingSpec distinguishes offline_unbounded computation from real_time computation.
 The former cannot claim a solve budget or timeout behavior. Real-time semantics
-require a solve budget no larger than the control period and an explicit overrun
-policy (hold_previous or fail). Both currently use zero-order hold. This contract
+require a solve budget no larger than the slow control/policy-update period and
+an explicit overrun policy (hold_previous or fail). A separate
+feedback_period_s defaults to the control period, preserving existing controller
+semantics, but can explicitly represent faster feedback evaluation between slow
+policy/planning updates. Physics, feedback, and control periods must have exact
+integer tick relationships. Output is held between feedback ticks. This contract
 does not by itself claim that the existing synchronous episode runner emulates
 real-time plant evolution during solver computation.
 
@@ -124,3 +128,19 @@ output and no canonical plant advancement. This is wiring evidence only. It does
 not establish locomotion performance or real-time feasibility; those require a
 separate prospective aligned evaluation under the shared task/scenario/information/
 timing contracts.
+
+## Native MJPC planning / feedback cadence
+
+The shared native MJPC bridge now separates policy replanning from current-state
+iLQG feedback. The process protocol receives an explicit replan flag.
+OptimizePolicy runs only on declared planning ticks; ActionFromPolicy receives the
+current WholeBodyState on every declared feedback tick. Controller commands are
+sampled on planning ticks and held between replans, so a high-rate feedback call
+cannot silently reset the upstream Walk target.
+
+The audited author deployment uses a 2 ms Unitree LowCmd/PD write thread but a
+separate asynchronous MJPC action loop. Therefore a 2 ms MJPC feedback period in
+the canonical evaluator is explicitly a prospective shared adaptation, not a
+claim about the author's native feedback frequency. The first prospective anchor
+uses offline_unbounded compute semantics until timing evidence supports a
+real-time claim.

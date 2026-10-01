@@ -10,6 +10,7 @@ import subprocess
 import numpy as np
 
 from .build_identity import cache_values, verify_controller
+from .clock import TimingSpec
 from .contracts import (
     POLICY_JOINTS,
     PositionPDActuatorSpec,
@@ -22,7 +23,7 @@ def validate_ready(value):
     if not isinstance(value, dict) or value.get("ready") is not True:
         raise ValueError("native MJPC controller did not report ready")
     exact = {
-        "protocol": 2,
+        "protocol": 3,
         "nq": 19,
         "nv": 18,
         "nu": 12,
@@ -64,18 +65,61 @@ def validate_ready(value):
     return names, spec
 
 
-def step_packet(state, command, joint_names):
+def cadence_tick(time_s, timing, last_tick=None):
+    if not isinstance(timing, TimingSpec):
+        raise ValueError("native MJPC requires TimingSpec")
+    if (
+        isinstance(time_s, bool)
+        or not isinstance(time_s, (int, float, np.integer, np.floating))
+        or not math.isfinite(time_s)
+        or time_s < 0
+    ):
+        raise ValueError("controller time must be finite nonnegative")
+    tick = int(round(float(time_s) / timing.physics_period_s))
+    if not math.isclose(
+        float(time_s),
+        tick * timing.physics_period_s,
+        rel_tol=0,
+        abs_tol=1e-9,
+    ):
+        raise ValueError("controller time is off the physics clock")
+    if tick % timing.feedback_decimation:
+        raise ValueError("controller step is off the feedback cadence")
+    if last_tick is not None and tick != last_tick + timing.feedback_decimation:
+        raise ValueError("missing, duplicate or reordered feedback tick")
+    return tick, tick % timing.decimation == 0
+
+
+def sample_command(command, replan, held_command=None):
+    requested = vector(command, 3, "controller command")
+    if type(replan) is not bool:
+        raise ValueError("replan flag must be boolean")
+    if replan:
+        return requested, requested.copy()
+    if held_command is None:
+        raise ValueError("feedback step requires a previously sampled command")
+    held = vector(held_command, 3, "held controller command")
+    return requested, held
+
+
+def step_packet(state, command, joint_names, *, replan):
     if not isinstance(state, WholeBodyState):
         raise ValueError("native MJPC requires WholeBodyState")
+    if type(replan) is not bool:
+        raise ValueError("replan flag must be boolean")
     state.validate()
     command = vector(command, 3, "controller command")
     qpos = state.qpos(joint_names)
     qvel = state.qvel(joint_names)
     values = [state.time_s, *command, *qpos, *qvel]
-    return "step " + " ".join(format(float(value), ".17g") for value in values)
+    return (
+        "step "
+        + ("1 " if replan else "0 ")
+        + " ".join(format(float(value), ".17g") for value in values)
+    )
 
 
-def parse_step_response(value, expected_time):
+def parse_step_response(value, expected_time, expected_replan):
     if not isinstance(value, dict):
         raise ValueError("native MJPC response must be an object")
     if value.get("ok") is not True:
@@ -85,7 +129,9 @@ def parse_step_response(value, expected_time):
         raise RuntimeError(message)
     time_s = value.get("time_s")
     cost = value.get("cost")
-    compute_us = value.get("compute_us")
+    replanned = value.get("replanned")
+    planning_us = value.get("planning_compute_us")
+    action_us = value.get("action_compute_us")
     if (
         isinstance(time_s, bool)
         or not isinstance(time_s, (int, float))
@@ -94,21 +140,33 @@ def parse_step_response(value, expected_time):
         or isinstance(cost, bool)
         or not isinstance(cost, (int, float))
         or not math.isfinite(cost)
-        or type(compute_us) not in (int, float)
-        or isinstance(compute_us, bool)
-        or not math.isfinite(compute_us)
-        or compute_us < 0
+        or type(replanned) is not bool
+        or replanned is not expected_replan
+        or type(planning_us) not in (int, float)
+        or isinstance(planning_us, bool)
+        or not math.isfinite(planning_us)
+        or planning_us < 0
+        or type(action_us) not in (int, float)
+        or isinstance(action_us, bool)
+        or not math.isfinite(action_us)
+        or action_us < 0
+        or (not replanned and planning_us != 0)
     ):
         raise ValueError("invalid native MJPC step metadata")
     return vector(value.get("q_des"), 12, "native MJPC q_des"), {
         "time_s": float(time_s),
         "cost": float(cost),
-        "compute_s": float(compute_us) * 1e-6,
+        "replanned": replanned,
+        "planning_compute_s": float(planning_us) * 1e-6,
+        "action_compute_s": float(action_us) * 1e-6,
     }
 
 
 class NativeMJPCController:
-    def __init__(self, binary, *, popen=subprocess.Popen):
+    def __init__(self, binary, timing, *, popen=subprocess.Popen):
+        if not isinstance(timing, TimingSpec):
+            raise ValueError("native MJPC controller requires TimingSpec")
+        self.timing = timing
         self.binary = Path(binary).resolve(strict=True)
         self.build_identity = verify_controller(self.binary)
         cache = cache_values(self.binary.parent)
@@ -125,6 +183,8 @@ class NativeMJPCController:
             bufsize=1,
         )
         self._closed = False
+        self._last_feedback_tick = None
+        self._held_command = None
         ready = self._read_json()
         self.joint_names, self.actuator_spec = validate_ready(ready)
         self.ready = ready
@@ -137,6 +197,9 @@ class NativeMJPCController:
             "canonical_evaluation_plant_modified": False,
             "gait_switch": ready["gait_switch"],
             "gait": ready["gait"],
+            "control_period_s": timing.control_period_s,
+            "feedback_period_s": timing.feedback_period_s,
+            "compute_semantics": timing.compute_semantics,
         }
 
     def _read_json(self):
@@ -167,12 +230,24 @@ class NativeMJPCController:
         response = self._request("reset")
         if response != {"ok": True, "reset": True}:
             raise RuntimeError("native MJPC reset failed")
+        self._last_feedback_tick = None
+        self._held_command = None
         self._diagnostics.pop("last_step", None)
 
     def step(self, observation, command):
-        packet = step_packet(observation, command, self.joint_names)
+        tick, replan = cadence_tick(
+            observation.time_s, self.timing, self._last_feedback_tick
+        )
+        requested, sampled = sample_command(command, replan, self._held_command)
+        packet = step_packet(observation, sampled, self.joint_names, replan=replan)
         response = self._request(packet)
-        action, metadata = parse_step_response(response, observation.time_s)
+        action, metadata = parse_step_response(response, observation.time_s, replan)
+        self._last_feedback_tick = tick
+        if replan:
+            self._held_command = sampled.copy()
+        metadata["requested_command"] = requested.tolist()
+        metadata["sampled_command"] = sampled.tolist()
+        metadata["command_sampled"] = replan
         self._diagnostics["last_step"] = metadata
         return action
 

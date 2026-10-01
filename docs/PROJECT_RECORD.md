@@ -50,7 +50,12 @@ static MJPC admission，以及一个 source-pinned persistent native MJPC contro
 事实，只在其私有 planning model 上应用显式 mjBIAS_AFFINE compatibility
 correction，输出 joint-position targets，再经共享 adapter 转为 canonical
 direct-torque action。零 canonical-step 工程 smoke 已证明该链可执行且不推进
-evaluation plant；这不是 locomotion capability、real-time 或跨 controller 比较结论。
+evaluation plant。随后 R1 timing repair 又显式拆开 slow planning/control cadence 与
+current-state feedback cadence：planning 仅在声明 tick 更新，feedback tick 不重规划，
+command 也只在 planning tick 采样。2 ms feedback 是 shared canonical adaptation，
+不是作者原生 feedback 频率声明；当前 observed planning 约 28 ms，因此 prospective
+anchor 仍必须标记 offline_unbounded。这些都不是 locomotion capability、real-time
+或跨 controller 比较结论。
 
 ### Scientifically verified results
 
