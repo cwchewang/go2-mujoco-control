@@ -16,6 +16,7 @@ set(MUJOCO_ROOT "$ENV{HOME}/.mujoco/mujoco-3.3.6" CACHE PATH "MuJoCo 3.3.6 distr
 find_path(MUJOCO_INCLUDE_DIR mujoco/mujoco.h PATHS "${MUJOCO_ROOT}/include" NO_DEFAULT_PATH REQUIRED)
 find_library(MUJOCO_LIBRARY mujoco PATHS "${MUJOCO_ROOT}/lib" NO_DEFAULT_PATH REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 include(FetchContent)
 set(ABSL_PROPAGATE_CXX_STD ON CACHE BOOL "" FORCE)
 set(ABSL_BUILD_TESTING OFF CACHE BOOL "" FORCE)
@@ -30,12 +31,22 @@ if(NOT ABSL_COMMIT STREQUAL "fb3621f4f897824c0dbe0615fa94543df6192f30")
 endif()
 # Build only the unchanged upstream optimizer. Built-in task assets, GUI,
 # estimators, and unrelated robot repositories are not dependencies of this tool.
-set(MJPC_FILES task.cc norm.cc utilities.cc trajectory.cc threadpool.cc
+set(MJPC_PATCH_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/patch_mjpc_utilities.py")
+set(MJPC_PATCHED_UTILITIES
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/mjpc_utilities_hardened.cc")
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" "${MJPC_PATCH_SCRIPT}"
+          "${MJPC_SOURCE_DIR}/mjpc/utilities.cc" "${MJPC_PATCHED_UTILITIES}"
+  COMMAND_ERROR_IS_FATAL ANY)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${MJPC_PATCH_SCRIPT}" "${MJPC_SOURCE_DIR}/mjpc/utilities.cc")
+set(MJPC_FILES task.cc norm.cc trajectory.cc threadpool.cc
   states/state.cc planners/planner.cc planners/model_derivatives.cc
   planners/cost_derivatives.cc planners/ilqg/backward_pass.cc
   planners/ilqg/policy.cc planners/ilqg/planner.cc
   tasks/quadruped/quadruped.cc)
 list(TRANSFORM MJPC_FILES PREPEND "${MJPC_SOURCE_DIR}/mjpc/")
+list(APPEND MJPC_FILES "${MJPC_PATCHED_UTILITIES}")
 add_library(go2_mjpc_core STATIC ${MJPC_FILES})
 target_include_directories(go2_mjpc_core PUBLIC "${MJPC_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
 target_link_libraries(go2_mjpc_core PUBLIC "${MUJOCO_LIBRARY}" Threads::Threads
@@ -48,3 +59,8 @@ add_executable(go2_mjpc_admit admit.cc)
 target_link_libraries(go2_mjpc_admit PRIVATE go2_mjpc_core)
 add_executable(go2_mjpc_controller controller.cc)
 target_link_libraries(go2_mjpc_controller PRIVATE go2_mjpc_core)
+
+enable_testing()
+add_executable(go2_mjpc_ground_test ground_test.cc)
+target_link_libraries(go2_mjpc_ground_test PRIVATE go2_mjpc_core)
+add_test(NAME ground_miss_zero_integration COMMAND go2_mjpc_ground_test)

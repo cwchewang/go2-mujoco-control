@@ -34,6 +34,8 @@ class NativeMJPCProtocolTest(unittest.TestCase):
             "canonical_evaluation_plant_modified": False,
             "gait_switch": "Manual",
             "gait": "Trot",
+            "ground_miss_handling": "rollout_warning_failure",
+            "warning_channel": "stderr",
             "joint_names": list(MOTOR_JOINTS),
             "position_lower": [-2.0] * 12,
             "position_upper": [2.0] * 12,
@@ -69,6 +71,14 @@ class NativeMJPCProtocolTest(unittest.TestCase):
             validate_ready(self.ready(compatibility_correction="silent_patch"))
         with self.assertRaisesRegex(ValueError, "PD gains"):
             validate_ready(self.ready(kp=[59.0] * 12))
+
+    def test_ready_rejects_ground_failure_or_warning_channel_drift(self):
+        for fields in (
+            {"ground_miss_handling": "ignore"},
+            {"warning_channel": "stdout"},
+        ):
+            with self.assertRaises(ValueError):
+                validate_ready(self.ready(**fields))
 
     def test_planning_and_feedback_cadence_are_distinct(self):
         timing = TimingSpec(0.002, 0.02, feedback_period_s=0.002)

@@ -33,6 +33,8 @@ def validate_ready(value):
         "canonical_evaluation_plant_modified": False,
         "gait_switch": "Manual",
         "gait": "Trot",
+        "ground_miss_handling": "rollout_warning_failure",
+        "warning_channel": "stderr",
     }
     for key, expected in exact.items():
         if value.get(key) != expected:
@@ -197,6 +199,8 @@ class NativeMJPCController:
             "canonical_evaluation_plant_modified": False,
             "gait_switch": ready["gait_switch"],
             "gait": ready["gait"],
+            "ground_miss_handling": ready["ground_miss_handling"],
+            "warning_channel": ready["warning_channel"],
             "control_period_s": timing.control_period_s,
             "feedback_period_s": timing.feedback_period_s,
             "compute_semantics": timing.compute_semantics,

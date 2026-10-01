@@ -37,7 +37,10 @@ def git(*args):
 
 
 def validate_capture_plan(raw, plan_path=DEFAULT_PLAN):
-    if raw.get("schema") != 1 or raw.get("id") != "aligned-flat-capture-v1":
+    if raw.get("schema") != 1 or raw.get("id") not in (
+        "aligned-flat-capture-v1",
+        "aligned-flat-capture-v2",
+    ):
         raise ValueError("unsupported aligned capture plan")
     expected = {
         "mode": "capture_preparation",
@@ -51,7 +54,7 @@ def validate_capture_plan(raw, plan_path=DEFAULT_PLAN):
         "requires_exact_head_independent_review": True,
         "raw_evidence": "jsonl",
         "replay": "CanonicalEvaluator",
-        "output_root": "example/cpp/experiments/_runs/aligned_flat_capture_v1",
+        "output_root": "example/cpp/experiments/_runs/" + raw["id"].replace("-", "_"),
     }
     for key, value in expected.items():
         if raw.get(key) != value:
@@ -147,12 +150,14 @@ def validate_external_start(prepared, review, authorization, head, manifest_sha2
     return True
 
 
-def validate_start_files(prepared_dir, review_path, authorization_path):
+def validate_start_files(
+    prepared_dir, review_path, authorization_path, plan_path=DEFAULT_PLAN
+):
     prepared_dir = Path(prepared_dir)
     prepared = verify_bundle(prepared_dir)
     head = current_head()
-    plan = load_capture_plan()
-    if prepared.get("protocol_sha256") != digest(DEFAULT_PLAN):
+    plan = load_capture_plan(plan_path)
+    if prepared.get("protocol_sha256") != digest(Path(plan_path)):
         raise ValueError("capture plan changed since preparation")
     if prepared.get("anchor_sha256") != digest(ROOT / plan["raw"]["anchor"]):
         raise ValueError("anchor changed since preparation")
@@ -218,16 +223,20 @@ def _validate_output(plan, output):
     return output
 
 
-def capture(prepared_dir, review_path, authorization_path, output):
+def capture(
+    prepared_dir, review_path, authorization_path, output, *, plan_path=DEFAULT_PLAN
+):
     """Run exactly one RL arm and one MJPC arm after external authorization."""
 
     prepared_dir = Path(prepared_dir)
     with experiment_lock():
         # This gate must complete before output/plant/controller creation.
-        start = validate_start_files(prepared_dir, review_path, authorization_path)
+        start = validate_start_files(
+            prepared_dir, review_path, authorization_path, plan_path
+        )
         prepared = start["prepared"]
         head = start["head"]
-        plan = load_capture_plan()
+        plan = load_capture_plan(plan_path)
         anchor = plan["anchor"]
         raw_plan = plan["raw"]
         output = _validate_output(plan, output)
@@ -287,16 +296,13 @@ def capture(prepared_dir, review_path, authorization_path, output):
                     raise ValueError("RL checkpoint changed during capture")
                 native_identity = verify_controller(MJPC_BINARY)
                 if (
-                    native_identity["binary_sha256"]
-                    != prepared["mjpc_binary_sha256"]
+                    native_identity["binary_sha256"] != prepared["mjpc_binary_sha256"]
                     or native_identity["inputs"]["mjpc"]["head"]
                     != prepared["mjpc_source_commit"]
                 ):
                     raise ValueError("MJPC identity changed during capture")
 
-                plant = MujocoPlant(
-                    prepared_dir / "inputs" / anchor["scenario"].scene
-                )
+                plant = MujocoPlant(prepared_dir / "inputs" / anchor["scenario"].scene)
                 validate_canonical_model(anchor, plant.model)
                 controller, close = _make_controller(name, anchor, prepared)
                 raw = run.path / (name + ".jsonl")
@@ -352,9 +358,7 @@ def capture(prepared_dir, review_path, authorization_path, output):
                     close()
 
                 rows = [
-                    strict_json(line)
-                    for line in raw.read_text().splitlines()
-                    if line
+                    strict_json(line) for line in raw.read_text().splitlines() if line
                 ]
                 replay = replay_aligned_rows(
                     rows, anchor["task"], anchor["physics_period_s"]

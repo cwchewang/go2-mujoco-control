@@ -64,6 +64,10 @@ int FeatureParameterIndex(const mjModel* model, const std::string& exact_name) {
   return -1;
 }
 
+void MuJoCoWarningToStderr(const char* message) {
+  std::cerr << "MUJOCO_WARNING: " << (message ? message : "") << std::endl;
+}
+
 void PrintError(const std::string& message) {
   std::cout << "{\"ok\":false,\"error\":\"";
   for (char c : message) {
@@ -133,6 +137,8 @@ class Controller {
               << ",\"compatibility_correction\":\"private_model_mjBIAS_AFFINE\""
               << ",\"canonical_evaluation_plant_modified\":false"
               << ",\"gait_switch\":\"Manual\",\"gait\":\"Trot\""
+              << ",\"ground_miss_handling\":\"rollout_warning_failure\""
+              << ",\"warning_channel\":\"stderr\""
               << ",\"joint_names\":[";
     for (int i = 0; i < model_->nu; ++i) {
       if (i) std::cout << ',';
@@ -434,6 +440,7 @@ int main(int argc, char** argv) {
     std::cerr << "usage: go2_mjpc_controller TASK_XML\n";
     return 2;
   }
+  mju_user_warning = MuJoCoWarningToStderr;
   try {
     Controller controller(argv[1]);
     std::string line;

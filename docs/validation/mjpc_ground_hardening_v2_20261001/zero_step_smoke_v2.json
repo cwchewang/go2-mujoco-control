@@ -1,0 +1,116 @@
+{
+  "canonical_steps": 0,
+  "canonical_time_s": 0.0,
+  "diagnostics": {
+    "adapter": {
+      "position_saturated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "position_target": [
+        4.596100589225049e-05,
+        0.9005175560580642,
+        -1.7991572168959429,
+        2.696403786808294e-05,
+        0.9012494598107356,
+        -1.800463694591259,
+        1.501506188168486e-05,
+        0.9008114842002435,
+        -1.7996185605354753,
+        -9.822971235830883e-05,
+        0.900170538120751,
+        -1.798278424122783
+      ],
+      "position_target_unclipped": [
+        4.596100589225049e-05,
+        0.9005175560580642,
+        -1.7991572168959429,
+        2.696403786808294e-05,
+        0.9012494598107356,
+        -1.800463694591259,
+        1.501506188168486e-05,
+        0.9008114842002435,
+        -1.7996185605354753,
+        -9.822971235830883e-05,
+        0.900170538120751,
+        -1.798278424122783
+      ],
+      "source_action_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "source_actuator_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ]
+    },
+    "controller": {
+      "canonical_evaluation_plant_modified": false,
+      "compatibility_correction": "private_model_mjBIAS_AFFINE",
+      "compute_semantics": "offline_unbounded",
+      "control_period_s": 0.02,
+      "feedback_period_s": 0.002,
+      "gait": "Trot",
+      "gait_switch": "Manual",
+      "ground_miss_handling": "rollout_warning_failure",
+      "horizon_steps": 36,
+      "last_step": {
+        "action_compute_s": 1e-06,
+        "command_sampled": true,
+        "cost": 0.08976081533117637,
+        "planning_compute_s": 0.028301,
+        "replanned": true,
+        "requested_command": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "sampled_command": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "time_s": 0.0
+      },
+      "planner": "MJPC iLQG",
+      "planner_dt_s": 0.01,
+      "source_nominal_biastype": "mjBIAS_NONE",
+      "warning_channel": "stderr"
+    }
+  },
+  "max_abs_torque_nm": 0.10329455263302645,
+  "native_stderr": "",
+  "process_survived_and_reset": true,
+  "saturated_motors": 0,
+  "unsupported_command_error": "QuadrupedFlat source has no lateral velocity command"
+}

@@ -11,7 +11,7 @@ from .aligned_capture import (
     validate_capture_plan,
     validate_external_start,
 )
-from .integrity import digest, verify_bundle
+from .integrity import digest, experiment_lock, verify_bundle
 
 
 class AlignedCaptureTest(unittest.TestCase):
@@ -23,6 +23,20 @@ class AlignedCaptureTest(unittest.TestCase):
         self.assertEqual(raw["capture_order"], ["rl", "mjpc"])
         self.assertEqual(raw["planned_attempts_per_controller"], 1)
         self.assertEqual(raw["max_attempts"], 2)
+
+    def test_v2_plan_has_fresh_campaign_and_preserves_anchor(self):
+        v1 = load_capture_plan()
+        v2 = load_capture_plan(
+            Path("tools/substrate/protocols/aligned_flat_capture_v2.json")
+        )
+        self.assertEqual(v2["raw"]["id"], "aligned-flat-capture-v2")
+        self.assertNotEqual(v1["raw"]["output_root"], v2["raw"]["output_root"])
+        self.assertEqual(v1["raw"]["anchor_sha256"], v2["raw"]["anchor_sha256"])
+        self.assertFalse(v2["raw"]["self_authorizes_physics"])
+        bad = copy.deepcopy(v2["raw"])
+        bad["output_root"] = v1["raw"]["output_root"]
+        with self.assertRaises(ValueError):
+            validate_capture_plan(bad)
 
     def test_plan_authorization_or_attempt_drift_fails_closed(self):
         plan = load_capture_plan()
@@ -83,7 +97,10 @@ class AlignedCaptureTest(unittest.TestCase):
             output = Path(temp) / "prepared"
             lock = Path(temp) / "experiment.lock"
             with (
-                mock.patch("tools.substrate.integrity.LOCK_PATH", lock),
+                mock.patch(
+                    "tools.substrate.aligned_capture.experiment_lock",
+                    side_effect=lambda: experiment_lock(lock),
+                ),
                 mock.patch(
                     "tools.substrate.aligned_capture.current_head",
                     return_value="d" * 40,
@@ -107,8 +124,14 @@ class AlignedCaptureTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             prepared_dir = root / "prepared"
-            with mock.patch(
-                "tools.substrate.aligned_capture.current_head", return_value=head
+            with (
+                mock.patch(
+                    "tools.substrate.aligned_capture.current_head", return_value=head
+                ),
+                mock.patch(
+                    "tools.substrate.aligned_capture.experiment_lock",
+                    side_effect=lambda: experiment_lock(root / "experiment.lock"),
+                ),
             ):
                 prepare(prepared_dir)
 
@@ -139,6 +162,10 @@ class AlignedCaptureTest(unittest.TestCase):
             with (
                 mock.patch(
                     "tools.substrate.aligned_capture.current_head", return_value=head
+                ),
+                mock.patch(
+                    "tools.substrate.aligned_capture.experiment_lock",
+                    side_effect=lambda: experiment_lock(root / "experiment.lock"),
                 ),
                 mock.patch(
                     "tools.substrate.aligned_capture.MujocoPlant",
