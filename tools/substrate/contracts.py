@@ -275,3 +275,73 @@ class PositionTargetControllerAdapter:
             for key, value in self._diagnostics.items()
         }
         return result
+
+
+@dataclass(frozen=True)
+class TimedObservation:
+    payload: object
+    sample_time_s: float
+    available_time_s: float
+    controller_time_s: float
+
+    def __post_init__(self):
+        values = (self.sample_time_s, self.available_time_s, self.controller_time_s)
+        if any(
+            isinstance(v, (bool, np.bool_))
+            or not isinstance(v, (int, float, np.integer, np.floating))
+            or not np.isfinite(v)
+            or v < 0
+            for v in values
+        ):
+            raise ValueError("observation times must be finite nonnegative scalars")
+        if self.sample_time_s > self.available_time_s + 1e-12:
+            raise ValueError("observation cannot be available before it is sampled")
+        if self.available_time_s > self.controller_time_s + 1e-12:
+            raise ValueError("observation is not yet available to controller")
+        for name in ("sample_time_s", "available_time_s", "controller_time_s"):
+            object.__setattr__(self, name, float(getattr(self, name)))
+
+    @property
+    def age_s(self):
+        return self.controller_time_s - self.sample_time_s
+
+
+@dataclass(frozen=True)
+class InformationSpec:
+    observation: str
+    model_access: str
+    latency_s: float = 0.0
+    noise_model: str = "none"
+
+    def __post_init__(self):
+        if self.observation not in ("proprioceptive", "whole_body_state"):
+            raise ValueError("unsupported observation regime")
+        if self.model_access not in ("none", "controller_model", "evaluation_model"):
+            raise ValueError("unsupported predictive-model access")
+        if self.noise_model != "none":
+            raise ValueError("noise model is declared but not implemented")
+        if (
+            isinstance(self.latency_s, (bool, np.bool_))
+            or not isinstance(self.latency_s, (int, float, np.integer, np.floating))
+            or not np.isfinite(self.latency_s)
+            or self.latency_s < 0
+        ):
+            raise ValueError("latency_s must be a finite nonnegative scalar")
+        object.__setattr__(self, "latency_s", float(self.latency_s))
+
+    def deliver(self, payload, sample_time_s, controller_time_s):
+        if self.observation == "proprioceptive":
+            if not isinstance(payload, Proprioception):
+                raise ValueError("information regime requires Proprioception")
+            payload.validate()
+        else:
+            if not isinstance(payload, WholeBodyState):
+                raise ValueError("information regime requires WholeBodyState")
+            if not np.isclose(payload.time_s, sample_time_s, rtol=0, atol=1e-9):
+                raise ValueError("whole-body state timestamp differs from sample time")
+        return TimedObservation(
+            payload=payload,
+            sample_time_s=sample_time_s,
+            available_time_s=float(sample_time_s) + self.latency_s,
+            controller_time_s=controller_time_s,
+        )
