@@ -87,3 +87,18 @@ require a solve budget no larger than the control period and an explicit overrun
 policy (hold_previous or fail). Both currently use zero-order hold. This contract
 does not by itself claim that the existing synchronous episode runner emulates
 real-time plant evolution during solver computation.
+
+## Explicit task, scenario, and evaluator boundary
+
+TaskSpec owns command schedule, horizon, measurement window, support semantics,
+physical stop conditions, success thresholds, and the named longitudinal metric.
+ScenarioSpec owns scene/reset identity, an optional compiled-physics fingerprint,
+and fail-closed expectations for implemented interventions. Friction and contact
+dimensionality expectations are checked against the compiled MuJoCo model rather
+than trusted from source XML text.
+
+CanonicalEvaluator consumes raw state/contact/warning evidence plus TaskSpec. It
+recomputes physical failures, endpoint progress, tracking error, and mandatory
+support completion independently of controller-reported failure/success labels.
+The sealed runner and analyzer remain unchanged; legacy protocol fields can be
+mapped into the new specs for prospective aligned comparisons.
