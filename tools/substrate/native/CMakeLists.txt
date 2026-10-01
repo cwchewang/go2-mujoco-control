@@ -33,12 +33,18 @@ endif()
 set(MJPC_FILES task.cc norm.cc utilities.cc trajectory.cc threadpool.cc
   states/state.cc planners/planner.cc planners/model_derivatives.cc
   planners/cost_derivatives.cc planners/ilqg/backward_pass.cc
-  planners/ilqg/policy.cc planners/ilqg/planner.cc)
+  planners/ilqg/policy.cc planners/ilqg/planner.cc
+  tasks/quadruped/quadruped.cc)
 list(TRANSFORM MJPC_FILES PREPEND "${MJPC_SOURCE_DIR}/mjpc/")
 add_library(go2_mjpc_core STATIC ${MJPC_FILES})
 target_include_directories(go2_mjpc_core PUBLIC "${MJPC_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
 target_link_libraries(go2_mjpc_core PUBLIC "${MUJOCO_LIBRARY}" Threads::Threads
   absl::base absl::any_invocable absl::check absl::flat_hash_map absl::log
   absl::random_random absl::span)
+# Pinned MJPC utilities use bit reinterpretation that is unsafe under
+# strict-aliasing optimization. Release smokes are stable with this disabled.
+target_compile_options(go2_mjpc_core PRIVATE -fno-strict-aliasing)
 add_executable(go2_mjpc_admit admit.cc)
 target_link_libraries(go2_mjpc_admit PRIVATE go2_mjpc_core)
+add_executable(go2_mjpc_controller controller.cc)
+target_link_libraries(go2_mjpc_controller PRIVATE go2_mjpc_core)

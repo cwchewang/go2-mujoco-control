@@ -1,10 +1,10 @@
 {
   "branch": "main",
-  "title": "RL capability-map successor",
-  "task": "docs/research/TASK_RL_CAPABILITY_MAP_SUCCESSOR_20260924.md",
-  "result": "docs/validation/rl_capability_map_successor_20260924/RESULTS.md",
-  "stage": "#189 map remains sealed: 5 cm, 10 cm and repeated-step passes retained; low-friction robustness unestablished; corrected yaw remains PERFORMANCE_FAIL; architecture reframed",
-  "scientific_status": "MuJoCo is canonical evaluation physics; MuJoCo/MJX is planned but incomplete; Go2 is the first testbed and MJPC/iLQR is a comparator. No generic multi-controller platform, cross-controller bottleneck, or paper gap is verified; Gate 0 remains incomplete",
+  "title": "R1 native MJPC shared adapter",
+  "task": "docs/research/TASK_R1_NATIVE_MJPC_SHARED_ADAPTER_20261001.md",
+  "result": "docs/validation/r1_native_mjpc_shared_adapter_20261001/RESULTS.md",
+  "stage": "Shared contracts are implemented; the pinned native MJPC controller is engineering-wired through WholeBodyState and PositionTargetControllerAdapter into canonical direct-torque semantics with a zero-canonical-step PASS",
+  "scientific_status": "MuJoCo remains canonical evaluation physics; Go2 remains the first testbed; MJPC/iLQG is now an executable comparator adapter, not a privileged truth source. No aligned locomotion comparison, cross-controller bottleneck, or paper gap is verified; Gate 0 remains incomplete",
   "last_live_head": "e40b0933572345f23b37e3bb06350518fde63e76",
-  "next": "Audit reusable mature Go2 whole-body controller, task and runner implementations; then define a prospective aligned comparison. Any low-friction follow-up must use the v2 semantic fixture and a new task"
+  "next": "Define and review the first prospective aligned closed-loop anchor using the shared TaskSpec, ScenarioSpec, InformationSpec, TimingSpec, ControllerAdapter and CanonicalEvaluator. Do not reuse sealed #189 attempts or treat zero-step wiring as locomotion evidence"
 }

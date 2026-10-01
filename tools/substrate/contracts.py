@@ -97,6 +97,13 @@ class WholeBodyState:
             raise ValueError("time_s must be a finite nonnegative scalar")
         object.__setattr__(self, "time_s", float(self.time_s))
 
+    def validate(self):
+        self.proprioception.validate()
+        vector(self.base_position_world, 3, "base_position_world")
+        vector(self.linear_velocity_world, 3, "linear_velocity_world")
+        if not np.isfinite(self.time_s) or self.time_s < 0:
+            raise ValueError("time_s must be a finite nonnegative scalar")
+
     def qpos(self, target_joint_names):
         p = self.proprioception
         return np.concatenate(

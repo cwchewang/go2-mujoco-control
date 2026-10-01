@@ -99,6 +99,28 @@ objective, and its tiny improvement cannot establish useful gait optimization.
 MJPC has known-model access; RL receives ideal proprioception. Shared physics
 does not make these information conditions equivalent.
 
+## Native MJPC shared-controller surface
+
+Bootstrap now also builds and seals go2_mjpc_controller. NativeMJPCController
+verifies that sealed binary and the exact pinned upstream task source, then keeps
+one headless process alive across controller updates. It requires WholeBodyState,
+reconstructs qpos/qvel by named source joint order, and returns source
+joint-position targets. PositionTargetControllerAdapter converts those targets
+through the declared source PD gains into the same canonical direct-torque
+contract used by evaluation.
+
+The pinned source task has a known actuator compatibility defect: its gain/bias
+encode 60/5 position PD while biastype remains mjBIAS_NONE. The native controller
+first validates that exact source fact, then changes only its private planning
+model to mjBIAS_AFFINE. This correction never touches the canonical evaluation
+plant. Manual/Trot Walk selection and current-state iLQG feedback are explicit
+and fail closed on drift.
+
+The zero-step integration smoke is engineering evidence only: it reads canonical
+reset state, performs controller-internal planning, resolves q_des to torque, and
+asserts canonical plant time/steps remain zero. Do not interpret its planning
+latency or finite action as locomotion or real-time capability.
+
 ## Formal experiment boundary
 
 The SOP preflight entry `tools/research/preflight.py` is restored from historical

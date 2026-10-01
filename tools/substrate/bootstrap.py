@@ -117,7 +117,7 @@ def main():
             "-DCMAKE_BUILD_TYPE=Release",
             "-DMJPC_SOURCE_DIR=" + str(base / "mjpc"),
         )
-        from .build_identity import inputs, seal
+        from .build_identity import inputs, seal, seal_controller
 
         before = inputs(base / "headless-reliable")
         run(
@@ -126,10 +126,12 @@ def main():
             base / "headless-reliable",
             "--target",
             "go2_mjpc_admit",
+            "go2_mjpc_controller",
             "-j",
             "4",
         )
         seal(base / "headless-reliable", before)
+        seal_controller(base / "headless-reliable", before)
     if not args.install and not args.build:
         p.print_help()
 

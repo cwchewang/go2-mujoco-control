@@ -135,6 +135,29 @@ class Boundaries(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "JSON-serializable"):
             adapter.diagnostics()
 
+    def test_position_adapter_accepts_whole_body_state(self):
+        class Source:
+            def reset(self, observation):
+                self.reset_time = observation.time_s
+
+            def step(self, observation, command):
+                return np.zeros(12)
+
+        spec = PositionPDActuatorSpec(
+            M,
+            np.full(12, -1.0),
+            np.full(12, 1.0),
+            np.full(12, 60.0),
+            np.full(12, 5.0),
+        )
+        source = Source()
+        adapter = PositionTargetControllerAdapter(source, spec, M)
+        whole = WholeBodyState(self.obs(), np.zeros(3), np.zeros(3), 0.0)
+        adapter.reset(whole)
+        command = adapter.step(whole, [0.0, 0.0, 0.0])
+        self.assertEqual(source.reset_time, 0.0)
+        self.assertEqual(command.joint_names, M)
+
     def test_policy_observation_golden(self):
         o = self.obs()
         o = Proprioception(

@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-09-28**
-> **状态：MUJOCO/MJX ARCHITECTURE REFRAMED; #189 SEMANTIC ERRATUM RECORDED; GATE 0 INCOMPLETE**
+> **最后更新：2026-10-01**
+> **状态：R1 SHARED CONTRACTS IMPLEMENTED; NATIVE MJPC ADAPTER ENGINEERING-WIRED; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -37,18 +37,20 @@ substrate，尚未完全实现。Go2 是第一 testbed，不是项目 identity�
 timing / intervention 定义、诊断、公平比较与证据要求确实支持的新机制。基本
 Go2 demo 是交付约束，可复用成熟组件；从零重写控制器本身不构成科学贡献。
 
-下一步接口方向限定为 `TaskSpec`、`ScenarioSpec`、`InformationSpec`、
-`TimingSpec`、`ControllerAdapter` 和 canonical `Evaluator` / physical-oracle
-boundary。该 contract 仍是 planned architecture；实现留待本轮语义修复通过后，
-再按独立任务推进。
+最小共享合同已在 2026-10-01 分阶段落地主线：ControllerAdapter、
+InformationSpec、TimingSpec、TaskSpec、ScenarioSpec 和 canonical
+Evaluator / physical-oracle boundary。它们明确动作、信息、时间、任务、场景
+与独立 outcome 语义；sealed 历史 runner/analyzer 未被改写，也仍不是通用 SDK。
 
 ### Currently executable capabilities
 
-当前可执行面是 task-specific：仓库有 MuJoCo Go2 assets、恢复后的 schema-2
-公开 RL execution/analyzer/offline verifier，以及 MJPC/iLQG static admission
-utilities。后者不是闭环 locomotion comparison。当前尚无通用
-Task/Scenario/Information/Timing API，也没有已经实现的 generic multi-controller
-evaluation platform。
+仓库现有 MuJoCo Go2 assets、schema-2 公开 RL execution/analyzer/offline verifier、
+static MJPC admission，以及一个 source-pinned persistent native MJPC controller
+适配面。native controller 验证 pinned source 的 nominal mjBIAS_NONE + gain/bias
+事实，只在其私有 planning model 上应用显式 mjBIAS_AFFINE compatibility
+correction，输出 joint-position targets，再经共享 adapter 转为 canonical
+direct-torque action。零 canonical-step 工程 smoke 已证明该链可执行且不推进
+evaluation plant；这不是 locomotion capability、real-time 或跨 controller 比较结论。
 
 ### Scientifically verified results
 
