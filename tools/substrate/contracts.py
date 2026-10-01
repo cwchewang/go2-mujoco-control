@@ -232,6 +232,50 @@ class ControllerAdapter(Protocol):
     def diagnostics(self): ...
 
 
+class ProprioceptivePolicyAdapter:
+    """Adapt a legacy proprioceptive policy reset/act surface to ControllerAdapter."""
+
+    def __init__(self, policy):
+        self.policy = policy
+        self._diagnostics = {}
+
+    @staticmethod
+    def _observation(observation):
+        if not isinstance(observation, Proprioception):
+            raise ValueError("proprioceptive policy requires Proprioception")
+        observation.validate()
+        return observation
+
+    def reset(self, observation):
+        self._observation(observation)
+        self.policy.reset()
+        self._diagnostics = {}
+
+    def step(self, observation, command):
+        observation = self._observation(observation)
+        result = self.policy.act(observation, command)
+        if not isinstance(result, TorqueCommand):
+            raise ValueError("proprioceptive policy must return TorqueCommand")
+        self._diagnostics = {"information_regime": "proprioceptive"}
+        return result
+
+    def diagnostics(self):
+        result = dict(self._diagnostics)
+        diagnostics = getattr(self.policy, "diagnostics", None)
+        if diagnostics is not None:
+            value = diagnostics()
+            if not isinstance(value, dict):
+                raise ValueError("policy diagnostics must be a dict")
+            try:
+                json.dumps(value)
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    "policy diagnostics must be JSON-serializable"
+                ) from error
+            result["policy"] = dict(value)
+        return result
+
+
 class PositionTargetControllerAdapter:
     """Wrap a controller whose native action is desired joint position."""
 

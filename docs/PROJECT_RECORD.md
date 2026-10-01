@@ -57,6 +57,14 @@ command 也只在 planning tick 采样。2 ms feedback 是 shared canonical adap
 anchor 仍必须标记 offline_unbounded。这些都不是 locomotion capability、real-time
 或跨 controller 比较结论。
 
+第一份 prospective aligned flat anchor v1 已完成 no-physics preparation：
+共享 body-frame 1 m/s TaskSpec、flat ScenarioSpec、canonical Evaluator/action
+语义已冻结；RL 与 MJPC 的 InformationSpec / TimingSpec 明确分别记录，不伪装成
+相同信息预算。prep commit、protocol SHA、scene physical fingerprint、RL checkpoint
+与 MJPC source/binary identity 均已离线核对。该 anchor 当前
+physics_step_authorized=false、scientific attempts=0、状态 PREPARED / NOT_RUN，
+必须先独立审查，不能据此产生任何 locomotion 或 controller 排名结论。
+
 ### Scientifically verified results
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
