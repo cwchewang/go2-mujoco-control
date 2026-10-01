@@ -7,12 +7,12 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 ## Active research frontier
 
 Branch: `main`.
-Task: [Aligned flat anchor v1 independently reviewed](docs/research/TASK_ALIGNED_FLAT_ANCHOR_V1_20261001.md).
-Closeout: [Aligned flat anchor v1 independently reviewed results](docs/validation/aligned_flat_anchor_v1_review_20261001.md).
-Stage: The first RL-vs-MJPC shared flat integration anchor has passed independent semantic review and exact-code no-physics re-preflight; status remains REVIEWED / NOT_RUN and canonical physics is still disabled.
-Scientific status: MuJoCo remains canonical evaluation physics; Go2 remains the first testbed. The 1 s anchor is explicitly an interface/evaluator integration check with broad guardrails, not the sealed #189 performance task. RL/MJPC information and timing regimes remain intentionally different and explicit. No locomotion comparison, ranking, real-time result, bottleneck or paper gap is verified; Gate 0 remains incomplete.
+Task: [Aligned flat capture v1 infrastructure stop](docs/research/TASK_ALIGNED_FLAT_CAPTURE_V1_20261001.md).
+Closeout: [Aligned flat capture v1 infrastructure stop results](docs/validation/aligned_flat_capture_v1_20261001/RESULTS.md).
+Stage: The first real shared closed-loop capture executed. RL completed 500 canonical steps and passed the broad 1 s engineering anchor; MJPC consumed its one attempt and stopped after 140 canonical steps at a tick-140 replan due an internal Ground/raycast error surfaced as a native JSON-IPC failure. v1 is closed with no retry.
+Scientific status: This is engineering integration evidence only. RL has a complete broad-anchor PASS; MJPC has no canonical terminal verdict, so the cross-controller comparison is incomplete. No controller ranking, real-time result, cross-controller bottleneck or paper gap is established; scientific attempts remain 0.
 Last live HEAD: `e40b0933572345f23b37e3bb06350518fde63e76`.
-Next: Prepare a separate exact-commit capture task and runner with one bounded attempt per controller, raw evidence and independent CanonicalEvaluator replay. Keep physics_step_authorized=false until that capture task itself is reviewed and explicitly authorized.
+Next: Close v1 permanently, diagnose the MJPC Ground/raycast and stdout-IPC failure without canonical physics, harden the native boundary, and prepare a separately versioned v2. Do not run v2 physics without a new exact-head review and explicit user START authorization.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

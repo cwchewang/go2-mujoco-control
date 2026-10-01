@@ -70,6 +70,15 @@ guardrails 与初始 body forward/left 对齐，并将该前提及 canonical dir
 actuator 边界加入 fail-closed preflight。状态提升为 REVIEWED / NOT_RUN，但
 physics_step_authorized 仍为 false、scientific attempts 仍为 0。
 
+首次 live aligned capture v1 随后在独立 capture task / exact HEAD
+2411c4af1f8ab95e50f7e07e672466b5c0abb406 上实际执行。RL 完成 500 个
+canonical physics steps，宽松 1 s integration anchor 的独立 replay 为 PASS
+(progress 0.612566 m，body-vx MAE 0.152334 m/s)。MJPC 的唯一 attempt 已消费，
+完成 140 physics steps 后在 tick 140 replan 遇到 source Ground() raycast
+no group 0 geom detected，通过严格 stdout JSON IPC 表现为 invalid JSON 并
+基础设施中止。最后保存状态未触发 canonical physical failure。v1 永久关闭、
+不得 retry；因此跨 controller comparison 仍 INCOMPLETE，不能产生排名或科学结论。
+
 ### Scientifically verified results
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
