@@ -93,9 +93,10 @@ real-time plant evolution during solver computation.
 TaskSpec owns command schedule, horizon, measurement window, support semantics,
 physical stop conditions, success thresholds, and the named longitudinal metric.
 ScenarioSpec owns scene/reset identity, an optional compiled-physics fingerprint,
-and fail-closed expectations for implemented interventions. Friction and contact
-dimensionality expectations are checked against the compiled MuJoCo model rather
-than trusted from source XML text.
+and fail-closed expectations for implemented interventions. Effective contact friction and dimensionality expectations are checked against
+active MuJoCo contact records after model compilation/forwarding, rather than
+inferred from one geom's XML or compiled fields. Verification fails closed when
+the expected contact pair is not active.
 
 CanonicalEvaluator consumes raw state/contact/warning evidence plus TaskSpec. It
 recomputes physical failures, endpoint progress, tracking error, and mandatory

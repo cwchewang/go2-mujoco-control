@@ -95,37 +95,49 @@ class TaskSpec:
 
 @dataclass(frozen=True)
 class ScenarioIntervention:
-    target_name: str
+    geom_names: tuple
     attribute: str
     expected: object
 
     def __post_init__(self):
-        if not isinstance(self.target_name, str) or not self.target_name:
-            raise ValueError("intervention target required")
-        if self.attribute == "friction":
-            value = vector(self.expected, 3, "friction")
+        names = tuple(self.geom_names)
+        if (
+            len(names) != 2
+            or len(set(names)) != 2
+            or any(type(x) is not str or not x for x in names)
+        ):
+            raise ValueError("effective contact verification requires two geom names")
+        object.__setattr__(self, "geom_names", names)
+        if self.attribute == "contact_friction":
+            value = vector(self.expected, 5, "effective contact friction")
             object.__setattr__(
                 self, "expected", np.frombuffer(value.tobytes(), dtype=np.float64)
             )
-        elif self.attribute == "condim":
+        elif self.attribute == "contact_dim":
             if type(self.expected) is not int or self.expected not in (1, 3, 4, 6):
-                raise ValueError("invalid condim")
+                raise ValueError("invalid effective contact dim")
         else:
-            raise ValueError("unsupported intervention attribute")
+            raise ValueError("unsupported effective contact attribute")
 
-    def verify(self, model):
+    def verify(self, model, data):
         import mujoco
 
-        g = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, self.target_name)
-        if g < 0:
-            raise ValueError("intervention target missing")
-        if self.attribute == "friction":
-            if not np.allclose(
-                model.geom_friction[g], self.expected, rtol=0, atol=1e-12
-            ):
-                raise ValueError("compiled friction intervention mismatch")
-        elif int(model.geom_condim[g]) != self.expected:
-            raise ValueError("compiled condim intervention mismatch")
+        ids = []
+        for name in self.geom_names:
+            gid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
+            if gid < 0:
+                raise ValueError("contact intervention geom missing")
+            ids.append(gid)
+        target = set(ids)
+        contacts = [c for c in data.contact if {int(c.geom1), int(c.geom2)} == target]
+        if not contacts:
+            raise ValueError("effective contact pair is not active")
+        for contact in contacts:
+            if self.attribute == "contact_friction":
+                if not np.allclose(contact.friction, self.expected, rtol=0, atol=1e-12):
+                    raise ValueError("effective contact friction mismatch")
+            elif int(contact.dim) != self.expected:
+                raise ValueError("effective contact dim mismatch")
         return True
 
 
@@ -156,14 +168,16 @@ class ScenarioSpec:
             raise ValueError("invalid intervention")
         object.__setattr__(self, "interventions", items)
 
-    def verify_model(self, model):
+    def verify_model(self, model, data=None):
         if (
             self.physical_sha256 is not None
             and physical_fingerprint(model) != self.physical_sha256
         ):
             raise ValueError("scenario physical fingerprint mismatch")
+        if self.interventions and data is None:
+            raise ValueError("contact data required to verify effective interventions")
         for item in self.interventions:
-            item.verify(model)
+            item.verify(model, data)
         return True
 
 
