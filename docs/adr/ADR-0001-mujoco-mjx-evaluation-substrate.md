@@ -103,3 +103,24 @@ recomputes physical failures, endpoint progress, tracking error, and mandatory
 support completion independently of controller-reported failure/success labels.
 The sealed runner and analyzer remain unchanged; legacy protocol fields can be
 mapped into the new specs for prospective aligned comparisons.
+
+## First native MJPC controller integration
+
+The pinned author Go2 MJPC implementation now has a persistent headless process
+surface for prospective shared evaluation. Its binary is sealed against native
+source/build inputs. It consumes WholeBodyState in the source joint order,
+returns joint-position targets, and is wrapped by PositionTargetControllerAdapter
+before any torque reaches the canonical plant.
+
+The pinned task source is validated in its actual nominal form: gain/bias encode
+position-PD intent while biastype is mjBIAS_NONE. The controller fails closed on
+any drift, then applies mjBIAS_AFFINE only to its private planning-model copy.
+The canonical direct-torque evaluation plant is never modified. Manual/Trot Walk
+selection and iLQG current-state feedback are explicit.
+
+A zero-canonical-step engineering smoke confirmed one complete
+state -> native MJPC -> q_des -> shared PD -> canonical torque path with finite
+output and no canonical plant advancement. This is wiring evidence only. It does
+not establish locomotion performance or real-time feasibility; those require a
+separate prospective aligned evaluation under the shared task/scenario/information/
+timing contracts.

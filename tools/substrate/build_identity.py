@@ -74,26 +74,60 @@ def inputs(build):
     }
 
 
-def seal(build, before):
+def _seal_binary(build, before, binary_name, identity_name):
     build = Path(build).resolve()
     after = inputs(build)
     if before != after:
         raise ValueError("build inputs changed during compilation")
-    binary = build / "go2_mjpc_admit"
-    result = {"schema": 1, "inputs": after, "binary_sha256": digest(binary)}
-    path = build / "build-identity.json"
-    # Build cache is mutable; raw admission copies of this identity are immutable.
+    binary = build / binary_name
+    result = {
+        "schema": 1,
+        "binary": binary_name,
+        "inputs": after,
+        "binary_sha256": digest(binary),
+    }
+    path = build / identity_name
+    # Build cache is mutable; raw evidence copies of identities are immutable.
     tmp = path.with_suffix(".new")
     tmp.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
     tmp.replace(path)
     return result
 
 
-def verify(binary):
+def seal(build, before):
+    return _seal_binary(build, before, "go2_mjpc_admit", "build-identity.json")
+
+
+def seal_controller(build, before):
+    return _seal_binary(
+        build,
+        before,
+        "go2_mjpc_controller",
+        "controller-build-identity.json",
+    )
+
+
+def _verify_binary(binary, identity_name, expected_name):
     binary = Path(binary).resolve()
-    identity = strict_json((binary.parent / "build-identity.json").read_text())
-    if identity.get("schema") != 1 or identity["binary_sha256"] != digest(binary):
+    identity = strict_json((binary.parent / identity_name).read_text())
+    if (
+        identity.get("schema") != 1
+        or identity.get("binary") not in (None, expected_name)
+        or identity["binary_sha256"] != digest(binary)
+    ):
         raise ValueError("binary does not match build identity")
     if identity["inputs"] != inputs(binary.parent):
         raise ValueError("stale build: inputs changed")
     return identity
+
+
+def verify(binary):
+    return _verify_binary(binary, "build-identity.json", "go2_mjpc_admit")
+
+
+def verify_controller(binary):
+    return _verify_binary(
+        binary,
+        "controller-build-identity.json",
+        "go2_mjpc_controller",
+    )
