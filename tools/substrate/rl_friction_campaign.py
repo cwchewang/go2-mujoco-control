@@ -517,6 +517,10 @@ def verify_capture(directory, *, ledger=None):
                 for a in attempts
             )
             or type(record["scientific_attempts"]) is not int
+            or type(record["canonical_physics_steps"]) is not int
+            or type(record["live_runs"]) is not int
+            or type(record["private_planning_calls"]) is not int
+            or record["private_planning_calls"] != 0
             or record["scientific_attempts"] != len(consumed)
             or record["live_runs"] != len(consumed)
             or record["canonical_physics_steps"]
@@ -582,8 +586,11 @@ def verify_capture(directory, *, ledger=None):
                     raise ValueError("captured fresh preflight did not pass")
         elif not global_case or stopped[0] != "preflight":
             raise ValueError("started campaign lacks fresh preflight evidence")
+        observed_arm_stop = None
         for item in attempts:
             status, name = item["status"], item["id"]
+            if observed_arm_stop and status != "NOT_RUN":
+                raise ValueError("arm executed after campaign stop")
             has_claim = name in consumed
             if (
                 stopped
@@ -610,12 +617,16 @@ def verify_capture(directory, *, ledger=None):
                     raise ValueError("NOT_RUN arm has execution evidence")
                 if not stopped:
                     raise ValueError("eligible fresh RL arm skipped")
+                reason_stop = observed_arm_stop or stopped
                 reason = (
                     "execution_or_evidence_failure"
-                    if stopped[1] == "EXECUTION_EVIDENCE_STOP"
-                    else stopped[1]
+                    if reason_stop[1] == "EXECUTION_EVIDENCE_STOP"
+                    else reason_stop[1]
                 )
-                if item["not_run_reason"] != f"campaign_stopped:{stopped[0]}:{reason}":
+                if (
+                    item["not_run_reason"]
+                    != f"campaign_stopped:{reason_stop[0]}:{reason}"
+                ):
                     raise ValueError("NOT_RUN stop reason differs")
                 continue
             if (
@@ -690,12 +701,14 @@ def verify_capture(directory, *, ledger=None):
                     != actual
                 ):
                     raise ValueError("prospective auxiliary replay differs")
-            if (
-                status
-                in ("SAFETY_STOP", "EXPOSURE_EVIDENCE_STOP", "EXECUTION_EVIDENCE_STOP")
-                and not global_case
+            if status in (
+                "SAFETY_STOP",
+                "EXPOSURE_EVIDENCE_STOP",
+                "EXECUTION_EVIDENCE_STOP",
             ):
-                stopped = (name, status)
+                observed_arm_stop = (name, status)
+                if not global_case:
+                    stopped = observed_arm_stop
         if stopped:
             if (
                 record["status"] != stopped[1]

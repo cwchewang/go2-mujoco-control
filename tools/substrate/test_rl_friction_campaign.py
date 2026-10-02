@@ -356,6 +356,50 @@ class IndependentEntryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "external claim"):
                 self.verify(f)
 
+    def reseal(self, path, record):
+        (path / "admission.json").write_text(json.dumps(record))
+        (path / "manifest.json").write_text(
+            json.dumps(
+                {
+                    p.relative_to(path).as_posix(): digest(p)
+                    for p in path.rglob("*")
+                    if p.is_file() and p.name != "manifest.json"
+                }
+            )
+        )
+
+    def test_global_failure_cannot_mask_arm_execution_after_safety_stop(self):
+        with self.fixture(reason="nonfoot_contact") as f:
+            self.launch(f)
+            a = verify_manifest(f[1])
+            failure = {
+                "case": "postcapture",
+                "error_type": "TEST ONLY",
+                "error": "synthetic global-failure forgery",
+                "physics_steps": a["canonical_physics_steps"],
+                "scientific_attempts": a["scientific_attempts"],
+            }
+            write_new(f[1] / "global-failure.json", failure)
+            a.update(
+                status="EXECUTION_EVIDENCE_STOP",
+                stopped_case="postcapture",
+                errors=[failure],
+            )
+            a["attempts"][1].update(status="PASS", not_run_reason=None)
+            self.reseal(f[1], a)
+            with self.assertRaisesRegex(ValueError, "arm executed after campaign stop"):
+                self.verify(f)
+
+    def test_boolean_step_count_cannot_masquerade_as_integer(self):
+        with self.fixture(reason="nonfoot_contact") as f:
+            self.launch(f)
+            a = verify_manifest(f[1])
+            self.assertEqual(a["canonical_physics_steps"], 1)
+            a["canonical_physics_steps"] = True
+            self.reseal(f[1], a)
+            with self.assertRaisesRegex(ValueError, "accounting differs"):
+                self.verify(f)
+
 
 class IndependentFreshPreflightTests(sharedtests.FreshPreflightTests):
     """The actual new preflight entry calls the actual child with held lock."""

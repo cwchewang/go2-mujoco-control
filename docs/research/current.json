@@ -3,8 +3,8 @@
   "title": "Independent RL sliding-friction reference v1: prospective freeze",
   "task": "docs/research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md",
   "result": "docs/validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md",
-  "stage": "Independent RL-only real capture/verify entry and full-current-input zero-physics qualification passed;290 fresh Python checks, original native checks explicitly reused; actual new campaign NOT_RUN awaiting incremental exact-head dual review",
+  "stage": "Independent RL-only real capture/verify entry complete, including strict arm-stop ordering and integer accounting; final source-bound qualification/preparation are handed off in one full_review_packet bundle; actual new campaign NOT_RUN",
   "scientific_status": "Old shared campaign remains permanently closed at3 attempts/13287 steps with17 NOT_RUN. New task budgets2 fresh RL friction repeats/12000 steps, actual0 attempts/0 canonical or private physics. Gate0 incomplete",
   "last_live_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
-  "next": "Use the single full_review_packet bundle for incremental science/execution review of the final clean HEAD and exact-head preparation. Genuine bound START precedes fresh locked preflight/capture; all old17 NOT_RUN remain closed"
+  "next": "Use the final full_review_packet bundle for one incremental exact-head science/execution review, then bound START and fresh locked preflight/capture. Preserve all old17 NOT_RUN and all prior sealed receipts"
 }
