@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 import subprocess
 
@@ -179,18 +180,42 @@ class NativeMJPCController:
         startup_timeout_s=10.0,
         response_timeout_s=30.0,
         diagnostic=None,
+        runtime_identity=None,
+        fd_trace_path=None,
     ):
         if not isinstance(timing, TimingSpec):
             raise ValueError("native MJPC controller requires TimingSpec")
         self.timing = timing
         self.binary = Path(binary).resolve(strict=True)
-        self.build_identity = verify_controller(self.binary)
-        cache = cache_values(self.binary.parent)
-        source = Path(cache["MJPC_SOURCE_DIR"]).resolve(strict=True)
-        self.task_xml = source / "mjpc/tasks/quadruped/task_flat.xml"
+        launch_env = None
+        if runtime_identity is None:
+            if fd_trace_path is not None:
+                raise ValueError("FD trace requires explicit sealed runtime")
+            self.build_identity = verify_controller(self.binary)
+            cache = cache_values(self.binary.parent)
+            source = Path(cache["MJPC_SOURCE_DIR"]).resolve(strict=True)
+            self.task_xml = source / "mjpc/tasks/quadruped/task_flat.xml"
+            argv = [str(self.binary)]
+        else:
+            from . import native_runtime
+
+            self.build_identity = native_runtime.verify(self.binary, runtime_identity)
+            argv, self.task_xml = native_runtime.argv(self.binary, runtime_identity)
+            launch_env = os.environ.copy()
+            for key in (
+                "LD_PRELOAD",
+                "LD_AUDIT",
+                "LD_LIBRARY_PATH",
+                "GO2_MJPC_FD_TRACE_PATH",
+            ):
+                launch_env.pop(key, None)
+            if fd_trace_path is not None:
+                launch_env["GO2_MJPC_FD_TRACE_PATH"] = str(
+                    Path(fd_trace_path).resolve()
+                )
         if not self.task_xml.is_file():
             raise ValueError("pinned QuadrupedFlat task XML is missing")
-        argv = [str(self.binary), str(self.task_xml)]
+        argv += [str(self.task_xml)]
         self._diagnostic = diagnostic
         self._diagnostic_step = None
         if diagnostic is not None:
@@ -202,6 +227,7 @@ class NativeMJPCController:
             argv,
             popen=popen,
             stderr_log_path=stderr_log_path,
+            **({"env": launch_env} if launch_env is not None else {}),
         )
         self.process = self._transport.process
         self._closed = False
@@ -212,6 +238,11 @@ class NativeMJPCController:
         try:
             ready = self._transport.read_json(startup_timeout_s)
             self.joint_names, self.actuator_spec = validate_ready(ready)
+            if (
+                runtime_identity is not None
+                and ready.get("worker_count") != self.build_identity["workers"]
+            ):
+                raise ValueError("native worker count differs from sealed identity")
         except Exception:
             self.close()
             raise

@@ -1,4 +1,4 @@
-"""Fixed-only 3 s MJPC baseline. Prepare/preflight never launch MJPC or integrate."""
+"""Fixed-only 3 s MJPC baseline. Preparation is offline; preflight launches one ready-only native worker."""
 
 from __future__ import annotations
 import argparse
@@ -6,7 +6,6 @@ import fcntl
 import hashlib
 import json
 import os
-import shutil
 import stat
 import subprocess
 import sys
@@ -28,16 +27,19 @@ from .integrity import (
     write_new,
 )
 from .native_mjpc import NativeMJPCController
+from . import native_runtime
 from .readiness import validate_authorization, validate_review
 from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNS = ROOT / "_runs"
-FIXED = Path("/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed")
 BINARY_SHA = "3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08"
 PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_fixed_baseline_3s_v1.json"
 RUNTIME = (
     "tools/substrate/mjpc_fixed_baseline.py",
+    "tools/substrate/run_mjpc_fixed_baseline",
+    "tools/substrate/native_runtime.py",
+    "tools/substrate/model.py",
     "tools/substrate/aligned_episode.py",
     "tools/substrate/aligned_anchor.py",
     "tools/substrate/native_mjpc.py",
@@ -102,7 +104,7 @@ def fresh(path):
     return p
 
 
-def prepare(output, binary=FIXED):
+def prepare(output, binary):
     with experiment_lock(), zero_step_guard():
         ident = identity()
         if strict_json(PROTOCOL.read_text()) != design():
@@ -122,15 +124,19 @@ def prepare(output, binary=FIXED):
                 ROOT / "tools/substrate/protocols/aligned_flat_anchor_v1.json"
             ),
             "build": bi,
-            "binary": {"name": "go2_mjpc_controller_fd_fixed", "sha256": BINARY_SHA},
+            "binary": {
+                "name": "runtime/go2_mjpc_controller_fd_fixed",
+                "sha256": BINARY_SHA,
+            },
         }
         with EvidenceRun(
             out, {"operation": "mjpc_fixed_baseline_prepare", **ident}
         ) as run:
-            target = out / packet["binary"]["name"]
-            shutil.copy2(binary, target)
-            if digest(target) != BINARY_SHA:
-                raise ValueError("copied binary digest mismatch")
+            native_runtime.package(binary, out / "runtime", ROOT, bi)
+            packet["runtime_identity"] = {
+                "name": "runtime/" + native_runtime.SIDECAR,
+                "sha256": digest(out / "runtime" / native_runtime.SIDECAR),
+            }
             write_new(out / "packet.json", packet)
             run.result.update(
                 status="PREPARED_NOT_RUN",
@@ -173,14 +179,11 @@ def validate(packet_path, output):
     ):
         raise ValueError("runtime/protocol/anchor drift")
     binary = pp.parent / packet["binary"]["name"]
-    source_binary = Path(packet["build"]["path"]).resolve(strict=True)
-    bi = build.build_identity(source_binary, "fixed")
-    if (
-        bi != packet.get("build")
-        or digest(binary) != BINARY_SHA
-        or digest(source_binary) != BINARY_SHA
-        or bi["workers"] != 4
-    ):
+    sidecar = pp.parent / packet["runtime_identity"]["name"]
+    if digest(sidecar) != packet["runtime_identity"]["sha256"]:
+        raise ValueError("runtime sidecar differs from packet")
+    runtime = native_runtime.verify(binary, sidecar)
+    if runtime["binary_sha256"] != BINARY_SHA or runtime["workers"] != 4:
         raise ValueError("binary/workers mismatch")
     anchor = load_anchor()
     task = replace(
@@ -190,7 +193,7 @@ def validate(packet_path, output):
         measurement_start_tick=150,
     )
     timing = anchor["controllers"]["mjpc"]["timing"]
-    plant = MujocoPlant(ROOT / anchor["scenario"].scene)
+    plant = MujocoPlant(sidecar.parent / runtime["canonical_xml"])
     validate_canonical_model(anchor, plant.model)
     if (
         plant.steps != 0
@@ -207,7 +210,7 @@ def validate(packet_path, output):
         raise ValueError("active native/Go2 process blocks preflight")
     return (
         packet,
-        source_binary,
+        binary,
         {
             "status": "PRECHECK_PASS",
             "branch": ident["branch"],
@@ -247,7 +250,7 @@ def no_launch(packet_path, output):
         }
 
 
-def _run_one(packet_path, output):
+def _run_one(packet_path, output, *, construction_only=False):
     """Capture primitive used only after a separate reviewed START gate."""
     packet, binary, _ = validate(
         packet_path, Path(output).parent / (Path(output).name + "_preflight")
@@ -261,20 +264,93 @@ def _run_one(packet_path, output):
     )
     timing = anchor["controllers"]["mjpc"]["timing"]
     info = anchor["controllers"]["mjpc"]["information"]
-    plant = MujocoPlant(ROOT / anchor["scenario"].scene)
-    native = NativeMJPCController(
-        binary,
-        timing,
-        stderr_log_path=Path(output) / "native.stderr.log",
-        diagnostic=(
-            "original",
-            ROOT / anchor["scenario"].scene,
-            Path(output) / "predictions.jsonl",
-        ),
-    )
-    controller = PositionTargetControllerAdapter(
-        native, native.actuator_spec, native.joint_names
-    )
+    sidecar = Path(packet_path).resolve().parent / packet["runtime_identity"]["name"]
+    runtime = native_runtime.verify(binary, sidecar)
+    canonical = sidecar.parent / runtime["canonical_xml"]
+    plant = MujocoPlant(canonical)
+    validate_canonical_model(anchor, plant.model)
+    launches = []
+
+    def counted_launch(argv, **kwargs):
+        process = subprocess.Popen(argv, **kwargs)
+        launches.append({"pid": process.pid, "argv": list(argv)})
+        return process
+
+    native = None
+    try:
+        native = NativeMJPCController(
+            binary,
+            timing,
+            popen=counted_launch,
+            stderr_log_path=Path(output) / "native.stderr.log",
+            diagnostic=("original", canonical, Path(output) / "predictions.jsonl"),
+            runtime_identity=sidecar,
+            fd_trace_path=Path(output) / "fd-trace.jsonl",
+        )
+        controller = PositionTargetControllerAdapter(
+            native, native.actuator_spec, native.joint_names
+        )
+        mapped = native_runtime.loaded_libraries(native.process.pid, sidecar)
+        write_new(Path(output) / "controller-ready.json", native.ready)
+        write_new(Path(output) / "loaded-libraries.json", mapped)
+        write_new(
+            Path(output) / "construction.json",
+            {
+                "phase": "controller_ready_before_episode",
+                "runtime_sidecar_sha256": digest(sidecar),
+                "runtime_binary": str(binary),
+                "canonical_xml": str(canonical),
+                "native_launches": launches,
+                "worker_command": Path("/proc/self/cmdline")
+                .read_bytes()
+                .decode()
+                .split(chr(0))[:-1],
+                "worker_pid": os.getpid(),
+                "canonical_physics_steps": plant.steps,
+                "optimizer_calls": 0,
+            },
+        )
+        if construction_only:
+            if (
+                plant.steps != 0
+                or float(plant.data.time) != 0
+                or native.diagnostics().get("last_step") is not None
+            ):
+                raise ValueError("construction-only worker advanced episode")
+            if (Path(output) / "predictions.jsonl").stat().st_size or (
+                Path(output) / "fd-trace.jsonl"
+            ).exists():
+                raise ValueError("construction-only worker emitted optimizer evidence")
+            native.close()
+            transport = native.diagnostics()["transport"]
+            if transport["stderr_bytes"]:
+                raise ValueError("native startup emitted warning/diagnostic stderr")
+            return {
+                "classification": "CONSTRUCTION_PRECHECK_PASS",
+                "phase": "controller_ready_before_episode",
+                "native_processes_started": len(launches),
+                "python_workers_started": 1,
+                "canonical_physics_steps": 0,
+                "optimizer_calls": 0,
+                "scientific_attempts": 0,
+                "attempt_consumed": False,
+                "runtime_sidecar_sha256": digest(sidecar),
+                "workers": native.ready["worker_count"],
+            }
+    except BaseException:
+        if native is not None:
+            native.close()
+        raise
+    finally:
+        write_new(
+            Path(output) / "construction-accounting.json",
+            {
+                "native_processes_started": len(launches),
+                "canonical_physics_steps_before_episode": plant.steps,
+                "optimizer_calls_before_episode": 0,
+                "construction_only": construction_only,
+            },
+        )
     consumed = False
 
     def consume():
@@ -341,6 +417,91 @@ def _run_one(packet_path, output):
         if outcome["terminal_reason"] == "horizon"
         else "SAFETY_STOP",
     }
+
+
+def consume_construction_capability(packet_path, output, lock_fd, token_fd):
+    if Path(f"/proc/self/fd/{lock_fd}").resolve() != LOCK_PATH.resolve():
+        raise ValueError("construction worker lacks inherited lock")
+    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    if not stat.S_ISFIFO(os.fstat(token_fd).st_mode):
+        raise ValueError("construction capability must be an inherited pipe")
+    with os.fdopen(token_fd, "r") as stream:
+        value = strict_json(stream.read())
+    expected = {
+        "mode": "construction_only",
+        "packet_sha256": digest(packet_path),
+        "output": str(Path(output).resolve()),
+        "parent_pid": os.getppid(),
+    }
+    if value != expected:
+        raise ValueError("construction capability binding mismatch")
+
+
+def construction_preflight(packet_path, output):
+    pp = Path(packet_path).resolve(strict=True)
+    with experiment_lock() as lock:
+        _, _, report = validate(pp, output)
+        out = Path(report["output"])
+        read_fd, write_fd = os.pipe()
+        command = [
+            sys.executable,
+            "-B",
+            "-m",
+            "tools.substrate.mjpc_fixed_baseline",
+            "--worker",
+            "--construction-only",
+            "--packet",
+            str(pp),
+            "--output",
+            str(out),
+            "--worker-lock-fd",
+            str(lock.fileno()),
+            "--worker-token-fd",
+            str(read_fd),
+        ]
+        try:
+            child = subprocess.Popen(
+                command,
+                cwd=ROOT,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                pass_fds=(lock.fileno(), read_fd),
+            )
+            os.close(read_fd)
+            read_fd = -1
+            capability = {
+                "mode": "construction_only",
+                "packet_sha256": digest(pp),
+                "output": str(out),
+                "parent_pid": os.getpid(),
+            }
+            os.write(write_fd, json.dumps(capability).encode())
+            os.close(write_fd)
+            write_fd = -1
+            try:
+                stdout, stderr = child.communicate(timeout=60)
+            except subprocess.TimeoutExpired:
+                child.kill()
+                child.communicate()
+                raise TimeoutError("construction preflight worker timed out")
+        finally:
+            for fd in (read_fd, write_fd):
+                if fd >= 0:
+                    os.close(fd)
+        if child.returncode:
+            raise RuntimeError("construction worker failed: " + stderr[-8000:])
+        result = strict_json(stdout)
+        if result.get("classification") != "CONSTRUCTION_PRECHECK_PASS":
+            raise ValueError("construction preflight did not reach episode boundary")
+        verify_manifest(out)
+        return {
+            **report,
+            **result,
+            "status": "PRECHECK_PASS_CONSTRUCTION",
+            "command": command,
+            "manifest_sha256": digest(out / "manifest.json"),
+        }
 
 
 def validate_start(packet_path, review_path, authorization_path):
@@ -579,7 +740,7 @@ def main(argv=None):
     g.add_argument("--capture", action="store_true")
     g.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     p.add_argument("--packet", type=Path)
-    p.add_argument("--binary", type=Path, default=FIXED)
+    p.add_argument("--binary", type=Path)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--review", type=Path)
     p.add_argument("--authorization", type=Path)
@@ -587,36 +748,44 @@ def main(argv=None):
     p.add_argument("--attempt", type=int)
     p.add_argument("--worker-lock-fd", type=int)
     p.add_argument("--worker-token-fd", type=int)
+    p.add_argument("--construction-only", action="store_true", help=argparse.SUPPRESS)
     a = p.parse_args(argv)
     os.chdir(ROOT)
     if a.prepare:
-        if a.packet:
-            p.error("--prepare does not accept --packet")
+        if a.packet or a.binary is None:
+            p.error(
+                "--prepare requires an explicit audited build binary and no --packet"
+            )
         result = prepare(a.output, a.binary)
     elif a.preflight:
         if not a.packet:
             p.error("--preflight requires --packet")
-        result = no_launch(a.packet, a.output)
+        result = construction_preflight(a.packet, a.output)
     elif a.worker:
-        if (
-            not all((a.packet, a.review, a.authorization, a.reservation))
-            or a.attempt not in (1, 2)
-            or a.worker_lock_fd is None
-            or a.worker_token_fd is None
-        ):
+        if not a.packet or a.worker_lock_fd is None or a.worker_token_fd is None:
             p.error(
                 "direct worker requires the pair runner's inherited lock and one-use capability"
             )
-        consume_worker_capability(
-            a.packet,
-            a.output,
-            a.reservation,
-            a.attempt,
-            a.worker_lock_fd,
-            a.worker_token_fd,
-            a.review,
-            a.authorization,
-        )
+        if a.construction_only:
+            consume_construction_capability(
+                a.packet, a.output, a.worker_lock_fd, a.worker_token_fd
+            )
+        else:
+            if not all((a.review, a.authorization, a.reservation)) or a.attempt not in (
+                1,
+                2,
+            ):
+                p.error("formal worker requires its reserved campaign")
+            consume_worker_capability(
+                a.packet,
+                a.output,
+                a.reservation,
+                a.attempt,
+                a.worker_lock_fd,
+                a.worker_token_fd,
+                a.review,
+                a.authorization,
+            )
         out = fresh(a.output)
         with EvidenceRun(
             out,
@@ -625,14 +794,19 @@ def main(argv=None):
                 "attempt": a.attempt,
             },
         ) as run:
-            result = _run_one(a.packet, out)
+            if a.construction_only:
+                with zero_step_guard():
+                    result = _run_one(a.packet, out, construction_only=True)
+            else:
+                result = _run_one(a.packet, out)
             write_new(out / "outcome.json", result)
             run.result.update(
                 status=result["classification"],
                 canonical_physics_steps=result["canonical_physics_steps"],
-                private_upper_bound=result["private_upper_bound"],
-                private_reserved=result["private_reserved"],
+                private_upper_bound=result.get("private_upper_bound", 0),
+                private_reserved=result.get("private_reserved", 0),
                 optimizer_calls=result["optimizer_calls"],
+                native_processes_started=result.get("native_processes_started", 1),
                 scientific_attempts=int(result["attempt_consumed"]),
             )
         verify_manifest(out)

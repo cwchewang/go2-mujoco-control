@@ -17,7 +17,7 @@ class NativeTransport:
     CHUNK = 4096
     MAX_REQUEST = 4096
 
-    def __init__(self, argv, *, popen=subprocess.Popen, stderr_log_path=None):
+    def __init__(self, argv, *, popen=subprocess.Popen, stderr_log_path=None, env=None):
         if stderr_log_path is None:
             fd, name = tempfile.mkstemp(prefix="go2-native-stderr-", suffix=".log")
             self.stderr_path = Path(name)
@@ -40,6 +40,7 @@ class NativeTransport:
                 stderr=subprocess.PIPE,
                 start_new_session=True,
                 bufsize=0,
+                **({"env": env} if env is not None else {}),
             )
             os.set_blocking(self.process.stdin.fileno(), False)
             self._selector.register(self.process.stdout, selectors.EVENT_READ)
