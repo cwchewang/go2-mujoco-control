@@ -6,5 +6,10 @@
   "stage": "Third-stage topic selection ACTIVE / OPEN; minimum adapter diagnostic qualification passed; two prepared scopes before genuine exact-head reviews; formal NOT_RUN",
   "scientific_status": "Two independent one-arm3s protocols propose total2 attempts/3000 canonical steps/private upper1228800. B changes only floor registration and post-PD torque clamp; source mass/damping/contact smoothing retained. Formal attempts/canonical steps0; old campaigns/17 NOT_RUN closed",
   "last_live_head": "849b7aa13c82b13880cfc214083f2473e794e83e",
-  "next": "Review the exact-head source-bound packet and both new prepared scopes, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work."
+  "next": "Review the exact-head source-bound packet and both new prepared scopes, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work.",
+  "related_result": {
+    "title": "Duplicate-FD cold-start diagnostic",
+    "path": "docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md",
+    "summary": "The duplicate t34 scheduling defect is fixed. Cold-start outputs matched across variants; same-process tick 0 to 10 sequence instrumentation and consumer are implemented, but the 8-call sequence remains unrun pending independent admission review. Stage 3 topic selection stays OPEN."
+  }
 }

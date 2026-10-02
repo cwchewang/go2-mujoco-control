@@ -280,7 +280,44 @@ def validate_response(variant,response,trace,predictions,stderr_bytes,anchor,rea
         not isinstance(response.get('q_des'),list) or len(response['q_des'])!=c['action'] or
         any(type(x) not in (int,float) or not math.isfinite(x) for x in response['q_des'])):
         raise ValueError('FD worker/knot/Jacobian or candidate trace mismatch')
+    if 'call_index' in trace:
+        if trace.get('call_index') != 1 or any(e.get('call_index') != 1 for e in events):
+            raise ValueError('FD trace optimizer-call identity mismatch')
+        for event in events:
+            for key in ('warmstart_before_fnv1a64','warmstart_after_fnv1a64'):
+                value=event.get(key)
+                if not isinstance(value,str) or not re.fullmatch(r'[0-9a-f]{16}',value):
+                    raise ValueError('FD warmstart hash missing or malformed')
+            for key in ('warmstart_before_norm','warmstart_before_max_abs',
+                        'warmstart_after_norm','warmstart_after_max_abs'):
+                if not finite(event.get(key)) or event[key] < 0:
+                    raise ValueError('FD warmstart summary invalid')
     prediction=predictions[0]
+    if 'planner_history' in prediction:
+        history=prediction['planner_history']
+        if (not isinstance(history,dict) or history.get('call_index') != 1 or
+            set(history) != {'call_index','pre_policy','pre_previous_policy','post_policy','selected_trajectory','worker_warmstart'}):
+            raise ValueError('planner history summary missing or inconsistent')
+        for name in ('pre_policy','pre_previous_policy','post_policy','selected_trajectory'):
+            summary=history[name]
+            if (not isinstance(summary,dict) or summary.get('finite') is not True or
+                summary.get('return_finite') is not True or not finite(summary.get('total_return')) or
+                type(summary.get('horizon')) is not int or type(summary.get('dim_state')) is not int or
+                type(summary.get('dim_action')) is not int or
+                not re.fullmatch(r'[0-9a-f]{16}',summary.get('fnv1a64',''))):
+                raise ValueError('planner trajectory summary invalid')
+        workers=history.get('worker_warmstart')
+        if not isinstance(workers,dict) or set(workers)!={'pre','post'}:
+            raise ValueError('worker warmstart boundary summary missing')
+        for side in ('pre','post'):
+            values=workers[side]
+            if not isinstance(values,list) or any(
+                not isinstance(v,dict) or type(v.get('worker')) is not int or
+                v.get('finite') is not True or not finite(v.get('norm')) or v['norm']<0 or
+                not finite(v.get('max_abs')) or v['max_abs']<0 or
+                not re.fullmatch(r'[0-9a-f]{16}',v.get('fnv1a64',''))
+                for v in values):
+                raise ValueError('worker warmstart summary invalid')
     if (prediction.get('mode')!=variant or
         prediction.get('optimization_model_id')!=variant+'-go2-soft-v1' or
         prediction.get('contact_semantics')!='selected_states_forward_reconstruction_smoothed_private_model' or
@@ -324,9 +361,9 @@ def validate_response(variant,response,trace,predictions,stderr_bytes,anchor,rea
         'candidate_id':predictions[0]['candidate_id'],'cost':response.get('cost'),
         'q_des':response.get('q_des')}
 
-def _packet(anchor):
+def _packet(anchor,replan=True):
     values=[anchor['time_s'],*anchor['command'],*anchor['qpos'],*anchor['qvel']]
-    return 'step 1 '+' '.join(format(float(x),'.17g') for x in values)
+    return 'step '+('1' if replan else '0')+' '+' '.join(format(float(x),'.17g') for x in values)
 
 def parse_trial_logs(trial,anchor,identities,directory):
     directory=Path(directory)

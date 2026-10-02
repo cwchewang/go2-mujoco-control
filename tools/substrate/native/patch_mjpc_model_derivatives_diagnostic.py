@@ -9,7 +9,7 @@ import sys
 EXPECTED_SHA256 = "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b"
 EXPECTED_GIT_BLOB = "03f67529a212d6c11f2dcad0a4bf44edd78fa1f2"
 INCLUDE = '#include "mjpc/utilities.h"\n'
-INCLUDE_WITH_TRACE = INCLUDE + '#include "model_derivative_indices.h"\n\n#include <chrono>\n#include <cstdint>\n#include <cstdio>\n#include <cstdlib>\n#include <fstream>\n#include <iomanip>\n#include <stdexcept>\n'
+INCLUDE_WITH_TRACE = '#include "mjpc/utilities.h"\n#include "model_derivative_indices.h"\n\n#include <atomic>\n#include <chrono>\n#include <cmath>\n#include <cstdint>\n#include <cstdio>\n#include <cstdlib>\n#include <fstream>\n#include <iomanip>\n#include <stdexcept>\n'
 OLD = """  // evaluate indices
   int s = skip + 1;
   evaluate_.push_back(0);
@@ -32,32 +32,7 @@ OLD_INSTRUMENTED = """  // Evaluate in source order and retain one event slot pe
 FIXED_INSTRUMENTED = """  // Use the unique-index patch; all FD event tracing matches the baseline.
   evaluate_ = go2_substrate::ModelDerivativeEvaluateIndices(T, skip);
 """
-TRACE_TYPES = """
-struct FDEvent {
-  int t = -1;
-  int worker = -1;
-  std::int64_t start_ns = 0;
-  std::int64_t end_ns = 0;
-};
-
-namespace {
-std::int64_t FDTraceNowNs() {
-  return std::chrono::duration_cast<std::chrono::nanoseconds>(
-             std::chrono::steady_clock::now().time_since_epoch())
-      .count();
-}
-
-std::uint64_t FDTraceHash(const double* data, std::size_t count,
-                          std::uint64_t hash) {
-  const auto* bytes = reinterpret_cast<const unsigned char*>(data);
-  for (std::size_t i = 0; i < count * sizeof(double); ++i) {
-    hash ^= bytes[i];
-    hash *= 1099511628211ULL;
-  }
-  return hash;
-}
-}  // namespace
-"""
+TRACE_TYPES = 'struct FDSummary {\n  std::uint64_t hash = 14695981039346656037ULL;\n  double norm = 0.0;\n  double max_abs = 0.0;\n};\nstruct FDEvent {\n  int t=-1; int worker=-1; std::uint64_t call=0;\n  std::int64_t start_ns=0; std::int64_t end_ns=0;\n  FDSummary before; FDSummary after;\n};\nnamespace {\nstd::atomic<std::uint64_t> g_fd_call_index{0};\nstd::int64_t FDTraceNowNs() {\n return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();\n}\nstd::uint64_t FDTraceHash(const double* data,std::size_t count,std::uint64_t hash) {\n const auto* bytes=reinterpret_cast<const unsigned char*>(data);\n for(std::size_t i=0;i<count*sizeof(double);++i){hash^=bytes[i];hash*=1099511628211ULL;} return hash;\n}\nFDSummary FDTraceSummary(const double* data,int count) {\n FDSummary result; double squared_norm=0.0;\n for(int i=0;i<count;++i){double magnitude=std::abs(data[i]);squared_norm+=data[i]*data[i];if(magnitude>result.max_abs)result.max_abs=magnitude;}\n result.norm=std::sqrt(squared_norm);result.hash=FDTraceHash(data,count,result.hash);return result;\n}\n}  // namespace'
 OLD_SCHEDULE = """  // evaluate derivatives
   int count_before = pool.GetCount();
   for (int t : evaluate_) {
@@ -92,69 +67,7 @@ OLD_SCHEDULE = """  // evaluate derivatives
   pool.WaitCount(count_before + evaluate_.size());
   pool.ResetCount();
 """
-NEW_SCHEDULE = """  // Trace records use unique slots, so tracing does not lock around FD work.
-  const char* trace_path = std::getenv("GO2_MJPC_FD_TRACE_PATH");
-  std::vector<FDEvent> fd_events(trace_path ? evaluate_.size() : 0);
-  int count_before = pool.GetCount();
-  for (std::size_t slot = 0; slot < evaluate_.size(); ++slot) {
-    const int t = evaluate_[slot];
-    pool.Schedule([&m, &data, &A = A, &B = B, &C = C, &D = D, &x, &u, &h,
-                   &fd_events, trace_path, slot,
-                   dim_state, dim_state_derivative, dim_action, dim_sensor, tol,
-                   mode, t, T]() {
-      const int worker = ThreadPool::WorkerId();
-      mjData* d = data[worker].get();
-      SetState(m, d, x + t * dim_state);
-      d->time = h[t];
-      mju_copy(d->ctrl, u + t * dim_action, dim_action);
-      const std::int64_t start_ns = trace_path ? FDTraceNowNs() : 0;
-      if (t == T - 1) {
-        mjd_transitionFD(m, d, tol, mode, nullptr, nullptr,
-                         DataAt(C, t * (dim_sensor * dim_state_derivative)),
-                         nullptr);
-      } else {
-        mjd_transitionFD(
-            m, d, tol, mode,
-            DataAt(A, t * (dim_state_derivative * dim_state_derivative)),
-            DataAt(B, t * (dim_state_derivative * dim_action)),
-            DataAt(C, t * (dim_sensor * dim_state_derivative)),
-            DataAt(D, t * (dim_sensor * dim_action)));
-      }
-      if (trace_path) fd_events[slot] = {t, worker, start_ns, FDTraceNowNs()};
-    });
-  }
-  pool.WaitCount(count_before + evaluate_.size());
-  pool.ResetCount();
-
-  if (trace_path) {
-    if (std::find(evaluate_.begin(), evaluate_.end(), T - 2) == evaluate_.end()) {
-      throw std::runtime_error("FD trace missing penultimate knot");
-    }
-    std::uint64_t hash = 14695981039346656037ULL;
-    hash = FDTraceHash(DataAt(A, (T - 2) * dim_state_derivative * dim_state_derivative),
-                       dim_state_derivative * dim_state_derivative, hash);
-    hash = FDTraceHash(DataAt(B, (T - 2) * dim_state_derivative * dim_action),
-                       dim_state_derivative * dim_action, hash);
-    hash = FDTraceHash(DataAt(C, (T - 2) * dim_sensor * dim_state_derivative),
-                       dim_sensor * dim_state_derivative, hash);
-    hash = FDTraceHash(DataAt(D, (T - 2) * dim_sensor * dim_action),
-                       dim_sensor * dim_action, hash);
-    std::ofstream trace(trace_path, std::ios::app);
-    if (!trace) throw std::runtime_error("FD trace output cannot be opened");
-    trace << "{\\\"events\\\":[";
-    for (std::size_t i = 0; i < fd_events.size(); ++i) {
-      if (i) trace << ',';
-      const auto& event = fd_events[i];
-      trace << "{\\\"t\\\":" << event.t << ",\\\"worker\\\":" << event.worker
-            << ",\\\"start_ns\\\":" << event.start_ns
-            << ",\\\"end_ns\\\":" << event.end_ns << '}';
-    }
-    trace << "],\\\"jacobian_t34_fnv1a64\\\":\\\"" << std::hex
-          << std::setw(16) << std::setfill('0') << hash
-          << "\\\",\\\"index_count\\\":" << std::dec << evaluate_.size()
-          << "}\\n";
-  }
-"""
+NEW_SCHEDULE = '  // Trace records use unique slots, so tracing does not lock around FD work.\n  const char* trace_path = std::getenv("GO2_MJPC_FD_TRACE_PATH");\n  std::vector<FDEvent> fd_events(trace_path ? evaluate_.size() : 0);\n  const std::uint64_t call_index = trace_path ? g_fd_call_index.fetch_add(1) + 1 : 0;\n  int count_before = pool.GetCount();\n  for (std::size_t slot = 0; slot < evaluate_.size(); ++slot) {\n    const int t = evaluate_[slot];\n    pool.Schedule([&m, &data, &A = A, &B = B, &C = C, &D = D, &x, &u, &h,\n                   &fd_events, trace_path, slot, call_index,\n                   dim_state, dim_state_derivative, dim_action, dim_sensor, tol,\n                   mode, t, T]() {\n      const int worker = ThreadPool::WorkerId();\n      mjData* d = data[worker].get();\n      SetState(m, d, x + t * dim_state);\n      d->time = h[t];\n      mju_copy(d->ctrl, u + t * dim_action, dim_action);\n      const std::int64_t start_ns = trace_path ? FDTraceNowNs() : 0;\n      const FDSummary before = trace_path ? FDTraceSummary(d->qacc_warmstart, m->nv) : FDSummary{};\n      if (t == T - 1) {\n        mjd_transitionFD(m, d, tol, mode, nullptr, nullptr,\n                         DataAt(C, t * (dim_sensor * dim_state_derivative)),\n                         nullptr);\n      } else {\n        mjd_transitionFD(\n            m, d, tol, mode,\n            DataAt(A, t * (dim_state_derivative * dim_state_derivative)),\n            DataAt(B, t * (dim_state_derivative * dim_action)),\n            DataAt(C, t * (dim_sensor * dim_state_derivative)),\n            DataAt(D, t * (dim_sensor * dim_action)));\n      }\n      if (trace_path) {\n        const FDSummary after = FDTraceSummary(d->qacc_warmstart, m->nv);\n        fd_events[slot] = {t, worker, call_index, start_ns, FDTraceNowNs(), before, after};\n      }\n    });\n  }\n  pool.WaitCount(count_before + evaluate_.size());\n  pool.ResetCount();\n\n  if (trace_path) {\n    if (std::find(evaluate_.begin(), evaluate_.end(), T - 2) == evaluate_.end()) {\n      throw std::runtime_error("FD trace missing penultimate knot");\n    }\n    std::uint64_t hash = 14695981039346656037ULL;\n    hash = FDTraceHash(DataAt(A, (T - 2) * dim_state_derivative * dim_state_derivative),\n                       dim_state_derivative * dim_state_derivative, hash);\n    hash = FDTraceHash(DataAt(B, (T - 2) * dim_state_derivative * dim_action),\n                       dim_state_derivative * dim_action, hash);\n    hash = FDTraceHash(DataAt(C, (T - 2) * dim_sensor * dim_state_derivative),\n                       dim_sensor * dim_state_derivative, hash);\n    hash = FDTraceHash(DataAt(D, (T - 2) * dim_sensor * dim_action),\n                       dim_sensor * dim_action, hash);\n    std::ofstream trace(trace_path, std::ios::app);\n    if (!trace) throw std::runtime_error("FD trace output cannot be opened");\n    trace << "{\\"call_index\\":" << call_index << ",\\"events\\":[";\n    for (std::size_t i = 0; i < fd_events.size(); ++i) {\n      if (i) trace << \',\';\n      const auto& event = fd_events[i];\n      trace << "{\\"t\\":" << event.t << ",\\"worker\\":" << event.worker\n            << ",\\"call_index\\":" << event.call\n            << ",\\"start_ns\\":" << event.start_ns\n            << ",\\"end_ns\\":" << event.end_ns\n            << ",\\"warmstart_before_fnv1a64\\":\\"" << std::hex << std::setw(16) << std::setfill(\'0\') << event.before.hash << "\\""\n            << ",\\"warmstart_before_norm\\":" << std::dec << event.before.norm\n            << ",\\"warmstart_before_max_abs\\":" << event.before.max_abs\n            << ",\\"warmstart_after_fnv1a64\\":\\"" << std::hex << std::setw(16) << std::setfill(\'0\') << event.after.hash << "\\""\n            << ",\\"warmstart_after_norm\\":" << std::dec << event.after.norm\n            << ",\\"warmstart_after_max_abs\\":" << event.after.max_abs << \'}\';\n    }\n    trace << "],\\"jacobian_t34_fnv1a64\\":\\"" << std::hex\n          << std::setw(16) << std::setfill(\'0\') << hash\n          << "\\",\\"index_count\\":" << std::dec << evaluate_.size()\n          << "}\\n";\n  }\n'
 OLD_RUN = """  // evaluate derivatives
   int count_before = pool.GetCount();
 """

@@ -254,7 +254,10 @@ class Controller {
 
     long long planning_elapsed = 0;
     if (replan) {
-      if (diagnostic_) diagnostic_->Reserve(model_.get(), planner_, horizon_);
+      if (diagnostic_) {
+        diagnostic_->Reserve(model_.get(), planner_, horizon_);
+        diagnostic_->BeginCall(planner_);
+      }
       has_policy_ = false;
       InvalidateCurrentRollouts(planner_);
       MakePlanningModelDifferentiable();
