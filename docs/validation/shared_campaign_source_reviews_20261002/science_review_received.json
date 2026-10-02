@@ -1,0 +1,14 @@
+{
+  "live_permission": false,
+  "original_report_supplied": false,
+  "original_reviewer_identity": null,
+  "prior_execution_hold": "CLOSED",
+  "provenance_note": "This preserves the conclusion explicitly forwarded by the coordinating parent. It does not reconstruct an original review report or create a runtime START receipt.",
+  "received_date": "2026-10-02",
+  "review_kind": "science",
+  "reviewed_head": "9440f0e1f94aa238367eedd12df997efda0975a6",
+  "scope": "forwarded_exact_source_review_conclusion",
+  "source_message_excerpt": "9440f0e1f94aa238367eedd12df997efda0975a6精确源码 science/execution 均APPROVED，旧HOLD已关闭但非live许可。",
+  "source_thread_id": "01a0f08f-d223-7240-813b-ee93267b700d",
+  "verdict": "APPROVED"
+}
