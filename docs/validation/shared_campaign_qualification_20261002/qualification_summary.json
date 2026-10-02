@@ -1,0 +1,51 @@
+{
+  "live_readiness": "CLOSED_FINAL_DUAL_REVIEW_REQUIRED",
+  "native_invocation": {
+    "argv": [
+      "/home/che/dev/go2-workspace/current/.substrate/headless-reliable/go2_mjpc_admit",
+      "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/qualification_20261002T053239371556Z/mjpc_flat.xml"
+    ],
+    "returncode": 0,
+    "wall_time_s": 0.9590905510121956
+  },
+  "physics_accounting": {
+    "canonical_physics_steps": 0,
+    "canonical_python_integrators_guarded": true,
+    "private_integration_step_count": null,
+    "private_rollout_horizon_steps": 21,
+    "private_rollouts_expected": true,
+    "private_static_admission_completed": true,
+    "private_static_optimizer_invocations": 1,
+    "private_step_count_status": "not_instrumented; real private integration occurs"
+  },
+  "preparation_status": "not_asserted_by_this_qualification_record; external_exact_head_packet_is_authoritative",
+  "prepared_target": "_runs/shared_campaign_runner_prep_20261002/prepared_20261002T053751962524Z",
+  "protocol_sha256": "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+  "qualification": {
+    "fingerprint": "ed8f43506001b242173746d1360504e5be2a4d8c68ec7ea51421ca0b68db10c5",
+    "manifest_sha256": "51241de44e70d31b5c681d1d89dab969ecc112a10548990ad3c5a2d0a5c3640e",
+    "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/qualification_20261002T053239371556Z",
+    "producer_head": "6f4aa704542d631c87aa5370fda9fa4450c61e7d"
+  },
+  "required_checks": {
+    "controller_build": 0,
+    "controller_configure": 0,
+    "controller_tests": 0,
+    "diff_check": 0,
+    "preflight_tests": 0,
+    "quality": 0,
+    "substrate_tests": 0,
+    "tooling_tests": 0
+  },
+  "scientific_attempts": 0,
+  "scope": "clean_bounded_static_qualification",
+  "source_reviewed_head": "9440f0e1f94aa238367eedd12df997efda0975a6",
+  "source_reviews": "docs/validation/shared_campaign_source_reviews_20261002",
+  "status": "ENGINEERING_ADMITTED",
+  "test_counts": {
+    "controller_ctest": 34,
+    "preflight": 36,
+    "substrate": 186,
+    "tooling": 33
+  }
+}

@@ -98,6 +98,10 @@ live execution. It still requires applicable clean qualification, exact-head
 science/execution reviews, binding to the existing three-stage delegation and
 fresh preflight. Native qualification performs real private optimizer rollouts;
 snapshot preparation and fake regressions perform no numerical integration.
+The exact9440f0e source science/execution conclusions are approved and preserved;
+clean bounded static qualification subsequently passed, with one native static
+admission and unknown total private integration count. Final exact-head
+preparation/reviews remain distinct live gates; no START exists.
 Gate0 remains incomplete.
 
 ### Scientifically verified results

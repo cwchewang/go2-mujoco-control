@@ -195,4 +195,7 @@ The minimal runner regression handoff is recorded in
 
 The execution HOLD fix and248-test guarded regression are available for
 re-review in [HOLD fix results](../validation/shared_campaign_hold_fix_20261002/RESULTS.md).
-Qualification and live remain closed while this fix is reviewed.
+The exact9440f0e source fix subsequently received science/execution APPROVED.
+The [bounded clean qualification](../validation/shared_campaign_qualification_20261002/RESULTS.md)
+passed with one real private static optimizer invocation; live remains closed
+pending the final exact-head preparation and dual review.
