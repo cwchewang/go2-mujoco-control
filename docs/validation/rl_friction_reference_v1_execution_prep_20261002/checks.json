@@ -1,0 +1,148 @@
+{
+  "canonical_physics_steps": 0,
+  "fresh_tests": {
+    "preflight": {
+      "count": 36,
+      "duration_s": 0.807,
+      "result": "PASS"
+    },
+    "substrate": {
+      "count": 221,
+      "duration_s": 40.481,
+      "result": "PASS"
+    },
+    "tooling": {
+      "count": 33,
+      "duration_s": 0.397,
+      "result": "PASS"
+    }
+  },
+  "native_operations_reused": 3,
+  "native_optimizer_invocations_new": 0,
+  "new_scientific_attempts": 0,
+  "ordinary_global_validator": "PASS",
+  "private_planning_calls": 0,
+  "qualification_checks": {
+    "controller_build": {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "-j",
+        "4"
+      ],
+      "execution": "reused_unchanged_sealed_native_inputs",
+      "returncode": 0,
+      "source_reference": {
+        "fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+        "manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+        "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_qualification_20261002T082220356151Z",
+        "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+      },
+      "wall_time_s": 0.22106518200598657
+    },
+    "controller_configure": {
+      "argv": [
+        "cmake",
+        "-S",
+        "/home/che/dev/go2-workspace/current/example/cpp",
+        "-B",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "execution": "reused_unchanged_sealed_native_inputs",
+      "returncode": 0,
+      "source_reference": {
+        "fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+        "manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+        "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_qualification_20261002T082220356151Z",
+        "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+      },
+      "wall_time_s": 0.12210210101329722
+    },
+    "controller_tests": {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "--output-on-failure"
+      ],
+      "execution": "reused_unchanged_sealed_native_inputs",
+      "returncode": 0,
+      "source_reference": {
+        "fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+        "manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+        "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_qualification_20261002T082220356151Z",
+        "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+      },
+      "wall_time_s": 2.778863497020211
+    },
+    "diff_check": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "execution": "fresh_no_physics",
+      "returncode": 0,
+      "wall_time_s": 0.008999315003165975
+    },
+    "preflight_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-c",
+        "import unittest; from tools.substrate.guards import zero_step_guard; guard=zero_step_guard(); guard.__enter__(); suite=unittest.defaultTestLoader.loadTestsFromNames(['tools.research.test_preflight', 'tools.research.test_preflight_integration']); result=unittest.TextTestRunner(verbosity=2).run(suite); guard.__exit__(None,None,None); raise SystemExit(not result.wasSuccessful())"
+      ],
+      "execution": "fresh_no_physics",
+      "returncode": 0,
+      "wall_time_s": 0.972942766995402
+    },
+    "quality": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-m",
+        "tools.check_quality"
+      ],
+      "execution": "fresh_no_physics",
+      "returncode": 0,
+      "wall_time_s": 0.2706478079780936
+    },
+    "substrate_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-c",
+        "import unittest; from tools.substrate.guards import zero_step_guard; guard=zero_step_guard(); guard.__enter__(); suite=unittest.defaultTestLoader.loadTestsFromNames(['tools.substrate.test_substrate', 'tools.substrate.test_native_boundary', 'tools.substrate.test_reliability', 'tools.substrate.test_policy_runtime', 'tools.substrate.test_clock', 'tools.substrate.test_launch', 'tools.substrate.test_qualification', 'tools.substrate.test_baseline', 'tools.substrate.test_bounded_conditions', 'tools.substrate.test_shared_campaign', 'tools.substrate.test_rl_friction_reference', 'tools.substrate.test_rl_friction_campaign']); result=unittest.TextTestRunner(verbosity=2).run(suite); guard.__exit__(None,None,None); raise SystemExit(not result.wasSuccessful())"
+      ],
+      "execution": "fresh_no_physics",
+      "returncode": 0,
+      "wall_time_s": 41.691380249976646
+    },
+    "tooling_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "execution": "fresh_no_physics",
+      "returncode": 0,
+      "wall_time_s": 0.47499172898824327
+    }
+  },
+  "source_qualification": {
+    "fingerprint": "fd0b4ef2204cab7f8da24cc52af5388ab2e7df435163f84d265708cb66e695e1",
+    "manifest_sha256": "d083d5f5a9803935da3d3a65b92ee5b27c77cec23c30b9c067025ab220b43d4b",
+    "path": "/home/che/dev/go2-workspace/current/_runs/rl_friction_reference_exec_prep_20261002/qualification_20261002T122315376115Z",
+    "producer_head": "cb2de37753e316b8f97824431edce39254510507"
+  },
+  "targeted_tests": {
+    "count": 25,
+    "duration_s": 4.187,
+    "physics": "FakePlant only; actual integrators guarded",
+    "result": "PASS"
+  }
+}

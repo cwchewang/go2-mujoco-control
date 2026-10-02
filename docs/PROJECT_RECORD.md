@@ -111,8 +111,11 @@ raw has no private predicted trajectory/contact sequence, so no causal mechanism
 is established. The separately delegated [RL friction prospective task](research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md)
 freezes one mu0.8-to0.3 card and two new RL repeats paired to these sealed passing
 RL references. Its budget is12000 canonical steps; actual new attempts/steps are0.
-The first delivery is configuration/reference/static precheck only, awaiting
-incremental science/execution review and new applicable admission before START.
+Its independent real two-arm runner and [current-input qualification](validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md)
+now pass zero-physics engineering checks, with290 fresh Python tests and explicit
+reuse of unchanged sealed native checks. The final exact-head preparation/review
+packet precedes incremental science/execution approval and bound START; no new
+scientific attempt, canonical integration or private planner call has occurred.
 This is an independent task; the stopped campaign and17 NOT_RUN arms remain closed.
 
 ### Scientifically verified results

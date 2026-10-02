@@ -46,3 +46,39 @@ physics and scientific attempts remain0.
 Qualification and current exact-head prepared references will be sealed in the
 single final review packet after the clean implementation commit. Actual
 science/execution approvals and bound START are still required before physics.
+
+## Complete current-input qualification: PRECHECK PASS
+
+Implementation/qualification producer HEAD:
+`cb2de37753e316b8f97824431edce39254510507`.
+New qualification:
+`_runs/rl_friction_reference_exec_prep_20261002/qualification_20261002T122315376115Z`.
+Manifest SHA256:
+`d083d5f5a9803935da3d3a65b92ee5b27c77cec23c30b9c067025ab220b43d4b`.
+Full input fingerprint:
+`fd0b4ef2204cab7f8da24cc52af5388ab2e7df435163f84d265708cb66e695e1`.
+
+The new receipt passed ordinary `qualification.validate`; no validator
+relaxation or old full-input receipt substitution occurred. Fresh checks passed:
+221 substrate tests in40.481s,36 preflight tests in0.807s and33 tooling tests
+in0.397s, plus quality and diff checks. These are290 freshly run Python tests.
+The three native operation logs retain their original b1ac producer and explicit
+reuse metadata. The [native basis proof](native-basis-proof.json) verifies all
+untouched model/build/binary/compiler/link/runtime inputs; the seven named
+increment files are covered by the fresh current-fingerprint checks.
+The [qualification reference](qualification-reference.json) and
+[check receipt](checks.json) preserve this distinction.
+
+Preparation must bind the exact final clean review HEAD. Its current reference,
+full qualification, frozen protocol and source diff will live together in the
+single `_runs/rl_friction_reference_exec_prep_20261002/full_review_packet_*`
+bundle. This report's producer qualification remains cb2de37 when subsequent
+prose-only commits reuse its identical complete fingerprint; it is never relabelled.
+The final bundle is the handoff for the parent to dispatch incremental exact-head
+science/execution review. Actual reviewer approval records are absent, and
+scientific attempts/physics remain0. No live fresh preflight or capture has run.
+
+Protocol/budget, old capture66630a6c..., old external ledger and its17 NOT_RUN
+entries remain unchanged. Gate0 remains incomplete. The parallel MJPC diagnosis
+remains the earlier [sealed read-only attachment](../rl_friction_reference_v1_prep_20261002/mjpc-readonly-diagnostic.md),
+with no private predicted trajectories available and no causal failure claim.
