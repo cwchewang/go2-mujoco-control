@@ -1,6 +1,8 @@
 """Claim/stop fixtures are FakePlant only; compiled models use forward and synthetic clocks."""
 
 import copy
+import hashlib
+import json
 from collections import deque
 from contextlib import ExitStack, contextmanager
 from dataclasses import replace
@@ -109,7 +111,9 @@ class CampaignFixture(unittest.TestCase):
                 "rl_checkpoint_sha256": "r",
                 "mjpc_binary_sha256": "b",
                 "mjpc_source_commit": "s",
-                "protocol_sha256": "p",
+                "protocol_sha256": hashlib.sha256(
+                    (json.dumps(plan["raw"], indent=2, sort_keys=True) + "\n").encode()
+                ).hexdigest(),
                 "anchor_sha256": "a",
             }
             review = {
@@ -274,6 +278,9 @@ class CampaignFixture(unittest.TestCase):
                 self.assertEqual(len(plants), 1)
                 self.assertEqual(len(closed), 1)
                 self.assertEqual(requested, ["rl_baseline_1"])
+                self.assertEqual(
+                    module.verify_capture(out)["scientific_attempts_checked"], 1
+                )
                 for arm in record["attempts"][1:]:
                     self.assertEqual(arm["status"], "NOT_RUN")
                     self.assertIn(
@@ -349,6 +356,9 @@ class CampaignFixture(unittest.TestCase):
             self.assertEqual(
                 record["baseline_eligibility"]["rl"]["reason"],
                 "own_baseline_nonrepeatable",
+            )
+            self.assertEqual(
+                module.verify_capture(out)["scientific_attempts_checked"], 12
             )
 
     def test_execution_boot_failure_claims_zero_and_closes_all_remaining(self):
@@ -470,6 +480,257 @@ class CampaignFixture(unittest.TestCase):
             claim["head"] = "wrong"
             path.write_text(__import__("json").dumps(claim))
             with self.assertRaisesRegex(ValueError, "external claim"):
+                module.verify_capture(out)
+
+    def rewrite_fake_json(self, path, value):
+        # Mutation tests affect only TemporaryDirectory fixtures, never raw runs.
+        self.assertIn("run_fake", str(path))
+        Path(path).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+    def reseal_fake(self, out, record):
+        self.assertEqual(record["head"], "h")
+        self.rewrite_fake_json(out / "admission.json", record)
+        self.rewrite_fake_json(
+            out / "manifest.json",
+            {
+                p.relative_to(out).as_posix(): module.digest(p)
+                for p in out.rglob("*")
+                if p.is_file() and p.name != "manifest.json"
+            },
+        )
+
+    def replace_fake_raw(self, out, item, rows, plan):
+        path = out / (item["id"] + ".jsonl")
+        self.assertIn("run_fake", str(path))
+        path.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        replay = module.replay_baseline(rows, plan)
+        item["physics_steps"] = rows[-1]["tick"]
+        item["status"] = replay["classification"]
+        analysis = item["analysis"]
+        analysis.update(
+            replay=replay,
+            classification=replay["classification"],
+            raw_sha256=module.digest(path),
+            frames=len(rows),
+            physics_steps=item["physics_steps"],
+        )
+        analysis["episode"].update(
+            steps=item["physics_steps"], terminal_reason=rows[-1]["terminal_reason"]
+        )
+        self.rewrite_fake_json(out / (item["id"] + "_analysis.json"), analysis)
+
+    def bind_fake_snapshot(self, root, out, record, plan):
+        eligibility = {
+            name: module._eligibility(name, out, record["attempts"], plan)
+            for name in ("rl", "mjpc")
+        }
+        self.rewrite_fake_json(
+            out / "baseline-eligibility.json", {"head": "h", "eligibility": eligibility}
+        )
+        snapshot_sha = module.digest(out / "baseline-eligibility.json")
+        record["baseline_eligibility"] = eligibility
+        record["baseline_eligibility_sha256"] = snapshot_sha
+        ledger = root / "_runs/substrate_attempts" / plan["raw"]["id"]
+        for item in record["attempts"][4:]:
+            if item["status"] == "NOT_RUN":
+                continue
+            own = eligibility[item["controller"]]
+            reference = next(
+                b for b in own["baselines"] if b["id"] == item["reference_baseline"]
+            )
+            item.update(
+                baseline_eligibility_sha256=snapshot_sha,
+                reference_baseline_sha256=reference["raw_sha256"],
+            )
+            claim_path = out / (item["id"] + "_claim.json")
+            claim = strict_json(claim_path.read_text())
+            claim.update(
+                baseline_eligibility_sha256=snapshot_sha,
+                reference_baseline_sha256=reference["raw_sha256"],
+            )
+            self.rewrite_fake_json(claim_path, claim)
+            # External ledger here belongs to this same temporary FakePlant fixture.
+            (ledger / (item["id"] + ".json")).write_text(
+                json.dumps(claim, indent=2, sort_keys=True) + "\n"
+            )
+
+    def test_challenge_claims_bind_frozen_qualification_and_reference(self):
+        with self.fixture() as (root, out, prepared, plan, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            snapshot = strict_json((out / "baseline-eligibility.json").read_text())
+            self.assertEqual(snapshot["eligibility"], record["baseline_eligibility"])
+            sha = module.digest(out / "baseline-eligibility.json")
+            for arm in record["attempts"][4:]:
+                claim = strict_json((out / (arm["id"] + "_claim.json")).read_text())
+                self.assertEqual(claim["baseline_eligibility_sha256"], sha)
+                self.assertEqual(
+                    claim["reference_baseline_sha256"],
+                    module.digest(out / (arm["reference_baseline"] + ".jsonl")),
+                )
+            verified = module.verify_capture(out)
+            self.assertTrue(verified["baseline_eligibility_recomputed"])
+            self.assertTrue(verified["skip_stop_sequence_checked"])
+
+    def test_frozen_baseline_change_stops_before_challenge_plant_claim(self):
+        with self.fixture() as (_, out, prepared, _, plants, _, _, _, patches, _):
+            execute = patches["_execute_arm"].side_effect
+
+            def change(item, *args):
+                if item["stage"] == "challenge":
+                    path = out / "rl_baseline_1.jsonl"
+                    path.write_text(path.read_text() + "\n")
+                return execute(item, *args)
+
+            patches["_execute_arm"].side_effect = change
+            result = self.launch(out, prepared)
+            self.assertEqual(result["status"], "EXECUTION_EVIDENCE_STOP")
+            self.assertEqual(result["scientific_attempts"], 4)
+            self.assertEqual(len(plants), 4)
+            self.assertFalse((out / "rl_sliding_friction_1_claim.json").exists())
+
+    def test_failed_or_nonrepeatable_baseline_entering_challenge_rejected(self):
+        for mode in ("performance", "repeat"):
+            with (
+                self.subTest(mode=mode),
+                self.fixture() as (root, out, prepared, plan, _, _, _, _, _, _),
+            ):
+                self.launch(out, prepared)
+                record = verify_manifest(out)
+                item = record["attempts"][0 if mode == "performance" else 1]
+                rows = module._read_rows(out / (item["id"] + ".jsonl"))
+                for row in rows[1:]:
+                    if mode == "performance":
+                        row["qvel"][0] = 0.5
+                    else:
+                        row["qpos"][0] += 1e-5
+                self.replace_fake_raw(out, item, rows, plan)
+                self.bind_fake_snapshot(root, out, record, plan)
+                self.reseal_fake(out, record)
+                with self.assertRaisesRegex(
+                    ValueError, "ineligible baseline entered challenge"
+                ):
+                    module.verify_capture(out)
+
+    def test_stop_followed_by_execution_rejected(self):
+        with self.fixture() as (_, out, prepared, plan, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            item = record["attempts"][0]
+            rows = module._read_rows(out / "rl_baseline_1.jsonl")[:2]
+            rows[-1].update(
+                warning_count=1,
+                failure="physics_warning",
+                terminal_reason="physics_warning",
+                controller_update=False,
+                information=None,
+                controller_diagnostics=None,
+                target=None,
+                action=None,
+            )
+            self.replace_fake_raw(out, item, rows, plan)
+            record.update(
+                status="SAFETY_STOP",
+                campaign_complete=False,
+                stopped_case=item["id"],
+                canonical_physics_steps=sum(
+                    a.get("physics_steps", 0) for a in record["attempts"]
+                ),
+            )
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "executed after campaign stop"):
+                module.verify_capture(out)
+
+    def test_raw_sha_drift_rejected_even_resealed(self):
+        with self.fixture() as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            raw = out / "rl_baseline_1.jsonl"
+            raw.write_text(raw.read_text() + "\n")
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "raw SHA"):
+                module.verify_capture(out)
+
+    def test_missing_analysis_never_verified(self):
+        for delete_copy in (False, True):
+            with (
+                self.subTest(delete_copy=delete_copy),
+                self.fixture() as (_, out, prepared, _, _, _, _, _, _, _),
+            ):
+                self.launch(out, prepared)
+                record = verify_manifest(out)
+                if delete_copy:
+                    (out / "rl_baseline_1_analysis.json").unlink()
+                else:
+                    del record["attempts"][0]["analysis"]
+                self.reseal_fake(out, record)
+                with self.assertRaisesRegex(ValueError, "missing analysis"):
+                    module.verify_capture(out)
+
+    def test_reference_hash_tamper_rejected_even_copies_agree(self):
+        for change_item in (False, True):
+            with (
+                self.subTest(change_item=change_item),
+                self.fixture() as (root, out, prepared, plan, _, _, _, _, _, _),
+            ):
+                self.launch(out, prepared)
+                record = verify_manifest(out)
+                item = record["attempts"][4]
+                copy = out / (item["id"] + "_claim.json")
+                claim = strict_json(copy.read_text())
+                claim["reference_baseline_sha256"] = "0" * 64
+                self.rewrite_fake_json(copy, claim)
+                ledger = root / "_runs/substrate_attempts" / plan["raw"]["id"]
+                (ledger / (item["id"] + ".json")).write_text(
+                    json.dumps(claim, indent=2, sort_keys=True) + "\n"
+                )
+                if change_item:
+                    item["reference_baseline_sha256"] = "0" * 64
+                self.reseal_fake(out, record)
+                with self.assertRaisesRegex(ValueError, "reference binding"):
+                    module.verify_capture(out)
+
+    def test_forged_snapshot_rejected_from_independent_replay(self):
+        with self.fixture() as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            record["baseline_eligibility"]["rl"]["eligible"] = False
+            self.rewrite_fake_json(
+                out / "baseline-eligibility.json",
+                {"head": "h", "eligibility": record["baseline_eligibility"]},
+            )
+            record["baseline_eligibility_sha256"] = module.digest(
+                out / "baseline-eligibility.json"
+            )
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(
+                ValueError, "eligibility differs from raw replay"
+            ):
+                module.verify_capture(out)
+
+    def test_wrong_eligibility_skip_reason_rejected(self):
+        with self.fixture(performance=True) as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            self.assertEqual(
+                module.verify_capture(out)["scientific_attempts_checked"], 12
+            )
+            record = verify_manifest(out)
+            record["attempts"][4]["not_run_reason"] = "arbitrary_closed_reason"
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "skipped arm reason"):
+                module.verify_capture(out)
+
+    def test_campaign_completion_lie_rejected(self):
+        with self.fixture() as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            record.update(
+                status="SAFETY_STOP",
+                campaign_complete=False,
+                stopped_case="rl_baseline_1",
+            )
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "completion differs"):
                 module.verify_capture(out)
 
     def test_v2_start_cannot_authorize_this_campaign(self):

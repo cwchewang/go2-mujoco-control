@@ -243,6 +243,12 @@ def _read_rows(path):
 
 
 def _execute_arm(item, run, ledger, prepared_dir, prepared, plan, head):
+    if item["stage"] == "challenge":
+        if _challenge_binding(item, run) != {
+            key: item.get(key)
+            for key in ("baseline_eligibility_sha256", "reference_baseline_sha256")
+        }:
+            raise ValueError("challenge baseline binding drifted before launch")
     config = plan["controllers"][item["controller"]]
     information, timing = config["information"], config["timing"]
     condition = None
@@ -265,7 +271,11 @@ def _execute_arm(item, run, ledger, prepared_dir, prepared, plan, head):
         nonlocal consumed
         if consumed or run.result["scientific_attempts"] >= plan["raw"]["max_attempts"]:
             raise ValueError("attempt duplicate or budget exhausted")
+        if item["stage"] == "challenge":
+            _challenge_binding(item, run)
         claim = {
+            "baseline_eligibility_sha256": item.get("baseline_eligibility_sha256"),
+            "reference_baseline_sha256": item.get("reference_baseline_sha256"),
             **{
                 k: item[k]
                 for k in (
@@ -375,43 +385,151 @@ def _not_run_after(attempts, case, reason):
             item["not_run_reason"] = f"campaign_stopped:{case}:{reason}"
 
 
-def _eligibility(name, run, attempts):
+def _check_analysis(item, directory, plan, consumed):
+    directory = Path(directory)
+    analysis_path = directory / (item["id"] + "_analysis.json")
+    if "analysis" not in item or not analysis_path.is_file():
+        raise ValueError("started arm missing analysis")
+    analysis = item["analysis"]
+    if strict_json(analysis_path.read_text()) != analysis:
+        raise ValueError("analysis copy differs")
+    raw = directory / (item["id"] + ".jsonl")
+    if not raw.is_file() or digest(raw) != analysis["raw_sha256"]:
+        raise ValueError("raw SHA differs from analysis")
+    rows = _read_rows(raw)
+    if (
+        type(item.get("physics_steps")) is not int
+        or not 0 <= item["physics_steps"] <= plan["task"].horizon_ticks
+        or analysis["episode"]["attempt_consumed"] is not consumed
+        or len(rows) != item["physics_steps"] + 1
+        or analysis["frames"] != len(rows)
+        or analysis["physics_steps"] != item["physics_steps"]
+        or analysis["episode"]["steps"] != item["physics_steps"]
+        or (
+            not consumed
+            and not (item["status"] == "SAFETY_STOP" and item["physics_steps"] == 0)
+        )
+    ):
+        raise ValueError("raw analysis/claim accounting differs")
+    replay = replay_baseline(rows, plan)
+    if replay["classification"] == "INCOMPLETE" or replay != analysis["replay"]:
+        raise ValueError("raw performance replay differs")
+    if analysis["episode"]["terminal_reason"] != replay["canonical"]["terminal_reason"]:
+        raise ValueError("episode terminal differs from raw")
+    status = replay["classification"]
+    if item["condition"] is not None:
+        reference = directory / (item["reference_baseline"] + ".jsonl")
+        actual = verify_condition(
+            rows,
+            _read_rows(reference),
+            item["condition"],
+            item["controller"],
+            plan,
+            digest(reference),
+        )
+        if actual != analysis["condition_evidence"]:
+            raise ValueError("condition replay differs")
+        if status != "SAFETY_STOP" and not actual["effective_complete_horizon"]:
+            status = "EXPOSURE_EVIDENCE_STOP"
+    elif analysis["condition_evidence"] is not None:
+        raise ValueError("baseline carries condition evidence")
+    if item["status"] != status or analysis["classification"] != status:
+        raise ValueError("captured classification differs from replay")
+    return replay
+
+
+def _eligibility(name, directory, attempts, plan):
     pair = [
         item
         for item in attempts
         if item["stage"] == "baseline" and item["controller"] == name
     ]
-    if any(item["status"] != "PASS" for item in pair):
-        return {
-            "eligible": False,
-            "reason": "own_baseline_not_passing",
-            "baseline_statuses": [item["status"] for item in pair],
-        }
+    if len(pair) != 2:
+        raise ValueError("own baseline pair incomplete")
+    baselines = []
+    for item in pair:
+        replay = _check_analysis(item, directory, plan, True)
+        baselines.append(
+            {
+                "id": item["id"],
+                "raw_sha256": digest(Path(directory) / (item["id"] + ".jsonl")),
+                "classification": replay["classification"],
+            }
+        )
+    result = {
+        "eligible": False,
+        "reason": "own_baseline_not_passing",
+        "baseline_statuses": [b["classification"] for b in baselines],
+        "baselines": baselines,
+    }
+    if any(b["classification"] != "PASS" for b in baselines):
+        return result
     difference = repeat_difference(
-        *[_read_rows(run.path / (item["id"] + ".jsonl")) for item in pair]
+        *[_read_rows(Path(directory) / (item["id"] + ".jsonl")) for item in pair]
     )
-    return {
-        "eligible": difference["repeatable"],
-        "reason": "repeatable_own_baseline"
+    result.update(
+        eligible=difference["repeatable"],
+        reason="repeatable_own_baseline"
         if difference["repeatable"]
         else "own_baseline_nonrepeatable",
-        "repeat_comparison": difference,
+        repeat_comparison=difference,
+    )
+    return result
+
+
+def _freeze_baselines(run, attempts, plan):
+    eligibility = {
+        name: _eligibility(name, run.path, attempts, plan) for name in ("rl", "mjpc")
     }
+    path = run.path / "baseline-eligibility.json"
+    write_new(path, {"head": run.result["head"], "eligibility": eligibility})
+    run.result["baseline_eligibility"] = eligibility
+    run.result["baseline_eligibility_sha256"] = digest(path)
+
+
+def _frozen_eligibility(run):
+    path = run.path / "baseline-eligibility.json"
+    eligibility = run.result["baseline_eligibility"]
+    if digest(path) != run.result["baseline_eligibility_sha256"] or strict_json(
+        path.read_text()
+    ) != {"head": run.result["head"], "eligibility": eligibility}:
+        raise ValueError("frozen baseline eligibility changed")
+    for own in eligibility.values():
+        for baseline in own["baselines"]:
+            if digest(run.path / (baseline["id"] + ".jsonl")) != baseline["raw_sha256"]:
+                raise ValueError("frozen baseline raw SHA changed")
+    return eligibility
+
+
+def _challenge_binding(item, run):
+    own = _frozen_eligibility(run)[item["controller"]]
+    if not own["eligible"]:
+        raise ValueError("ineligible baseline cannot enter challenge")
+    reference = next(
+        b for b in own["baselines"] if b["id"] == item["reference_baseline"]
+    )
+    binding = {
+        "baseline_eligibility_sha256": run.result["baseline_eligibility_sha256"],
+        "reference_baseline_sha256": reference["raw_sha256"],
+    }
+    if any(key in item and item[key] != value for key, value in binding.items()):
+        raise ValueError("challenge baseline binding drifted")
+    return binding
 
 
 def _run_campaign(run, ledger, prepared_dir, prepared, plan, head):
     attempts = run.result["attempts"]
-    eligibility = run.result["baseline_eligibility"]
     setup_done = False
     for item in attempts:
         try:
             if item["stage"] == "challenge":
-                name = item["controller"]
-                if name not in eligibility:
-                    eligibility[name] = _eligibility(name, run, attempts)
-                if not eligibility[name]["eligible"]:
-                    item["not_run_reason"] = eligibility[name]["reason"]
+                if not run.result["baseline_eligibility"]:
+                    _freeze_baselines(run, attempts, plan)
+                own = _frozen_eligibility(run)[item["controller"]]
+                if not own["eligible"]:
+                    item["not_run_reason"] = own["reason"]
                     continue
+                item.update(_challenge_binding(item, run))
             if current_head(plan) != head:
                 raise ValueError("HEAD changed during campaign")
             verify_bundle(prepared_dir)
@@ -561,104 +679,199 @@ def verify_capture(directory, *, ledger=None):
         plan = load_plan(directory / "capture-plan.json")
         ledger = Path(ledger or ROOT / "_runs/substrate_attempts" / plan["raw"]["id"])
         known = arms(plan)
-        if len(record["attempts"]) != len(known):
+        attempts = record["attempts"]
+        if len(attempts) != len(known):
             raise ValueError("captured arm catalog length differs")
-        for index, (item, frozen) in enumerate(zip(record["attempts"], known), 1):
+        for index, (item, frozen) in enumerate(zip(attempts, known), 1):
             if item["index"] != index or any(item[k] != v for k, v in frozen.items()):
                 raise ValueError("captured arm catalog differs")
-            if item["status"] == "NOT_RUN":
-                if (
-                    not item["not_run_reason"]
-                    or item["not_run_reason"] == "not_reached"
-                ):
-                    raise ValueError("unclosed skipped arm")
-                if (directory / (item["id"] + ".jsonl")).exists():
-                    raise ValueError("skipped arm has raw samples")
-        expected = [
-            a
-            for a in record["attempts"]
-            if (directory / (a["id"] + "_claim.json")).exists()
-        ]
+        consumed_ids = {
+            item["id"]
+            for item in attempts
+            if (directory / (item["id"] + "_claim.json")).exists()
+        }
         if (
-            record["scientific_attempts"] != len(expected)
-            or len(expected) > 20
+            type(record["scientific_attempts"]) is not int
+            or record["scientific_attempts"] != len(consumed_ids)
+            or record["live_runs"] != len(consumed_ids)
+            or len(consumed_ids) > 20
+            or any(
+                type(a.get("physics_steps", 0)) is not int
+                or a.get("physics_steps", 0) < 0
+                for a in attempts
+            )
             or record["canonical_physics_steps"]
-            != sum(a.get("physics_steps", 0) for a in record["attempts"])
+            != sum(a.get("physics_steps", 0) for a in attempts)
             or record["canonical_physics_steps"] > 120000
         ):
             raise ValueError("captured attempt/step accounting differs")
         if set(p.name for p in ledger.iterdir()) != {
             "campaign.json",
-            *[a["id"] + ".json" for a in expected],
+            *[name + ".json" for name in consumed_ids],
         }:
             raise ValueError("external ledger membership differs")
-        if strict_json((ledger / "campaign.json").read_text()) != strict_json(
-            (directory / "campaign-claim.json").read_text()
-        ):
+        campaign = strict_json((ledger / "campaign.json").read_text())
+        if campaign != strict_json((directory / "campaign-claim.json").read_text()):
             raise ValueError("campaign external claim differs")
-        for item in record["attempts"]:
-            consumed = item in expected
+        if campaign != {
+            "head": record["head"],
+            "output": str(directory),
+            "protocol_sha256": digest(directory / "capture-plan.json"),
+            "max_attempts": 20,
+            "physics_steps_max": 120000,
+            "planned_arms": known,
+        }:
+            raise ValueError("campaign claim binding differs")
+        eligibility, eligibility_hash, stopped = None, None, None
+        for item in attempts:
+            status, name = item["status"], item["controller"]
+            consumed = item["id"] in consumed_ids
+            if item["stage"] == "challenge" and eligibility is None and stopped is None:
+                eligibility = {
+                    own: _eligibility(own, directory, attempts, plan)
+                    for own in ("rl", "mjpc")
+                }
+                path = directory / "baseline-eligibility.json"
+                if (
+                    not path.is_file()
+                    or strict_json(path.read_text())
+                    != {"head": record["head"], "eligibility": eligibility}
+                    or record["baseline_eligibility"] != eligibility
+                    or record.get("baseline_eligibility_sha256") != digest(path)
+                ):
+                    raise ValueError(
+                        "frozen baseline eligibility differs from raw replay"
+                    )
+                eligibility_hash = digest(path)
+            if stopped is not None and status != "NOT_RUN":
+                raise ValueError("arm executed after campaign stop")
+            if status == "NOT_RUN":
+                if (
+                    consumed
+                    or item.get("physics_steps", 0)
+                    or "analysis" in item
+                    or any(
+                        (directory / (item["id"] + suffix)).exists()
+                        for suffix in (
+                            ".jsonl",
+                            "_analysis.json",
+                            "_failure.json",
+                            ".native.stderr.log",
+                        )
+                    )
+                ):
+                    raise ValueError("skipped arm has execution evidence")
+                if stopped is not None:
+                    stop_case, stop_status = stopped
+                    reason = (
+                        "execution_or_evidence_failure"
+                        if stop_status == "EXECUTION_EVIDENCE_STOP"
+                        else stop_status
+                    )
+                    expected_reason = f"campaign_stopped:{stop_case}:{reason}"
+                elif item["stage"] != "challenge" or eligibility[name]["eligible"]:
+                    raise ValueError("eligible or baseline arm skipped")
+                else:
+                    expected_reason = eligibility[name]["reason"]
+                if item["not_run_reason"] != expected_reason:
+                    raise ValueError(
+                        "skipped arm reason differs from replayed gate/stop"
+                    )
+                continue
+            if (
+                status
+                not in (
+                    "PASS",
+                    "PERFORMANCE_FAIL",
+                    "SAFETY_STOP",
+                    "EXPOSURE_EVIDENCE_STOP",
+                    "EXECUTION_EVIDENCE_STOP",
+                )
+                or item["not_run_reason"] is not None
+            ):
+                raise ValueError("invalid executed arm status")
+            binding = {
+                "baseline_eligibility_sha256": None,
+                "reference_baseline_sha256": None,
+            }
+            if item["stage"] == "challenge":
+                if not eligibility[name]["eligible"]:
+                    raise ValueError("ineligible baseline entered challenge")
+                reference = next(
+                    b
+                    for b in eligibility[name]["baselines"]
+                    if b["id"] == item["reference_baseline"]
+                )
+                binding = {
+                    "baseline_eligibility_sha256": eligibility_hash,
+                    "reference_baseline_sha256": reference["raw_sha256"],
+                }
+                if any(item.get(key) != value for key, value in binding.items()):
+                    raise ValueError("challenge reference binding differs")
             if consumed:
                 claim = strict_json((ledger / (item["id"] + ".json")).read_text())
-                if (
-                    claim
-                    != strict_json(
-                        (directory / (item["id"] + "_claim.json")).read_text()
-                    )
-                    or claim["head"] != record["head"]
-                    or Path(claim["raw"]) != directory / (item["id"] + ".jsonl")
+                if claim != strict_json(
+                    (directory / (item["id"] + "_claim.json")).read_text()
                 ):
                     raise ValueError("arm external claim differs")
-            if "analysis" not in item:
-                continue
-            rows = _read_rows(directory / (item["id"] + ".jsonl"))
-            analysis = item["analysis"]
-            if (
-                analysis["episode"]["attempt_consumed"] is not consumed
-                or len(rows) != item["physics_steps"] + 1
-                or analysis["physics_steps"] != item["physics_steps"]
-                or (
-                    not consumed
-                    and not (
-                        item["status"] == "SAFETY_STOP" and item["physics_steps"] == 0
-                    )
-                )
+                expected_claim = {
+                    **{
+                        k: item[k]
+                        for k in (
+                            "id",
+                            "controller",
+                            "stage",
+                            "repeat",
+                            "condition",
+                            "reference_baseline",
+                        )
+                    },
+                    **binding,
+                    "index": item["index"],
+                    "head": record["head"],
+                    "raw": str(directory / (item["id"] + ".jsonl")),
+                    "boundary": "first_post_handoff_state_control_sample",
+                    "scope": "scientific",
+                }
+                if claim != expected_claim:
+                    raise ValueError("arm external claim/reference binding differs")
+            _check_analysis(item, directory, plan, consumed)
+            if status in (
+                "SAFETY_STOP",
+                "EXPOSURE_EVIDENCE_STOP",
+                "EXECUTION_EVIDENCE_STOP",
             ):
-                raise ValueError("raw analysis/claim accounting differs")
-            if replay_baseline(rows, plan) != item["analysis"]["replay"]:
-                raise ValueError("raw performance replay differs")
-            if item["condition"] is not None:
-                reference = directory / (item["reference_baseline"] + ".jsonl")
-                actual = verify_condition(
-                    rows,
-                    _read_rows(reference),
-                    item["condition"],
-                    item["controller"],
-                    plan,
-                    digest(reference),
-                )
-                if actual != item["analysis"]["condition_evidence"]:
-                    raise ValueError("condition replay differs")
-            expected_status = item["analysis"]["replay"]["classification"]
+                stopped = (item["id"], status)
+        if eligibility is None and (
+            record["baseline_eligibility"]
+            or record.get("baseline_eligibility_sha256") is not None
+            or (directory / "baseline-eligibility.json").exists()
+        ):
+            raise ValueError("baseline eligibility exists before challenge stage")
+        if stopped is None:
             if (
-                item["condition"] is not None
-                and expected_status != "SAFETY_STOP"
-                and not actual["effective_complete_horizon"]
+                record["status"] != "CAPTURE_COMPLETE"
+                or record["campaign_complete"] is not True
+                or record.get("stopped_case") is not None
             ):
-                expected_status = "EXPOSURE_EVIDENCE_STOP"
-            if (
-                item["status"] != expected_status
-                or item["analysis"]["classification"] != expected_status
-            ):
-                raise ValueError("captured classification differs from replay")
+                raise ValueError("campaign completion differs from arm sequence")
+        elif (
+            record["status"] != stopped[1]
+            or record["campaign_complete"] is not False
+            or record.get("stopped_case") != stopped[0]
+        ):
+            raise ValueError("campaign stop differs from arm sequence")
         return {
             "status": "VERIFIED",
             "head": record["head"],
             "capture_status": record["status"],
             "external_claims_checked": True,
+            "baseline_eligibility_recomputed": eligibility is not None,
+            "skip_stop_sequence_checked": True,
+            "raw_sha_checked": True,
             "canonical_physics_steps": 0,
             "private_planning_calls": 0,
-            "scientific_attempts_checked": len(expected),
+            "scientific_attempts_checked": len(consumed_ids),
         }
 
 

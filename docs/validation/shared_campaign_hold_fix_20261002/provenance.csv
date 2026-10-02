@@ -1,0 +1,3 @@
+raw_path,curated_file,sha256,bytes
+/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/hold_regression_20261002T050822271449Z/summary.json,test_summary.json,a7972136d4c424144adb4f16d61925b303b590e8c53dcafa2768081b435cad06,305
+/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/hold_regression_20261002T050822271449Z/tests.log,substrate_tests.log,2bfdd2e465987a591b119257b8b6e65a8ce6248d86714e02988f33a762ef92aa,27148

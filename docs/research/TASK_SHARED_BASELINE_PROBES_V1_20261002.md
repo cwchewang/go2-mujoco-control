@@ -169,8 +169,11 @@ integration functions are guarded. Cleanup on evidence exceptions is checked.
 [shared_campaign.py](../../tools/substrate/shared_campaign.py) implements the
 fixed20-arm catalog, own-baseline eligibility, fresh instances, durable single
 claims, continuous campaign lock,300s watchdog, whole-campaign stops and closed
-NOT_RUN reasons. Initial safety failure before action consumes zero attempts and
-zero canonical steps. Its CLI exposes only prepare and offline verify; the
+NOT_RUN reasons. Before challenges, the runner freezes raw replayed baseline
+eligibility and raw reference hashes; each challenge claim binds the snapshot
+and paired reference SHA. The offline verifier recomputes both baseline repeats,
+skip/stop sequence and raw SHA, and rejects missing analyses. Initial safety
+failure before action consumes zero attempts and zero canonical steps. Its CLI exposes only prepare and offline verify; the
 capture entry point remains bound to new exact-head reviews and delegation.
 
 [condition_evidence.py](../../tools/substrate/condition_evidence.py) independently
@@ -189,3 +192,7 @@ are never rerun.
 
 The minimal runner regression handoff is recorded in
 [runner results](../validation/shared_campaign_runner_review_20261002/RESULTS.md).
+
+The execution HOLD fix and248-test guarded regression are available for
+re-review in [HOLD fix results](../validation/shared_campaign_hold_fix_20261002/RESULTS.md).
+Qualification and live remain closed while this fix is reviewed.

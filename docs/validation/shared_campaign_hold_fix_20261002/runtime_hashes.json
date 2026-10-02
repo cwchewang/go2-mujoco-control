@@ -1,0 +1,6 @@
+{
+  "tools/substrate/condition_evidence.py": "3debeabe2a61f5a452957be4c6257368e56bedbba9a0eabb950d3af88c9cf458",
+  "tools/substrate/protocols/shared_baseline_probes_v1.json": "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+  "tools/substrate/shared_campaign.py": "43149a54cdc096b1f066b5ea1e9aa57a012dcfcb095e0c58ec86a334a79d3ddb",
+  "tools/substrate/test_shared_campaign.py": "15bfca5185d4b734bddfc184b1f533de9cb003b2d8c5fc20a942cf02693e43b0"
+}
