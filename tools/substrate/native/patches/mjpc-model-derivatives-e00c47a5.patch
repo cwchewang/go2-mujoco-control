@@ -1,0 +1,27 @@
+--- a/mjpc/planners/model_derivatives.cc
++++ b/mjpc/planners/model_derivatives.cc
+@@ -19,6 +19,7 @@
+ #include <mujoco/mujoco.h>
+ #include "mjpc/threadpool.h"
+ #include "mjpc/utilities.h"
++#include "model_derivative_indices.h"
+ 
+ namespace mjpc {
+ 
+@@ -53,14 +54,8 @@
+   evaluate_.clear();
+   interpolate_.clear();
+ 
+-  // evaluate indices
+-  int s = skip + 1;
+-  evaluate_.push_back(0);
+-  for (int t = s; t < T - s; t += s) {
+-    evaluate_.push_back(t);
+-  }
+-  evaluate_.push_back(T - 2);
+-  evaluate_.push_back(T - 1);
++  // evaluate indices; retain the original order without duplicate indices.
++  evaluate_ = go2_substrate::ModelDerivativeEvaluateIndices(T, skip);
+ 
+   // interpolate indices
+   for (int t = 0, e = 0; t < T; t++) {

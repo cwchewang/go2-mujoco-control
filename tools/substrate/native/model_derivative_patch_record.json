@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "upstream_repository": "https://github.com/johnzhang3/mujoco_mpc.git",
+  "upstream_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+  "pinned_source_path": "mjpc/planners/model_derivatives.cc",
+  "pinned_source_git_blob": "03f67529a212d6c11f2dcad0a4bf44edd78fa1f2",
+  "pinned_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+  "generated_overlay_delta_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+  "overlay_generator": "tools/substrate/native/patch_mjpc_model_derivatives.py",
+  "index_helper": "tools/substrate/native/model_derivative_indices.h",
+  "index_test": "tools/substrate/native/model_derivative_indices_test.cc",
+  "simulation_runs_authorized": false,
+  "modified_pinned_checkout": false,
+  "generated_overlay_patch_file": "tools/substrate/native/patches/mjpc-model-derivatives-e00c47a5.patch"
+}
