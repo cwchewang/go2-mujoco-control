@@ -129,13 +129,33 @@ the actual CLI logs, claims and94-member archive.
 See the [verified friction closeout](validation/rl_sliding_friction_reference_v1_closeout_20261002/RESULTS.md).
 
 Together with the old RL baseline PASS and single adapted MJPC safety stop,
-this completes the delegated bounded third-stage local deliverable: one frozen
+this completes one local experiment: a frozen
 RL friction-condition point, without an aligned12s MJPC comparator. It does not
+complete the user's third stage of finding a research topic. It does not
 establish a controller ranking, stable MJPC failure mechanism, generic robustness
 or a complete Gate0. The old campaign and17 NOT_RUN remain closed, and #189's
 low-friction erratum remains unchanged. RL boundary and MJPC zero-forward-command
-studies are possible next-stage options awaiting user selection and independent
+studies remain conditional diagnostic proposals requiring independent
 prospective tasks. No fourth-stage method work is started.
+
+The user corrected the stage scope after local closeout: third-stage topic
+selection remains ACTIVE / OPEN. The premature stage-completion wording in the
+local closeout/navigation at3ae9a7c is superseded here; scientific raw, metrics,
+claims and two reviewers' local acceptance remain unchanged.
+The [new read-only diagnosis](validation/stage3_topic_diagnosis_20261002/RESULTS.md)
+confirms the correct pinned Go2 source branch, but finds private-versus-canonical
+joint damping2.0 versus0.1, root mass7.521 versus6.921kg, floor-0.01 versus0m,
+foot-contact impedance differences and missing private actuator force limits.
+Both use impratio100; home and named PD mapping agree. These are material
+prediction/adaptation confounds, not proof of the RR_calf cause or an iLQR limit.
+MuJoCo evaluation and passing RL remain usable; this adapted MJPC is not yet
+a useful strong comparator. Repair is engineering and must stay bounded.
+Zero-forward still forces Walk/Manual Trot and cannot isolate static stability.
+The minimum proposal is a source-bound parity/evidence audit followed only
+under new independent scopes by instrumented frozen-versus-corrected prediction
+one-arm3s diagnostics, total proposed canonical cap3000steps; none is launched.
+RL command-space and temporal-response candidates remain testable without this
+MJPC candidate; none is yet a novelty verdict or selected paper topic.
 
 ### Scientifically verified results
 
