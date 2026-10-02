@@ -5,7 +5,7 @@ This task asks whether the already passing frozen RL adapter sustains the same
 decides whether this card supplies a bounded RL condition effect worth retaining
 in the capability map; it does not select a controller family or explain MJPC.
 
-Mode: prospective bounded scientific task, first delivery is FROZEN / NOT_RUN.
+Mode: CLOSED / VERIFIED; two arms PASS, frozen budget exhausted; both independent closeout reviews approved. The original prospective specification below is retained.
 Parent: `d4bccb60f4fb8c6a63ed85da409b29c0b642cec8`.
 Branch: `research/rl-friction-reference-prep-20261002`.
 Protocol: [rl_sliding_friction_reference_v1.json](../../tools/substrate/protocols/rl_sliding_friction_reference_v1.json).
@@ -98,3 +98,14 @@ lock continuously from fresh preflight through capture. A valid START reserves
 the unique new ledger before preflight, so preflight failure also permanently
 closes this campaign without consuming a scientific arm. Old17 NOT_RUN and
 all prior raw/claims remain immutable.
+
+## Actual closeout
+
+The [verified result](../validation/rl_sliding_friction_reference_v1_closeout_20261002/RESULTS.md)
+records capture HEAD849b7aa13c82b13880cfc214083f2473e794e83e, exactly2 scientific
+attempts/12000 canonical steps/0 private planning calls, both arms PASS and
+independent raw/real-ledger verification. The two identical raw traces establish
+deterministic reproduction, not independent statistical seeds. Science and
+execution final read-only closeout both approved the bounded third-stage result.
+The protocol is closed; old17 NOT_RUN stay closed. Broader evidence gaps and
+any next-stage RL/MJPC study require user selection and a new prospective task.

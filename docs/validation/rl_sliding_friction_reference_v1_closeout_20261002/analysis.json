@@ -1,0 +1,167 @@
+{
+  "attempts": [
+    {
+      "auxiliary": {
+        "actual": {
+          "affects_primary_classification": false,
+          "body_vx_mae_mps": 0.13324509292757755,
+          "body_vx_mean_mps": 0.8667549070724224,
+          "endpoint_in_performance_mean": false,
+          "measurement_samples": 3000,
+          "measurement_window": "[6,12)",
+          "status": "COMPLETE"
+        },
+        "paired_mae_delta_mps": 0.018651561864547098,
+        "paired_mean_delta_mps": -0.018651561864547084,
+        "reference": {
+          "affects_primary_classification": false,
+          "body_vx_mae_mps": 0.11459353106303045,
+          "body_vx_mean_mps": 0.8854064689369695,
+          "endpoint_in_performance_mean": false,
+          "measurement_samples": 3000,
+          "measurement_window": "[6,12)",
+          "status": "COMPLETE"
+        }
+      },
+      "condition": {
+        "actual_exposure_observed": true,
+        "card_setting_observed": true,
+        "effective_complete_horizon": true,
+        "exposure_status": "EXPOSED_COMPLETE",
+        "first_confirmed_exposure_state_tick": 3001,
+        "metric_scope": "whole_episode_operational; no recovery_time_or_post6s_claim",
+        "paired_baseline_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "paired_prefix_maximum_difference": 0.0,
+        "paired_prefix_through_tick": 3000,
+        "paired_prefix_valid": true,
+        "payload_packets_independently_checked": 600
+      },
+      "condition_summary": {
+        "changed_contact_samples": 5726,
+        "delayed_updates": 0,
+        "force_ticks": 0,
+        "id": "sliding_friction",
+        "nominal_applied_impulse_Ns": 0.0,
+        "physical_sha256_after": "66b368197539cec7dc1f1c4cf5d6ec08a7dad79cbed0244dfd0ff8162ff530cb",
+        "physical_sha256_before": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+        "private_controller_model_changed": false
+      },
+      "frames": 6001,
+      "id": "rl_friction_1",
+      "main": {
+        "body_vx_mae_mps": 0.12589866958444307,
+        "body_vx_mean_mps": 0.8741013304155569,
+        "endpoint_in_performance_mean": false,
+        "episode_lateral_max_m": 0.2157132126312139,
+        "episode_yaw_max_rad": 0.058912605785149834,
+        "measurement_samples": 5000,
+        "measurement_window": "[2,12)"
+      },
+      "raw_sha256": "151dfa3c8a7a24418dd0fbbfcfaaa015788b00e0cf56002a6ad38397adb7fb58",
+      "status": "PASS",
+      "steps": 6000
+    },
+    {
+      "auxiliary": {
+        "actual": {
+          "affects_primary_classification": false,
+          "body_vx_mae_mps": 0.13324509292757755,
+          "body_vx_mean_mps": 0.8667549070724224,
+          "endpoint_in_performance_mean": false,
+          "measurement_samples": 3000,
+          "measurement_window": "[6,12)",
+          "status": "COMPLETE"
+        },
+        "paired_mae_delta_mps": 0.018651561864547098,
+        "paired_mean_delta_mps": -0.018651561864547084,
+        "reference": {
+          "affects_primary_classification": false,
+          "body_vx_mae_mps": 0.11459353106303045,
+          "body_vx_mean_mps": 0.8854064689369695,
+          "endpoint_in_performance_mean": false,
+          "measurement_samples": 3000,
+          "measurement_window": "[6,12)",
+          "status": "COMPLETE"
+        }
+      },
+      "condition": {
+        "actual_exposure_observed": true,
+        "card_setting_observed": true,
+        "effective_complete_horizon": true,
+        "exposure_status": "EXPOSED_COMPLETE",
+        "first_confirmed_exposure_state_tick": 3001,
+        "metric_scope": "whole_episode_operational; no recovery_time_or_post6s_claim",
+        "paired_baseline_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "paired_prefix_maximum_difference": 0.0,
+        "paired_prefix_through_tick": 3000,
+        "paired_prefix_valid": true,
+        "payload_packets_independently_checked": 600
+      },
+      "condition_summary": {
+        "changed_contact_samples": 5726,
+        "delayed_updates": 0,
+        "force_ticks": 0,
+        "id": "sliding_friction",
+        "nominal_applied_impulse_Ns": 0.0,
+        "physical_sha256_after": "66b368197539cec7dc1f1c4cf5d6ec08a7dad79cbed0244dfd0ff8162ff530cb",
+        "physical_sha256_before": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+        "private_controller_model_changed": false
+      },
+      "frames": 6001,
+      "id": "rl_friction_2",
+      "main": {
+        "body_vx_mae_mps": 0.12589866958444307,
+        "body_vx_mean_mps": 0.8741013304155569,
+        "endpoint_in_performance_mean": false,
+        "episode_lateral_max_m": 0.2157132126312139,
+        "episode_yaw_max_rad": 0.058912605785149834,
+        "measurement_samples": 5000,
+        "measurement_window": "[2,12)"
+      },
+      "raw_sha256": "151dfa3c8a7a24418dd0fbbfcfaaa015788b00e0cf56002a6ad38397adb7fb58",
+      "status": "PASS",
+      "steps": 6000
+    }
+  ],
+  "canonical_physics_steps": 12000,
+  "capture": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/rl_sliding_friction_reference_v1/run_20261002T130923251546Z",
+  "capture_manifest_sha256": "5154e8406abff5ed2a6f3f5721fd8879893a5292bc0a9314fa1fc861ad2425a8",
+  "formal_start_utc": "2026-10-02T13:14:08.813216+00:00",
+  "formal_stderr_bytes": 0,
+  "formal_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "formal_stdout_sha256": "e5669263e9c270229b4146e18f85bb1e51c4753f1e08fbce3404a96579734bee",
+  "head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+  "pid": 773698,
+  "preentry_wrapper_failure": {
+    "canonical_physics_steps": 0,
+    "correction": "invoke reviewed module directly with repository cwd; same admission and output paths",
+    "error": "ModuleNotFoundError: tools; absolute script path omitted repository import path",
+    "formal_campaign_ledger_created": false,
+    "phase": "wrapper_import_before_reviewed_capture_entry",
+    "pid": 772778,
+    "private_planning_calls": 0,
+    "query_utc": "2026-10-02T13:13:51.590404+00:00",
+    "scientific_attempts": 0,
+    "stderr_sha256": "7dcccf7f55aecfb958c3741307d1c6370e864442f7fdc99fb89a30e013687c5d",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker_source_sha256": "828503353f6a2f56487b4dd49751bffcabbe155dc5a59a7669f880f0485dce8a"
+  },
+  "private_planning_calls": 0,
+  "raw_identical": true,
+  "repeat_comparison": {
+    "maximum_absolute_state_control_difference": 0.0,
+    "repeatable": true
+  },
+  "scientific_attempts": 2,
+  "status": "CAPTURE_COMPLETE",
+  "verification": {
+    "canonical_physics_steps": 0,
+    "capture_status": "CAPTURE_COMPLETE",
+    "external_claims_checked": true,
+    "head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+    "paired_prefix_exposure_and_auxiliary_checked": true,
+    "private_planning_calls": 0,
+    "scientific_attempts_checked": 2,
+    "status": "VERIFIED"
+  }
+}

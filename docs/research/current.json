@@ -1,10 +1,10 @@
 {
   "branch": "research/rl-friction-reference-prep-20261002",
-  "title": "Independent RL sliding-friction reference v1: prospective freeze",
+  "title": "Independent RL sliding-friction reference v1: verified closeout",
   "task": "docs/research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md",
-  "result": "docs/validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md",
-  "stage": "Independent RL-only real capture/verify entry complete, including strict arm-stop ordering and integer accounting; final source-bound qualification/preparation are handed off in one full_review_packet bundle; actual new campaign NOT_RUN",
-  "scientific_status": "Old shared campaign remains permanently closed at3 attempts/13287 steps with17 NOT_RUN. New task budgets2 fresh RL friction repeats/12000 steps, actual0 attempts/0 canonical or private physics. Gate0 incomplete",
-  "last_live_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
-  "next": "Use the final full_review_packet bundle for one incremental exact-head science/execution review, then bound START and fresh locked preflight/capture. Preserve all old17 NOT_RUN and all prior sealed receipts"
+  "result": "docs/validation/rl_sliding_friction_reference_v1_closeout_20261002/RESULTS.md",
+  "stage": "Bounded third-stage local deliverable closed: two RL friction PASS arms; independent raw/real-ledger verification and both final read-only reviews approved",
+  "scientific_status": "New campaign consumed2 scientific attempts/12000 canonical steps/0 private planning calls. Identical raw is deterministic reproduction, not independent statistical seeds. Old campaign remains closed at3 attempts/13287 steps with17 NOT_RUN; MJPC useful-baseline gate and Gate0 remain incomplete",
+  "last_live_head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+  "next": "No further run or review is required for this closeout. Preserve all sealed evidence. Any RL boundary or MJPC zero-forward-command next-stage study awaits user selection and a separate prospective task; no fourth-stage method work is started"
 }

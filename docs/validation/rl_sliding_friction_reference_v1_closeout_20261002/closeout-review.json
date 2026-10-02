@@ -1,0 +1,18 @@
+{
+  "source_head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+  "attested_by_source_thread": "01a0f08f-d223-7240-813b-ee93267b700d",
+  "evidence_type": "Final reviewer outcomes and turn references relayed by the delegating parent; original full review transcripts are not copied here.",
+  "science": {
+    "reviewer_thread": "01a0f819-d2cc-728a-baf2-30ec9050b08e",
+    "turn": "01a0fccf-080c-726f-b27e-06d1545899cf",
+    "verdict": "APPROVED",
+    "scope": "Bounded third-stage deliverable complete; deterministic repetition, no independent seeds; 5726 active foot-floor records cover2948 ticks; no further physics needed."
+  },
+  "execution": {
+    "reviewer_thread": "01a0f7d0-411d-7446-9b73-68efe68130bf",
+    "turn": "01a0fccf-2d94-72bf-97e6-76e1544e1bde",
+    "verdict": "APPROVED / VERIFIED",
+    "scope": "PID exited; one real campaign and two claims; initial wrapper failed before import/API entry with zero attempts/physics; old17 NOT_RUN preserved."
+  },
+  "new_physics_authorized": false
+}

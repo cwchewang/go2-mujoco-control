@@ -100,7 +100,7 @@ at tick1287/2.574s for nonfoot_contact; zero-integration terminal reconstruction
 confirmed the floor/RR_calf pair. One MJPC trial does not establish a stable
 failure mechanism or controller-family ranking. The remaining17 arms, including
 all16 challenges, were NOT_RUN. The four-baseline stage did not complete;
-stage3 robustness has no result and the MJPC useful-baseline gate remains unmet.
+the old campaign challenge stage has no result and the MJPC useful-baseline gate remains unmet.
 The local official verifier checked raw integrity and the real external ledger.
 The campaign is permanently closed with no retry or replacement; see
 [verified safety-stop closeout](validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
@@ -108,22 +108,41 @@ Native private rollouts were real and their total integration count is unknown.
 Gate0 remains incomplete. The read-only diagnosis is complete: all foot contact
 constraints disappear from2.450s, with floor/RR_calf safety stop at2.574s; sealed
 raw has no private predicted trajectory/contact sequence, so no causal mechanism
-is established. The separately delegated [RL friction prospective task](research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md)
-freezes one mu0.8-to0.3 card and two new RL repeats paired to these sealed passing
-RL references. Its budget is12000 canonical steps; actual new attempts/steps are0.
-Its independent real two-arm runner and [current-input qualification](validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md)
-now pass zero-physics engineering checks, with290 fresh Python tests and explicit
-reuse of unchanged sealed native checks. The final exact-head preparation/review
-packet precedes incremental science/execution approval and bound START; no new
-scientific attempt, canonical integration or private planner call has occurred.
-This is an independent task; the stopped campaign and17 NOT_RUN arms remain closed.
+is established. The separately delegated [RL friction task](research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md)
+now closes at live HEAD849b7aa13c82b13880cfc214083f2473e794e83e. Its independent
+mu0.8-to0.3-at6s card consumed2 fresh scientific attempts/12000 canonical steps,
+with0 private planning calls; both12s arms PASS. Primary mean body-vx is0.874101m/s
+and MAE0.125899m/s, giving paired mean delta−0.011191m/s. The predeclared [6,12)
+auxiliary mean is0.866755m/s, paired delta−0.018652m/s. Whole-episode lateral
+max0.215713m and yaw max0.058913rad pass their original0.3 bounds.
+Each arm verifies5726 changed active foot-floor contact-friction records over2948
+ticks, first exposed state tick3001/6.002s; these are contact records, not
+independent statistical samples or contact forces. Paired pre-intervention
+prefix difference is0. Identical raw SHA151dfa3c8a7a24418dd0fbbfcfaaa015788b00e0cf56002a6ad38397adb7fb58
+establishes deterministic reproduction, not independent statistical seeds.
+The official independent raw/real-ledger replay is VERIFIED; both original
+science and execution final read-only reviews approved. Current-input
+qualification ran292 fresh Python checks and explicitly reused unchanged
+sealed native checks. The failed initial wrapper entered no capture API and
+consumed0 attempts/physics; its source and full logs remain preserved alongside
+the actual CLI logs, claims and94-member archive.
+See the [verified friction closeout](validation/rl_sliding_friction_reference_v1_closeout_20261002/RESULTS.md).
+
+Together with the old RL baseline PASS and single adapted MJPC safety stop,
+this completes the delegated bounded third-stage local deliverable: one frozen
+RL friction-condition point, without an aligned12s MJPC comparator. It does not
+establish a controller ranking, stable MJPC failure mechanism, generic robustness
+or a complete Gate0. The old campaign and17 NOT_RUN remain closed, and #189's
+low-friction erratum remains unchanged. RL boundary and MJPC zero-forward-command
+studies are possible next-stage options awaiting user selection and independent
+prospective tasks. No fourth-stage method work is started.
 
 ### Scientifically verified results
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
 #189 九例 map。原始轨迹与尝试账本未改写；语义修正见 erratum。没有证据证明
 跨 controller bottleneck、普遍低摩擦鲁棒性或论文 gap；Gate 0 仍未完成。
-2026-10-02 的12s shared baseline 两次 RL PASS 和一次 adapted MJPC 非足接触安全停止，亦限于该冻结条件；所有挑战未运行，不构成 robustness map 或跨控制器排名。执行 frontier 跟随 `CURRENT.md`。
+2026-10-02 的12s shared baseline 两次 RL PASS 和一次 adapted MJPC 非足接触安全停止，亦限于该冻结条件；旧 shared campaign 的所有挑战未运行。独立 RL friction card 两次 PASS 已经 raw/真实账本验证和双末审通过，仅提供单一冻结条件点和确定性复现，不构成普遍 robustness map 或跨控制器排名。执行 frontier 跟随 `CURRENT.md`。
 
 ## 1D. [2026-09-24 | VERIFIED / BOUNDED; 2026-09-28 ERRATUM] RL capability map 正式完成
 
