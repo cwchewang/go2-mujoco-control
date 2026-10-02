@@ -1232,3 +1232,212 @@ class ConditionEvidenceTests(unittest.TestCase):
         )
         self.assertEqual(actual["exposure_status"], "NOT_EXPOSED_HORIZON")
         self.assertFalse(actual["effective_complete_horizon"])
+
+
+class FreshPreflightTests(unittest.TestCase):
+    """Real campaign -> launcher -> child preflight; only receipt/lock paths are fixtures."""
+
+    def setUp(self):
+        import subprocess
+
+        from . import launch
+
+        self.launch = launch
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.lock_path = self.root / "fixture.lock"
+        self.runner = self.root / "tools/substrate/shared_campaign.py"
+        self.runner.parent.mkdir(parents=True)
+        self.runner.write_text(
+            'raise AssertionError("preflight must never execute the runner")\n'
+            + Path(module.__file__).read_text()
+        )
+        self.qdir = self.root / "_runs/fixture_qualification"
+        self.qdir.mkdir(parents=True)
+        self.reference = {
+            "path": str(self.qdir),
+            "manifest_sha256": "FAKE RECEIPT FIXTURE ONLY",
+            "producer_head": "FAKE RECEIPT FIXTURE ONLY",
+            "fingerprint": "FAKE RECEIPT FIXTURE ONLY",
+        }
+        (self.qdir / "reference.json").write_text(json.dumps(self.reference))
+        self.called = self.qdir / "validator_called"
+        self.output = self.root / "_runs/capture"
+        (self.root / ".gitignore").write_text("_runs/\nfixture.lock\n")
+        self.git = lambda *args: subprocess.check_output(
+            ["git", *args], cwd=self.root, stderr=subprocess.DEVNULL, text=True
+        ).strip()
+        self.git("init", "-b", "fixture")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("config", "user.name", "Fixture")
+        self.git("add", ".")
+        self.git("commit", "-m", "runner fixture")
+        self.base = self.git("rev-parse", "HEAD")
+
+        # Production preflight, CLI arguments and inherited descriptor run in a
+        # real child. Its receipt validator boundary is synthetic, and only the
+        # fixed global lock pathname is mapped to this fixture's actual lock.
+        # No production launch/preflight/run_logged function is replaced.
+        child = self.root / "tools/research/preflight.py"
+        child.parent.mkdir(parents=True)
+        child.write_text(
+            f"import sys\nsys.path.insert(0, {str(module.ROOT)!r})\n"
+            "import json, os\nfrom pathlib import Path\n"
+            "from unittest.mock import patch\n"
+            "from tools.research import preflight\n"
+            "from tools.substrate import qualification\n"
+            "from tools.substrate.guards import zero_step_guard\n"
+            f"lock_path = {str(self.lock_path)!r}\n"
+            "real_stat = os.stat\n"
+            "def fixture_stat(path, *args, **kwargs):\n"
+            "    if path == '/tmp/go2_mujoco_experiment.lock':\n"
+            "        path = lock_path\n"
+            "    return real_stat(path, *args, **kwargs)\n"
+            "def fixture_validate(path):\n"
+            "    directory = Path(path)\n"
+            "    (directory / 'validator_called').write_text('fixture only')\n"
+            "    value = json.loads((directory / 'reference.json').read_text())\n"
+            "    if value.get('invalid'):\n"
+            "        raise ValueError('invalid qualification fixture')\n"
+            "    return value\n"
+            "with patch.object(os, 'stat', side_effect=fixture_stat), "
+            "patch.object(qualification, 'validate', side_effect=fixture_validate), "
+            "zero_step_guard():\n"
+            "    raise SystemExit(preflight.main())\n"
+        )
+        protocol = self.root / "tools/substrate/protocols/fixture.json"
+        protocol.parent.mkdir()
+        protocol.write_text('{"fixture": true}\n')
+        self.commit()
+
+    def commit(self):
+        self.git("add", ".")
+        self.git("commit", "--allow-empty", "-m", "preflight fixture")
+        self.head = self.git("rev-parse", "HEAD")
+
+    def call(self, *, review_head=None):
+        from .integrity import experiment_lock
+
+        review = {
+            "head": review_head or self.head,
+            "science": {
+                "verdict": "APPROVED",
+                "reviewer": "FAKE SCIENCE FIXTURE ONLY",
+                "evidence": "FAKE FIXTURE ONLY; no real launch review",
+            },
+            "execution": {
+                "verdict": "APPROVED",
+                "reviewer": "FAKE EXECUTION FIXTURE ONLY",
+                "evidence": "FAKE FIXTURE ONLY; no real launch review",
+            },
+        }
+        plan = {
+            "raw": {
+                "id": "shared-baseline-probes-v1",
+                "expected_branch": "fixture",
+                "accepted_parent_head": self.base,
+            }
+        }
+        with (
+            experiment_lock(self.lock_path) as lock,
+            mock.patch.object(module, "ROOT", self.root),
+            mock.patch.object(module, "__file__", str(self.runner)),
+            mock.patch.object(self.launch, "ROOT", self.root),
+            mock.patch.object(
+                module, "MujocoPlant", side_effect=AssertionError("physics")
+            ),
+            mock.patch.object(
+                module, "NativeMJPCController", side_effect=AssertionError("native")
+            ),
+            mock.patch.object(
+                module, "FrozenPolicy", side_effect=AssertionError("policy")
+            ),
+        ):
+            try:
+                return module._fresh_preflight(
+                    lock,
+                    self.head,
+                    review,
+                    plan,
+                    {"qualification": self.reference},
+                    self.output,
+                )
+            finally:
+                # The child used the same inherited open description. It must
+                # not release the parent's lock at its terminal outcome.
+                with self.lock_path.open("a") as competitor:
+                    with self.assertRaises(BlockingIOError):
+                        fcntl.flock(competitor.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                self.assertFalse(self.output.exists())
+                self.assertFalse((self.root / "_runs/substrate_attempts").exists())
+
+    def report(self):
+        reports = list(
+            (self.root / "_runs/shared_campaign_preflight").glob("*/report.json")
+        )
+        self.assertEqual(len(reports), 1)
+        return json.loads(reports[0].read_text())
+
+    def test_real_campaign_preflight_accepts_receipt_without_duplicate_tests(self):
+        from .integrity import verify_bundle
+
+        reference = self.call()
+        report = self.report()
+        self.assertTrue(report["pass"])
+        self.assertEqual(report["tests"], [])
+        self.assertEqual(report["qualification"], self.reference)
+        self.assertTrue(self.called.exists())
+        checks = {item["name"]: item["status"] for item in report["checks"]}
+        for name in (
+            "reviewed_inprocess_runner",
+            "qualification_receipt_valid",
+            "changed_surface_has_no_live_test",
+            "sol_review_exact_head",
+        ):
+            self.assertEqual(checks[name], "PASS")
+        self.assertFalse(any(name.startswith("dds_") for name in checks))
+        self.assertEqual(set(report["changes"]["surfaces"]), {"runtime", "schema"})
+        admission = verify_bundle(reference["path"])
+        self.assertEqual(admission["canonical_physics_steps"], 0)
+        self.assertEqual(admission["scientific_attempts"], 0)
+
+    def test_missing_transport_reproduces_both_failures_and_skips_receipt(self):
+        import subprocess
+
+        self.runner.write_text(
+            self.runner.read_text().replace('TRANSPORT = "inprocess"\n', "")
+        )
+        self.commit()
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.call()
+        report = self.report()
+        self.assertFalse(report["pass"])
+        checks = {item["name"]: item["status"] for item in report["checks"]}
+        self.assertEqual(checks["reviewed_inprocess_runner"], "FAIL")
+        self.assertEqual(checks["changed_surface_has_no_live_test"], "FAIL")
+        self.assertNotIn("qualification_receipt_valid", checks)
+        self.assertFalse(self.called.exists())
+
+    def test_invalid_receipt_still_blocks_changed_runtime(self):
+        import subprocess
+
+        (self.qdir / "reference.json").write_text(
+            json.dumps(dict(self.reference, invalid=True))
+        )
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.call()
+        checks = {item["name"]: item["status"] for item in self.report()["checks"]}
+        self.assertEqual(checks["reviewed_inprocess_runner"], "PASS")
+        self.assertEqual(checks["qualification_receipt_valid"], "FAIL")
+        self.assertEqual(checks["changed_surface_has_no_live_test"], "FAIL")
+        self.assertTrue(self.called.exists())
+
+    def test_wrong_review_head_stops_before_child_preflight(self):
+        with self.assertRaisesRegex(ValueError, "exact launch HEAD"):
+            self.call(review_head="0" * 40)
+        self.assertFalse(self.called.exists())
+        self.assertEqual(
+            list((self.root / "_runs/shared_campaign_preflight").glob("*/report.json")),
+            [],
+        )

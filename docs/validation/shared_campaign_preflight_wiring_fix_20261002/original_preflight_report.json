@@ -1,0 +1,315 @@
+{
+  "changes": {
+    "auto_surfaces": [
+      "runtime",
+      "schema"
+    ],
+    "diff_base": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde",
+    "manual_surfaces": [],
+    "paths": [
+      "CURRENT.md",
+      "docs/PROJECT_RECORD.md",
+      "docs/research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md",
+      "docs/research/current.json",
+      "docs/validation/aligned_flat_capture_v2_closeout_20261002/RESULTS.md",
+      "docs/validation/aligned_flat_capture_v2_closeout_20261002/manifest.json",
+      "docs/validation/aligned_flat_capture_v2_closeout_20261002/provenance.csv",
+      "docs/validation/aligned_flat_capture_v2_closeout_20261002/science_review_received.json",
+      "docs/validation/shared_baseline_probes_prep_20261002/RESULTS.md",
+      "docs/validation/shared_baseline_probes_prep_20261002/default_fake_neutrality.json",
+      "docs/validation/shared_baseline_probes_prep_20261002/focused_tests.log",
+      "docs/validation/shared_baseline_probes_prep_20261002/manifest.json",
+      "docs/validation/shared_baseline_probes_prep_20261002/precheck_receipt.json",
+      "docs/validation/shared_baseline_probes_prep_20261002/provenance.csv",
+      "docs/validation/shared_baseline_probes_prep_20261002/runtime_hashes.json",
+      "docs/validation/shared_baseline_probes_prep_20261002/substrate_tests.log",
+      "docs/validation/shared_baseline_probes_prep_20261002/test_summary.json",
+      "docs/validation/shared_campaign_hold_fix_20261002/RESULTS.md",
+      "docs/validation/shared_campaign_hold_fix_20261002/manifest.json",
+      "docs/validation/shared_campaign_hold_fix_20261002/provenance.csv",
+      "docs/validation/shared_campaign_hold_fix_20261002/runtime_hashes.json",
+      "docs/validation/shared_campaign_hold_fix_20261002/substrate_tests.log",
+      "docs/validation/shared_campaign_hold_fix_20261002/test_summary.json",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/RESULTS.md",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/manifest.json",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/precheck_summary.json",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/provenance.csv",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/runtime_hashes.json",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/science_hold_received.json",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/substrate_tests.log",
+      "docs/validation/shared_campaign_protocol_identity_fix_20261002/test_summary.json",
+      "docs/validation/shared_campaign_qualification_20261002/RESULTS.md",
+      "docs/validation/shared_campaign_qualification_20261002/controller_build.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/controller_build.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/controller_configure.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/controller_configure.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/controller_tests.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/controller_tests.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/diff_check.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/diff_check.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/manifest.json",
+      "docs/validation/shared_campaign_qualification_20261002/native_static.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/native_static.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/preflight_tests.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/preflight_tests.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/provenance.csv",
+      "docs/validation/shared_campaign_qualification_20261002/qualification_receipt.json",
+      "docs/validation/shared_campaign_qualification_20261002/qualification_summary.json",
+      "docs/validation/shared_campaign_qualification_20261002/quality.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/quality.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/raw_qualification_manifest.json",
+      "docs/validation/shared_campaign_qualification_20261002/substrate_tests.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/substrate_tests.stdout",
+      "docs/validation/shared_campaign_qualification_20261002/tooling_tests.stderr",
+      "docs/validation/shared_campaign_qualification_20261002/tooling_tests.stdout",
+      "docs/validation/shared_campaign_runner_review_20261002/RESULTS.md",
+      "docs/validation/shared_campaign_runner_review_20261002/manifest.json",
+      "docs/validation/shared_campaign_runner_review_20261002/preserved_raw_attempts.json",
+      "docs/validation/shared_campaign_runner_review_20261002/provenance.csv",
+      "docs/validation/shared_campaign_runner_review_20261002/runtime_hashes.json",
+      "docs/validation/shared_campaign_runner_review_20261002/substrate_tests.log",
+      "docs/validation/shared_campaign_runner_review_20261002/test_summary.json",
+      "docs/validation/shared_campaign_source_reviews_20261002/RESULTS.md",
+      "docs/validation/shared_campaign_source_reviews_20261002/execution_review_received.json",
+      "docs/validation/shared_campaign_source_reviews_20261002/manifest.json",
+      "docs/validation/shared_campaign_source_reviews_20261002/science_review_received.json",
+      "tools/substrate/aligned_episode.py",
+      "tools/substrate/bounded_conditions.py",
+      "tools/substrate/condition_evidence.py",
+      "tools/substrate/protocols/shared_baseline_probes_v1.json",
+      "tools/substrate/qualify.py",
+      "tools/substrate/shared_baseline.py",
+      "tools/substrate/shared_campaign.py",
+      "tools/substrate/test_bounded_conditions.py",
+      "tools/substrate/test_shared_campaign.py"
+    ],
+    "surfaces": [
+      "runtime",
+      "schema"
+    ]
+  },
+  "checks": [
+    {
+      "detail": "0402009534a6b91040327659c704d1f3768d1e08",
+      "name": "git_head_readable",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual_branch": "research/shared-baseline-probes-prep-20261002",
+        "actual_head": "0402009534a6b91040327659c704d1f3768d1e08",
+        "expected_branch": "research/shared-baseline-probes-prep-20261002",
+        "expected_head": "0402009534a6b91040327659c704d1f3768d1e08",
+        "head_matches": true,
+        "mode": "named",
+        "pass": true,
+        "praxis_binding": {
+          "check_pass": true,
+          "complete": false,
+          "expected_transport_identity_complete": false,
+          "mismatches": {},
+          "missing": [
+            "PRAXIS_REPOSITORY",
+            "PRAXIS_ISSUE_NUMBER",
+            "PRAXIS_TASK_BRANCH",
+            "PRAXIS_TASK_COMMIT",
+            "PRAXIS_TASK_PATH"
+          ],
+          "present": false,
+          "valid": false
+        },
+        "stderr": ""
+      },
+      "name": "expected_branch",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "check_pass": true,
+        "complete": false,
+        "expected_transport_identity_complete": false,
+        "mismatches": {},
+        "missing": [
+          "PRAXIS_REPOSITORY",
+          "PRAXIS_ISSUE_NUMBER",
+          "PRAXIS_TASK_BRANCH",
+          "PRAXIS_TASK_COMMIT",
+          "PRAXIS_TASK_PATH"
+        ],
+        "present": false,
+        "valid": false
+      },
+      "name": "praxis_identity_binding",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "0402009534a6b91040327659c704d1f3768d1e08",
+        "expected": "0402009534a6b91040327659c704d1f3768d1e08"
+      },
+      "name": "expected_head",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "",
+      "name": "worktree_clean_before_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "base": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde",
+        "error": ""
+      },
+      "name": "diff_base_resolved",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/dev/go2-workspace/current/tools/substrate/shared_campaign.py",
+      "name": "runner_exists",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": null,
+      "name": "inprocess_has_no_domain",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/dev/go2-workspace/current/tools/substrate/shared_campaign.py",
+      "name": "runner_python_syntax",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "declared and exact-head reviewed; no DDS sockets",
+      "name": "reviewed_inprocess_runner",
+      "severity": "hard",
+      "status": "FAIL"
+    },
+    {
+      "detail": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T073915677730Z",
+      "name": "run_directory_fresh",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": [],
+      "name": "no_stale_runtime_process",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "surfaces": [
+          "runtime",
+          "schema"
+        ],
+        "test_count": 0
+      },
+      "name": "changed_surface_has_no_live_test",
+      "severity": "hard",
+      "status": "FAIL"
+    },
+    {
+      "detail": {
+        "approved_head": "0402009534a6b91040327659c704d1f3768d1e08",
+        "current_head": "0402009534a6b91040327659c704d1f3768d1e08"
+      },
+      "name": "sol_review_exact_head",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "after": "0402009534a6b91040327659c704d1f3768d1e08",
+        "before": "0402009534a6b91040327659c704d1f3768d1e08"
+      },
+      "name": "head_unchanged_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "",
+      "name": "worktree_clean_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "74c4fb9f0f9f8a439d32e22180c040bd9c13a2e18c43ee7ca8458471aa1ac437",
+      "name": "runner_unchanged_after_tests",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "gitignored": true,
+        "output": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_preflight/20261002T073935805419Z/report.json"
+      },
+      "name": "output_preserves_clean_worktree",
+      "severity": "hard",
+      "status": "PASS"
+    },
+    {
+      "detail": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_preflight/20261002T073935805419Z/report.json",
+      "name": "output_fresh_outside_capture",
+      "severity": "hard",
+      "status": "PASS"
+    }
+  ],
+  "experiment_id": "shared-baseline-probes-v1",
+  "git": {
+    "branch": "research/shared-baseline-probes-prep-20261002",
+    "head": "0402009534a6b91040327659c704d1f3768d1e08"
+  },
+  "hard_failure_count": 2,
+  "identity": {
+    "actual_branch": "research/shared-baseline-probes-prep-20261002",
+    "actual_head": "0402009534a6b91040327659c704d1f3768d1e08",
+    "expected_branch": "research/shared-baseline-probes-prep-20261002",
+    "expected_head": "0402009534a6b91040327659c704d1f3768d1e08",
+    "head_matches": true,
+    "mode": "named",
+    "pass": true,
+    "praxis_binding": {
+      "check_pass": true,
+      "complete": false,
+      "expected_transport_identity_complete": false,
+      "mismatches": {},
+      "missing": [
+        "PRAXIS_REPOSITORY",
+        "PRAXIS_ISSUE_NUMBER",
+        "PRAXIS_TASK_BRANCH",
+        "PRAXIS_TASK_COMMIT",
+        "PRAXIS_TASK_PATH"
+      ],
+      "present": false,
+      "valid": false
+    }
+  },
+  "output": {
+    "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_preflight/20261002T073935805419Z/report.json",
+    "written": true
+  },
+  "pass": false,
+  "repo_root": "/home/che/dev/go2-workspace/current",
+  "runner_diff": null,
+  "schema_version": 2,
+  "sol_review": {
+    "approved_head": "0402009534a6b91040327659c704d1f3768d1e08",
+    "auto_trigger_surfaces": [
+      "runtime",
+      "schema"
+    ],
+    "current_head": "0402009534a6b91040327659c704d1f3768d1e08",
+    "required": true
+  },
+  "tests": [],
+  "warning_count": 0
+}

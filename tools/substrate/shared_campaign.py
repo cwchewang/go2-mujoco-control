@@ -35,6 +35,7 @@ from .rl import FrozenPolicy
 from .shared_baseline import DEFAULT_PLAN, load_plan, replay_baseline, repeat_difference
 from .condition_evidence import verify_condition
 
+TRANSPORT = "inprocess"
 ROOT = Path(__file__).resolve().parents[2]
 CHECKPOINT = ROOT / ".substrate/rl/policy.pt"
 BINARY = ROOT / ".substrate/headless-reliable/go2_mjpc_controller"

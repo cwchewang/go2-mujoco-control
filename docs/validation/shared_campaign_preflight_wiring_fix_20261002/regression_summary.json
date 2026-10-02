@@ -1,0 +1,31 @@
+{
+  "canonical_physics_steps": 0,
+  "capability_status": "NOT_RUN",
+  "diff_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_time_s": 0.012986658985028043
+  },
+  "errors": 0,
+  "failures": 0,
+  "live_runs": 0,
+  "private_planning_calls": 0,
+  "quality": {
+    "argv": [
+      ".substrate/dev-venv/bin/python",
+      "-m",
+      "tools.check_quality",
+      "--style"
+    ],
+    "returncode": 0,
+    "wall_time_s": 0.4203892539953813
+  },
+  "scientific_attempts": 0,
+  "scope": "offline_engineering_admission",
+  "status": "ENGINEERING_ADMITTED",
+  "tests_run": 294
+}
