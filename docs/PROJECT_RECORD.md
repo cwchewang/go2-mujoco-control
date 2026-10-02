@@ -1,6 +1,6 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-10-01**
+> **最后更新：2026-10-02**
 > **状态：R1 SHARED CONTRACTS IMPLEMENTED; NATIVE MJPC ADAPTER ENGINEERING-WIRED; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
@@ -78,6 +78,23 @@ canonical physics steps，宽松 1 s integration anchor 的独立 replay 为 PAS
 no group 0 geom detected，通过严格 stdout JSON IPC 表现为 invalid JSON 并
 基础设施中止。最后保存状态未触发 canonical physical failure。v1 永久关闭、
 不得 retry；因此跨 controller comparison 仍 INCOMPLETE，不能产生排名或科学结论。
+
+The separately admitted aligned capture v2 is now permanently closed at
+ab27185f6c0ee47fdd09fecb367977bf4ab9cfde: RL and MJPC each completed500 canonical
+steps/501 frames and passed the broad1s engineering horizon without a canonical
+safety failure. The independent science closeout accepted only that frozen
+engineering scope. MJPC body-vx MAE was0.811741m/s, and median planning28.453ms
+does not establish20ms real-time performance. No mature-controller capability,
+ranking, safety-stop live validation or scientific bottleneck follows.
+See [v2 closeout](validation/aligned_flat_capture_v2_closeout_20261002/RESULTS.md).
+V1 and v2 remain sealed; scientific attempts for v2 remain0.
+
+The next [shared baseline/probe candidate](research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md)
+separates12s own-controller operational baselines from four finite condition
+probes. Its preparation uses no canonical integration and self-authorizes no
+physics. It requires a specific campaign runner, applicable clean qualification,
+new exact-head reviews and binding to the existing three-stage delegation,
+followed by fresh preflight. Gate0 remains incomplete.
 
 ### Scientifically verified results
 

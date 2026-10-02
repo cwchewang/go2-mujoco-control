@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "shared-baseline-probes-v1",
+  "mode": "candidate_preparation",
+  "self_authorizes_physics": false,
+  "anchor": "tools/substrate/protocols/aligned_flat_anchor_v1.json",
+  "anchor_sha256": "0d0e0061c3552ae0faf3f9b64d006054d8205f26901398ab0b160cbb9b4d900b",
+  "baseline_attempts": 4,
+  "challenge_attempts_max": 16,
+  "max_attempts": 20,
+  "horizon_ticks": 6000,
+  "measurement_start_tick": 1000,
+  "measurement_end_tick_exclusive": 6000,
+  "replicates": 2,
+  "physics_steps_max": 120000,
+  "repeat_absolute_tolerance": 1e-9,
+  "retry": "none",
+  "safety_execution_evidence_failure": "stop_campaign",
+  "horizon_performance_failure": "retain_and_continue",
+  "stage3_gate": "two_valid_passing_repeatable_own_baselines",
+  "live_readiness": "NOT_READY_REQUIRES_CAPTURE_RUNNER_AND_DUAL_REVIEW",
+  "performance": {
+    "body_vx_mean_min_mps": 0.8,
+    "body_vx_mae_max_mps": 0.2,
+    "episode_lateral_max_m": 0.3,
+    "episode_yaw_max_rad": 0.3
+  },
+  "conditions": {
+    "sliding_friction": {
+      "variable": "four_foot_geom_sliding_friction",
+      "from": 0.8,
+      "to": 0.3,
+      "start_tick": 3000,
+      "end_tick_exclusive": 6000,
+      "interface": "canonical_model.geom_friction[feet,0]",
+      "evidence": "active_foot_floor_contact_friction"
+    },
+    "observation_delay": {
+      "variable": "measurement_transport_delay_s",
+      "from": 0,
+      "to": 0.02,
+      "start_tick": 0,
+      "end_tick_exclusive": 6000,
+      "interface": "bounded_immutable_state_buffer",
+      "evidence": "sample_available_controller_times_and_payload"
+    },
+    "decision_period": {
+      "variable": "controller_decision_period_s",
+      "from": 0.02,
+      "to": 0.04,
+      "start_tick": 0,
+      "end_tick_exclusive": 6000,
+      "interface": "TimingSpec_control_period",
+      "evidence": "actual_policy_update_and_native_replan_ticks"
+    },
+    "lateral_force": {
+      "variable": "base_world_y_force_N",
+      "from": 0,
+      "to": 50,
+      "start_tick": 3000,
+      "end_tick_exclusive": 3100,
+      "interface": "data.xfrc_applied[base_link]",
+      "evidence": "actual_applied_world_wrench_each_tick"
+    }
+  }
+}

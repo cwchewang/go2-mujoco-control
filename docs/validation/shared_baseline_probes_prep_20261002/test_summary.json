@@ -1,0 +1,13 @@
+{
+  "canonical_physics_steps": 0,
+  "errors": 0,
+  "failures": 0,
+  "integration_guard": [
+    "mj_step",
+    "mj_step1",
+    "mj_step2"
+  ],
+  "output": "_runs/shared_baseline_probes_prep_20261002/all_20261002T025223608938Z",
+  "success": true,
+  "tests": 216
+}

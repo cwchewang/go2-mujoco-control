@@ -1,0 +1,46 @@
+test_broken_raw_and_command_rejected (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_candidate_budget_and_cards_fail_closed (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_decision_period_preserves_native_feedback (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_decision_period_rl_holds_until_next_decision (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_delayed_content_and_native_current_clock (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_force_boundaries_input_impulse_and_cleanup (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_force_cleanup_on_emit_exception (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_foreign_force_is_rejected (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_half_open_metrics_and_terminal_endpoint (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_ineffective_contact_is_rejected (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_latency_requires_explicit_matching_hook (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_performance_and_safety_are_separate (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_proprioceptive_delay_keeps_named_content (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_repeat_checks_use_states_and_applied_controls (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_static_actual_friction_changes_only_sliding (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_yaw_gate_and_independent_body_velocity (tools.substrate.test_bounded_conditions.BoundedConditionsTest) ... ok
+test_latency_fails_closed (tools.substrate.test_aligned_episode.AlignedEpisodeTest) ... ok
+test_proprioceptive_updates_and_replay (tools.substrate.test_aligned_episode.AlignedEpisodeTest) ... ok
+test_whole_body_updates_every_tick (tools.substrate.test_aligned_episode.AlignedEpisodeTest) ... ok
+test_all_canonical_stop_on_seal_campaign_and_retain_terminal_analysis (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_analysis_write_error_preserves_raw_and_claim_and_stops (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_execution_and_replay_errors_seal_partial_evidence_without_next_arm (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_identity_error_before_plant_stops_without_claim (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_initial_safety_stop_has_no_consumed_attempt_but_seals_campaign (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_owned_close_exception_seals_raw_claim_without_next_arm (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_predeclared_horizon_metric_failures_continue_and_remain_failures (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_run_claim_write_failure_retains_durable_consumed_claim (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_second_arm_identity_error_retains_first_analysis_without_second_plant (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_unannounced_performance_failure_stops (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_v2_stop_and_deadline_policy_drift_rejected (tools.substrate.test_campaign_stop.CampaignStopTest) ... ok
+test_command_is_sampled_only_on_replan_ticks (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_planning_and_feedback_cadence_are_distinct (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_metadata_builds_explicit_pd_spec (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_rejects_compatibility_or_gain_drift (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_ready_rejects_ground_failure_or_warning_channel_drift (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_stale_fallback_metadata_is_rejected (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_step_packet_reconstructs_source_joint_order (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_step_response_separates_plan_and_feedback_cost (tools.substrate.test_native_mjpc.NativeMJPCProtocolTest) ... ok
+test_anchor_is_frozen_and_physics_disabled (tools.substrate.test_aligned_anchor.AlignedAnchorTest) ... ok
+test_authorization_or_source_drift_fails_closed (tools.substrate.test_aligned_anchor.AlignedAnchorTest) ... ok
+test_rl_adapter_satisfies_shared_controller_protocol (tools.substrate.test_aligned_anchor.AlignedAnchorTest) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 6.597s
+
+OK

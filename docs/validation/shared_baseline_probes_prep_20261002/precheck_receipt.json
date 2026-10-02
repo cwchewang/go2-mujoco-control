@@ -1,0 +1,30 @@
+{
+  "branch": "research/shared-baseline-probes-prep-20261002",
+  "candidate_precheck": "PASS",
+  "canonical_physics_steps": 0,
+  "capability_status": "NOT_RUN",
+  "checkpoint_sha256": "9d9ad783a1017b6eced5984eb95279cc5b36db8cc84d21e646f46ba2a8023d9d",
+  "clean_head": false,
+  "errors": [],
+  "fake_default_path_comparisons": {
+    "mjpc": {
+      "fake_trace_sha256": "361a59a04ee6955860fc4a72eb7d704db1136a73eef1fc0a3dced7eb4bef5891",
+      "frames": 6001,
+      "same_raw_rows": true
+    },
+    "rl": {
+      "fake_trace_sha256": "5159943749e41abb24432fc8b300111e620fbf397c11430b3a70a2a5f0efa091",
+      "frames": 6001,
+      "same_raw_rows": true
+    }
+  },
+  "live_readiness": "NOT_READY_REQUIRES_CAPTURE_RUNNER_AND_DUAL_REVIEW",
+  "live_runs": 0,
+  "native_binary_sha256": "8f6867c911067db654f4af45b98407fd72066e9ba5316ca5dcf8706a0147784a",
+  "new_scientific_attempts": 0,
+  "protocol_sha256": "d5cc8c43c71ae0d82b5f1748bc2bba943727ca7373fa6e69eec7ed40bf6bbaeb",
+  "qualification": false,
+  "scope": "offline_engineering_admission",
+  "status": "ENGINEERING_ADMITTED",
+  "tested_parent_head": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde"
+}

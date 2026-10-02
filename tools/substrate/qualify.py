@@ -73,6 +73,7 @@ def main():
                         "tools.substrate.test_launch",
                         "tools.substrate.test_qualification",
                         "tools.substrate.test_baseline",
+                        "tools.substrate.test_bounded_conditions",
                         "-v",
                     ],
                     120,
