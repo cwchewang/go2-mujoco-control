@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 import argparse
+import fcntl
+import hashlib
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 from dataclasses import replace
@@ -17,6 +20,7 @@ from .episode import MujocoPlant
 from .guards import zero_step_guard, wall_deadline
 from .integrity import (
     EvidenceRun,
+    LOCK_PATH,
     digest,
     experiment_lock,
     strict_json,
@@ -353,16 +357,131 @@ def validate_start(packet_path, review_path, authorization_path):
     return pp
 
 
+def campaign_reservation_path(packet_path):
+    return RUNS / f"mjpc_fixed_baseline_campaign_{digest(packet_path)}.json"
+
+
+def reserve_campaign(packet_path, authorization_path, output_base):
+    pp = Path(packet_path).resolve(strict=True)
+    packet = strict_json(pp.read_text())
+    tokens = [os.urandom(32).hex(), os.urandom(32).hex()]
+    base = str(Path(output_base).resolve())
+    record = {
+        "schema": 1,
+        "campaign_id": digest(pp),
+        "packet_sha256": digest(pp),
+        "prepared_manifest_sha256": digest(pp.parent / "manifest.json"),
+        "head": packet["head"],
+        "protocol_sha256": packet["protocol_sha256"],
+        "authorization_sha256": digest(authorization_path),
+        "max_attempts": 2,
+        "output_base": base,
+        "outputs": [base + "_repeat1", base + "_repeat2"],
+        "worker_token_sha256": [
+            hashlib.sha256(token.encode()).hexdigest() for token in tokens
+        ],
+        "status": "RESERVED_ONCE",
+    }
+    reservation = campaign_reservation_path(pp)
+    encoded = (json.dumps(record, indent=2, sort_keys=True) + "\n").encode()
+    fd = os.open(reservation, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(encoded)
+            stream.flush()
+            os.fsync(stream.fileno())
+        directory_fd = os.open(reservation.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    except BaseException:
+        # Keep an exclusive partial reservation as a permanent fail-closed stop.
+        raise
+    return reservation, tokens
+
+
+def consume_worker_capability(
+    packet_path,
+    output,
+    reservation_path,
+    attempt,
+    lock_fd,
+    token_fd,
+    review_path,
+    authorization_path,
+):
+    pp = validate_start(packet_path, review_path, authorization_path)
+    os.fstat(lock_fd)
+    if Path(f"/proc/self/fd/{lock_fd}").resolve() != LOCK_PATH.resolve():
+        raise ValueError("worker did not inherit the experiment lock handle")
+    # Re-flocking the inherited open-file description succeeds only for the pair's
+    # held lock. A separately opened competing descriptor cannot pass this check.
+    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    if not stat.S_ISFIFO(os.fstat(token_fd).st_mode):
+        raise ValueError("worker capability must arrive over an inherited pipe")
+    token = os.read(token_fd, 128).decode()
+    os.close(token_fd)
+    reservation = Path(reservation_path).resolve(strict=True)
+    if reservation != campaign_reservation_path(pp).resolve():
+        raise ValueError("reservation is not the packet's unique campaign slot")
+    record = strict_json(reservation.read_text())
+    auth_sha = digest(authorization_path)
+    expected = {
+        "campaign_id": digest(pp),
+        "packet_sha256": digest(pp),
+        "prepared_manifest_sha256": digest(pp.parent / "manifest.json"),
+        "head": strict_json(pp.read_text())["head"],
+        "protocol_sha256": strict_json(pp.read_text())["protocol_sha256"],
+        "authorization_sha256": auth_sha,
+        "max_attempts": 2,
+    }
+    if any(record.get(key) != value for key, value in expected.items()):
+        raise ValueError("campaign reservation binding mismatch")
+    if attempt not in (1, 2) or Path(output).resolve() != Path(
+        record["outputs"][attempt - 1]
+    ):
+        raise ValueError("worker output/attempt does not match reserved campaign")
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    if token_hash != record["worker_token_sha256"][attempt - 1]:
+        raise ValueError("worker capability token mismatch")
+    if attempt == 2:
+        first = Path(record["outputs"][0])
+        verify_manifest(first)
+        prior = strict_json((first / "outcome.json").read_text())
+        if (
+            prior.get("classification") != "HORIZON_REACHED"
+            or prior.get("canonical_physics_steps") != 1500
+        ):
+            raise ValueError("repeat 2 is blocked unless repeat 1 reached horizon")
+    claim = reservation.with_name(reservation.stem + f"_attempt{attempt}.claim")
+    claim_data = {
+        "campaign_id": record["campaign_id"],
+        "attempt": attempt,
+        "output": str(Path(output).resolve()),
+        "pid": os.getpid(),
+    }
+    fd = os.open(claim, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w") as stream:
+        json.dump(claim_data, stream, sort_keys=True)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    return pp
+
+
 def run_pair(packet_path, output, review_path, authorization_path):
     pp = validate_start(packet_path, review_path, authorization_path)
     base = fresh(output)
-    with experiment_lock():
+    results = []
+    with experiment_lock() as lock:
         validate(pp, base)
-        results = []
-        for repeat in (1, 2):
-            target = Path(str(base) + f"_repeat{repeat}")
+        reservation, tokens = reserve_campaign(pp, authorization_path, base)
+        for attempt, token in enumerate(tokens, start=1):
+            target = Path(str(base) + f"_repeat{attempt}")
             if target.exists():
-                raise ValueError("repeat output already exists; no retry")
+                raise ValueError("reserved repeat output already exists; no retry")
+            token_read_fd, token_write_fd = os.pipe()
             command = [
                 sys.executable,
                 "-B",
@@ -377,27 +496,79 @@ def run_pair(packet_path, output, review_path, authorization_path):
                 str(review_path),
                 "--authorization",
                 str(authorization_path),
+                "--reservation",
+                str(reservation),
+                "--attempt",
+                str(attempt),
+                "--worker-lock-fd",
+                str(lock.fileno()),
+                "--worker-token-fd",
+                str(token_read_fd),
             ]
-            completed = subprocess.run(
-                command, cwd=ROOT, capture_output=True, text=True, timeout=330
-            )
-            if completed.returncode:
+            try:
+                child = subprocess.Popen(
+                    command,
+                    cwd=ROOT,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    pass_fds=(lock.fileno(), token_read_fd),
+                )
+                os.close(token_read_fd)
+                token_read_fd = -1
+                os.write(token_write_fd, token.encode())
+                os.close(token_write_fd)
+                token_write_fd = -1
+                try:
+                    stdout, stderr = child.communicate(timeout=330)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    stdout, stderr = child.communicate()
+                    results.append(
+                        {
+                            "repeat": attempt,
+                            "status": "EXECUTION_STOP",
+                            "stderr": stderr[-4000:],
+                        }
+                    )
+                    return {
+                        "status": "STOPPED_NO_RETRY",
+                        "reservation": str(reservation),
+                        "results": results,
+                    }
+            finally:
+                for fd in (token_read_fd, token_write_fd):
+                    if fd >= 0:
+                        os.close(fd)
+            if child.returncode:
                 results.append(
                     {
-                        "repeat": repeat,
+                        "repeat": attempt,
                         "status": "EXECUTION_STOP",
-                        "stderr": completed.stderr[-4000:],
+                        "stderr": stderr[-4000:],
                     }
                 )
-                return {"status": "STOPPED_NO_RETRY", "results": results}
-            result = strict_json(completed.stdout)
-            results.append({"repeat": repeat, **result})
+                return {
+                    "status": "STOPPED_NO_RETRY",
+                    "reservation": str(reservation),
+                    "results": results,
+                }
+            result = strict_json(stdout)
+            results.append({"repeat": attempt, **result})
             if (
                 result.get("classification") != "HORIZON_REACHED"
                 or result.get("canonical_physics_steps") != 1500
             ):
-                return {"status": "STOPPED_NO_RETRY", "results": results}
-    return {"status": "TWO_REPEAT_HORIZON_REACHED", "results": results}
+                return {
+                    "status": "STOPPED_NO_RETRY",
+                    "reservation": str(reservation),
+                    "results": results,
+                }
+    return {
+        "status": "TWO_REPEAT_HORIZON_REACHED",
+        "reservation": str(reservation),
+        "results": results,
+    }
 
 
 def main(argv=None):
@@ -406,12 +577,16 @@ def main(argv=None):
     g.add_argument("--prepare", action="store_true")
     g.add_argument("--preflight", action="store_true")
     g.add_argument("--capture", action="store_true")
-    g.add_argument("--worker", action="store_true")
+    g.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     p.add_argument("--packet", type=Path)
     p.add_argument("--binary", type=Path, default=FIXED)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--review", type=Path)
     p.add_argument("--authorization", type=Path)
+    p.add_argument("--reservation", type=Path)
+    p.add_argument("--attempt", type=int)
+    p.add_argument("--worker-lock-fd", type=int)
+    p.add_argument("--worker-token-fd", type=int)
     a = p.parse_args(argv)
     os.chdir(ROOT)
     if a.prepare:
@@ -423,12 +598,32 @@ def main(argv=None):
             p.error("--preflight requires --packet")
         result = no_launch(a.packet, a.output)
     elif a.worker:
-        if not a.packet or not a.review or not a.authorization:
-            p.error("--worker requires --packet, --review, and --authorization")
-        validate_start(a.packet, a.review, a.authorization)
+        if (
+            not all((a.packet, a.review, a.authorization, a.reservation))
+            or a.attempt not in (1, 2)
+            or a.worker_lock_fd is None
+            or a.worker_token_fd is None
+        ):
+            p.error(
+                "direct worker requires the pair runner's inherited lock and one-use capability"
+            )
+        consume_worker_capability(
+            a.packet,
+            a.output,
+            a.reservation,
+            a.attempt,
+            a.worker_lock_fd,
+            a.worker_token_fd,
+            a.review,
+            a.authorization,
+        )
         out = fresh(a.output)
         with EvidenceRun(
-            out, {"operation": "mjpc_fixed_baseline_repeat_worker"}
+            out,
+            {
+                "operation": "mjpc_fixed_baseline_repeat_worker",
+                "attempt": a.attempt,
+            },
         ) as run:
             result = _run_one(a.packet, out)
             write_new(out / "outcome.json", result)
