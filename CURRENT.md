@@ -6,13 +6,13 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 ## Active research frontier
 
-Branch: `research/rl-friction-reference-prep-20261002`.
-Task: [Third-stage topic selection: source-bound MJPC diagnosis](docs/research/TASK_STAGE3_TOPIC_DIAGNOSIS_20261002.md).
-Closeout: [Third-stage topic selection: source-bound MJPC diagnosis results](docs/validation/stage3_topic_diagnosis_20261002/RESULTS.md).
-Stage: Third-stage topic selection ACTIVE / OPEN; local RL friction experiment closed and dual-reviewed; read-only MJPC configuration diagnosis and minimum diagnostic proposal complete.
-Scientific status: Correct pinned Go2 branch; material private-model/plant damping, mass, floor, contact-impedance and actuator-limit confounds. RR_calf causal mechanism unresolved. New diagnostic physics0; old campaigns and17 NOT_RUN remain closed; Gate0 incomplete.
+Branch: `research/mjpc-adaptation-diagnostic-20261002`.
+Task: [Third-stage topic diagnosis: bounded MJPC adapter check](docs/research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md).
+Closeout: [Third-stage topic diagnosis: bounded MJPC adapter check results](docs/validation/mjpc_adaptation_diagnostic_v1_prep_20261002/RESULTS.md).
+Stage: Third-stage topic selection ACTIVE / OPEN; minimum adapter diagnostic implemented, qualification/preparation before exact-head review; formal NOT_RUN.
+Scientific status: Two independent one-arm3s protocols propose total2 attempts/3000 canonical steps/private upper1228800. B changes only floor registration and post-PD torque clamp; source mass/damping/contact smoothing retained. Formal attempts/canonical steps0; old campaigns/17 NOT_RUN closed.
 Last live HEAD: `849b7aa13c82b13880cfc214083f2473e794e83e`.
-Next: Review the source-bound minimum proposal and complete missing private/canonical parity and prediction-evidence admission before any separate diagnostic task. No fourth-stage method work or blind controller replacement.
+Next: Complete current-input qualification/prepared bindings, obtain genuine incremental exact-head reviews, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work..
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

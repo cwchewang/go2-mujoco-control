@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "id": "mjpc-adaptation-corrected-3s-v1",
+  "mode": "corrected",
+  "branch": "research/mjpc-adaptation-diagnostic-20261002",
+  "parent": "b5547c77898c237ceb883407d64d3ce245c97fc5",
+  "canonical_steps_max": 1500,
+  "scientific_attempts_max": 1,
+  "private_step_upper_bound_max": 614400,
+  "private_reservation_per_replan": 4096,
+  "replan_calls_max": 150,
+  "horizon_s": 3.0,
+  "wall_timeout_s": 300,
+  "retry": "none",
+  "stop": "first_safety_execution_evidence_budget_failure",
+  "capability_claim": "none; short adapter diagnostic",
+  "corrected_fields": [
+    "floor_world_z",
+    "effective_pd_torque_clamp"
+  ],
+  "preserved": [
+    "mass",
+    "damping",
+    "contact_smoothing",
+    "cost",
+    "gait",
+    "pd60_5",
+    "0.35s_horizon",
+    "10ms_prediction",
+    "20ms_replan",
+    "2ms_feedback",
+    "one_sided_fd1e-6"
+  ],
+  "corrected_admission_gate": "new_original_prefix_match_1e-9_and_nonfoot_stop_tick1287"
+}

@@ -57,8 +57,9 @@ target_link_libraries(go2_mjpc_core PUBLIC "${MUJOCO_LIBRARY}" Threads::Threads
 target_compile_options(go2_mjpc_core PRIVATE -fno-strict-aliasing)
 add_executable(go2_mjpc_admit admit.cc)
 target_link_libraries(go2_mjpc_admit PRIVATE go2_mjpc_core)
-add_executable(go2_mjpc_controller controller.cc)
+add_executable(go2_mjpc_controller controller.cc diagnostic_budget.cc)
 target_link_libraries(go2_mjpc_controller PRIVATE go2_mjpc_core)
+target_link_options(go2_mjpc_controller PRIVATE "-Wl,--wrap=mj_step" "-Wl,--wrap=mjd_transitionFD")
 
 enable_testing()
 add_executable(go2_mjpc_ground_test ground_test.cc)
@@ -68,3 +69,10 @@ add_test(NAME ground_miss_zero_integration COMMAND go2_mjpc_ground_test)
 add_executable(go2_mjpc_fresh_plan_test fresh_plan_test.cc)
 target_link_libraries(go2_mjpc_fresh_plan_test PRIVATE go2_mjpc_core)
 add_test(NAME fresh_plan_zero_integration COMMAND go2_mjpc_fresh_plan_test)
+
+add_executable(go2_mjpc_diagnostic_contract_test diagnostic_contract_test.cc)
+target_link_libraries(go2_mjpc_diagnostic_contract_test PRIVATE go2_mjpc_core)
+add_test(NAME diagnostic_mapping_zero_integration
+  COMMAND go2_mjpc_diagnostic_contract_test
+  "${MJPC_SOURCE_DIR}/mjpc/tasks/quadruped/task_flat.xml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../../unitree_robots/go2/phase2_flat.xml")

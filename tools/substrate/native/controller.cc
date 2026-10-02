@@ -1,4 +1,5 @@
 #include "fresh_plan.h"
+#include "diagnostic.h"
 // Persistent headless controller for the pinned Go2 MJPC QuadrupedFlat+iLQG.
 // It produces source-model position targets and never steps the evaluation plant.
 #include <chrono>
@@ -75,12 +76,19 @@ void PrintError(const std::string& message) {
     if (c == '"' || c == '\\') std::cout << '\\';
     std::cout << ((c == '\n' || c == '\r') ? ' ' : c);
   }
-  std::cout << "\"}" << std::endl;
+  std::cout << "\"";
+  if(active_private_budget) std::cout << ",\"failed_private_accounting\":{"
+    << "\"reserved_step_upper_bound\":"<<active_private_budget->reserved.load()
+    << ",\"rollout_mj_step_count\":"<<active_private_budget->rollout_steps.load()
+    << ",\"fd_step_upper_bound_count\":"<<active_private_budget->fd_step_upper_bound.load()
+    << ",\"fd_call_count\":"<<active_private_budget->fd_calls.load()<<"}";
+  std::cout << "}" << std::endl;
 }
 
 class Controller {
  public:
-  explicit Controller(const char* task_xml)
+  explicit Controller(const char* task_xml, const char* diagnostic_mode=nullptr,
+                      const char* canonical_xml=nullptr, const char* trace=nullptr)
       : model_(Load(task_xml), mj_deleteModel),
         data_(mj_makeData(model_.get()), mj_deleteData),
         pool_(4) {
@@ -90,6 +98,8 @@ class Controller {
       throw std::runtime_error("unexpected Go2 source model dimensions");
     }
     ValidateAndCorrectActuators();
+    if (diagnostic_mode) diagnostic_=std::make_unique<Diagnostic>(
+        model_.get(), diagnostic_mode, canonical_xml, trace);
     const char* transitions =
         mjpc::GetCustomTextData(model_.get(), "task_transition");
     if (!transitions ||
@@ -243,6 +253,7 @@ class Controller {
 
     long long planning_elapsed = 0;
     if (replan) {
+      if (diagnostic_) diagnostic_->Reserve(model_.get(), planner_, horizon_);
       has_policy_ = false;
       InvalidateCurrentRollouts(planner_);
       MakePlanningModelDifferentiable();
@@ -283,6 +294,8 @@ class Controller {
         throw std::runtime_error("MJPC action outside source actuator range");
       }
     }
+    if (diagnostic_ && replan)
+      diagnostic_->Record(model_.get(), data_.get(), planner_, *best, time_s);
     last_action_ = action;
     last_time_ = time_s;
 
@@ -299,7 +312,15 @@ class Controller {
       if (i) std::cout << ',';
       std::cout << action[i];
     }
-    std::cout << "]}" << std::endl;
+    std::cout << "]";
+    if (diagnostic_) std::cout << ",\"diagnostic\":{\"policy_id\":"
+      << diagnostic_->calls() << ",\"private_step_upper_bound_reserved\":"
+      << diagnostic_->reserved() << ",\"private_step_limit\":"
+      << Diagnostic::kLimit
+      << ",\"rollout_mj_step_count\":"<<diagnostic_->budget().rollout_steps.load()
+      << ",\"fd_step_upper_bound_count\":"<<diagnostic_->budget().fd_step_upper_bound.load()
+      << ",\"fd_call_count\":"<<diagnostic_->budget().fd_calls.load()<<"}";
+    std::cout << "}" << std::endl;
   }
 
  private:
@@ -406,6 +427,7 @@ class Controller {
 
   std::unique_ptr<mjModel, decltype(&mj_deleteModel)> model_;
   std::unique_ptr<mjData, decltype(&mj_deleteData)> data_;
+  std::unique_ptr<Diagnostic> diagnostic_;
   mjpc::QuadrupedFlat task_;
   mjpc::State state_;
   mjpc::iLQGPlanner planner_;
@@ -443,13 +465,15 @@ std::vector<double> ReadVector(std::istringstream& stream, int size) {
 }  // namespace
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  if (argc != 2 && argc != 5) {
     std::cerr << "usage: go2_mjpc_controller TASK_XML\n";
     return 2;
   }
   mju_user_warning = MuJoCoWarningToStderr;
   try {
-    Controller controller(argv[1]);
+    Controller controller(argv[1], argc==5 ? argv[2] : nullptr,
+                          argc==5 ? argv[3] : nullptr,
+                          argc==5 ? argv[4] : nullptr);
     std::string line;
     while (std::getline(std::cin, line)) {
       try {

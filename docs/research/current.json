@@ -1,10 +1,10 @@
 {
-  "branch": "research/rl-friction-reference-prep-20261002",
-  "title": "Third-stage topic selection: source-bound MJPC diagnosis",
-  "task": "docs/research/TASK_STAGE3_TOPIC_DIAGNOSIS_20261002.md",
-  "result": "docs/validation/stage3_topic_diagnosis_20261002/RESULTS.md",
-  "stage": "Third-stage topic selection ACTIVE / OPEN; local RL friction experiment closed and dual-reviewed; read-only MJPC configuration diagnosis and minimum diagnostic proposal complete",
-  "scientific_status": "Correct pinned Go2 branch; material private-model/plant damping, mass, floor, contact-impedance and actuator-limit confounds. RR_calf causal mechanism unresolved. New diagnostic physics0; old campaigns and17 NOT_RUN remain closed; Gate0 incomplete",
+  "branch": "research/mjpc-adaptation-diagnostic-20261002",
+  "title": "Third-stage topic diagnosis: bounded MJPC adapter check",
+  "task": "docs/research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md",
+  "result": "docs/validation/mjpc_adaptation_diagnostic_v1_prep_20261002/RESULTS.md",
+  "stage": "Third-stage topic selection ACTIVE / OPEN; minimum adapter diagnostic implemented, qualification/preparation before exact-head review; formal NOT_RUN",
+  "scientific_status": "Two independent one-arm3s protocols propose total2 attempts/3000 canonical steps/private upper1228800. B changes only floor registration and post-PD torque clamp; source mass/damping/contact smoothing retained. Formal attempts/canonical steps0; old campaigns/17 NOT_RUN closed",
   "last_live_head": "849b7aa13c82b13880cfc214083f2473e794e83e",
-  "next": "Review the source-bound minimum proposal and complete missing private/canonical parity and prediction-evidence admission before any separate diagnostic task. No fourth-stage method work or blind controller replacement"
+  "next": "Complete current-input qualification/prepared bindings, obtain genuine incremental exact-head reviews, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work."
 }

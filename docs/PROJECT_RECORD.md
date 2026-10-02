@@ -456,3 +456,6 @@ predeclares only horizon metric failure continuation; see
 200 guarded substrate tests passed with canonical steps 0. Private C++ planning
 is a distinct integration surface. Both roles must review the new exact HEAD;
 scientific attempts remain 0, Gate 0 incomplete and live v2 NOT_RUN.
+
+
+2026-10-02 third-stage diagnostic increment: [bounded adapter task](research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md) implements separate3s original/corrected scopes. B retains source position-PD and corrects floor registration/effective torque clamp; source mass, damping and deliberate smoothing remain. Rollout and FD upper-bound accounting covers private integration; B requires A verified original prefix/stop reproduction. Formal attempts/canonical steps0 pending new exact-head reviews; qualification optimizer smoke is engineering only. This does not select a topic or start a new method.

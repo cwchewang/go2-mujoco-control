@@ -178,6 +178,7 @@ class NativeMJPCController:
         stderr_log_path=None,
         startup_timeout_s=10.0,
         response_timeout_s=30.0,
+        diagnostic=None,
     ):
         if not isinstance(timing, TimingSpec):
             raise ValueError("native MJPC controller requires TimingSpec")
@@ -189,8 +190,16 @@ class NativeMJPCController:
         self.task_xml = source / "mjpc/tasks/quadruped/task_flat.xml"
         if not self.task_xml.is_file():
             raise ValueError("pinned QuadrupedFlat task XML is missing")
+        argv = [str(self.binary), str(self.task_xml)]
+        self._diagnostic = diagnostic
+        self._diagnostic_step = None
+        if diagnostic is not None:
+            mode, canonical, trace = diagnostic
+            if mode not in ("original", "corrected") or Path(trace).exists():
+                raise ValueError("invalid/fresh diagnostic trace required")
+            argv += [mode, str(Path(canonical).resolve(strict=True)), str(trace)]
         self._transport = NativeTransport(
-            [str(self.binary), str(self.task_xml)],
+            argv,
             popen=popen,
             stderr_log_path=stderr_log_path,
         )
@@ -247,10 +256,20 @@ class NativeMJPCController:
         )
         requested, sampled = sample_command(command, replan, self._held_command)
         packet = step_packet(observation, sampled, self.joint_names, replan=replan)
+        response = None
         try:
             response = self._request(packet)
             action, metadata = parse_step_response(response, observation.time_s, replan)
+            if self._diagnostic is not None:
+                from .mjpc_diagnostic import validate_budget_record
+
+                self._diagnostic_step = validate_budget_record(
+                    response.get("diagnostic"), tick, self._diagnostic_step
+                )
+                metadata["diagnostic"] = self._diagnostic_step
         except Exception:
+            if self._diagnostic is not None and response is not None:
+                self._diagnostics["last_failed_response"] = response
             self._requires_reset = True
             raise
         self._last_feedback_tick = tick
