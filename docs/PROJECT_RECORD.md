@@ -105,8 +105,15 @@ The local official verifier checked raw integrity and the real external ledger.
 The campaign is permanently closed with no retry or replacement; see
 [verified safety-stop closeout](validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
 Native private rollouts were real and their total integration count is unknown.
-Gate0 remains incomplete. Next work is read-only diagnosis; later physics needs
-a new prospective task rather than resuming this stopped campaign.
+Gate0 remains incomplete. The read-only diagnosis is complete: all foot contact
+constraints disappear from2.450s, with floor/RR_calf safety stop at2.574s; sealed
+raw has no private predicted trajectory/contact sequence, so no causal mechanism
+is established. The separately delegated [RL friction prospective task](research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md)
+freezes one mu0.8-to0.3 card and two new RL repeats paired to these sealed passing
+RL references. Its budget is12000 canonical steps; actual new attempts/steps are0.
+The first delivery is configuration/reference/static precheck only, awaiting
+incremental science/execution review and new applicable admission before START.
+This is an independent task; the stopped campaign and17 NOT_RUN arms remain closed.
 
 ### Scientifically verified results
 

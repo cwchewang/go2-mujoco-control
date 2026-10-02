@@ -6,13 +6,13 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 ## Active research frontier
 
-Branch: `research/shared-baseline-probes-prep-20261002`.
-Task: [Go2 shared baseline and bounded probes v1: verified whole-campaign safety stop](docs/research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md).
-Closeout: [Go2 shared baseline and bounded probes v1: verified whole-campaign safety stop results](docs/validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
-Stage: Frozen b1ac4f7 campaign permanently closed by MJPC baseline1 nonfoot_contact SAFETY_STOP; official raw/real-ledger verification and148-member source-bound archive checks passed; no retry or further arm.
-Scientific status: 3 scientific attempts and13287 canonical steps: two RL12s baseline PASS with exact repetition, one adapted MJPC safety stop at2.574s; remaining17 arms including all16 challenges NOT_RUN; no controller ranking and Gate0 incomplete.
+Branch: `research/rl-friction-reference-prep-20261002`.
+Task: [Independent RL sliding-friction reference v1: prospective freeze](docs/research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md).
+Closeout: [Independent RL sliding-friction reference v1: prospective freeze results](docs/validation/rl_friction_reference_v1_prep_20261002/PRECHECK.md).
+Stage: Independent prospective RL-only friction card frozen; source references and zero-physics precheck precede incremental review; new campaign NOT_RUN.
+Scientific status: Old shared campaign remains permanently closed at3 attempts/13287 steps with17 NOT_RUN. New task budgets2 fresh RL friction repeats/12000 steps, actual0 attempts/0 canonical or private physics. Gate0 incomplete.
 Last live HEAD: `b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d`.
-Next: Keep this campaign and sealed v1/v2 permanently closed. Continue read-only diagnosis of the adapted MJPC floor/RR_calf safety stop; any later physical investigation needs a new prospective bounded task and admission, never replay consumed arms or resume skipped challenges.
+Next: Review the frozen single-card design/reference chain and minimal independent binding increment; qualify actual new runtime and fresh locked preflight before any START. Preserve old campaign, v1/v2 and their unused arms.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The
