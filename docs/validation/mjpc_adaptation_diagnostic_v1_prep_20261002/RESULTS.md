@@ -39,10 +39,18 @@ Development precheck:3 native zero-integration tests and23 focused Python checks
 passed. One bounded native smoke had0 canonical steps/0 scientific attempts and
 one optimizer call:700 rollout steps, FD upper1801, reserved4096; initial q_des
 difference from sealed original0. This does not establish full-episode neutrality.
-Current-input qualification and both prepared manifests will be bound in one
-handoff packet before review.
+Current-input qualification is ENGINEERING_ADMITTED at producer HEAD
+21be68ea701adad3f3a3a05a2ac72c267982513f; all seven required checks and three
+fresh native zero-integration tests passed. [Qualification reference](qualification-reference.json),
+[model mapping](model-audit.json), [checks](checks.json) and
+[bounded smoke accounting](native-smoke-accounting.json) bind actual logs/results.
+Both prepared manifests are supplied by the external source-bound review packet.
 
 Science direction attestation turn01a0fcef-18b2-753f-b7ef-ee6ca2ba89b6 guides the
 increment; it is NOT an exact-head implementation approval. Formal capture
 requires new genuine exact-head science/execution verdicts. All old evidence
 remains unchanged; new formal attempts/canonical steps are0.
+
+Qualification invokes one additional bounded engineering optimizer call,
+recorded separately from the earlier development smoke; canonical/formal steps
+remain0. Counter accounting is rollout700 plus FD upper1801, reserved4096.

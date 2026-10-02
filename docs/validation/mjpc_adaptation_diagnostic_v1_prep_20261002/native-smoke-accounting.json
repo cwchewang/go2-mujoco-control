@@ -1,0 +1,17 @@
+{
+  "accounting": {
+    "fd_call_count": 37,
+    "fd_step_upper_bound_count": 1801,
+    "policy_id": 1,
+    "private_step_limit": 614400,
+    "private_step_upper_bound_reserved": 4096,
+    "rollout_mj_step_count": 700
+  },
+  "binary_sha256": "a0c6198d65253d94863a40a92b0780ba376a4b6f358fdf83695ff1182ec04f24",
+  "canonical_steps": 0,
+  "max_initial_action_difference": 0.0,
+  "optimizer_calls": 1,
+  "private_step_upper_bound_max": 4096,
+  "scientific_attempts": 0,
+  "whole_episode_neutrality": "not established"
+}
