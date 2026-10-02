@@ -258,6 +258,20 @@ def _validate_replan_output(directory, variant, call_index, anchor):
     }
 
 
+def require_fresh_output(path):
+    """Reject existing paths, symlink aliases, and every sealed ancestor before writes."""
+    lexical = Path(os.path.abspath(path))
+    resolved = lexical.resolve(strict=False)
+    if lexical != resolved:
+        raise ValueError("output path traverses a symlink or alias")
+    for ancestor in (resolved, *resolved.parents):
+        if (ancestor / "manifest.json").exists() and (ancestor / "admission.json").exists():
+            raise ValueError("output must be outside sealed evidence")
+    if os.path.lexists(lexical):
+        raise ValueError("output must be fresh; existing directory or file is rejected")
+    return resolved
+
+
 def run_sequence_trial(trial, source, binaries, identities, output_dir, *,
                        popen=subprocess.Popen, native_transport=NativeTransport):
     """Run one approved variant/repeat after admission; keeps one process for all ticks."""
@@ -265,7 +279,7 @@ def run_sequence_trial(trial, source, binaries, identities, output_dir, *,
     if variant not in ("original", "fixed") or trial.get("repeat") not in (1, 2):
         raise ValueError("invalid sequence trial identity")
     rows = validate_sequence_bundle(source)
-    output_dir = Path(output_dir).resolve(strict=False)
+    output_dir = require_fresh_output(output_dir)
     capture = Path(source["source_capture"]).resolve(strict=True)
     if output_dir == capture or output_dir.is_relative_to(capture):
         raise ValueError("sequence output must be outside the sealed source capture")
@@ -471,8 +485,8 @@ def run_sequence_batch(source_capture, binaries, identities, output_root, *,
                        popen=subprocess.Popen, native_transport=NativeTransport):
     """Run one four-trial sequence set after the existing admission decision."""
     source = load_sequence(source_capture)
-    output_root = Path(output_root)
-    output_root.mkdir(parents=True, exist_ok=True)
+    output_root = require_fresh_output(output_root)
+    output_root.mkdir(parents=True, exist_ok=False)
     before = d.digest(Path(source["source_capture"]) / "manifest.json")
     if before != source["source_manifest_sha256"]:
         raise ValueError("sealed source manifest changed before sequence run")
