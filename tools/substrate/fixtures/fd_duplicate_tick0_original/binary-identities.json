@@ -1,0 +1,34 @@
+{
+  "fixed": {
+    "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+    "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+    "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+    "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+    "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+    "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+    "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+    "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+    "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+    "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+    "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+    "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+    "variant": "fixed",
+    "workers": 4
+  },
+  "original": {
+    "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+    "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+    "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+    "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+    "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+    "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+    "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+    "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+    "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+    "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+    "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+    "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+    "variant": "original",
+    "workers": 4
+  }
+}

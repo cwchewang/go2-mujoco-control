@@ -206,43 +206,114 @@ def validate_authorization(auth,head,prepared_manifest):
     if not isinstance(auth,dict) or any(auth.get(k)!=v for k,v in expected.items()) or auth.get('authorized_by')!='user' or not str(auth.get('user_instruction','')).strip():
         raise ValueError('explicit future user authorization does not match prepared run')
 
-def validate_response(variant,response,trace,predictions,stderr_bytes,anchor):
+def candidate_contract(ready):
+    protocol=strict_json(PROTOCOL.read_text())
+    validate_protocol(protocol)
+    expected={'ready':True,'protocol':3,'nq':19,'nv':18,'nu':12,
+        'worker_count':protocol['workers'],'horizon_steps':protocol['horizon_steps'],
+        'planner':'MJPC iLQG','warning_channel':'stderr',
+        'policy_freshness':'current_candidate_required',
+        'canonical_evaluation_plant_modified':False,
+        'compatibility_correction':'private_model_mjBIAS_AFFINE','source_nominal_biastype':'mjBIAS_NONE',
+        'ground_miss_handling':'rollout_warning_failure','gait_switch':'Manual','gait':'Trot'}
+    if (not isinstance(ready,dict) or
+        any(type(ready.get(k)) is not type(v) or ready[k]!=v for k,v in expected.items()) or
+        not finite(ready.get('planner_dt')) or
+        not math.isclose(ready['planner_dt'],protocol['planner_dt_s'],rel_tol=0,abs_tol=1e-12)):
+        raise ValueError('native startup configuration mismatch')
+    for name in ('position_lower','position_upper','kp','kd'):
+        if not vector(ready.get(name),ready['nu']):
+            raise ValueError('native startup actuator dimensions mismatch')
+    if (not isinstance(ready.get('joint_names'),list) or len(ready['joint_names'])!=ready['nu'] or
+        any(not isinstance(x,str) or not x for x in ready['joint_names']) or
+        len(set(ready['joint_names']))!=ready['nu'] or
+        ready['kp']!=[60]*ready['nu'] or ready['kd']!=[5]*ready['nu'] or
+        any(lo>=hi for lo,hi in zip(ready['position_lower'],ready['position_upper']))):
+        raise ValueError('native startup actuator identity mismatch')
+    return {'knots':ready['horizon_steps'],'qpos':ready['nq'],'qvel':ready['nv'],
+            'action':ready['nu'],'workers':ready['worker_count'],
+            'dt':ready['planner_dt'],'rollouts':protocol['nominal_rollouts']}
+
+def finite(value):
+    return type(value) in (int,float) and math.isfinite(value)
+
+def vector(value,size):
+    return isinstance(value,list) and len(value)==size and all(finite(x) for x in value)
+
+def validate_response(variant,response,trace,predictions,stderr_bytes,anchor,ready):
+    if variant not in ('original','fixed'): raise ValueError('invalid FD variant')
+    c=candidate_contract(ready)
+    if not isinstance(response,dict) or not isinstance(trace,dict):
+        raise ValueError('response/trace must be objects')
     fd_calls,fd_upper=(OLD_FD if variant=='original' else FIXED_FD)
     diag=response.get('diagnostic',{})
+    if not isinstance(diag,dict) or not isinstance(predictions,list):
+        raise ValueError('diagnostic/prediction fields malformed')
     if (response.get('ok') is not True or response.get('replanned') is not True or
         response.get('current_rollout_valid') is not True or diag.get('policy_id')!=1 or
         diag.get('fd_call_count')!=fd_calls or diag.get('fd_step_upper_bound_count')!=fd_upper or
         diag.get('rollout_mj_step_count')!=ROLLOUT_STEPS or
         diag.get('private_step_upper_bound_reserved')!=RESERVATION or
-        diag.get('private_step_limit')!=LIMIT or stderr_bytes!=0):
+        diag.get('private_step_limit')!=LIMIT or stderr_bytes!=0 or
+        any(type(diag.get(k)) is not int for k in ('policy_id','fd_call_count',
+            'fd_step_upper_bound_count','rollout_mj_step_count',
+            'private_step_upper_bound_reserved','private_step_limit'))):
         raise ValueError('native warning, candidate, identity or private budget mismatch')
     events=trace.get('events')
     t34=2 if variant=='original' else 1
-    expected_knots=([*range(35),34,35] if variant=='original' else list(range(36)))
+    last=c['knots']-1
+    expected_knots=([*range(last),last-1,last] if variant=='original' else list(range(c['knots'])))
     if (trace.get('index_count')!=fd_calls or not isinstance(events,list) or len(events)!=fd_calls or
         [e.get('t') for e in events]!=expected_knots or
         sum(e.get('t')==34 for e in events)!=t34 or
-        any(type(e.get('worker')) is not int or e['worker'] not in range(4) or
+        any(type(e.get('t')) is not int or type(e.get('worker')) is not int or e['worker'] not in range(c['workers']) or
             type(e.get('start_ns')) is not int or type(e.get('end_ns')) is not int or
             e['start_ns']>=e['end_ns'] for e in events) or
         not re.fullmatch(r'[0-9a-f]{16}',trace.get('jacobian_t34_fnv1a64','')) or
-        len(predictions)!=1 or predictions[0].get('policy_id')!=1 or
+        len(predictions)!=1 or not isinstance(predictions[0],dict) or
+        type(predictions[0].get('policy_id')) is not int or predictions[0].get('policy_id')!=1 or
         type(predictions[0].get('candidate_id')) is not int or
-        predictions[0]['candidate_id'] not in range(10) or
-        not math.isclose(predictions[0].get('anchor_time_s',-1),anchor['time_s'],rel_tol=0,abs_tol=1e-12) or
-        not math.isfinite(response.get('cost',float('nan'))) or
-        not isinstance(response.get('q_des'),list) or len(response['q_des'])!=12 or
+        predictions[0]['candidate_id'] not in range(c['rollouts']) or
+        not finite(predictions[0].get('anchor_time_s')) or
+        not math.isclose(predictions[0]['anchor_time_s'],anchor['time_s'],rel_tol=0,abs_tol=1e-12) or
+        not finite(response.get('cost')) or
+        not isinstance(response.get('q_des'),list) or len(response['q_des'])!=c['action'] or
         any(type(x) not in (int,float) or not math.isfinite(x) for x in response['q_des'])):
         raise ValueError('FD worker/knot/Jacobian or candidate trace mismatch')
-    states=predictions[0].get('states')
-    if not isinstance(states,list) or len(states)!=37 or not isinstance(states[0],dict):
+    prediction=predictions[0]
+    if (prediction.get('mode')!=variant or
+        prediction.get('optimization_model_id')!=variant+'-go2-soft-v1' or
+        prediction.get('contact_semantics')!='selected_states_forward_reconstruction_smoothed_private_model' or
+        any(not finite(response.get(k)) or not math.isclose(response[k],v,rel_tol=0,abs_tol=1e-12)
+            for k,v in (('time_s',anchor['time_s']),('vx',anchor['command'][0]),('wz',anchor['command'][2])))):
+        raise ValueError('candidate mode/response identity mismatch')
+    accounting=prediction.get('private_accounting')
+    expected={'fd_call_count':fd_calls,'fd_step_upper_bound_count':fd_upper,
+              'rollout_mj_step_count':ROLLOUT_STEPS,'reserved_step_upper_bound':RESERVATION}
+    if not isinstance(accounting,dict) or any(type(accounting.get(k)) is not int or accounting[k]!=v for k,v in expected.items()):
+        raise ValueError('candidate private accounting mismatch')
+    states=prediction.get('states')
+    if not isinstance(states,list) or len(states)!=c['knots']:
         raise ValueError('candidate horizon/state dimensions mismatch')
+    for t,state in enumerate(states):
+        if (not isinstance(state,dict) or not vector(state.get('qpos'),c['qpos']) or
+            not vector(state.get('qvel'),c['qvel']) or
+            not vector(state.get('nominal_position_action'),c['action']) or
+            not finite(state.get('time_s')) or
+            not math.isclose(state['time_s'],anchor['time_s']+t*c['dt'],rel_tol=0,abs_tol=1e-12) or
+            not isinstance(state.get('active_contacts'),list)):
+            raise ValueError('candidate state/action dimensions or time mismatch')
+        for contact in state['active_contacts']:
+            if (not isinstance(contact,dict) or
+                not isinstance(contact.get('geom_ids'),list) or len(contact['geom_ids'])!=2 or
+                any(type(x) is not int or x<0 for x in contact['geom_ids']) or
+                not isinstance(contact.get('geom_names'),list) or len(contact['geom_names'])!=2 or
+                any(not isinstance(x,str) for x in contact['geom_names']) or
+                not finite(contact.get('distance_m'))):
+                raise ValueError('candidate contact fields mismatch')
     first=states[0]
-    if (not isinstance(first.get('qpos'),list) or len(first['qpos'])!=19 or
-        not isinstance(first.get('qvel'),list) or len(first['qvel'])!=18 or
-        any(type(x) not in (int,float) or not math.isfinite(x) for x in first['qpos']+first['qvel']) or
-        any(not math.isclose(float(x),float(y),rel_tol=0,abs_tol=1e-12)
-            for x,y in zip(first['qpos']+first['qvel'],anchor['qpos']+anchor['qvel']))):
+    if any(not math.isclose(float(x),float(y),rel_tol=0,abs_tol=1e-12)
+           for x,y in zip(first['qpos']+first['qvel'],anchor['qpos']+anchor['qvel'])):
         raise ValueError('candidate initial state does not match fixed input anchor')
     events34=[e for e in events if e['t']==34]
     overlap=len(events34)==2 and events34[0]['start_ns']<events34[1]['end_ns'] and events34[1]['start_ns']<events34[0]['end_ns']
@@ -256,6 +327,38 @@ def validate_response(variant,response,trace,predictions,stderr_bytes,anchor):
 def _packet(anchor):
     values=[anchor['time_s'],*anchor['command'],*anchor['qpos'],*anchor['qvel']]
     return 'step 1 '+' '.join(format(float(x),'.17g') for x in values)
+
+def parse_trial_logs(trial,anchor,identities,directory):
+    directory=Path(directory)
+    rows=[strict_json(x) for x in (directory/'native.jsonl').read_text().splitlines()]
+    if (len(rows)!=2 or set(rows[0])!={'ready'} or set(rows[1])!={'request','response'} or
+        rows[1]['request']!=_packet(anchor)):
+        raise ValueError('native request/response log mismatch')
+    traces=[strict_json(x) for x in (directory/'fd-trace.jsonl').read_text().splitlines()]
+    candidates=[strict_json(x) for x in (directory/'predictions.jsonl').read_text().splitlines()]
+    observation=validate_response(trial['variant'],rows[1]['response'],
+        traces[0] if len(traces)==1 else {},candidates,
+        (directory/'native.stderr.log').stat().st_size,anchor,rows[0]['ready'])
+    return {**trial,'binary_identity':identities[trial['variant']],
+        'logs':{'native':'native.jsonl','stderr':'native.stderr.log',
+                'fd_worker_knots':'fd-trace.jsonl','candidate':'predictions.jsonl'},
+        'observation':observation}
+
+def trial_accounting(trial,directory):
+    directory=Path(directory); rows=[]; response=None
+    try:
+        rows=[strict_json(x) for x in (directory/'native.jsonl').read_text().splitlines()]
+        response=next((r['response'] for r in rows if isinstance(r,dict) and 'response' in r),None)
+    except (OSError,ValueError): pass
+    attempted=(directory/'optimizer-attempt.json').exists() or any(isinstance(r,dict) and 'request' in r for r in rows)
+    raw=response.get('diagnostic') if isinstance(response,dict) else None
+    keys=('fd_call_count','fd_step_upper_bound_count','rollout_mj_step_count','private_step_upper_bound_reserved')
+    known=isinstance(raw,dict) and all(type(raw.get(k)) is int and raw[k]>=0 for k in keys)
+    return {**trial,'optimizer_call_attempted':attempted,'budget_known':known,
+        'raw_private_accounting':raw,'accounting_source':'native.jsonl response.diagnostic' if known else 'unavailable',
+        'private_observed_upper_bound':raw['fd_step_upper_bound_count']+raw['rollout_mj_step_count'] if known else None,
+        'private_configured_reservation':max(RESERVATION,raw['private_step_upper_bound_reserved']) if known and attempted else (RESERVATION if attempted else 0),
+        'private_attempted_upper_bound':(OLD_PRIVATE if trial['variant']=='original' else FIXED_PRIVATE) if attempted else 0}
 
 def run_trial(trial,anchor,binaries,identities,directory):
     directory.mkdir(parents=True,exist_ok=False)
@@ -271,10 +374,9 @@ def run_trial(trial,anchor,binaries,identities,directory):
         ready=transport.read_json(10)
         with native_log.open('x') as f:
             f.write(json.dumps({'ready':ready},sort_keys=True)+'\n'); f.flush(); os.fsync(f.fileno())
-        if (ready.get('ready') is not True or ready.get('worker_count')!=4 or
-            ready.get('planner')!='MJPC iLQG' or ready.get('horizon_steps')!=36 or
-            not math.isclose(ready.get('planner_dt',-1),.01,rel_tol=0,abs_tol=1e-12)):
-            raise ValueError('native startup configuration mismatch')
+        candidate_contract(ready)
+        write_new(directory/'optimizer-attempt.json',{'optimizer_call_attempted':True,
+            'variant':trial['variant'],'reserved_upper_bound':RESERVATION})
         response=transport.request(packet,30)
         with native_log.open('a') as f:
             f.write(json.dumps({'request':packet,'response':response},sort_keys=True,allow_nan=False)+'\n')
@@ -284,14 +386,7 @@ def run_trial(trial,anchor,binaries,identities,directory):
     stderr=transport.diagnostics()
     if stderr['stderr_read_error'] or stderr['stderr_bytes']:
         raise ValueError('warning or stderr drain failure')
-    trace_rows=[strict_json(x) for x in trace.read_text().splitlines()]
-    candidates=[strict_json(x) for x in predictions.read_text().splitlines()]
-    observation=validate_response(trial['variant'],response,trace_rows[0] if len(trace_rows)==1 else {},
-                                  candidates,stderr['stderr_bytes'],anchor)
-    return {**trial,'binary_identity':identities[trial['variant']],
-        'logs':{'native':'native.jsonl','stderr':'native.stderr.log',
-                'fd_worker_knots':'fd-trace.jsonl','candidate':'predictions.jsonl'},
-        'observation':observation}
+    return parse_trial_logs(trial,anchor,identities,directory)
 
 def repeat_summary(completed):
     keyed={(r['tick'],r['variant'],r['repeat']):r for r in completed}
@@ -306,6 +401,41 @@ def repeat_summary(completed):
                     'exact_cost_match':x['cost']==y['cost'],'exact_q_des_match':x['q_des']==y['q_des'],
                     't34_overlap':[x['t34_overlap'],y['t34_overlap']]})
     return out
+
+def collect_trials(plan,anchors,ids,directory,runner):
+    completed=[]; records=[]; stop=None
+    for item in plan:
+        label=f"tick{item['tick']}_{item['variant']}_repeat{item['repeat']}"
+        trial_dir=Path(directory)/label; error=None
+        try: completed.append(runner(item,anchors[item['tick']],ids,trial_dir))
+        except BaseException as exc: error=f'{type(exc).__name__}: {exc}'; stop=error
+        records.append({**trial_accounting(item,trial_dir),
+            'status':'REJECTED' if error else 'ACCEPTED','error':error})
+        if error: break
+    return completed,records,stop
+
+def make_result(ident,inputs,ids,plan,completed,records,stop,prepared_path,offline=False):
+    attempted=[r for r in records if r['optimizer_call_attempted']]
+    unknown=sum(not r['budget_known'] for r in attempted)
+    return {'schema':2,'status':'STOPPED_INCOMPLETE' if stop else ('OFFLINE_REPLAY_COMPLETE' if offline else 'DIAGNOSTIC_COMPLETE'),
+        'head':ident['head'],'protocol_sha256':digest(PROTOCOL),'input_sha256':digest(Path(prepared_path)/'inputs.json'),
+        'binary_identities':ids,'trial_plan':plan,'models':inputs['models'],
+        'completed_trials':completed,'trial_records':records,'attempted_trials':attempted,
+        'repeat_comparisons':repeat_summary(completed),'optimizer_calls_attempted':len(attempted),
+        'optimizer_calls_completed':len(completed),'new_optimizer_calls':0 if offline else len(attempted),
+        'private_observed_upper_bound':None if unknown else sum(r['private_observed_upper_bound'] for r in attempted),
+        'private_budget_unknown_trials':unknown,'private_attempted_upper_bound':sum(r['private_attempted_upper_bound'] for r in attempted),
+        'private_configured_reservation':sum(r['private_configured_reservation'] for r in attempted),
+        'private_total_upper_bound_max':TOTAL_UPPER,'private_total_reserved_upper_bound_max':TOTAL_RESERVED,
+        'canonical_integration_steps':0,'seed':'not used (xfrc_std=0)',
+        'scientific_gate':'none; observations only','stop_reason':stop}
+
+def record_result(run_record,result,offline=False):
+    write_new(run_record.path/'RESULT.json',result)
+    for k in ('status','optimizer_calls_attempted','optimizer_calls_completed','new_optimizer_calls',
+        'private_observed_upper_bound','private_budget_unknown_trials','private_attempted_upper_bound',
+        'private_configured_reservation','stop_reason'): run_record.result[k]=result[k]
+    run_record.result.update(capability_status='OFFLINE_REPLAY_ONLY' if offline else ('PRIVATE_DIAGNOSTIC_EXECUTED' if result['optimizer_calls_attempted'] else 'NOT_RUN'),result_path='RESULT.json')
 
 def run(prepared_path,review_path=None,authorization_path=None,output=None):
     with experiment_lock():
@@ -340,35 +470,17 @@ def run(prepared_path,review_path=None,authorization_path=None,output=None):
         from tools.research.preflight import DEFAULT_PROCESS_NAMES,find_processes
         if find_processes(DEFAULT_PROCESS_NAMES+('go2_mjpc_controller_fd_original','go2_mjpc_controller_fd_fixed')):
             raise ValueError('stale Go2/native process before run')
-        anchors={r['tick']:r for r in inputs['anchors']}; completed=[]; stop=None
+        anchors={r['tick']:r for r in inputs['anchors']}
         with EvidenceRun(Path(output),{'operation':'private_fd_duplicate_diagnostic'}) as run_record:
             run_record.result.update(scope='private_fd_duplicate_diagnostic',task_id=protocol['task_id'],
-                head=ident['head'],prepared_manifest_sha256=prepared_manifest,
-                optimizer_calls_max=8,private_total_upper_bound=TOTAL_UPPER,
-                private_total_reserved_upper_bound=TOTAL_RESERVED,canonical_integration_steps=0)
+                head=ident['head'],prepared_manifest_sha256=prepared_manifest,optimizer_calls_max=8,
+                private_total_upper_bound=TOTAL_UPPER,private_total_reserved_upper_bound=TOTAL_RESERVED,canonical_integration_steps=0)
+            def live_runner(item,anchor,identities,directory):
+                return run_trial(item,anchor,binaries,identities,directory)
             with wall_deadline(300):
-                for item in trial_plan():
-                    label=f"tick{item['tick']}_{item['variant']}_repeat{item['repeat']}"
-                    try:
-                        completed.append(run_trial(item,anchors[item['tick']],binaries,ids,run_record.path/label))
-                    except BaseException as exc:
-                        stop=f'{type(exc).__name__}: {exc}'
-                        break
-            status='DIAGNOSTIC_COMPLETE' if stop is None else 'STOPPED_INCOMPLETE'
-            result={'schema':1,'status':status,'head':ident['head'],'protocol_sha256':digest(PROTOCOL),
-                'input_sha256':digest(prepared_path/'inputs.json'),'binary_identities':ids,
-                'trial_plan':trial_plan(),'models':inputs['models'],'completed_trials':completed,'repeat_comparisons':repeat_summary(completed),
-                'optimizer_calls_completed':len(completed),
-                'private_observed_upper_bound':sum(x['observation']['private_call_upper_bound'] for x in completed),
-                'private_configured_reservation':len(completed)*RESERVATION,
-                'private_total_upper_bound_max':TOTAL_UPPER,'private_total_reserved_upper_bound_max':TOTAL_RESERVED,
-                'canonical_integration_steps':0,'seed':'not used (xfrc_std=0)',
-                'scientific_gate':'none; observations only','stop_reason':stop}
-            write_new(run_record.path/'RESULT.json',result)
-            run_record.result.update(status=status,optimizer_calls_completed=len(completed),
-                private_observed_upper_bound=result['private_observed_upper_bound'],
-                private_configured_reservation=result['private_configured_reservation'],
-                stop_reason=stop,result_path='RESULT.json')
+                completed,records,stop=collect_trials(trial_plan(),anchors,ids,run_record.path,live_runner)
+            result=make_result(ident,inputs,ids,trial_plan(),completed,records,stop,prepared_path)
+            record_result(run_record,result)
     return str(Path(output)/'RESULT.json')
 
 def main():

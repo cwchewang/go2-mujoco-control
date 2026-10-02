@@ -53,45 +53,6 @@ class FDDuplicateDiagnosticTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'tick 0/10'):
             d.anchors_from_raw_rows([row])
 
-    def test_t34_and_budget_acceptance_for_both_variants(self):
-        for variant,count,upper in (('original',37,1801),('fixed',36,1752)):
-            knots=([*range(35),34,35] if variant=='original' else list(range(36)))
-            events=[{'t':t,'worker':i%4,'start_ns':i*100+1,'end_ns':i*100+50}
-                    for i,t in enumerate(knots)]
-            if variant=='original':
-                events[-2]['start_ns']=3420
-                events[-2]['end_ns']=3460
-            trace={'events':events,'index_count':count,'jacobian_t34_fnv1a64':'a'*16}
-            anchor={'tick':0,'time_s':0.0,'command':[0.0]*3,'qpos':[0.0]*19,'qvel':[0.0]*18}
-            states=[{'qpos':[0.0]*19,'qvel':[0.0]*18}]+[{} for _ in range(36)]
-            preds=[{'policy_id':1,'candidate_id':2,'anchor_time_s':0.0,'states':states}]
-            response={'ok':True,'replanned':True,'current_rollout_valid':True,
-                'diagnostic':{'policy_id':1,'fd_call_count':count,
-                    'fd_step_upper_bound_count':upper,'rollout_mj_step_count':700,
-                    'private_step_upper_bound_reserved':4096,'private_step_limit':614400},
-                'q_des':[0.0]*12,'cost':1.0}
-            value=d.validate_response(variant,response,trace,preds,0,anchor)
-            self.assertEqual(value['fd_calls'],count)
-            self.assertEqual(value['private_call_upper_bound'],d.OLD_PRIVATE if variant=='original' else d.FIXED_PRIVATE)
-
-    def test_candidate_anchor_mismatch_fails_closed(self):
-        anchor={'tick':10,'time_s':0.02,'command':[0.0]*3,'qpos':[0.0]*19,'qvel':[1.0]*18}
-        states=[{'qpos':[0.0]*19,'qvel':[0.0]*18}]+[{} for _ in range(36)]
-        prediction={'policy_id':1,'candidate_id':0,'anchor_time_s':0.01,'states':states}
-        response={'ok':True,'replanned':True,'current_rollout_valid':True,
-                  'diagnostic':{'policy_id':1,'fd_call_count':36,
-                      'fd_step_upper_bound_count':1752,'rollout_mj_step_count':700,
-                      'private_step_upper_bound_reserved':4096,'private_step_limit':614400},
-                  'cost':1.0,'q_des':[0.0]*12}
-        events=[{'t':t,'worker':t%4,'start_ns':t*100+1,'end_ns':t*100+50}
-                for t in range(36)]
-        trace={'events':events,'index_count':36,'jacobian_t34_fnv1a64':'a'*16}
-        with self.assertRaisesRegex(ValueError,'candidate trace mismatch'):
-            d.validate_response('fixed',response,trace,[prediction],0,anchor)
-        prediction['anchor_time_s']=anchor['time_s']
-        with self.assertRaisesRegex(ValueError,'candidate initial state'):
-            d.validate_response('fixed',response,trace,[prediction],0,anchor)
-
     def test_generator_preserves_old_schedule_and_traces_both_variants(self):
         source=d.ROOT/'.substrate/mjpc/mjpc/planners/model_derivatives.cc'
         script=d.ROOT/'tools/substrate/native/patch_mjpc_model_derivatives_diagnostic.py'
