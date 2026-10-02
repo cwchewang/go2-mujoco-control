@@ -19,3 +19,8 @@ including causal limits, zero-forward discrimination, bounded costs, outcomes
 that change the next decision, and topic implications. Any proposed live task
 needs its own frozen scope, applicable qualification, independent reviews and
 authorization. This prose task grants no live readiness or physics budget.
+
+[Terrain/command admission notes](STAGE3_TERRAIN_ADMISSION_NOTES_20261002.md)
+record the flat support-geom restriction, unsupported command distinction and
+already-enabled finite-difference/contact settings. The minimum proposal remains
+conditional; no new native or canonical physics has been started.

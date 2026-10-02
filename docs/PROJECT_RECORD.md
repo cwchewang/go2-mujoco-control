@@ -156,6 +156,13 @@ under new independent scopes by instrumented frozen-versus-corrected prediction
 one-arm3s diagnostics, total proposed canonical cap3000steps; none is launched.
 RL command-space and temporal-response candidates remain testable without this
 MJPC candidate; none is yet a novelty verdict or selected paper topic.
+[Terrain/command admission](research/STAGE3_TERRAIN_ADMISSION_NOTES_20261002.md)
+requires a new support-geom specification before any terrain capture: current
+flat episode.py treats foot contact outside phase2_floor as forbidden. MJPC
+lateral/reverse rejection is UNSUPPORTED, not capability FAIL. One-sided
+finite differences at1e-6, derivative_skip0 and impratio100 already exist.
+Stage-three selection still needs admissible terrain capability/failure evidence
+and a falsifiable research question; engineering repair is not its endpoint.
 
 ### Scientifically verified results
 
