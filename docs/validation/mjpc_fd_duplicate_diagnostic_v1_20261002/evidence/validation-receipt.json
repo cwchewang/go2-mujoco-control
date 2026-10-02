@@ -1,0 +1,123 @@
+{
+  "approved_run_design": {
+    "aggregate_reservation": 32768,
+    "canonical_integration_steps": 0,
+    "execution_authorized": false,
+    "hold_reason": "Independent admission requires review of this receipt and the exact-final-HEAD prepared packet.",
+    "optimizer_calls": 8,
+    "per_call_reservation": 4096,
+    "trials": [
+      {
+        "repeat": 1,
+        "variant": "original"
+      },
+      {
+        "repeat": 2,
+        "variant": "original"
+      },
+      {
+        "repeat": 1,
+        "variant": "fixed"
+      },
+      {
+        "repeat": 2,
+        "variant": "fixed"
+      }
+    ],
+    "worker_count": 4
+  },
+  "branch": "research/mjpc-fd-duplicate-fix-20261003",
+  "build": {
+    "binaries": {
+      "fixed": {
+        "bytes": 341784,
+        "path": "_runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002/short_sequence_evidence/go2_mjpc_controller_fd_fixed",
+        "sha256": "3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08"
+      },
+      "original": {
+        "bytes": 341592,
+        "path": "_runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002/short_sequence_evidence/go2_mjpc_controller_fd_original",
+        "sha256": "92f7056463ae1f12cceea09b377712647716682254d3b911ce11d0e52bbe7f4b"
+      }
+    },
+    "cmake_cache_identity": {
+      "CMAKE_BUILD_TYPE:STRING": "Release",
+      "CMAKE_CXX_COMPILER:STRING": "/usr/bin/c++",
+      "CMAKE_CXX_FLAGS:STRING": "",
+      "GO2_MJPC_BUILD_FD_DIAGNOSTIC:BOOL": "ON"
+    },
+    "cmake_cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+    "command": "touch tools/substrate/native/diagnostic.h tools/substrate/native/controller.cc; ninja -C /tmp/go2-mjpc-fd-diagnostic go2_mjpc_controller_fd_original go2_mjpc_controller_fd_fixed",
+    "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+    "ninja_build_file_sha256": "4cb937f8487cde9a510bc93dc3161ea9e31401e73b304fb66e0a84150d4b043f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "1b33acc090b60504691a450238dd7b52902440afd0a7059337b7f4b56dd8db9b"
+  },
+  "evidence_files": {
+    "build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.stdout": "1b33acc090b60504691a450238dd7b52902440afd0a7059337b7f4b56dd8db9b",
+    "diff-check.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff-check.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "offline-replay-RESULT.json": "33ec599fb2f0767aef02bef7b0d6eb8f2c77117c05a42a912c708842f87b4099",
+    "offline-replay.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "offline-replay.stdout": "f62980de903180946f5e4fe19f46207eabc77e0f9815f230166ef8e54dee1441",
+    "tests.stderr": "216a0c86634080bc0dc6627a76e86d8c75373c3a7d1bd830d9268842ae36f342",
+    "tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "offline_replay": {
+    "accepted_trials": 8,
+    "canonical_integration_steps": 0,
+    "command": "python3 -m tools.substrate.fd_duplicate_contract_replay --source-run _runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002_run_records/result --prepared _runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002 --output /tmp/fd-duplicate-contract-replay-20261003-receipt",
+    "new_optimizer_calls": 0,
+    "preserved_result_path": "docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/evidence/offline-replay-RESULT.json",
+    "result_path": "/tmp/fd-duplicate-contract-replay-20261003-receipt/RESULT.json",
+    "result_sha256": "33ec599fb2f0767aef02bef7b0d6eb8f2c77117c05a42a912c708842f87b4099",
+    "status": "OFFLINE_REPLAY_COMPLETE",
+    "stdout_sha256": "f62980de903180946f5e4fe19f46207eabc77e0f9815f230166ef8e54dee1441"
+  },
+  "precheck": {
+    "all_eight_trial_identities_present": true,
+    "branch_matches_current_pointer": true,
+    "current_pointer_branch": "research/mjpc-fd-duplicate-fix-20261003",
+    "git_diff_check_passed": true,
+    "python_compile_passed": true,
+    "sealed_inputs_validated": true,
+    "source_manifest_verified": true,
+    "workspace_pointer_check_passed": true
+  },
+  "receipt_schema": "mjpc-short-sequence-evidence-v1",
+  "recorded_utc": "2026-10-02T21:26:48Z",
+  "sealed_input": {
+    "capture": "/home/che/dev/go2-workspace/current/_runs/mjpc_adaptation_diagnostic_execution_20261002/original_capture_20261002T164948Z",
+    "capture_status": "ENGINEERING_ADMITTED",
+    "input_sha256_by_tick": {
+      "0": "55554fb04a33dacb1f082f43b80f3045d002118d3d2d5ccdb239325eb8bbdaeb",
+      "1": "ce84026cfb78099a6ddbd6fff18e030f8052760f0df6565c35a6b55afb03dad1",
+      "10": "4af96aefb94852dea9e3c0ac28c6574bd40d07e91ef19b6aeb0eda49fa93d61d",
+      "2": "4fa0e4463a66f0cb6a0946af99b06038b5e823e0c70f6e31343f3be5fbadc521",
+      "3": "bb57b9d83d419054b51c0487981857c5773c5878387218a9bc3af49c118da2bb",
+      "4": "5db46359baacbc9ed923b7b4b81d335c2699d27eaaf21dec9717384da8fa88bc",
+      "5": "00fb131a904268dec1c79aebd74d7f3e286d4111e77c4b605d0d8e0f71627299",
+      "6": "c64b568ab0d8a7511eca7e5d341b767a344b5cdfbe1ec0a3a3c75810331ec233",
+      "7": "df8d884be2fe0f97d4ab33c37fbfb6a7e595c19a026afeeb80b3edf0486a832b",
+      "8": "52418ad894608cc9667753ca670e64f3ff9509bf7d24aa6d79019149742a74f6",
+      "9": "af7b7130ecc876c9bdc17570565595bd6833a1853baa653bf3d4176f895f075f"
+    },
+    "manifest_sha256": "2bebb006bef0ab7635056f19ceb8f3513e0d3b5b4d99cc7f9018f7bfb69950f2",
+    "raw_jsonl_sha256": "9a4f2711f558b80ac58c803406971f43be7c44f4c5e64f7a50c728e2a7440e55",
+    "replan_ticks": [
+      0,
+      10
+    ],
+    "tick_count": 11
+  },
+  "status": "PRECHECK_PASS_EXECUTION_HOLD",
+  "tested_source_head": "106b7efd60eae737d5071254e7ee4372a6c43a82",
+  "tested_tree_note": "Focused source files equal this HEAD; only research pointer/closeout documentation are modified before the evidence-receipt commit.",
+  "tests": {
+    "command": "python3 -m unittest -v tools.substrate.test_mjpc_short_sequence tools.substrate.test_fd_duplicate_real_response",
+    "passed": 15,
+    "stderr_sha256": "216a0c86634080bc0dc6627a76e86d8c75373c3a7d1bd830d9268842ae36f342",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

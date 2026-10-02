@@ -1,0 +1,938 @@
+{
+  "attempted_trials": [
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "fixed"
+    }
+  ],
+  "binary_identities": {
+    "fixed": {
+      "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+      "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+      "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+      "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+      "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+      "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+      "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+      "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+      "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+      "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+      "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+      "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+      "variant": "fixed",
+      "workers": 4
+    },
+    "original": {
+      "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+      "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+      "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+      "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+      "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+      "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+      "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+      "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+      "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+      "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+      "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+      "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+      "variant": "original",
+      "workers": 4
+    }
+  },
+  "canonical_integration_steps": 0,
+  "completed_trials": [
+    {
+      "binary_identity": {
+        "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+        "variant": "original",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06608674148251567,
+        "fd_calls": 37,
+        "fd_step_upper_bound": 1801,
+        "jacobian_t34_fnv1a64": "0aa12e12d06c1ff1",
+        "private_call_upper_bound": 2501,
+        "q_des": [
+          5.9612107293841e-05,
+          0.9000552370015383,
+          -1.7990965556451506,
+          1.3351828870058169e-05,
+          0.900787120187728,
+          -1.800402890190167,
+          -3.0255330321708995e-06,
+          0.9005680087612259,
+          -1.8000473851128707,
+          -8.024112311501502e-05,
+          0.8999271380855435,
+          -1.7987073075917468
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": true,
+        "t34_workers": [
+          3,
+          0
+        ]
+      },
+      "repeat": 1,
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+        "variant": "fixed",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06608674148251567,
+        "fd_calls": 36,
+        "fd_step_upper_bound": 1752,
+        "jacobian_t34_fnv1a64": "0aa12e12d06c1ff1",
+        "private_call_upper_bound": 2452,
+        "q_des": [
+          5.9612107293841e-05,
+          0.9000552370015383,
+          -1.7990965556451506,
+          1.3351828870058169e-05,
+          0.900787120187728,
+          -1.800402890190167,
+          -3.0255330321708995e-06,
+          0.9005680087612259,
+          -1.8000473851128707,
+          -8.024112311501502e-05,
+          0.8999271380855435,
+          -1.7987073075917468
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": false,
+        "t34_workers": [
+          3
+        ]
+      },
+      "repeat": 1,
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+        "variant": "original",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06608674148251567,
+        "fd_calls": 37,
+        "fd_step_upper_bound": 1801,
+        "jacobian_t34_fnv1a64": "0aa12e12d06c1ff1",
+        "private_call_upper_bound": 2501,
+        "q_des": [
+          5.9612107293841e-05,
+          0.9000552370015383,
+          -1.7990965556451506,
+          1.3351828870058169e-05,
+          0.900787120187728,
+          -1.800402890190167,
+          -3.0255330321708995e-06,
+          0.9005680087612259,
+          -1.8000473851128707,
+          -8.024112311501502e-05,
+          0.8999271380855435,
+          -1.7987073075917468
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": true,
+        "t34_workers": [
+          0,
+          3
+        ]
+      },
+      "repeat": 2,
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+        "variant": "fixed",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06608674148251567,
+        "fd_calls": 36,
+        "fd_step_upper_bound": 1752,
+        "jacobian_t34_fnv1a64": "0aa12e12d06c1ff1",
+        "private_call_upper_bound": 2452,
+        "q_des": [
+          5.9612107293841e-05,
+          0.9000552370015383,
+          -1.7990965556451506,
+          1.3351828870058169e-05,
+          0.900787120187728,
+          -1.800402890190167,
+          -3.0255330321708995e-06,
+          0.9005680087612259,
+          -1.8000473851128707,
+          -8.024112311501502e-05,
+          0.8999271380855435,
+          -1.7987073075917468
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": false,
+        "t34_workers": [
+          1
+        ]
+      },
+      "repeat": 2,
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+        "variant": "original",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06467098399627501,
+        "fd_calls": 37,
+        "fd_step_upper_bound": 1801,
+        "jacobian_t34_fnv1a64": "0621728786669f57",
+        "private_call_upper_bound": 2501,
+        "q_des": [
+          0.0009548674720213587,
+          0.9007687182062356,
+          -1.8008462741611835,
+          7.496268008682982e-05,
+          0.90150322237256,
+          -1.8028683180770217,
+          3.110938768383889e-05,
+          0.9012031295836803,
+          -1.8021013821442857,
+          -0.0008118647114574599,
+          0.9005801517735357,
+          -1.8000252114351944
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": true,
+        "t34_workers": [
+          3,
+          1
+        ]
+      },
+      "repeat": 1,
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+        "variant": "fixed",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06467098399627501,
+        "fd_calls": 36,
+        "fd_step_upper_bound": 1752,
+        "jacobian_t34_fnv1a64": "0621728786669f57",
+        "private_call_upper_bound": 2452,
+        "q_des": [
+          0.0009548674720213587,
+          0.9007687182062356,
+          -1.8008462741611835,
+          7.496268008682982e-05,
+          0.90150322237256,
+          -1.8028683180770217,
+          3.110938768383889e-05,
+          0.9012031295836803,
+          -1.8021013821442857,
+          -0.0008118647114574599,
+          0.9005801517735357,
+          -1.8000252114351944
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": false,
+        "t34_workers": [
+          2
+        ]
+      },
+      "repeat": 1,
+      "tick": 10,
+      "variant": "fixed"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "a705f90d361acca6eeac032ae1c593568d5552fc37dc5cb21b4fcb2124e9bff3",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "4ea5ac63ed5c546702f903bebc0379e38c22e0b187b95e25916cbdf0409d1e16",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+        "variant": "original",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06467098399627501,
+        "fd_calls": 37,
+        "fd_step_upper_bound": 1801,
+        "jacobian_t34_fnv1a64": "0621728786669f57",
+        "private_call_upper_bound": 2501,
+        "q_des": [
+          0.0009548674720213587,
+          0.9007687182062356,
+          -1.8008462741611835,
+          7.496268008682982e-05,
+          0.90150322237256,
+          -1.8028683180770217,
+          3.110938768383889e-05,
+          0.9012031295836803,
+          -1.8021013821442857,
+          -0.0008118647114574599,
+          0.9005801517735357,
+          -1.8000252114351944
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": true,
+        "t34_workers": [
+          3,
+          2
+        ]
+      },
+      "repeat": 2,
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "binary_identity": {
+        "binary_sha256": "214a458fb0c665a54a5fd940a5509de75d73f035fe9e1fcece4f39191b279d38",
+        "build_ninja_sha256": "2545cd2d2406eac823c56361d35609911c4117eb018da7ef75fd0639c26d1b0e",
+        "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+        "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+        "diagnostic_patch_script_sha256": "0590d07fdf36e38fefce63b35af5ed578f09ffa8760cf1fdd6fcc881dd7bb00a",
+        "generated_source_sha256": "55c27f709ff74f51ebd3188cbc7b05bcd7db57e8797f6b58adcf17efda0f01a1",
+        "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+        "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+        "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+        "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+        "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+        "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+        "variant": "fixed",
+        "workers": 4
+      },
+      "logs": {
+        "candidate": "predictions.jsonl",
+        "fd_worker_knots": "fd-trace.jsonl",
+        "native": "native.jsonl",
+        "stderr": "native.stderr.log"
+      },
+      "observation": {
+        "candidate_id": 8,
+        "cost": 0.06467098399627501,
+        "fd_calls": 36,
+        "fd_step_upper_bound": 1752,
+        "jacobian_t34_fnv1a64": "0621728786669f57",
+        "private_call_upper_bound": 2452,
+        "q_des": [
+          0.0009548674720213587,
+          0.9007687182062356,
+          -1.8008462741611835,
+          7.496268008682982e-05,
+          0.90150322237256,
+          -1.8028683180770217,
+          3.110938768383889e-05,
+          0.9012031295836803,
+          -1.8021013821442857,
+          -0.0008118647114574599,
+          0.9005801517735357,
+          -1.8000252114351944
+        ],
+        "rollout_steps": 700,
+        "t34_overlap": false,
+        "t34_workers": [
+          3
+        ]
+      },
+      "repeat": 2,
+      "tick": 10,
+      "variant": "fixed"
+    }
+  ],
+  "head": "106b7efd60eae737d5071254e7ee4372a6c43a82",
+  "historical_optimizer_calls_attempted": 8,
+  "input_sha256": "bb8c97657a3eeb18c580f443fad3aaa5c29ebc225a58444ede85ce25a4a45e0d",
+  "models": {
+    "canonical_evaluation": {
+      "path": "/home/che/dev/go2-workspace/current/unitree_robots/go2/phase2_flat.xml",
+      "sha256": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e"
+    },
+    "source_task": {
+      "path": "/home/che/dev/go2-workspace/current/.substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml",
+      "sha256": "a99762b6209d3a71e9004d49643cc861340b00188bfc7ceae58bf7a0f1c798e1"
+    }
+  },
+  "new_optimizer_calls": 0,
+  "offline_replay_accepted_trials": 8,
+  "optimizer_calls_attempted": 8,
+  "optimizer_calls_completed": 8,
+  "private_attempted_upper_bound": 19812,
+  "private_budget_unknown_trials": 0,
+  "private_configured_reservation": 32768,
+  "private_observed_upper_bound": 19812,
+  "private_total_reserved_upper_bound_max": 32768,
+  "private_total_upper_bound_max": 19812,
+  "protocol_sha256": "21660ef2d84bf0d278f9c683b4b3bfc6238820b01abec8c4c84873a8eed42a0b",
+  "repeat_comparisons": [
+    {
+      "exact_cost_match": true,
+      "exact_jacobian_hash_match": true,
+      "exact_q_des_match": true,
+      "t34_overlap": [
+        true,
+        true
+      ],
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "exact_cost_match": true,
+      "exact_jacobian_hash_match": true,
+      "exact_q_des_match": true,
+      "t34_overlap": [
+        false,
+        false
+      ],
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "exact_cost_match": true,
+      "exact_jacobian_hash_match": true,
+      "exact_q_des_match": true,
+      "t34_overlap": [
+        true,
+        true
+      ],
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "exact_cost_match": true,
+      "exact_jacobian_hash_match": true,
+      "exact_q_des_match": true,
+      "t34_overlap": [
+        false,
+        false
+      ],
+      "tick": 10,
+      "variant": "fixed"
+    }
+  ],
+  "schema": 2,
+  "scientific_gate": "none; observations only",
+  "seed": "not used (xfrc_std=0)",
+  "source_head": "dbe4b94b3c62d3233d3332b63ef2ff73a233259a",
+  "source_manifest_sha256": "158152b73d31c767213c21223fde3fee4cb8766e64a869e8224bef6bf1bed73e",
+  "source_original_accepted_trials": 8,
+  "source_original_status": "DIAGNOSTIC_COMPLETE",
+  "source_original_stop_reason": null,
+  "source_run": "/home/che/dev/go2-workspace/current/_runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002_run_records/result",
+  "status": "OFFLINE_REPLAY_COMPLETE",
+  "stop_reason": null,
+  "trial_plan": [
+    {
+      "repeat": 1,
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "repeat": 1,
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "repeat": 2,
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "repeat": 2,
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "repeat": 1,
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "repeat": 1,
+      "tick": 10,
+      "variant": "fixed"
+    },
+    {
+      "repeat": 2,
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "repeat": 2,
+      "tick": 10,
+      "variant": "fixed"
+    }
+  ],
+  "trial_records": [
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 0,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 1,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "fixed"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2501,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2501,
+      "raw_private_accounting": {
+        "fd_call_count": 37,
+        "fd_step_upper_bound_count": 1801,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "original"
+    },
+    {
+      "accounting_source": "native.jsonl response.diagnostic",
+      "budget_known": true,
+      "error": null,
+      "optimizer_call_attempted": true,
+      "private_attempted_upper_bound": 2452,
+      "private_configured_reservation": 4096,
+      "private_observed_upper_bound": 2452,
+      "raw_private_accounting": {
+        "fd_call_count": 36,
+        "fd_step_upper_bound_count": 1752,
+        "policy_id": 1,
+        "private_step_limit": 614400,
+        "private_step_upper_bound_reserved": 4096,
+        "rollout_mj_step_count": 700
+      },
+      "repeat": 2,
+      "status": "ACCEPTED",
+      "tick": 10,
+      "variant": "fixed"
+    }
+  ]
+}

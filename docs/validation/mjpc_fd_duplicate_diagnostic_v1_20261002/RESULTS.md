@@ -29,3 +29,7 @@ Compare exact external-input digests and replan schedule across all four runs. C
 Stop the entire paired sequence on any missing or changed sealed input, nonconsecutive tick/time, dimension/nonfinite input, replan schedule drift, worker count other than four, stale/missing candidate, missing warmstart/policy summary, any warning/stderr, unknown or over-reservation private budget, or any canonical integration step. Do not retry or fill a stopped pair.
 
 Existing fd-trace logs already record knot, worker and interval. The offline real-response regression validates the sealed tick-0 native response through the current consumer and checks the old incorrect 37-state expectation is rejected. `python3 -m unittest -v tools.substrate.test_fd_duplicate_real_response` passed all 7 tests; its no-launch guard blocks native transport and optimizer calls. No optimizer, model build, or physics was run for this preparation.
+
+## Execution hold and evidence packet
+
+Independent science review approved the bounded design (8 optimizer calls, four workers, canonical integration 0, aggregate private reservation 32,768). Execution remains HOLD until independent admission verifies saved test output, offline replay output, both binary identities/hashes, sealed input hashes/manifest, and the prepared packet bound to the final HEAD. No optimizer is authorized by this preparation.
