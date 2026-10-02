@@ -28,8 +28,24 @@ Compare exact external-input digests and replan schedule across all four runs. C
 
 Stop the entire paired sequence on any missing or changed sealed input, nonconsecutive tick/time, dimension/nonfinite input, replan schedule drift, worker count other than four, stale/missing candidate, missing warmstart/policy summary, any warning/stderr, unknown or over-reservation private budget, or any canonical integration step. Do not retry or fill a stopped pair.
 
-Existing fd-trace logs already record knot, worker and interval. The offline real-response regression validates the sealed tick-0 native response through the current consumer and checks the old incorrect 37-state expectation is rejected. `python3 -m unittest -v tools.substrate.test_fd_duplicate_real_response` passed all 7 tests; its no-launch guard blocks native transport and optimizer calls. No optimizer, model build, or physics was run for this preparation.
+Previous engineering preparation compiled both diagnostic binaries and passed 15 focused contracts. Its eight sealed historical-response offline replays were accepted; new optimizer calls and canonical integrations were zero. Those saved receipts remain in evidence/validation-receipt.json.
 
 ## Execution hold and evidence packet
 
 Independent science review approved the bounded design (8 optimizer calls, four workers, canonical integration 0, aggregate private reservation 32,768). Execution remains HOLD until independent admission verifies saved test output, offline replay output, both binary identities/hashes, sealed input hashes/manifest, and the prepared packet bound to the final HEAD. No optimizer is authorized by this preparation.
+
+## Launcher and output-location repair (zero optimizer)
+
+The import failure is sealed at _runs/mjpc_fd_duplicate_sequence_execution_84e85199f6b3/; its manifest SHA-256 remains eb1d857fb777ec381867a0c822ffa471436b5165fcb5201093f99274ad4655db. It occurred before lock acquisition, preflight, or native launch. It is not a scientific sample.
+
+The actual entry is now the committed executable tools/substrate/run_mjpc_short_sequence, which switches to its own repository root and invokes python3 -B -m tools.substrate.mjpc_short_sequence_launcher. It works from /tmp and the repository. Preparation and execution share the existing experiment lock and preflight. --no-launch follows that same path and has a separate denied-native runner before returning. The launcher seals capture outputs and accounts for private counters by per-call deltas within each persistent process.
+
+Before any mkdir or transport launch, the core sequence runner rejects existing output paths, symlink aliases, and sealed ancestors. The launcher additionally requires both new preparation and observation output directories to be direct children of _runs. The old sealed preparation's five original members still match their hashes; the four previously appended short_sequence_evidence files remain preserved, so its directory manifest still has a file-set mismatch. This repair does not modify, remove, or reuse that bundle as the new preparation.
+
+The real command regression, not just consumer parsing, passed 24 tests at source commit 085e61305b669fce9aaead2856e408cb3544c1a6. It covers complete command invocations from both cwd values, no native launch, empty/nonempty existing outputs, sealed packet member preservation, core rejection before transport, and symlink bypass refusal. Actual stdout/stderr and source/build/input identities are in evidence/launcher-validation.json and evidence/launcher-tests-085e613.*.
+
+The new independent preparation is _runs/mjpc_short_sequence_evidence_launcherfix_20261003/; its packet binds the final clean HEAD and includes runtime hashes, both copied binaries and original build identities, and all eleven sealed inputs. Its immutable manifest is separate from _runs/mjpc_short_sequence_observation_launcherfix_20261003/, the proposed fresh observation output. The tested preflight command is:
+
+    /home/che/dev/go2-workspace/current/tools/substrate/run_mjpc_short_sequence --execute --packet /home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_evidence_launcherfix_20261003/packet.json --output /home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_observation_launcherfix_20261003 --no-launch
+
+The future capture command has the same executable and arguments with --no-launch removed. No optimizer ran in this repair. The 8-call scope and Stage 3 OPEN scientific boundary remain as previously declared; the repaired launcher and final packet are ready for review.

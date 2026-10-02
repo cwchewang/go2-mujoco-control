@@ -10,6 +10,6 @@
   "related_result": {
     "title": "Duplicate-FD cold-start diagnostic",
     "path": "docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md",
-    "summary": "The duplicate t34 scheduling defect is fixed. Cold-start outputs matched across variants. Same-process tick 0 to 10 sequence code is implemented; the approved 8-call replay is on HOLD pending evidence-backed exact-HEAD admission."
+    "summary": "Duplicate t34 scheduling is fixed. The repository launcher and sealed-output guards are repaired; 24 tests cover the full no-launch command from /tmp and repo. A new independent packet binds the repaired HEAD; the 8-call sequence remains NOT_RUN and Stage 3 stays OPEN."
   }
 }
