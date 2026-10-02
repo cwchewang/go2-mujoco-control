@@ -36,3 +36,37 @@ provenance. Before START, minimally bind the new two-arm catalog/sealed referenc
 to the unchanged engine, qualify the actual increment, obtain incremental
 science/execution review, and perform fresh locked preflight. Review unchanged
 infrastructure by its accepted source/hash chain, not by inventing new physics.
+
+## Sealed PRECHECK PASS receipt
+
+Preparation source HEAD:
+`eaa9976627bbb6df4e67df385e236f14df93db1d` (clean named branch).
+Output:
+`_runs/rl_friction_reference_prep_20261002/freeze_precheck_20261002T101816347837Z`.
+Manifest SHA256:
+`72bc4db5e8b29c6ef8e641be6aaec17171dd6f6da20ad9b973cf9de3e789fb57`.
+
+The production precheck returned PRECHECK_PASS. It verified the original
+capture manifest66630a6c..., its actual external ledger, all source closure and
+the two passing repeatable RL references. All15 inherited runtime-source files
+were compared byte-for-byte to the original capture head with git object bytes.
+The new output root and new ledger were absent. Real canonical integration
+was forbidden; controller construction and native identity startup were also
+explicitly blocked around this invocation. Counts: new scientific attempts0,
+canonical physics0, private planning calls0. Static compilation/mj_forward
+does not imply an integrated trajectory.
+
+Curated exact copies are [precheck admission](precheck-admission.json),
+[reference chain](reference-chain.json), [source verifier](source-verification.json),
+[arm catalog](planned-arms.json), [sealed reference auxiliary values](auxiliary-reference.json)
+and [source hashes](unchanged-runtime-source-hashes.json).
+[Checks receipt](checks.json) states the exact test invocations; it is not a
+native qualification. [Review packet](review-packet.json) scopes the incremental
+review and explicitly marks live admission NOT_CREATED. Final prose/hygiene/
+navigation checks passed with203 tracked source files and167 formatted files.
+[Manifest](manifest.json) covers this curated package with
+[provenance](provenance.csv).
+
+The parallel [MJPC read-only diagnosis](mjpc-readonly-diagnostic.md) describes
+sealed actual contact constraints/joint tracking and missing private predictions.
+No MJPC controller, optimizer or new physics was used for that diagnosis.

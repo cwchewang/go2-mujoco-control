@@ -1,0 +1,48 @@
+{
+  "canonical_integration_guard": [
+    "mj_step",
+    "mj_step1",
+    "mj_step2"
+  ],
+  "distinct_final_selected_tests": 67,
+  "invocations": [
+    {
+      "duration_s": 27.831,
+      "modules": [
+        "tools.substrate.test_rl_friction_reference",
+        "tools.substrate.test_shared_campaign",
+        "tools.substrate.test_bounded_conditions"
+      ],
+      "result": "PASS",
+      "source_stage": "before static helper extraction",
+      "tests": 66
+    },
+    {
+      "duration_s": 0.732,
+      "modules": [
+        "tools.substrate.test_rl_friction_reference"
+      ],
+      "result": "PASS",
+      "source_stage": "final static helper including actual model/checkpoint",
+      "tests": 9
+    }
+  ],
+  "new_canonical_physics_steps": 0,
+  "new_module_tests": 9,
+  "new_scientific_attempts": 0,
+  "private_planning_calls": 0,
+  "production_precheck_head": "eaa9976627bbb6df4e67df385e236f14df93db1d",
+  "production_precheck_manifest_sha256": "72bc4db5e8b29c6ef8e641be6aaec17171dd6f6da20ad9b973cf9de3e789fb57",
+  "qualification": false,
+  "quality": {
+    "diff_check": "PASS",
+    "formatted_files": 167,
+    "generated_current": "PASS",
+    "links": "PASS",
+    "style": "PASS",
+    "tracked_source_files": 203
+  },
+  "schema": 1,
+  "shared_lock": "/tmp/go2_mujoco_experiment.lock",
+  "unchanged_existing_tests": 58
+}

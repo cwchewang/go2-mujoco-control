@@ -1,0 +1,70 @@
+{
+  "capture": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z",
+  "external_ledger_files": {
+    "campaign.json": "bc1fa92d724758d14750fa1b84364a40c6ed6458a3ff901c264bf392170b5f1c",
+    "mjpc_baseline_1.json": "02b803bb9b929f94bbe610ac9a00e8ebed649b07699182eab95cbaff12e28332",
+    "rl_baseline_1.json": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+    "rl_baseline_2.json": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a"
+  },
+  "manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+  "old_campaign_status": "PERMANENTLY_CLOSED",
+  "old_not_run_count": 17,
+  "own_rl_baseline_eligibility": {
+    "baseline_statuses": [
+      "PASS",
+      "PASS"
+    ],
+    "baselines": [
+      {
+        "classification": "PASS",
+        "id": "rl_baseline_1",
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+      },
+      {
+        "classification": "PASS",
+        "id": "rl_baseline_2",
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+      }
+    ],
+    "eligible": true,
+    "reason": "repeatable_own_baseline",
+    "repeat_comparison": {
+      "maximum_absolute_state_control_difference": 0.0,
+      "repeatable": true
+    }
+  },
+  "paired_references": [
+    {
+      "capture_claim_sha256": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+      "classification": "PASS",
+      "external_claim_sha256": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+      "id": "rl_baseline_1",
+      "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+      "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+      "repeat": 1,
+      "role": "read_only_reference_not_new_attempt"
+    },
+    {
+      "capture_claim_sha256": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a",
+      "classification": "PASS",
+      "external_claim_sha256": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a",
+      "id": "rl_baseline_2",
+      "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+      "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+      "repeat": 2,
+      "role": "read_only_reference_not_new_attempt"
+    }
+  ],
+  "prepared": {
+    "manifest_sha256": "abc8db97e07a6fbd5cdd8c5953541f1402e107ba38b6437ce43df87b8af3542e",
+    "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_prepared_20261002T082653659619Z"
+  },
+  "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "source_qualification": {
+    "fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+    "manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+    "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_qualification_20261002T082220356151Z",
+    "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+  },
+  "source_qualification_is_new_head_admission": false
+}

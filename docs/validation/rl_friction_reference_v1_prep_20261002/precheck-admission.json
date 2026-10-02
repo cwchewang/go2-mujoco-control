@@ -1,0 +1,30 @@
+{
+  "branch": "research/rl-friction-reference-prep-20261002",
+  "canonical_physics_steps": 0,
+  "capability_status": "NOT_RUN",
+  "checks": [
+    "strict_frozen_protocol_and_inherited_loader",
+    "official_source_capture_real_ledger_verifier",
+    "two_passing_repeatable_own_rl_references",
+    "old_campaign_closed_17_NOT_RUN",
+    "static_canonical_model_and_checkpoint",
+    "friction_reset_does_not_change_RL_information_or_timing",
+    "half_open_auxiliary_reference_samples",
+    "new_campaign_output_and_ledger_absent"
+  ],
+  "errors": [],
+  "execution_remaining": "Bind independent two-arm catalog and sealed RL references to unchanged engine; new exact-head qualification/preflight and incremental reviews before START",
+  "head": "eaa9976627bbb6df4e67df385e236f14df93db1d",
+  "live_execution_admission": "NOT_CREATED",
+  "live_runs": 0,
+  "max_attempts": 2,
+  "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+  "physics_step_authorized": false,
+  "physics_steps_max": 12000,
+  "private_planning_calls": 0,
+  "protocol_sha256": "d10719424809db2037a01f755786b4f93c20ad6cfe2db1455e847ef0f57da89d",
+  "readiness": "AWAITING_INCREMENTAL_SCIENCE_AND_EXECUTION_REVIEW",
+  "scientific_attempts": 0,
+  "scope": "prospective_spec_reference_static_precheck",
+  "status": "PRECHECK_PASS"
+}
