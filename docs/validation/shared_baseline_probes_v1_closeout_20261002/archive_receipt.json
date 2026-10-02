@@ -1,0 +1,13 @@
+{
+  "archive": "/home/che/dev/go2-workspace/archive/evidence/shared_baseline_probes_v1_20261002T085338452324Z/shared_baseline_probes_v1_20261002T085338452324Z.tar.gz",
+  "bytes": 17237811,
+  "canonical_capture_steps": 13287,
+  "capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "capture_manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+  "capture_status": "SAFETY_STOP",
+  "local_external_ledger_verified": true,
+  "members_verified": 148,
+  "portable_path_binding": "archive preserves original absolute preparation/qualification references; no claim of relocated portable verifier execution",
+  "scientific_attempts": 3,
+  "sha256": "ac7b3030de5b7283c006d9d3d806d42709196504ec664dba15fd7c619936fc2e"
+}

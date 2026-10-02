@@ -1,6 +1,6 @@
 # Shared baseline and bounded probes v1: bounded runner preparation
 
-Status: bounded runner implemented / engineering regression package; NOT LIVE READY.
+Status: frozen campaign permanently CLOSED / SAFETY_STOP at b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d;3 scientific attempts and13287 canonical steps, no retry. See [verified closeout](../validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md). The scientific plan below remains the frozen capture design; it grants no restart.
 
 ## Decision and authority
 

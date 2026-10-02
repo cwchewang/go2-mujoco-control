@@ -1,0 +1,145 @@
+{
+  "capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "capture_manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+  "conclusion": "canonical nonfoot guard failure is independently reconstructed and evidence/ledger verifies. Private bad-rollout events and planning wall times do not imply an invalid selected plan or canonical numerical warning. Adaptation correctness and tiny initial optimizer/prefix differences remain separate unresolved questions. No new run/retry or causal mechanism claim.",
+  "mjpc_first500_ticks": {
+    "canonical_warning_count_max": 0,
+    "clip_counts_by_canonical_motor_index": {
+      "11": 4,
+      "2": 2,
+      "6": 2,
+      "7": 4,
+      "8": 1
+    },
+    "feedback_samples": 500,
+    "first_clip": {
+      "motor": "RR_calf_joint",
+      "tick": 105
+    },
+    "first_observed_stderr_changes_ticks": [
+      110,
+      140
+    ],
+    "forbidden_contact_count": 0,
+    "height_min_max_m": [
+      0.2699864165802818,
+      0.35643282665958387
+    ],
+    "lateral_max_abs_m": 0.03789185205560732,
+    "max_abs_applied_torque_Nm": 45.43,
+    "max_abs_unclipped_torque_Nm": 59.86802959312415,
+    "no_support_ranges_inclusive": [
+      [
+        132,
+        175
+      ],
+      [
+        404,
+        419
+      ]
+    ],
+    "observation_age_s_max": 0,
+    "planning_calls": 50,
+    "planning_calls_above20ms": 50,
+    "planning_compute_ms_min_median_max": [
+      20.673000000000002,
+      29.385499999999997,
+      45.682
+    ],
+    "position_target_clip_count": 0,
+    "private_rollout_divergence_log_events": 2,
+    "roll_pitch_yaw_max_abs_rad": [
+      0.18418264742442056,
+      0.15753467691768455,
+      0.08492457261124574
+    ],
+    "selected_current_rollout_invalid_count": 0,
+    "support_count_histogram": {
+      "0": 60,
+      "1": 84,
+      "2": 261,
+      "3": 5,
+      "4": 90
+    },
+    "tick_range_inclusive": [
+      0,
+      499
+    ],
+    "tilt_max_rad": 0.22430092500930096,
+    "torque_clip_frames": 11,
+    "torque_clip_motor_samples": 13
+  },
+  "mjpc_full_preterminal": {
+    "all_feedback_time_matches_canonical": true,
+    "all_information_ages_zero": true,
+    "all_state_control_finite": true,
+    "canonical_warning_count_max": 0,
+    "feedback_samples": 1287,
+    "planning_calls": 129,
+    "planning_calls_above20ms": 128,
+    "planning_compute_ms_min_median_max": [
+      19.885999999999996,
+      27.25,
+      45.682
+    ],
+    "position_target_clip_count": 0,
+    "selected_current_rollout_invalid_count": 0,
+    "tick_range_inclusive": [
+      0,
+      1286
+    ],
+    "torque_clip_frames": 20,
+    "torque_clip_motor_samples": 22
+  },
+  "private_optimizer": {
+    "divergence_log_events": 6,
+    "limitation": "log events do not expose candidate IDs, discarded batch count or IPC/wall delivery latency",
+    "rejection_source": "pinned .substrate/mjpc/mjpc/trajectory.cc sets failure/maximum_return and returns on CheckWarnings; controller.cc RequireFreshPlan and best->failure/finite-return checks precede successful action response",
+    "selected_current_rollout_invalid_count": 0,
+    "warning": "MUJOCO_WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 2.7900.",
+    "warning_first_observed_canonical_sim_time_s": 2.4599999999999507,
+    "warning_first_observed_canonical_tick": 1230
+  },
+  "scope": "read-only sealed raw/source diagnosis; no controller or dynamics",
+  "terminal": {
+    "body_names": [
+      "world",
+      "RR_calf"
+    ],
+    "foot_support_count": 0,
+    "forbidden_contact_geom_ids": [
+      0,
+      53
+    ],
+    "geom_names": [
+      "phase2_floor",
+      null
+    ],
+    "height_m": 0.30522282968689934,
+    "independent_forward_contact_distance_m": 0.0008041157844224708,
+    "roll_pitch_yaw_rad": [
+      0.14984963276009544,
+      -0.294672020628639,
+      0.007636175121491169
+    ],
+    "sim_time_s": 2.573999999999938,
+    "tick": 1287,
+    "tilt_rad": 0.32959342838329186
+  },
+  "v2_prefix_comparison": {
+    "binary_model_anchor_checkpoint_source_identities_same": true,
+    "mjpc_ctrl_first_tick_above1e9": 10,
+    "mjpc_max_abs_ctrl_difference_Nm": 44.02951737128603,
+    "mjpc_max_abs_qpos_difference": 0.6310332532313068,
+    "mjpc_max_abs_qvel_difference": 17.5936218966956,
+    "mjpc_qpos_first_tick_above1e9": 31,
+    "mjpc_qvel_first_tick_above1e9": 21,
+    "mjpc_tick10_max_abs_ctrl_difference_Nm": 2.0972956704667922e-09,
+    "range_inclusive": [
+      0,
+      499
+    ],
+    "rl_max_state_control_difference": 0,
+    "root_cause": "unresolved; prefix mismatch is not proof of adapter bug or solver nondeterminism"
+  }
+}

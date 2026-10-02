@@ -18,7 +18,7 @@
 
 状态词：`CURRENT / VERIFIED / LEGACY BASELINE / HOLD / RE-AUDIT / SUPERSEDED / HISTORICAL`。
 
-## 1. [2026-09-28 | CURRENT | SNAPSHOT] 当前项目
+## 1. [2026-10-02 | CURRENT | SNAPSHOT] 当前项目
 
 #189 已形成第一张 bounded RL capability map。其封存执行与原始 case 记录仍在
 [原结果](validation/rl_capability_map_successor_20260924/RESULTS.md)；
@@ -89,31 +89,31 @@ ranking, safety-stop live validation or scientific bottleneck follows.
 See [v2 closeout](validation/aligned_flat_capture_v2_closeout_20261002/RESULTS.md).
 V1 and v2 remain sealed; scientific attempts for v2 remain0.
 
-The next [shared baseline/probe candidate](research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md)
-separates12s own-controller operational baselines from four finite condition
-probes. Its preparation uses no canonical integration and self-authorizes no
-physics. The specific bounded runner and independent delivered-payload/exposure
-verifier are now implemented; the engineering regression handoff does not open
-live execution. It still requires applicable clean qualification, exact-head
-science/execution reviews, binding to the existing three-stage delegation and
-fresh preflight. Native qualification performs real private optimizer rollouts;
-snapshot preparation and fake regressions perform no numerical integration.
-The exact9440f0e source science/execution conclusions are approved and preserved;
-clean bounded static qualification subsequently passed, with one native static
-admission and unknown total private integration count. Final exact-head
-preparation/reviews remain distinct live gates; no START exists.
-The subsequent final science HOLD identified a protocol/archive serialization
-identity mismatch in that package. The repaired source passed254 guarded tests
-and awaits new exact-head reviews and versioned qualification/preparation;
-previous receipts remain sealed historical evidence and do not admit this runtime.
-Gate0 remains incomplete.
+The [shared baseline/probe campaign](research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md)
+ran at b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d after final exact-head dual
+approval and fresh in-process preflight. Its frozen whole-campaign safety stop
+closed execution after3 scientific attempts and13287 canonical steps.
+Both RL12s baseline repeats passed the declared operational thresholds
+(mean body-vx0.885292m/s, MAE0.114708m/s), with identical raw bytes and maximum
+raw state/applied-control repeat difference0. Adapted MJPC baseline1 stopped
+at tick1287/2.574s for nonfoot_contact; zero-integration terminal reconstruction
+confirmed the floor/RR_calf pair. One MJPC trial does not establish a stable
+failure mechanism or controller-family ranking. The remaining17 arms, including
+all16 challenges, were NOT_RUN. The four-baseline stage did not complete;
+stage3 robustness has no result and the MJPC useful-baseline gate remains unmet.
+The local official verifier checked raw integrity and the real external ledger.
+The campaign is permanently closed with no retry or replacement; see
+[verified safety-stop closeout](validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
+Native private rollouts were real and their total integration count is unknown.
+Gate0 remains incomplete. Next work is read-only diagnosis; later physics needs
+a new prospective task rather than resuming this stopped campaign.
 
 ### Scientifically verified results
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
 #189 九例 map。原始轨迹与尝试账本未改写；语义修正见 erratum。没有证据证明
 跨 controller bottleneck、普遍低摩擦鲁棒性或论文 gap；Gate 0 仍未完成。
-执行 frontier 跟随 `CURRENT.md`。
+2026-10-02 的12s shared baseline 两次 RL PASS 和一次 adapted MJPC 非足接触安全停止，亦限于该冻结条件；所有挑战未运行，不构成 robustness map 或跨控制器排名。执行 frontier 跟随 `CURRENT.md`。
 
 ## 1D. [2026-09-24 | VERIFIED / BOUNDED; 2026-09-28 ERRATUM] RL capability map 正式完成
 

@@ -1,0 +1,46 @@
+{
+  "actual_start_utc": "2026-10-02T08:53:56.582893+00:00",
+  "authorized_by": "user",
+  "campaign_claim_sha256": "bc1fa92d724758d14750fa1b84364a40c6ed6458a3ff901c264bf392170b5f1c",
+  "capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "capture_sealed_mtime_utc": "2026-10-02T08:54:35.988910+00:00",
+  "final_review_packet_sha256": "0f8e375606fb1a816d4b655b629a22b3e499ffd695d7fb92f1db09844e05a34f",
+  "first_scientific_claim_mtime_utc": "2026-10-02T08:54:06.089739+00:00",
+  "first_scientific_claim_sha256": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+  "fresh_preflight": {
+    "manifest_sha256": "a95c7c67b7d6b078ada7eeeff7d01fa0ccf6e1e1790a046104bc05eee7cd97d1",
+    "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_preflight/20261002T085350582979Z"
+  },
+  "no_retry": true,
+  "original_user_instruction": "\u6258\u7ba1\u5230\u7b2c\u4e09\u6bb5\u5427",
+  "pid": 706616,
+  "review": {
+    "execution": {
+      "evidence": "Parent-forwarded final APPROVED conclusion; original thread 01a0f7d0-411d-7446-9b73-68efe68130bf, turn 01a0fbc0-0b84-73f9-af0f-7832548f04ac; exact packet SHA256 0f8e375606fb1a816d4b655b629a22b3e499ffd695d7fb92f1db09844e05a34f",
+      "final_review_packet_sha256": "0f8e375606fb1a816d4b655b629a22b3e499ffd695d7fb92f1db09844e05a34f",
+      "final_turn_id": "01a0fbc0-0b84-73f9-af0f-7832548f04ac",
+      "head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+      "prepared_manifest_sha256": "abc8db97e07a6fbd5cdd8c5953541f1402e107ba38b6437ce43df87b8af3542e",
+      "provenance": "genuine final conclusions supplied by coordinating parent; original report text not supplied and not fabricated",
+      "qualification_fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+      "qualification_manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+      "reviewer": "go2-independent-review-task-2",
+      "thread_id": "01a0f7d0-411d-7446-9b73-68efe68130bf",
+      "verdict": "APPROVED"
+    },
+    "head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+    "science": {
+      "evidence": "Parent-forwarded final APPROVED conclusion; original thread 01a0f819-d2cc-728a-baf2-30ec9050b08e, turn 01a0fbc3-d421-7072-b047-abdec727b745; exact packet SHA256 0f8e375606fb1a816d4b655b629a22b3e499ffd695d7fb92f1db09844e05a34f",
+      "final_review_packet_sha256": "0f8e375606fb1a816d4b655b629a22b3e499ffd695d7fb92f1db09844e05a34f",
+      "final_turn_id": "01a0fbc3-d421-7072-b047-abdec727b745",
+      "head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+      "prepared_manifest_sha256": "abc8db97e07a6fbd5cdd8c5953541f1402e107ba38b6437ce43df87b8af3542e",
+      "provenance": "genuine final conclusions supplied by coordinating parent; original report text not supplied and not fabricated",
+      "qualification_fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+      "qualification_manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+      "reviewer": "go2-independent-science-task-4-20261001",
+      "thread_id": "01a0f819-d2cc-728a-baf2-30ec9050b08e",
+      "verdict": "APPROVED"
+    }
+  }
+}

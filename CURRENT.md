@@ -7,12 +7,12 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 ## Active research frontier
 
 Branch: `research/shared-baseline-probes-prep-20261002`.
-Task: [Go2 shared baseline and bounded probes: bounded runner engineering preparation](docs/research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md).
-Closeout: [Go2 shared baseline and bounded probes: bounded runner engineering preparation results](docs/validation/shared_campaign_preflight_wiring_fix_20261002/RESULTS.md).
-Stage: Actual040 campaign stopped in fresh preflight before any arm. Missing explicit inprocess declaration repaired;294 guarded same-entry/substrate/preflight checks passed. New exact-head qualification/preparation and independent reviews are required before a new START.
-Scientific status: V2 contains two engineering attempts,1000 canonical steps and zero scientific attempts; no locomotion ranking or real-time claim. Next-stage baseline/probes are NOT_RUN and Gate0 remains incomplete.
-Last live HEAD: `ab27185f6c0ee47fdd09fecb367977bf4ab9cfde`.
-Next: Use the append-only preflight wiring review packet for the new exact source HEAD and fingerprint. Create fresh applicable qualification/preparation, obtain corresponding independent reviews, and run fresh preflight before a new capture; never restart the old no_retry job or reuse040 bindings.
+Task: [Go2 shared baseline and bounded probes v1: verified whole-campaign safety stop](docs/research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md).
+Closeout: [Go2 shared baseline and bounded probes v1: verified whole-campaign safety stop results](docs/validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
+Stage: Frozen b1ac4f7 campaign permanently closed by MJPC baseline1 nonfoot_contact SAFETY_STOP; official raw/real-ledger verification and148-member source-bound archive checks passed; no retry or further arm.
+Scientific status: 3 scientific attempts and13287 canonical steps: two RL12s baseline PASS with exact repetition, one adapted MJPC safety stop at2.574s; remaining17 arms including all16 challenges NOT_RUN; no controller ranking and Gate0 incomplete.
+Last live HEAD: `b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d`.
+Next: Keep this campaign and sealed v1/v2 permanently closed. Continue read-only diagnosis of the adapted MJPC floor/RR_calf safety stop; any later physical investigation needs a new prospective bounded task and admission, never replay consumed arms or resume skipped challenges.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

@@ -1,0 +1,290 @@
+{
+  "attempts": [
+    {
+      "analysis": {
+        "case": "rl_baseline_1",
+        "classification": "PASS",
+        "condition_evidence": null,
+        "elapsed_s": 2.895291742985137,
+        "episode": {
+          "attempt_consumed": true,
+          "steps": 6000,
+          "terminal_reason": "horizon"
+        },
+        "frames": 6001,
+        "physics_steps": 6000,
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "replay": {
+          "canonical": {
+            "first_failure": null,
+            "frames": 6001,
+            "missing_supports": [],
+            "progress_m": 10.351219907754878,
+            "terminal_reason": "horizon",
+            "verdict": "PASS",
+            "vx_mae_mps": 0.11471712059703629
+          },
+          "classification": "PASS",
+          "performance": {
+            "body_vx_mae_mps": 0.11470773246571479,
+            "body_vx_mean_mps": 0.8852922675342852,
+            "endpoint_in_performance_mean": false,
+            "episode_lateral_max_m": 0.16800918587598115,
+            "episode_yaw_max_rad": 0.045076343833307386,
+            "measurement_samples": 5000,
+            "measurement_window": "[2,12)"
+          }
+        }
+      },
+      "id": "rl_baseline_1",
+      "not_run_reason": null,
+      "physics_steps": 6000,
+      "status": "PASS"
+    },
+    {
+      "analysis": {
+        "case": "rl_baseline_2",
+        "classification": "PASS",
+        "condition_evidence": null,
+        "elapsed_s": 2.622810272005154,
+        "episode": {
+          "attempt_consumed": true,
+          "steps": 6000,
+          "terminal_reason": "horizon"
+        },
+        "frames": 6001,
+        "physics_steps": 6000,
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "replay": {
+          "canonical": {
+            "first_failure": null,
+            "frames": 6001,
+            "missing_supports": [],
+            "progress_m": 10.351219907754878,
+            "terminal_reason": "horizon",
+            "verdict": "PASS",
+            "vx_mae_mps": 0.11471712059703629
+          },
+          "classification": "PASS",
+          "performance": {
+            "body_vx_mae_mps": 0.11470773246571479,
+            "body_vx_mean_mps": 0.8852922675342852,
+            "endpoint_in_performance_mean": false,
+            "episode_lateral_max_m": 0.16800918587598115,
+            "episode_yaw_max_rad": 0.045076343833307386,
+            "measurement_samples": 5000,
+            "measurement_window": "[2,12)"
+          }
+        }
+      },
+      "id": "rl_baseline_2",
+      "not_run_reason": null,
+      "physics_steps": 6000,
+      "status": "PASS"
+    },
+    {
+      "analysis": {
+        "case": "mjpc_baseline_1",
+        "classification": "SAFETY_STOP",
+        "condition_evidence": null,
+        "elapsed_s": 5.081120718998136,
+        "episode": {
+          "attempt_consumed": true,
+          "steps": 1287,
+          "terminal_reason": "nonfoot_contact"
+        },
+        "frames": 1288,
+        "physics_steps": 1287,
+        "raw_sha256": "e5f760c54a57d12e8da6150972cb084414c3f9d84f1827ac9582b292532a3841",
+        "replay": {
+          "canonical": {
+            "first_failure": {
+              "reason": "nonfoot_contact",
+              "tick": 1287
+            },
+            "frames": 1288,
+            "missing_supports": [],
+            "progress_m": 0.348427692896604,
+            "terminal_reason": "nonfoot_contact",
+            "verdict": "FAIL",
+            "vx_mae_mps": 0.8980457811032002
+          },
+          "classification": "SAFETY_STOP",
+          "performance": null
+        }
+      },
+      "id": "mjpc_baseline_1",
+      "not_run_reason": null,
+      "physics_steps": 1287,
+      "status": "SAFETY_STOP"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_baseline_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_sliding_friction_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_sliding_friction_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_observation_delay_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_observation_delay_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_decision_period_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_decision_period_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_lateral_force_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "rl_lateral_force_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_sliding_friction_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_sliding_friction_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_observation_delay_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_observation_delay_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_decision_period_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_decision_period_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_lateral_force_1",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "analysis": null,
+      "id": "mjpc_lateral_force_2",
+      "not_run_reason": "campaign_stopped:mjpc_baseline_1:SAFETY_STOP",
+      "physics_steps": 0,
+      "status": "NOT_RUN"
+    }
+  ],
+  "boundary": "whole-campaign safety stop retained; no retry and no challenges; one MJPC trial does not establish a reproducible mechanism or controller-family ranking",
+  "canonical_capture_steps": 13287,
+  "capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "capture_manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+  "mjpc_terminal": {
+    "failure": "nonfoot_contact",
+    "method": "one mj_forward at sealed terminal qpos/qvel on prepared identical physical model; no integration, no controller/private planner",
+    "raw_forbidden_contacts": [
+      [
+        0,
+        53
+      ]
+    ],
+    "reconstructed_contacts": [
+      {
+        "body_names": [
+          "world",
+          "RR_calf"
+        ],
+        "distance_m": 0.0008041157844224708,
+        "geom_ids": [
+          0,
+          53
+        ],
+        "geom_names": [
+          "phase2_floor",
+          null
+        ]
+      }
+    ],
+    "sim_time_s": 2.573999999999938,
+    "terminal_reason": "nonfoot_contact",
+    "tick": 1287
+  },
+  "not_run_count": 17,
+  "physics_accounting": {
+    "audit_canonical_steps": 0,
+    "audit_private_planning_calls": 0,
+    "capture_canonical_steps": 13287,
+    "native_private_rollouts": "real in MJPC capture; total private integration step count not instrumented"
+  },
+  "rl_raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+  "rl_repeat": {
+    "maximum_absolute_state_control_difference": 0.0,
+    "repeatable": true
+  },
+  "scientific_attempts": 3,
+  "status": "SAFETY_STOP",
+  "stopped_case": "mjpc_baseline_1"
+}
