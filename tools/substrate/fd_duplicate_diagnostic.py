@@ -84,6 +84,23 @@ def validate_protocol(protocol):
 def trial_plan():
     return [{'tick':t,'repeat':n,'variant':v} for t in (0,10) for n in (1,2) for v in ('original','fixed')]
 
+def default_run_record_paths(prepared_path):
+    prepared=Path(prepared_path).resolve(strict=True)
+    base=prepared.parent/(prepared.name+'_run_records')
+    return {'review':base/'review.json','authorization':base/'authorization.json',
+            'output':base/'result'}
+
+def validate_run_record_paths(prepared_path,**paths):
+    prepared=Path(prepared_path).resolve(strict=True)
+    for label,value in paths.items():
+        candidate=Path(value)
+        lexical=candidate if candidate.is_absolute() else Path.cwd()/candidate
+        lexical=Path(os.path.abspath(lexical))
+        resolved=candidate.resolve(strict=False)
+        if (lexical==prepared or lexical.is_relative_to(prepared) or
+            resolved==prepared or resolved.is_relative_to(prepared)):
+            raise ValueError(f'{label} path must be outside prepared bundle')
+
 def anchors_from_raw_rows(source_rows):
     rows={}
     for row in source_rows:
@@ -290,9 +307,16 @@ def repeat_summary(completed):
                     't34_overlap':[x['t34_overlap'],y['t34_overlap']]})
     return out
 
-def run(prepared_path,review_path,authorization_path,output):
+def run(prepared_path,review_path=None,authorization_path=None,output=None):
     with experiment_lock():
         prepared_path=Path(prepared_path).resolve(strict=True)
+        defaults=default_run_record_paths(prepared_path)
+        review_path=Path(review_path) if review_path is not None else defaults['review']
+        authorization_path=(Path(authorization_path) if authorization_path is not None
+                            else defaults['authorization'])
+        output=Path(output) if output is not None else defaults['output']
+        validate_run_record_paths(prepared_path,review=review_path,
+            authorization=authorization_path,output=output)
         prep=verify_manifest(prepared_path)
         if prep.get('status')!='ENGINEERING_ADMITTED': raise ValueError('prepared record not admitted')
         protocol=strict_json((prepared_path/'protocol.json').read_text())
@@ -354,8 +378,9 @@ def main():
     prep.add_argument('--original-binary',type=Path,required=True); prep.add_argument('--fixed-binary',type=Path,required=True)
     prep.add_argument('--output',type=Path,required=True)
     start=sub.add_parser('run'); start.add_argument('--prepared',type=Path,required=True)
-    start.add_argument('--review',type=Path,required=True); start.add_argument('--authorization',type=Path,required=True)
-    start.add_argument('--output',type=Path,required=True)
+    start.add_argument('--review',type=Path,help='external exact-head review JSON (default: sibling run-record directory)')
+    start.add_argument('--authorization',type=Path,help='external user authorization JSON (default: sibling run-record directory)')
+    start.add_argument('--output',type=Path,help='external result directory (default: sibling run-record directory)')
     a=p.parse_args()
     if a.cmd=='plan': print(json.dumps({'bounds':derive_bounds(),'trials':trial_plan()},indent=2,sort_keys=True))
     elif a.cmd=='prepare': print(prepare(a.capture,a.original_binary,a.fixed_binary,a.output))
