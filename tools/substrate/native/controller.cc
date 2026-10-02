@@ -142,7 +142,8 @@ class Controller {
     Reset();
 
     std::cout << "{\"ready\":true,\"protocol\":3,\"nq\":19,\"nv\":18,\"nu\":12,"
-              << "\"planner\":\"MJPC iLQG\",\"planner_dt\":" << planner_dt_
+              << "\"worker_count\":" << pool_.NumThreads()
+              << ",\"planner\":\"MJPC iLQG\",\"planner_dt\":" << planner_dt_
               << ",\"horizon_steps\":" << horizon_
               << ",\"source_nominal_biastype\":\"mjBIAS_NONE\""
               << ",\"compatibility_correction\":\"private_model_mjBIAS_AFFINE\""

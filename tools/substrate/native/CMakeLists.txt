@@ -60,6 +60,47 @@ add_library(go2_mjpc_core STATIC ${MJPC_FILES})
 target_include_directories(go2_mjpc_core PUBLIC "${MJPC_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
 add_executable(model_derivative_indices_test model_derivative_indices_test.cc)
+
+option(GO2_MJPC_BUILD_FD_DIAGNOSTIC
+  "Build matched original/fixed FD-traced diagnostic binaries" OFF)
+if(GO2_MJPC_BUILD_FD_DIAGNOSTIC)
+  set(MJPC_DIAGNOSTIC_PATCH_SCRIPT
+    "${CMAKE_CURRENT_SOURCE_DIR}/patch_mjpc_model_derivatives_diagnostic.py")
+  set(MJPC_FD_ORIGINAL_SOURCE
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/model_derivatives_fd_original.cc")
+  set(MJPC_FD_FIXED_SOURCE
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/model_derivatives_fd_fixed.cc")
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}" "${MJPC_DIAGNOSTIC_PATCH_SCRIPT}"
+            "${MJPC_SOURCE_DIR}/mjpc/planners/model_derivatives.cc"
+            "${MJPC_FD_ORIGINAL_SOURCE}" "${MJPC_FD_FIXED_SOURCE}"
+    COMMAND_ERROR_IS_FATAL ANY)
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${MJPC_DIAGNOSTIC_PATCH_SCRIPT}"
+    "${MJPC_SOURCE_DIR}/mjpc/planners/model_derivatives.cc")
+  set(MJPC_DIAGNOSTIC_COMMON_FILES ${MJPC_FILES})
+  list(REMOVE_ITEM MJPC_DIAGNOSTIC_COMMON_FILES "${MJPC_PATCHED_DERIVATIVES}")
+  foreach(variant IN ITEMS original fixed)
+    if(variant STREQUAL "original")
+      set(MJPC_FD_VARIANT_SOURCE "${MJPC_FD_ORIGINAL_SOURCE}")
+    else()
+      set(MJPC_FD_VARIANT_SOURCE "${MJPC_FD_FIXED_SOURCE}")
+    endif()
+    add_library(go2_mjpc_fd_${variant}_core STATIC
+      ${MJPC_DIAGNOSTIC_COMMON_FILES} "${MJPC_FD_VARIANT_SOURCE}")
+    target_include_directories(go2_mjpc_fd_${variant}_core PUBLIC
+      "${MJPC_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
+    target_link_libraries(go2_mjpc_fd_${variant}_core PUBLIC
+      "${MUJOCO_LIBRARY}" Threads::Threads absl::base absl::any_invocable
+      absl::check absl::flat_hash_map absl::log absl::random_random absl::span)
+    target_compile_options(go2_mjpc_fd_${variant}_core PRIVATE -fno-strict-aliasing)
+    add_executable(go2_mjpc_controller_fd_${variant} controller.cc diagnostic_budget.cc)
+    target_link_libraries(go2_mjpc_controller_fd_${variant} PRIVATE
+      go2_mjpc_fd_${variant}_core)
+    target_link_options(go2_mjpc_controller_fd_${variant} PRIVATE
+      "-Wl,--wrap=mj_step" "-Wl,--wrap=mjd_transitionFD")
+  endforeach()
+endif()
 target_link_libraries(go2_mjpc_core PUBLIC "${MUJOCO_LIBRARY}" Threads::Threads
   absl::base absl::any_invocable absl::check absl::flat_hash_map absl::log
   absl::random_random absl::span)
