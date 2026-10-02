@@ -71,21 +71,30 @@ failure supplies a bounded observation; an invalid/safety-stopped campaign
 limits evidence to its recorded prefix. All outcomes close this task at its
 frozen budget. Any next physical question requires a new prospective task.
 
-## First delivery and remaining execution work
+## Implementation and review handoff
 
-`python -m tools.substrate.rl_friction_reference --output <fresh-absolute-path>`
-only freezes/checks the new spec, official old capture/real ledger, passing
-reference pair, static canonical model/checkpoint and auxiliary algebra. It has
-no capture/START API. The precheck takes the existing experiment lock, forbids
-canonical integration and makes no policy/native planner calls.
+The first [frozen-spec precheck](../validation/rl_friction_reference_v1_prep_20261002/PRECHECK.md)
+remains source-bound to eaa9976/304a4b9 and immutable. The actual
+[execution runner](../../tools/substrate/rl_friction_campaign.py) now exposes
+prepare, explicit capture and independent verify. It reuses the unchanged
+shared episode/friction/prefix/exposure/primary replay/STOP engine through an
+optional RL-only identity callback, leaving the old default intact.
 
-[PRECHECK](../validation/rl_friction_reference_v1_prep_20261002/PRECHECK.md)
-records the exact checks and evidence. New scientific attempts and canonical/
-private physics remain0. The original runner sources are unchanged.
+The [execution preparation report](../validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md)
+records targeted zero-physics tests and the new task-specific qualification.
+The qualifier binds complete actual inputs, reruns affected Python checks and
+labels unchanged pinned native checks as reused with original producer metadata;
+it does not rerun native private optimizer admission. No synthetic fixture
+review or prior campaign approval supplies this new task's live approval.
 
-Before live execution, minimally bind the independent two-arm catalog and the
-sealed references to that engine, create applicable clean qualification for the
-actual new runtime inputs, review that binding increment, then hold the shared
-lock through fresh preflight and capture. The old whole-input qualification is
-reference provenance only and is not admission for a changed fingerprint.
-No current-head execution qualification or live preflight is claimed here.
+The final single review packet binds current exact clean HEAD, frozen protocol,
+new qualification, snapshot/reference preparation and tests. Review only this
+increment: adopting sealed own RL references, independent two-arm claim/STOP
+ownership, fresh entry/preflight and auxiliary semantics. Controller tuning,
+model, policy, timing, safety and intervention strength remain frozen.
+Before capture, require genuine independent exact-head science and execution
+approval plus task/budget/prepared-manifest-bound user START. Hold the shared
+lock continuously from fresh preflight through capture. A valid START reserves
+the unique new ledger before preflight, so preflight failure also permanently
+closes this campaign without consuming a scientific arm. Old17 NOT_RUN and
+all prior raw/claims remain immutable.

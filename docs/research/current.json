@@ -2,9 +2,9 @@
   "branch": "research/rl-friction-reference-prep-20261002",
   "title": "Independent RL sliding-friction reference v1: prospective freeze",
   "task": "docs/research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md",
-  "result": "docs/validation/rl_friction_reference_v1_prep_20261002/PRECHECK.md",
-  "stage": "Independent prospective RL-only friction card frozen; source references and zero-physics precheck precede incremental review; new campaign NOT_RUN",
+  "result": "docs/validation/rl_friction_reference_v1_execution_prep_20261002/RESULTS.md",
+  "stage": "Independent RL-only two-arm capture/verify entry implemented;25 zero-physics tests pass; clean qualification preparation precedes incremental exact-head review",
   "scientific_status": "Old shared campaign remains permanently closed at3 attempts/13287 steps with17 NOT_RUN. New task budgets2 fresh RL friction repeats/12000 steps, actual0 attempts/0 canonical or private physics. Gate0 incomplete",
   "last_live_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
-  "next": "Review the frozen single-card design/reference chain and minimal independent binding increment; qualify actual new runtime and fresh locked preflight before any START. Preserve old campaign, v1/v2 and their unused arms"
+  "next": "Complete new current-input qualification and exact-head snapshot preparation; deliver one full incremental review packet. Genuine dual review and bound START precede fresh locked preflight and physics; old17 NOT_RUN remain closed"
 }

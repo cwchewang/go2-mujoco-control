@@ -88,6 +88,16 @@ def arms(plan):
 
 def auxiliary_window(rows):
     """Prospective [6,12) scalar body-vx metrics; partial horizons stay unscored."""
+    if not (len(rows) == 6001 and rows[-1]["terminal_reason"] == "horizon"):
+        return {
+            "status": "NOT_MEASURABLE",
+            "measurement_window": "[6,12)",
+            "measurement_samples": sum(3000 <= row["tick"] < 6000 for row in rows),
+            "endpoint_in_performance_mean": False,
+            "body_vx_mean_mps": None,
+            "body_vx_mae_mps": None,
+            "affects_primary_classification": False,
+        }
     velocities = []
     for expected_tick, row in enumerate(rows):
         if type(row["tick"]) is not int or row["tick"] != expected_tick:

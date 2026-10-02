@@ -539,7 +539,9 @@ def _challenge_binding(item, run):
     return binding
 
 
-def _run_campaign(run, ledger, prepared_dir, prepared, plan, head):
+def _run_campaign(
+    run, ledger, prepared_dir, prepared, plan, head, *, identity_check=None
+):
     attempts = run.result["attempts"]
     setup_done = False
     for item in attempts:
@@ -555,7 +557,7 @@ def _run_campaign(run, ledger, prepared_dir, prepared, plan, head):
             if current_head(plan) != head:
                 raise ValueError("HEAD changed during campaign")
             verify_bundle(prepared_dir)
-            _identity(prepared)
+            (identity_check or _identity)(prepared)
             if not setup_done:
                 base._setup_runtime()
                 setup_done = True
