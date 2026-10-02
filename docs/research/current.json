@@ -1,10 +1,10 @@
 {
   "branch": "research/shared-baseline-probes-prep-20261002",
-  "title": "Go2 shared baseline and bounded probes: zero-physics candidate preparation",
+  "title": "Go2 shared baseline and bounded probes: bounded runner engineering preparation",
   "task": "docs/research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md",
-  "result": "docs/validation/shared_baseline_probes_prep_20261002/RESULTS.md",
-  "stage": "V2 engineering capture is independently accepted and permanently closed. The next12s baseline and four finite condition cards are candidates; guarded hook preparation is complete and no new physical capture is start-ready",
+  "result": "docs/validation/shared_campaign_runner_review_20261002/RESULTS.md",
+  "stage": "V2 remains permanently closed. The bounded runner and independent payload/exposure verifier are implemented and guarded regression is complete; no new physical capture is start-ready",
   "scientific_status": "V2 contains two engineering attempts,1000 canonical steps and zero scientific attempts; no locomotion ranking or real-time claim. Next-stage baseline/probes are NOT_RUN and Gate0 remains incomplete",
   "last_live_head": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde",
-  "next": "Review the candidate task, operational acceptance and zero-physics hook package; then add the bounded campaign runner and create new exact-head qualification/preparation/review/authorization bindings before fresh-preflight capture. Never rerun v1/v2"
+  "next": "Review the minimal bounded runner handoff; complete clean qualification and exact-head zero-step preparation, then exact-head science/execution reviews, existing delegation binding and fresh preflight. Never rerun v1/v2"
 }

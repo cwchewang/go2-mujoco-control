@@ -92,9 +92,13 @@ V1 and v2 remain sealed; scientific attempts for v2 remain0.
 The next [shared baseline/probe candidate](research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md)
 separates12s own-controller operational baselines from four finite condition
 probes. Its preparation uses no canonical integration and self-authorizes no
-physics. It requires a specific campaign runner, applicable clean qualification,
-new exact-head reviews and binding to the existing three-stage delegation,
-followed by fresh preflight. Gate0 remains incomplete.
+physics. The specific bounded runner and independent delivered-payload/exposure
+verifier are now implemented; the engineering regression handoff does not open
+live execution. It still requires applicable clean qualification, exact-head
+science/execution reviews, binding to the existing three-stage delegation and
+fresh preflight. Native qualification performs real private optimizer rollouts;
+snapshot preparation and fake regressions perform no numerical integration.
+Gate0 remains incomplete.
 
 ### Scientifically verified results
 

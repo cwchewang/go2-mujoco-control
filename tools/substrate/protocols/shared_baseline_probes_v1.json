@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "id": "shared-baseline-probes-v1",
-  "mode": "candidate_preparation",
+  "mode": "capture_preparation",
   "self_authorizes_physics": false,
   "anchor": "tools/substrate/protocols/aligned_flat_anchor_v1.json",
   "anchor_sha256": "0d0e0061c3552ae0faf3f9b64d006054d8205f26901398ab0b160cbb9b4d900b",
@@ -13,12 +13,12 @@
   "measurement_end_tick_exclusive": 6000,
   "replicates": 2,
   "physics_steps_max": 120000,
-  "repeat_absolute_tolerance": 1e-9,
+  "repeat_absolute_tolerance": 1e-09,
   "retry": "none",
   "safety_execution_evidence_failure": "stop_campaign",
   "horizon_performance_failure": "retain_and_continue",
   "stage3_gate": "two_valid_passing_repeatable_own_baselines",
-  "live_readiness": "NOT_READY_REQUIRES_CAPTURE_RUNNER_AND_DUAL_REVIEW",
+  "live_readiness": "AWAITING_EXACT_HEAD_REVIEWS_AND_BOUND_DELEGATION",
   "performance": {
     "body_vx_mean_min_mps": 0.8,
     "body_vx_mae_max_mps": 0.2,
@@ -36,13 +36,13 @@
       "evidence": "active_foot_floor_contact_friction"
     },
     "observation_delay": {
-      "variable": "measurement_transport_delay_s",
+      "variable": "controller_observation_delivery_delay_s",
       "from": 0,
       "to": 0.02,
       "start_tick": 0,
       "end_tick_exclusive": 6000,
       "interface": "bounded_immutable_state_buffer",
-      "evidence": "sample_available_controller_times_and_payload"
+      "evidence": "normalized_measurement_and_retimed_payload_hashes_with_source_tick"
     },
     "decision_period": {
       "variable": "controller_decision_period_s",
@@ -62,5 +62,15 @@
       "interface": "data.xfrc_applied[base_link]",
       "evidence": "actual_applied_world_wrench_each_tick"
     }
-  }
+  },
+  "output_root": "example/cpp/experiments/_runs/shared_baseline_probes_v1",
+  "expected_branch": "research/shared-baseline-probes-prep-20261002",
+  "accepted_parent_head": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde",
+  "wall_timeout_s": 300,
+  "self_authorized_scientific_attempts": 0,
+  "planned_scientific_attempts_max": 20,
+  "challenge_pairing": "challenge_repeat_j_to_own_baseline_repeat_j",
+  "payload_evidence_format": "normalized-named-state-v1",
+  "unexposed_horizon_policy": "stop_campaign_without_robustness_pass",
+  "paired_prefix_absolute_tolerance": 1e-09
 }

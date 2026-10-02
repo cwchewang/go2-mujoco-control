@@ -1,0 +1,14 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "guarded": [
+    "mj_step",
+    "mj_step1",
+    "mj_step2"
+  ],
+  "output": "_runs/shared_campaign_runner_prep_20261002/regression_20261002T042713564155Z",
+  "private_planning_calls": 0,
+  "real_canonical_integration_steps": 0,
+  "success": true,
+  "tests": 238
+}

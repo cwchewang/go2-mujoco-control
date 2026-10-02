@@ -3,12 +3,48 @@
 from collections import deque
 from dataclasses import replace
 import math
+import hashlib
+import json
 import numpy as np
 
-from .contracts import InformationSpec, TimedObservation, WholeBodyState
+from .contracts import (
+    InformationSpec,
+    TimedObservation,
+    WholeBodyState,
+    POLICY_JOINTS,
+    reorder,
+)
 
 
 IDS = ("sliding_friction", "observation_delay", "decision_period", "lateral_force")
+
+
+def payload_digest(payload):
+    """Canonical named-state-v1 wire evidence; no simulator handles."""
+    p = payload.proprioception if isinstance(payload, WholeBodyState) else payload
+    p.validate()
+    proprio = {
+        "joint_names": list(POLICY_JOINTS),
+        "position": reorder(p.position, p.joint_names, POLICY_JOINTS).tolist(),
+        "velocity": reorder(p.velocity, p.joint_names, POLICY_JOINTS).tolist(),
+        "quaternion_wxyz": p.quaternion_wxyz.tolist(),
+        "angular_velocity_body": p.angular_velocity_body.tolist(),
+    }
+    if isinstance(payload, WholeBodyState):
+        record = {
+            "kind": "whole_body_state",
+            "proprioception": proprio,
+            "base_position_world": payload.base_position_world.tolist(),
+            "linear_velocity_world": payload.linear_velocity_world.tolist(),
+            "time_s": payload.time_s,
+        }
+    else:
+        record = {"kind": "proprioceptive", **proprio}
+    return hashlib.sha256(
+        json.dumps(
+            record, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode()
+    ).hexdigest()
 
 
 def condition_specs(name, information, timing):
@@ -79,6 +115,7 @@ class BoundedCondition:
             from .model import physical_fingerprint
 
             self.before_fingerprint = physical_fingerprint(plant.model)
+            self.after_fingerprint = self.before_fingerprint
         if self.name == "lateral_force":
             self.body = plant.mj.mj_name2id(
                 plant.model, plant.mj.mjtObj.mjOBJ_BODY, "base_link"
@@ -122,18 +159,19 @@ class BoundedCondition:
             # Native planning uses the CURRENT control clock with old measurements.
             # The original sample time remains in the immutable TimedObservation.
             controller_payload = replace(controller_payload, time_s=time_s)
-        return (
-            timed,
-            controller_payload,
-            {
-                "initial_state_seed": seeded,
-                "controller_payload_time_s": (
-                    controller_payload.time_s
-                    if isinstance(controller_payload, WholeBodyState)
-                    else None
-                ),
-            },
-        )
+        metadata = {
+            "format": "normalized-named-state-v1",
+            "initial_state_seed": seeded,
+            "source_tick": int(round(timed.sample_time_s / 0.002)),
+            "source_payload_sha256": payload_digest(timed.payload),
+            "controller_payload_sha256": payload_digest(controller_payload),
+            "controller_payload_time_s": (
+                controller_payload.time_s
+                if isinstance(controller_payload, WholeBodyState)
+                else None
+            ),
+        }
+        return timed, controller_payload, metadata
 
     def before_step(self, plant, tick):
         record = {"id": self.name, "tick": tick}
@@ -158,7 +196,13 @@ class BoundedCondition:
                     c.friction, expected, rtol=0, atol=1e-12
                 ):
                     raise ValueError("actual contact friction did not match condition")
-                contacts.append({"foot_geom": foot, "friction": c.friction.tolist()})
+                contacts.append(
+                    {
+                        "foot_geom": foot,
+                        "foot_name": plant.feet[foot],
+                        "friction": c.friction.tolist(),
+                    }
+                )
             if self.switched:
                 self.contact_samples += len(contacts)
             record.update(switched=self.switched, actual_contacts=contacts)
@@ -179,10 +223,6 @@ class BoundedCondition:
         return record
 
     def complete(self):
-        if self.name == "sliding_friction" and (
-            not self.switched or self.contact_samples == 0
-        ):
-            raise ValueError("no effective changed contact observed")
         if self.name == "lateral_force" and self.force_ticks != 100:
             raise ValueError("force interval incomplete")
         if self.name == "observation_delay" and self.delayed_updates == 0:

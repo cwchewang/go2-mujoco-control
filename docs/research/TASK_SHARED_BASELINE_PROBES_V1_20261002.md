@@ -1,6 +1,6 @@
-# Shared baseline and bounded probes v1: candidate preparation
+# Shared baseline and bounded probes v1: bounded runner preparation
 
-Status: candidate freeze / zero-physics engineering package; NOT LIVE READY.
+Status: bounded runner implemented / engineering regression package; NOT LIVE READY.
 
 ## Decision and authority
 
@@ -81,9 +81,9 @@ baseline; differing controller information prevents a fair-information ranking.
 | Card | Unique variable / strength | Interface and time | Required actual evidence |
 | --- | --- | --- | --- |
 | Sliding friction | Four foot sliding coefficients0.8 to0.3; other components fixed | Canonical geom_friction[feet,0], from6s through episode end | Active foot-floor friction[0.3,0.3,0.02,0.01,0.01], condim6; physical fingerprints before/after |
-| Observation delay | Measurement transport0 to20ms | Immutable sampled-state buffer for whole episode | Original payload and sample/available/controller times; current native clock explicitly separate |
-| Decision period | Policy/replan20 to40ms | Whole episode; RL target hold40ms, MJPC feedback remains2ms | Real policy update/replan ticks, sample times and held actions |
-| Lateral force | Base world-y0 to50N for0.2s | xfrc_applied[base_link],6--6.2s | Actual six-component world wrench every tick;100 force ticks and10N*s input impulse; cleanup |
+| Controller observation delivery delay | Measurement delivery0 to20ms | Immutable state buffer for whole episode; MJPC planning and2ms feedback both affected | Independently reconstructed normalized delivered hash and source tick; separate native retimed hash and current clock |
+| Decision period | Policy/replan20 to40ms | RL observation consumption, target hold, history update and command sampling change; MJPC replan and command sampling change, feedback remains2ms | Actual update/replan ticks, command sample and held target |
+| External force pulse | Base world-y0 to50N for0.2s | xfrc_applied[base_link],6--6.2s | Actual six-component world wrench every tick;100 force ticks and10N*s input impulse; cleanup |
 
 These strengths are prospective engineering probe hypotheses, not source-derived
 robustness thresholds. Delay equals one baseline decision period; the timing
@@ -93,7 +93,8 @@ finite degradation without searching intensities or fitting a boundary.
 
 For delay, initial reset state is explicitly available during the first20ms.
 No negative-time samples are fabricated. Afterwards the full measurement packet
-is20ms old. The native packet carries the current control time while the original
+is20ms old. Both MJPC planning and its2ms feedback use the delivered delayed
+observation. Current requested command and control time remain current. The native packet carries the current control time while the original
 measurement timestamp remains in evidence. Current-state PD realizes the target
 each physics tick: the intervention delays controller observations, not the
 low-level PD loop. The policy's internal previous-action memory is not delayed.
@@ -106,8 +107,20 @@ incorrect actual changed contact is insufficient/invalid evidence.
 
 The force is a prescribed input impulse, not proof of a particular velocity
 change or recovery mechanism. The fixed world direction is part of the card.
-The slower period tests decision-rate sensitivity, not compute-budget or
-real-time capability.
+The slower period changes the coupled observation/action/history/command clocks
+for RL and replan/command clocks for MJPC. It is not pure compute-budget, equivalent
+feedback, equal information or real-time capability.
+
+Physical cards are set only after the tick3000 safety check. A failure before or
+on that tick without application is pre-exposure, not challenge causation.
+Challenge repeat j is paired with baseline j; the unmodified raw state/control
+prefix is checked independently at1e-9. Each affected update carries a normalized
+measurement payload hash and source tick, plus the separate native retimed hash.
+The verifier reconstructs both from raw state, rather than trusting timestamps.
+Setting a card, confirming actual exposure and completing a valid horizon are
+distinct evidence states. An unexposed horizon cannot earn robustness PASS and
+stops the campaign with all later arms NOT_RUN. Only the original operational
+window is evaluated; no post6s metric or recovery-time claim is added.
 
 ## Budget, stopping and interpretation
 
@@ -153,14 +166,26 @@ Tests use FakePlant for episode clocks/delay/holds and real compiled model
 mj_forward only for contact/friction and applied-input checks. All three native
 integration functions are guarded. Cleanup on evidence exceptions is checked.
 
-This package deliberately has no stage2/3 live campaign CLI. Before launch, add
-the smallest specific campaign runner binding these hooks, budget, eligibility,
-external claims, fresh instances, durable campaign stops and per-arm watchdog.
-Then perform clean qualification, snapshot preparation, both exact-head reviews
-and fresh lock/process/input preflight. Use new prepared/authorization bindings,
-never v2 receipts. No runtime START is provided by this document.
+[shared_campaign.py](../../tools/substrate/shared_campaign.py) implements the
+fixed20-arm catalog, own-baseline eligibility, fresh instances, durable single
+claims, continuous campaign lock,300s watchdog, whole-campaign stops and closed
+NOT_RUN reasons. Initial safety failure before action consumes zero attempts and
+zero canonical steps. Its CLI exposes only prepare and offline verify; the
+capture entry point remains bound to new exact-head reviews and delegation.
 
-Completion: candidate loader, hook implementation and guarded precheck available
-for independent semantic/execution review, with v2 closeout persisted and
-navigation corrected. Test and review status is recorded in
-[preparation results](../validation/shared_baseline_probes_prep_20261002/RESULTS.md).
+[condition_evidence.py](../../tools/substrate/condition_evidence.py) independently
+reconstructs hashes, update/command clocks, paired prefixes and actual exposure.
+[test_shared_campaign.py](../../tools/substrate/test_shared_campaign.py) covers
+claim failures, six safety classes, eligibility, fresh instances, ledger drift,
+v2 authorization rejection and physical-card onset with synthetic clocks only.
+
+Clean qualification deliberately invokes the existing native static optimizer:
+real private21-step rollouts occur, with exact integration count uninstrumented.
+This is not a zero-private-physics qualification. Snapshot preparation itself
+forbids canonical integration and makes zero private planning calls. Qualification,
+final clean preparation, exact-head science/execution reviews and fresh preflight
+must pass before any live capture. No runtime START is provided here, and v1/v2
+are never rerun.
+
+The minimal runner regression handoff is recorded in
+[runner results](../validation/shared_campaign_runner_review_20261002/RESULTS.md).

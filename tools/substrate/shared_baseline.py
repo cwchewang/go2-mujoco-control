@@ -19,8 +19,18 @@ def load_plan(path=DEFAULT_PLAN):
     exact = {
         "schema": 1,
         "id": "shared-baseline-probes-v1",
-        "mode": "candidate_preparation",
+        "mode": "capture_preparation",
         "self_authorizes_physics": False,
+        "output_root": "example/cpp/experiments/_runs/shared_baseline_probes_v1",
+        "expected_branch": "research/shared-baseline-probes-prep-20261002",
+        "accepted_parent_head": "ab27185f6c0ee47fdd09fecb367977bf4ab9cfde",
+        "wall_timeout_s": 300,
+        "self_authorized_scientific_attempts": 0,
+        "planned_scientific_attempts_max": 20,
+        "challenge_pairing": "challenge_repeat_j_to_own_baseline_repeat_j",
+        "payload_evidence_format": "normalized-named-state-v1",
+        "unexposed_horizon_policy": "stop_campaign_without_robustness_pass",
+        "paired_prefix_absolute_tolerance": 1e-09,
         "baseline_attempts": 4,
         "challenge_attempts_max": 16,
         "max_attempts": 20,
@@ -34,7 +44,7 @@ def load_plan(path=DEFAULT_PLAN):
         "safety_execution_evidence_failure": "stop_campaign",
         "horizon_performance_failure": "retain_and_continue",
         "stage3_gate": "two_valid_passing_repeatable_own_baselines",
-        "live_readiness": "NOT_READY_REQUIRES_CAPTURE_RUNNER_AND_DUAL_REVIEW",
+        "live_readiness": "AWAITING_EXACT_HEAD_REVIEWS_AND_BOUND_DELEGATION",
     }
     for key, expected in exact.items():
         if type(raw.get(key)) is not type(expected) or raw[key] != expected:
@@ -67,13 +77,13 @@ def load_plan(path=DEFAULT_PLAN):
             "evidence": "active_foot_floor_contact_friction",
         },
         "observation_delay": {
-            "variable": "measurement_transport_delay_s",
+            "variable": "controller_observation_delivery_delay_s",
             "from": 0.0,
             "to": 0.02,
             "start_tick": 0,
             "end_tick_exclusive": 6000,
             "interface": "bounded_immutable_state_buffer",
-            "evidence": "sample_available_controller_times_and_payload",
+            "evidence": "normalized_measurement_and_retimed_payload_hashes_with_source_tick",
         },
         "decision_period": {
             "variable": "controller_decision_period_s",
