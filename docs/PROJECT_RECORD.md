@@ -102,6 +102,10 @@ The exact9440f0e source science/execution conclusions are approved and preserved
 clean bounded static qualification subsequently passed, with one native static
 admission and unknown total private integration count. Final exact-head
 preparation/reviews remain distinct live gates; no START exists.
+The subsequent final science HOLD identified a protocol/archive serialization
+identity mismatch in that package. The repaired source passed254 guarded tests
+and awaits new exact-head reviews and versioned qualification/preparation;
+previous receipts remain sealed historical evidence and do not admit this runtime.
 Gate0 remains incomplete.
 
 ### Scientifically verified results

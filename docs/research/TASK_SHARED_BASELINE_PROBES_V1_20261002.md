@@ -199,3 +199,10 @@ The exact9440f0e source fix subsequently received science/execution APPROVED.
 The [bounded clean qualification](../validation/shared_campaign_qualification_20261002/RESULTS.md)
 passed with one real private static optimizer invocation; live remains closed
 pending the final exact-head preparation and dual review.
+
+The later final science HOLD found original-protocol/archive byte identity
+mismatch. The [identity repair](../validation/shared_campaign_protocol_identity_fix_20261002/RESULTS.md)
+preserves original protocol bytes and separately binds the serialized capture
+plan hash through prepared manifests, claims and authorization. The repaired
+runtime needs fresh versioned qualification/preparation and exact-head reviews;
+old receipts remain historical and START is prohibited until the new gates close.

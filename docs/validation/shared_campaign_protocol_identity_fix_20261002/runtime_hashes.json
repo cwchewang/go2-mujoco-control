@@ -1,0 +1,5 @@
+{
+  "tools/substrate/protocols/shared_baseline_probes_v1.json": "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+  "tools/substrate/shared_campaign.py": "74c4fb9f0f9f8a439d32e22180c040bd9c13a2e18c43ee7ca8458471aa1ac437",
+  "tools/substrate/test_shared_campaign.py": "13ba112bac139af2014abb0d163b73fa8938e09a2ab53a8184ed7b237005f11a"
+}

@@ -1,0 +1,10 @@
+{
+  "live_start": "PROHIBITED",
+  "new_exact_head_review": "PENDING",
+  "original_full_report_supplied": false,
+  "reason": "campaign claim bound original protocol bytes while verifier required sorted archive-plan bytes; prior fixture concealed the mismatch",
+  "reviewed_head": "afa786312fa842c7bc44bef804e827bf19d888f8",
+  "scope": "parent_forwarded_final_science_hold_conclusion",
+  "source_thread_id": "01a0f08f-d223-7240-813b-ee93267b700d",
+  "verdict": "HOLD"
+}

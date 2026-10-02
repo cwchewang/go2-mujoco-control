@@ -1,7 +1,6 @@
 """Claim/stop fixtures are FakePlant only; compiled models use forward and synthetic clocks."""
 
 import copy
-import hashlib
 import json
 from collections import deque
 from contextlib import ExitStack, contextmanager
@@ -23,7 +22,13 @@ from .condition_evidence import verify_condition
 from .contracts import WholeBodyState
 from .episode import MujocoPlant
 from .guards import zero_step_guard
-from .integrity import experiment_lock, strict_json, verify_manifest, write_new
+from .integrity import (
+    EvidenceRun,
+    experiment_lock,
+    strict_json,
+    verify_manifest,
+    write_new,
+)
 from .shared_baseline import load_plan
 
 
@@ -88,7 +93,15 @@ class CampaignFixture(unittest.TestCase):
         self.addCleanup(guard.__exit__, None, None, None)
 
     @contextmanager
-    def fixture(self, *, reason=None, fault_tick=1, performance=False, mismatch=False):
+    def fixture(
+        self,
+        *,
+        reason=None,
+        fault_tick=1,
+        performance=False,
+        mismatch=False,
+        real_prepare=False,
+    ):
         plan = copy.deepcopy(load_plan())
         plan["task"] = replace(
             plan["task"],
@@ -103,19 +116,85 @@ class CampaignFixture(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
             root = Path(temp)
             prepared_dir = root / "prepared"
-            prepared_dir.mkdir()
-            write_new(prepared_dir / "manifest.json", {})
+            lock_path = root / "fixture.lock"
             out = root / plan["raw"]["output_root"] / "run_fake"
-            prepared = {
-                "qualification": {},
-                "rl_checkpoint_sha256": "r",
-                "mjpc_binary_sha256": "b",
-                "mjpc_source_commit": "s",
-                "protocol_sha256": hashlib.sha256(
-                    (json.dumps(plan["raw"], indent=2, sort_keys=True) + "\n").encode()
-                ).hexdigest(),
-                "anchor_sha256": "a",
+            qdir = root / "qualification"
+            with EvidenceRun(qdir) as qrun:
+                qrun.result.update(
+                    status="ENGINEERING_ADMITTED",
+                    qualification={"head": "h"},
+                    qualification_fingerprint="fake-qualification-fingerprint",
+                )
+            qualification = {
+                "path": str(qdir.resolve()),
+                "manifest_sha256": module.digest(qdir / "manifest.json"),
+                "producer_head": "h",
+                "fingerprint": "fake-qualification-fingerprint",
             }
+            if real_prepare:
+                sources = strict_json(module.base.LOCK.read_text())
+                native = {
+                    "binary_sha256": "b",
+                    "inputs": {"mjpc": {"head": sources["mjpc"]["commit"]}},
+                }
+                with (
+                    mock.patch.object(module, "current_head", return_value="h"),
+                    mock.patch.object(
+                        module, "validate_qualification", return_value=qualification
+                    ),
+                    mock.patch.object(
+                        module.base, "verify_controller", return_value=native
+                    ),
+                    mock.patch.object(
+                        module,
+                        "experiment_lock",
+                        side_effect=lambda: experiment_lock(lock_path),
+                    ),
+                    mock.patch.object(
+                        module,
+                        "NativeMJPCController",
+                        side_effect=AssertionError(
+                            "no private controller in preparation"
+                        ),
+                    ),
+                    mock.patch.object(
+                        module,
+                        "FrozenPolicy",
+                        side_effect=AssertionError(
+                            "no policy inference in preparation"
+                        ),
+                    ),
+                ):
+                    module.prepare(
+                        prepared_dir,
+                        qualification_path=qdir,
+                        plan_path=module.DEFAULT_PLAN,
+                    )
+                prepared = verify_manifest(prepared_dir)
+            else:
+                with EvidenceRun(prepared_dir) as prun:
+                    with (prepared_dir / "frozen-protocol.json").open("xb") as stream:
+                        stream.write(module.DEFAULT_PLAN.read_bytes())
+                    write_new(prepared_dir / "capture-plan.json", plan["raw"])
+                    prun.result.update(
+                        status="ENGINEERING_ADMITTED",
+                        scope="shared_campaign_preparation",
+                        head="h",
+                        readiness="AWAITING_EXACT_HEAD_REVIEWS_AND_BOUND_DELEGATION",
+                        qualification=qualification,
+                        rl_checkpoint_sha256="r",
+                        mjpc_binary_sha256="b",
+                        mjpc_source_commit="s",
+                        protocol_sha256=module.digest(module.DEFAULT_PLAN),
+                        capture_plan_sha256=module.digest(
+                            prepared_dir / "capture-plan.json"
+                        ),
+                        anchor_sha256=plan["raw"]["anchor_sha256"],
+                        max_attempts=20,
+                        physics_steps_max=120000,
+                        planned_arms=module.arms(plan),
+                    )
+                prepared = verify_manifest(prepared_dir)
             review = {
                 "head": "h",
                 "science": {
@@ -129,8 +208,18 @@ class CampaignFixture(unittest.TestCase):
                     "evidence": "FakePlant",
                 },
             }
-            authorization = {"fake_only": True}
-            lock_path = root / "fixture.lock"
+            authorization = {
+                "action": "START_FORMAL_CAPTURE",
+                "head": "h",
+                "protocol_sha256": prepared["protocol_sha256"],
+                "prepared_manifest_sha256": module.digest(
+                    prepared_dir / "manifest.json"
+                ),
+                "max_attempts": 20,
+                "authorized_by": "user",
+                "user_instruction": "FAKE FIXTURE ONLY; no real live authorization",
+                "task_id": plan["raw"]["id"],
+            }
 
             def assert_lock():
                 with lock_path.open("a") as other:
@@ -182,7 +271,6 @@ class CampaignFixture(unittest.TestCase):
                 ),
                 "_fresh_preflight": mock.Mock(side_effect=preflight),
                 "_identity": mock.Mock(),
-                "verify_bundle": mock.Mock(),
                 "MujocoPlant": mock.Mock(side_effect=plant_factory),
                 "validate_canonical_model": mock.Mock(),
                 "_make_controller": mock.Mock(side_effect=controller_factory),
@@ -733,6 +821,149 @@ class CampaignFixture(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "completion differs"):
                 module.verify_capture(out)
 
+    def test_real_protocol_normal_prepare_capture_verify_uses_two_identities(self):
+        with self.fixture(real_prepare=True) as (_, out, prepared, _, _, _, _, _, _, _):
+            p = verify_manifest(prepared)
+            original = module.DEFAULT_PLAN.read_bytes()
+            self.assertEqual((prepared / "frozen-protocol.json").read_bytes(), original)
+            self.assertEqual(p["protocol_sha256"], module.digest(module.DEFAULT_PLAN))
+            self.assertEqual(
+                p["protocol_sha256"],
+                "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+            )
+            self.assertEqual(
+                p["capture_plan_sha256"],
+                "42f509301c8d24e94121bddf4e100476c5849d465326ea93959e8e527d2e494d",
+            )
+            self.assertNotEqual(p["protocol_sha256"], p["capture_plan_sha256"])
+            self.assertEqual(p["canonical_physics_steps"], 0)
+            self.assertEqual(p["private_planning_calls"], 0)
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            claim = strict_json((out / "campaign-claim.json").read_text())
+            for key in ("protocol_sha256", "capture_plan_sha256"):
+                self.assertEqual(claim[key], p[key])
+                self.assertEqual(record[key], p[key])
+            self.assertEqual((out / "frozen-protocol.json").read_bytes(), original)
+            self.assertEqual(
+                (out / "capture-plan.json").read_bytes(),
+                (prepared / "capture-plan.json").read_bytes(),
+            )
+            self.assertEqual(
+                claim["prepared_manifest_sha256"],
+                module.digest(prepared / "manifest.json"),
+            )
+            self.assertEqual(
+                module.verify_capture(out)["scientific_attempts_checked"], 20
+            )
+
+    def test_swapped_original_archive_campaign_identities_rejected(self):
+        for key in ("protocol_sha256", "capture_plan_sha256"):
+            with (
+                self.subTest(key=key),
+                self.fixture() as (root, out, prepared, plan, _, _, _, _, _, _),
+            ):
+                self.launch(out, prepared)
+                record = verify_manifest(out)
+                claim = strict_json((out / "campaign-claim.json").read_text())
+                other = (
+                    "capture_plan_sha256"
+                    if key == "protocol_sha256"
+                    else "protocol_sha256"
+                )
+                claim[key] = claim[other]
+                self.rewrite_fake_json(out / "campaign-claim.json", claim)
+                ledger = root / "_runs/substrate_attempts" / plan["raw"]["id"]
+                (ledger / "campaign.json").write_text(
+                    json.dumps(claim, indent=2, sort_keys=True) + "\n"
+                )
+                self.reseal_fake(out, record)
+                with self.assertRaisesRegex(
+                    ValueError, "campaign claim binding differs"
+                ):
+                    module.verify_capture(out)
+
+    def test_capture_original_or_archive_byte_drift_rejected(self):
+        for name in ("frozen-protocol.json", "capture-plan.json"):
+            with (
+                self.subTest(name=name),
+                self.fixture() as (_, out, prepared, _, _, _, _, _, _, _),
+            ):
+                self.launch(out, prepared)
+                record = verify_manifest(out)
+                path = out / name
+                path.write_bytes(path.read_bytes() + b"\n")
+                self.reseal_fake(out, record)
+                with self.assertRaisesRegex(
+                    ValueError, "protocol/archive plan identity"
+                ):
+                    module.verify_capture(out)
+
+    def test_preparation_manifest_reference_tamper_rejected(self):
+        with self.fixture() as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            reference = strict_json((out / "preparation-reference.json").read_text())
+            reference["manifest_sha256"] = "0" * 64
+            self.rewrite_fake_json(out / "preparation-reference.json", reference)
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "capture/preparation reference"):
+                module.verify_capture(out)
+
+    def test_authorization_protocol_must_bind_original_identity(self):
+        with self.fixture() as (_, out, prepared, _, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            auth = strict_json((out / "authorization.json").read_text())
+            auth["protocol_sha256"] = record["capture_plan_sha256"]
+            self.rewrite_fake_json(out / "authorization.json", auth)
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(ValueError, "start authorization"):
+                module.verify_capture(out)
+
+    def test_qualification_reference_tamper_rejected_after_outer_rebinding(self):
+        with self.fixture() as (root, out, prepared, plan, _, _, _, _, _, _):
+            self.launch(out, prepared)
+            record = verify_manifest(out)
+            p = verify_manifest(prepared)
+            p["qualification"]["manifest_sha256"] = "0" * 64
+            # Both preparation and qualification are temporary fixtures here.
+            self.assertTrue(prepared.is_relative_to(root))
+            (prepared / "admission.json").write_text(
+                json.dumps(p, indent=2, sort_keys=True) + "\n"
+            )
+            (prepared / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        item.relative_to(prepared).as_posix(): module.digest(item)
+                        for item in prepared.rglob("*")
+                        if item.is_file() and item.name != "manifest.json"
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n"
+            )
+            sha = module.digest(prepared / "manifest.json")
+            ref = strict_json((out / "preparation-reference.json").read_text())
+            ref["manifest_sha256"] = sha
+            self.rewrite_fake_json(out / "preparation-reference.json", ref)
+            auth = strict_json((out / "authorization.json").read_text())
+            auth["prepared_manifest_sha256"] = sha
+            self.rewrite_fake_json(out / "authorization.json", auth)
+            campaign = strict_json((out / "campaign-claim.json").read_text())
+            campaign["prepared_manifest_sha256"] = sha
+            self.rewrite_fake_json(out / "campaign-claim.json", campaign)
+            ledger = root / "_runs/substrate_attempts" / plan["raw"]["id"]
+            (ledger / "campaign.json").write_text(
+                json.dumps(campaign, indent=2, sort_keys=True) + "\n"
+            )
+            self.reseal_fake(out, record)
+            with self.assertRaisesRegex(
+                ValueError, "preparation/qualification reference"
+            ):
+                module.verify_capture(out)
+
     def test_v2_start_cannot_authorize_this_campaign(self):
         with tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
             root = Path(temp)
@@ -740,7 +971,14 @@ class CampaignFixture(unittest.TestCase):
             prepared_dir = root / "prepared"
             prepared_dir.mkdir()
             write_new(prepared_dir / "manifest.json", {})
+            (prepared_dir / "frozen-protocol.json").write_bytes(
+                module.DEFAULT_PLAN.read_bytes()
+            )
+            write_new(prepared_dir / "capture-plan.json", plan["raw"])
             prepared = {
+                "capture_plan_sha256": module.digest(
+                    prepared_dir / "capture-plan.json"
+                ),
                 "scope": "shared_campaign_preparation",
                 "head": "h",
                 "readiness": "AWAITING_EXACT_HEAD_REVIEWS_AND_BOUND_DELEGATION",

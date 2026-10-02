@@ -91,6 +91,22 @@ def _identity(prepared):
         raise ValueError("native identity changed since preparation")
 
 
+def _plan_identity(directory, plan, record):
+    directory = Path(directory)
+    identity = {
+        "protocol_sha256": digest(directory / "frozen-protocol.json"),
+        "capture_plan_sha256": digest(directory / "capture-plan.json"),
+    }
+    if any(record.get(key) != value for key, value in identity.items()):
+        raise ValueError("frozen protocol/archive plan identity differs")
+    if any(
+        strict_json((directory / name).read_text()) != plan["raw"]
+        for name in ("frozen-protocol.json", "capture-plan.json")
+    ):
+        raise ValueError("frozen protocol/archive plan semantics differ")
+    return identity
+
+
 def prepare(output, *, qualification_path, plan_path=DEFAULT_PLAN):
     with experiment_lock(), zero_step_guard():
         plan = load_plan(plan_path)
@@ -121,6 +137,8 @@ def prepare(output, *, qualification_path, plan_path=DEFAULT_PLAN):
                 raise ValueError("raw-state canonical joint order drifted")
             if plant.steps != 0 or plant.data.time != 0:
                 raise ValueError("preparation advanced the canonical plant")
+            with (run.path / "frozen-protocol.json").open("xb") as stream:
+                stream.write(Path(plan_path).read_bytes())
             write_new(run.path / "capture-plan.json", plan["raw"])
             write_new(run.path / "planned-arms.json", arms(plan))
             run.result.update(
@@ -131,6 +149,7 @@ def prepare(output, *, qualification_path, plan_path=DEFAULT_PLAN):
                 branch=plan["raw"]["expected_branch"],
                 qualification=qualification,
                 protocol_sha256=digest(Path(plan_path)),
+                capture_plan_sha256=digest(run.path / "capture-plan.json"),
                 anchor_sha256=plan["raw"]["anchor_sha256"],
                 max_attempts=plan["raw"]["max_attempts"],
                 physics_steps_max=plan["raw"]["physics_steps_max"],
@@ -144,6 +163,7 @@ def prepare(output, *, qualification_path, plan_path=DEFAULT_PLAN):
                 private_planning_calls=0,
                 scientific_attempts=0,
             )
+            _plan_identity(run.path, plan, run.result)
     verify_bundle(output)
     return {
         "head": head,
@@ -170,6 +190,7 @@ def validate_start_files(prepared_dir, review_path, authorization_path, plan_pat
         or prepared.get("planned_arms") != arms(plan)
     ):
         raise ValueError("prepared campaign binding drifted")
+    _plan_identity(prepared_dir, plan, prepared)
     _identity(prepared)
     review = strict_json(Path(review_path).read_text())
     authorization = strict_json(Path(authorization_path).read_text())
@@ -628,11 +649,16 @@ def capture(
                 scientific_attempts=0,
                 canonical_physics_steps=0,
                 campaign_complete=False,
+                protocol_sha256=prepared["protocol_sha256"],
+                capture_plan_sha256=prepared["capture_plan_sha256"],
             )
             try:
                 write_new(run.path / "review.json", review)
                 write_new(run.path / "authorization.json", authorization)
-                write_new(run.path / "capture-plan.json", plan["raw"])
+                for name in ("frozen-protocol.json", "capture-plan.json"):
+                    with (run.path / name).open("xb") as stream:
+                        stream.write((Path(prepared_dir) / name).read_bytes())
+                _plan_identity(run.path, plan, prepared)
                 write_new(
                     run.path / "preparation-reference.json",
                     {
@@ -646,6 +672,10 @@ def capture(
                     "head": head,
                     "output": str(output),
                     "protocol_sha256": prepared["protocol_sha256"],
+                    "capture_plan_sha256": prepared["capture_plan_sha256"],
+                    "prepared_manifest_sha256": digest(
+                        Path(prepared_dir) / "manifest.json"
+                    ),
                     "max_attempts": 20,
                     "physics_steps_max": 120000,
                     "planned_arms": arms(plan),
@@ -677,6 +707,39 @@ def verify_capture(directory, *, ledger=None):
         directory = Path(directory).resolve()
         record = verify_manifest(directory)
         plan = load_plan(directory / "capture-plan.json")
+        identity = _plan_identity(directory, plan, record)
+        reference = strict_json((directory / "preparation-reference.json").read_text())
+        prepared_dir = Path(reference["path"])
+        prepared = verify_bundle(prepared_dir)
+        prepared_manifest = digest(prepared_dir / "manifest.json")
+        if (
+            reference["manifest_sha256"] != prepared_manifest
+            or prepared.get("head") != record["head"]
+            or prepared.get("scope") != "shared_campaign_preparation"
+            or prepared.get("planned_arms") != arms(plan)
+            or prepared.get("max_attempts") != 20
+            or prepared.get("physics_steps_max") != 120000
+            or _plan_identity(prepared_dir, plan, prepared) != identity
+        ):
+            raise ValueError("capture/preparation reference binding differs")
+        qualification = prepared["qualification"]
+        qdir = Path(qualification["path"])
+        qrecord = verify_bundle(qdir)
+        if (
+            digest(qdir / "manifest.json") != qualification["manifest_sha256"]
+            or qrecord["qualification_fingerprint"] != qualification["fingerprint"]
+            or qrecord["qualification"]["head"] != qualification["producer_head"]
+        ):
+            raise ValueError("preparation/qualification reference binding differs")
+        validate_review(
+            strict_json((directory / "review.json").read_text()), record["head"]
+        )
+        authorization = strict_json((directory / "authorization.json").read_text())
+        validate_authorization(
+            authorization, dict(prepared, prepared_manifest_sha256=prepared_manifest)
+        )
+        if authorization.get("task_id") != plan["raw"]["id"]:
+            raise ValueError("captured authorization belongs to another campaign")
         ledger = Path(ledger or ROOT / "_runs/substrate_attempts" / plan["raw"]["id"])
         known = arms(plan)
         attempts = record["attempts"]
@@ -716,7 +779,8 @@ def verify_capture(directory, *, ledger=None):
         if campaign != {
             "head": record["head"],
             "output": str(directory),
-            "protocol_sha256": digest(directory / "capture-plan.json"),
+            **identity,
+            "prepared_manifest_sha256": prepared_manifest,
             "max_attempts": 20,
             "physics_steps_max": 120000,
             "planned_arms": known,
