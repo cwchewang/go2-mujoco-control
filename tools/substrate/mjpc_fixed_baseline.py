@@ -14,7 +14,7 @@ from .native_mjpc import NativeMJPCController
 
 ROOT=Path(__file__).resolve().parents[2]
 RUNS=ROOT/"_runs"
-FIXED=ROOT/"_runs/mjpc_short_sequence_evidence_launcherfix_20261003/go2_mjpc_controller_fd_fixed"
+FIXED=Path("/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed")
 BINARY_SHA="3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08"
 PROTOCOL=ROOT/"tools/substrate/protocols/mjpc_fixed_baseline_3s_v1.json"
 RUNTIME=("tools/substrate/mjpc_fixed_baseline.py","tools/substrate/aligned_episode.py","tools/substrate/aligned_anchor.py","tools/substrate/native_mjpc.py","tools/substrate/native_transport.py","tools/substrate/contracts.py","tools/substrate/episode.py","tools/substrate/evaluator.py","tools/substrate/clock.py","tools/substrate/guards.py","tools/substrate/integrity.py","tools/substrate/build_identity.py","tools/substrate/protocols/aligned_flat_anchor_v1.json","tools/substrate/protocols/mjpc_fixed_baseline_3s_v1.json")
@@ -63,13 +63,13 @@ def validate(packet_path,output):
     if manifest.get("status")!="PREPARED_NOT_RUN" or any(packet.get(k)!=ident[k] for k in ("branch","head")): raise ValueError("stale preparation")
     if packet.get("kind")!="mjpc-fixed-baseline-3s-v1" or packet.get("design")!=design(): raise ValueError("design mismatch")
     if packet.get("runtime")!=runtime_identity() or packet.get("protocol_sha256")!=digest(PROTOCOL) or packet.get("anchor_sha256")!=digest(ROOT/"tools/substrate/protocols/aligned_flat_anchor_v1.json"): raise ValueError("runtime/protocol/anchor drift")
-    binary=pp.parent/packet["binary"]["name"]; bi=build.build_identity(binary,"fixed")
-    if {k:v for k,v in bi.items() if k!="path"}!={k:v for k,v in packet.get("build",{}).items() if k!="path"} or digest(binary)!=BINARY_SHA or bi["workers"]!=4: raise ValueError("binary/workers mismatch")
+    binary=pp.parent/packet["binary"]["name"]; source_binary=Path(packet["build"]["path"]).resolve(strict=True); bi=build.build_identity(source_binary,"fixed")
+    if bi!=packet.get("build") or digest(binary)!=BINARY_SHA or digest(source_binary)!=BINARY_SHA or bi["workers"]!=4: raise ValueError("binary/workers mismatch")
     anchor=load_anchor(); task=replace(anchor["task"],task_id="mjpc-fixed-baseline-3s-v1",horizon_ticks=1500,measurement_start_tick=150)
     timing=anchor["controllers"]["mjpc"]["timing"]; plant=MujocoPlant(ROOT/anchor["scenario"].scene)
     if plant.steps!=0 or float(plant.data.time)!=0.0 or plant.model.opt.timestep!=timing.physics_period_s: raise ValueError("zero-step plant/timing check")
     if task.command_at(0).tolist()!=[0.,0.,0.] or task.command_at(150).tolist()!=[1.,0.,0.]: raise ValueError("task command mismatch")
-    return packet,binary,{"status":"PRECHECK_PASS","branch":ident["branch"],"head":ident["head"],
+    return packet,source_binary,{"status":"PRECHECK_PASS","branch":ident["branch"],"head":ident["head"],
       "packet_sha256":digest(pp),"prepared_manifest_sha256":digest(pp.parent/"manifest.json"),
       "output":str(out),"fixed_binary_sha256":digest(binary),"workers":4,
       "canonical_physics_steps":0,"native_processes_started":0,"optimizer_calls":0,"experiment_lock":"held"}
