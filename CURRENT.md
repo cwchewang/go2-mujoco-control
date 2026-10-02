@@ -14,7 +14,7 @@ Scientific status: Two independent one-arm3s protocols propose total2 attempts/3
 Last live HEAD: `849b7aa13c82b13880cfc214083f2473e794e83e`.
 Next: Review the exact-head source-bound packet and both new prepared scopes, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work.
 
-**Related bounded diagnostic:** [Duplicate-FD cold-start diagnostic](docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md) — Duplicate t34 scheduling is fixed. The repository launcher and sealed-output guards are repaired; 24 tests cover the full no-launch command from /tmp and repo. A new independent packet binds the repaired HEAD; the 8-call sequence remains NOT_RUN and Stage 3 stays OPEN.
+**Related bounded diagnostic:** [Duplicate-FD cold-start diagnostic](docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md) — The fixed-index bug removes duplicate t34 tasks. The reviewed same-process 8-call observation completed at HEAD 6c2dbad: all calls passed, canonical integration 0, costs identical and tick-10 q_des differed by at most 1.01e-10. Planner/warmstart hashes varied across processes; causal interpretation remains open.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

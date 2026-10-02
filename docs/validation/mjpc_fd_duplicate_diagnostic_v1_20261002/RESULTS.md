@@ -18,7 +18,7 @@ For ticks 0–10, the raw stream has every consecutive tick, qpos (19), qvel (18
 
 The raw stream does not contain the old process's full planner policy or per-worker mjData warmstart. A new sequence therefore preserves planner and worker history only between its own tick-0 and tick-10 replans; it cannot be called an exact continuation or reproduction of old A's hidden state.
 
-## Minimum next observation replay (implemented; execution pending independent admission review)
+## Minimum next observation replay (completed)
 
 Use four cold starts: original and fixed variants, each repeated twice. In each process, keep the same four-worker controller alive while feeding the verified sealed external input rows for ticks 0–10 in order. Preserve the logged replan schedule: optimizer calls at ticks 0 and 10 only. This is eight optimizer calls total and a 32,768 aggregate reservation at 4,096 per call. Do not step the canonical evaluation plant or claim a forward-physics result.
 
@@ -30,11 +30,21 @@ Stop the entire paired sequence on any missing or changed sealed input, nonconse
 
 Previous engineering preparation compiled both diagnostic binaries and passed 15 focused contracts. Its eight sealed historical-response offline replays were accepted; new optimizer calls and canonical integrations were zero. Those saved receipts remain in evidence/validation-receipt.json.
 
-## Execution hold and evidence packet
+## Completed same-process observation
 
-Independent science review approved the bounded design (8 optimizer calls, four workers, canonical integration 0, aggregate private reservation 32,768). Execution remains HOLD until independent admission verifies saved test output, offline replay output, both binary identities/hashes, sealed input hashes/manifest, and the prepared packet bound to the final HEAD. No optimizer is authorized by this preparation.
+Joint science/execution review approved the packet bound to HEAD 6c2dbadc72bfcfd64bfafe4a63d77b2ff2ed9174. The user then explicitly authorized execution. Fresh preflight passed under the exclusive experiment lock; the run used four native processes, four workers each, all 11 ticks, and two optimizer calls per process at ticks 0 and 10. **Attempted/completed: 8/8.** All four runs completed without stderr or warning. Canonical integration steps were 0.
 
-## Launcher and output-location repair (zero optimizer)
+The exact input digests matched across all four runs. All selected candidate IDs were 8. At tick 0, all costs were 0.06608674148251567 and q_des matched exactly. At tick 10, all costs were 0.06179540548852948; maximum q_des difference was 1.0067746636366337e-10 within repeats and 1.0056555588278115e-10 across variants, below the predeclared 1e-9 tolerance. Cost differences were zero at both anchors.
+
+Original emitted two t34 FD events per call; fixed emitted one. Tick-0 t34 Jacobian summary was 0aa12e12d06c1ff1 across all runs. Tick-10 hashes were 997cc10f76ee60c9 for repeat 1 and 352f0a5fcba0ec7f for repeat 2, matching across variants within each repeat despite differing worker assignments.
+
+Planner policy/selected-trajectory hash was 783924e4fe084d93 in all four runs at tick 0. At tick 10 it varied by run: original repeats 5d10479541baf28a and 48deae72a791bc34; fixed repeats e8e53f897fea1acf and 8e9ddcea76b70575. Tick-0 warmstart input was zero (hash ec32669a74fcae65); each process's tick-10 pre-call worker warmstarts equal its own tick-0 post-call summaries, confirming state persisted within that process. Worker assignments and the corresponding per-worker warmstart hashes/norms vary across runs. The selected cost and q_des remain within tolerance, so these summaries show internal-history variation without identifying its cause or reproducing old A's hidden state.
+
+Private integration upper bounds were 2,501 per original call and 2,452 per fixed call, 19,812 total. The run reserved 4,096 per call, 32,768 total. This is a bounded engineering observation, not a capability result, controller ranking, or real-time claim. Stage 3 topic selection remains OPEN.
+
+Immutable run evidence is _runs/mjpc_short_sequence_observation_launcherfix_20261003/. Its manifest SHA-256 is f25395406e10ae9ef0f4ffa723d5784fedfebe6888803c5c4da79ba2a4f10f9f, RESULT.json SHA-256 is 2acd26298c93a26d7505949e8f90d937817384360fbba8879618c4c22d069f72, private-accounting.json SHA-256 is b1a4c916de6ce403532aee09df49fff3ada6fac0ab044af0eec2f0f75e714897, and admission.json SHA-256 is 018f67ba34d8c8c61813091e72c12631271f664fb4b23b6056f1e98585ef3894. The fresh-preflight record is sealed in the same manifest. The prepared packet remains _runs/mjpc_short_sequence_evidence_launcherfix_20261003/packet.json with SHA-256 a0cefd7b8b453a9c2a689da92cba627875c6509c6d37b892e2600a6c4e0567c7; its manifest SHA-256 is 946e72ab52668836bb4ef92f72f12dff93248a6ee9d284e0f937a3059a4dfd43. The sealed input raw SHA-256 is 9a4f2711f558b80ac58c803406971f43be7c44f4c5e64f7a50c728e2a7440e55.
+
+## Launcher and output-location repair
 
 The import failure is sealed at _runs/mjpc_fd_duplicate_sequence_execution_84e85199f6b3/; its manifest SHA-256 remains eb1d857fb777ec381867a0c822ffa471436b5165fcb5201093f99274ad4655db. It occurred before lock acquisition, preflight, or native launch. It is not a scientific sample.
 
@@ -44,8 +54,4 @@ Before any mkdir or transport launch, the core sequence runner rejects existing 
 
 The real command regression, not just consumer parsing, passed 24 tests at source commit 085e61305b669fce9aaead2856e408cb3544c1a6. It covers complete command invocations from both cwd values, no native launch, empty/nonempty existing outputs, sealed packet member preservation, core rejection before transport, and symlink bypass refusal. Actual stdout/stderr and source/build/input identities are in evidence/launcher-validation.json and evidence/launcher-tests-085e613.*.
 
-The new independent preparation is _runs/mjpc_short_sequence_evidence_launcherfix_20261003/; its packet binds the final clean HEAD and includes runtime hashes, both copied binaries and original build identities, and all eleven sealed inputs. Its immutable manifest is separate from _runs/mjpc_short_sequence_observation_launcherfix_20261003/, the proposed fresh observation output. The tested preflight command is:
-
-    /home/che/dev/go2-workspace/current/tools/substrate/run_mjpc_short_sequence --execute --packet /home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_evidence_launcherfix_20261003/packet.json --output /home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_observation_launcherfix_20261003 --no-launch
-
-The future capture command has the same executable and arguments with --no-launch removed. No optimizer ran in this repair. The 8-call scope and Stage 3 OPEN scientific boundary remain as previously declared; the repaired launcher and final packet are ready for review.
+The independent preparation is _runs/mjpc_short_sequence_evidence_launcherfix_20261003/; its immutable packet binds source, build products, binaries and all eleven sealed inputs. The actual same-process observation completed in the separate top-level output directory _runs/mjpc_short_sequence_observation_launcherfix_20261003/. The earlier launcher-repair step itself had zero optimizer calls; the completed observation and its results are recorded above.
