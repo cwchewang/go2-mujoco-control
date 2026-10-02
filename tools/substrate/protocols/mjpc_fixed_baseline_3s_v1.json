@@ -1,0 +1,18 @@
+{
+  "repeats": 2,
+  "workers": 4,
+  "horizon_s": 3.0,
+  "canonical_steps": 1500,
+  "replans": 150,
+  "private_reservation_per_replan": 4096,
+  "private_upper_bound_per_repeat": 614400,
+  "private_upper_bound_total": 1228800,
+  "binary_sha256": "3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08",
+  "anchor": "aligned-flat-forward-integration-v1",
+  "zero_command_ticks": 50,
+  "ramp_ticks": 100,
+  "failure_policy": "stop pair on first safety/execution/evidence/budget failure; no retry",
+  "pass": "both fresh-process episodes reach 1500 ticks with canonical classification HORIZON_REACHED",
+  "capability_claim": "none"
+}
+
