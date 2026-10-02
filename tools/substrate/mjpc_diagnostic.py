@@ -192,3 +192,47 @@ def model_audit():
         "corrected_fields": ["floor_world_z", "effective_pd_torque_clamp"],
         "mass_damping_contact_parameters_preserved": True,
     }
+
+
+def optimization_model(mode):
+    """Independent contact reconstruction; no transition or integration."""
+    import mujoco as mj
+
+    if mode not in ("original", "corrected"):
+        raise ValueError("invalid optimization reconstruction mode")
+    model = mj.MjModel.from_xml_path(
+        str(ROOT / ".substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml")
+    )
+    model.actuator_biastype[:] = mj.mjtBias.mjBIAS_AFFINE
+    if mode == "corrected":
+        plant = mj.MjModel.from_xml_path(
+            str(ROOT / "unitree_robots/go2/phase2_flat.xml")
+        )
+        model.geom_pos[mj.mj_name2id(model, mj.mjtObj.mjOBJ_GEOM, "floor"), 2] = 0
+        for i in range(model.nu):
+            name = mj.mj_id2name(
+                model, mj.mjtObj.mjOBJ_JOINT, int(model.actuator_trnid[i, 0])
+            )
+            j = mj.mj_name2id(plant, mj.mjtObj.mjOBJ_JOINT, name)
+            matches = np.flatnonzero(plant.actuator_trnid[:, 0] == j)
+            if j < 0 or len(matches) != 1:
+                raise ValueError("reconstruction torque joint mapping")
+            model.actuator_forcelimited[i] = 1
+            model.actuator_forcerange[i] = plant.actuator_ctrlrange[matches[0]]
+    # Mocap cannot affect this contact reconstruction: its descendants do not collide.
+    for geom in range(model.ngeom):
+        body = int(model.geom_bodyid[geom])
+        while body:
+            if model.body_mocapid[body] >= 0 and (
+                model.geom_contype[geom] or model.geom_conaffinity[geom]
+            ):
+                raise ValueError("unrecorded mocap affects collision geometry")
+            body = int(model.body_parentid[body])
+    model.opt.timestep = 0.01
+    model.jnt_solimp[:, 0] = 0
+    model.geom_solimp[:, 0] = 0
+    model.pair_solimp[:, 0] = 0
+    expected = model_audit()["optimization_models"][mode + "-go2-soft-v1"]
+    if physical_fingerprint(model) != expected:
+        raise ValueError("optimization reconstruction physical identity")
+    return model

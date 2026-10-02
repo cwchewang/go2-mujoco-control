@@ -29,6 +29,7 @@ from .readiness import validate_authorization, validate_review
 
 ROOT = spec.ROOT
 BINARY = ROOT / ".substrate/headless-reliable/go2_mjpc_controller"
+TRANSPORT = "inprocess"
 
 
 def identity():
@@ -94,6 +95,10 @@ def check_original_gate(capture_path, verification_path):
         or summary["capture_manifest_sha256"] != digest(original / "manifest.json")
     ):
         raise ValueError("original admission not source-bound")
+    with zero_step_guard():
+        actual_summary = audit_capture(original)
+    if summary != actual_summary:
+        raise ValueError("original verification does not prove complete current checks")
     old = (
         ROOT
         / "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z/mjpc_baseline_1.jsonl"
@@ -129,6 +134,60 @@ def check_original_gate(capture_path, verification_path):
     return True
 
 
+def verify_entry(prepared, review_path, output):
+    with experiment_lock() as lock, zero_step_guard():
+        head = identity()
+        p = verify_bundle(prepared)
+        plan = spec.load_plan(Path(prepared) / "protocol.json")
+        review = strict_json(Path(review_path).read_text())
+        validate_review(review, head)
+        if p["head"] != head or p["task_id"] != plan["raw"]["id"]:
+            raise ValueError("entry prepared identity")
+        validate_reference(p["qualification"])
+        if (
+            spec.model_audit() != p["model_audit"]
+            or verify_controller(BINARY) != p["controller_identity"]
+        ):
+            raise ValueError("entry model/build drift")
+        with EvidenceRun(
+            Path(output), {"operation": "mjpc_diagnostic_verify_entry"}
+        ) as run:
+            preflight(
+                lock,
+                head,
+                review,
+                run.path / "preflight.json",
+                run.path / "future_capture",
+                {
+                    "configuration": {
+                        "branch": spec.BRANCH,
+                        "diff_base": plan["raw"]["parent"],
+                    }
+                },
+                p["qualification"],
+                runner=Path(__file__),
+                experiment_id=p["task_id"],
+            )
+            write_new(run.path / "review.json", review)
+            write_new(
+                run.path / "prepared-reference.json",
+                {
+                    "path": str(Path(prepared).resolve()),
+                    "manifest_sha256": digest(Path(prepared) / "manifest.json"),
+                },
+            )
+            run.result.update(
+                status="ENGINEERING_ADMITTED",
+                head=head,
+                canonical_physics_steps=0,
+                private_optimizer_calls=0,
+                scientific_attempts=0,
+                formal_ledger_touched=False,
+                production_entry="PREFLIGHT_VERIFIED",
+            )
+    return str(output)
+
+
 def capture(prepared, review_path, authorization_path, output):
     with experiment_lock() as lock:
         p = verify_bundle(prepared)
@@ -138,14 +197,18 @@ def capture(prepared, review_path, authorization_path, output):
         auth = strict_json(Path(authorization_path).read_text())
         validate_review(review, head)
         binding = dict(
-            p, prepared_manifest_sha256=digest(Path(prepared) / "manifest.json")
+            p,
+            prepared_path=str(Path(prepared).resolve()),
+            prepared_manifest_sha256=digest(Path(prepared) / "manifest.json"),
         )
         validate_authorization(auth, binding)
         if (
             p["head"] != head
             or p["task_id"] != plan["raw"]["id"]
             or auth.get("task_id") != p["task_id"]
+            or type(auth.get("canonical_steps_max")) is not int
             or auth.get("canonical_steps_max") != 1500
+            or type(auth.get("private_step_upper_bound_max")) is not int
             or auth.get("private_step_upper_bound_max") != spec.LIMIT
         ):
             raise ValueError("START task/private/canonical budget mismatch")
@@ -277,7 +340,162 @@ def capture(prepared, review_path, authorization_path, output):
         return str(output)
 
 
-def verify_capture(capture_dir, output):
+def validate_capture_metadata(record, p, plan, binding, review, auth):
+    if (
+        p["head"] != record["head"]
+        or p["task_id"] != record["task_id"]
+        or record["task_id"] != plan["raw"]["id"]
+        or p["protocol_sha256"] != plan["protocol_sha256"]
+        or p["max_attempts"] != 1
+        or p["canonical_steps_max"] != 1500
+        or p["private_step_upper_bound_max"] != spec.LIMIT
+    ):
+        raise ValueError("prepared task/head/protocol/budget binding")
+    validate_review(review, record["head"])
+    validate_authorization(auth, binding)
+    if (
+        auth.get("task_id") != p["task_id"]
+        or type(auth.get("canonical_steps_max")) is not int
+        or auth["canonical_steps_max"] != 1500
+        or type(auth.get("private_step_upper_bound_max")) is not int
+        or auth["private_step_upper_bound_max"] != spec.LIMIT
+    ):
+        raise ValueError("START diagnostic task/budget binding")
+
+
+def verify_capture_binding(directory, record, plan):
+    binding = strict_json((directory / "prepared-reference.json").read_text())
+    prepared = Path(binding["prepared_path"]).resolve()
+    p = verify_bundle(prepared)
+    expected = dict(
+        p,
+        prepared_path=str(prepared),
+        prepared_manifest_sha256=digest(prepared / "manifest.json"),
+    )
+    if binding != expected:
+        raise ValueError("prepared reference binding")
+    if digest(prepared / "protocol.json") != p["protocol_sha256"]:
+        raise ValueError("prepared protocol digest binding")
+    validate_capture_metadata(
+        record,
+        p,
+        plan,
+        binding,
+        strict_json((directory / "review.json").read_text()),
+        strict_json((directory / "authorization.json").read_text()),
+    )
+    auth = strict_json((directory / "authorization.json").read_text())
+    report = strict_json((directory / "preflight.json").read_text())
+    if (
+        report.get("pass") is not True
+        or report["identity"]["actual_head"] != record["head"]
+        or report["experiment_id"] != p["task_id"]
+        or report["qualification"] != p["qualification"]
+        or report["sol_review"]["approved_head"] != record["head"]
+    ):
+        raise ValueError("preflight exact-head/qualification binding")
+    validate_reference(p["qualification"])
+    if (
+        strict_json((directory / "model-audit.json").read_text()) != p["model_audit"]
+        or p["model_audit"] != spec.model_audit()
+        or strict_json((directory / "controller-identity.json").read_text())
+        != p["controller_identity"]
+        or verify_controller(BINARY) != p["controller_identity"]
+    ):
+        raise ValueError("capture model/build mapping binding")
+    if plan["raw"]["mode"] == "corrected":
+        check_original_gate(
+            auth.get("original_capture"), auth.get("original_verification")
+        )
+
+
+def validate_prediction(pred, row, mode, model):
+    import mujoco as mj
+    import numpy as np
+    from .contracts import vector
+
+    account = row["controller_diagnostics"]["controller"]["last_step"]["diagnostic"]
+    policy = account["policy_id"]
+    if (
+        type(pred["anchor_time_s"]) not in (int, float)
+        or not np.isfinite(pred["anchor_time_s"])
+        or type(pred.get("policy_id")) is not int
+        or pred["policy_id"] != policy
+        or pred["anchor_time_s"] != row["sim_time_s"]
+        or pred["mode"] != mode
+        or pred["optimization_model_id"] != mode + "-go2-soft-v1"
+        or type(pred["candidate_id"]) is not int
+        or not 0 <= pred["candidate_id"] < 10
+        or len(pred["states"]) != 36
+        or pred["contact_semantics"]
+        != "selected_states_forward_reconstruction_smoothed_private_model"
+    ):
+        raise ValueError("prediction identity/time/model/candidate mismatch")
+    budget = pred["private_accounting"]
+    if set(budget) != {
+        "rollout_mj_step_count",
+        "fd_step_upper_bound_count",
+        "fd_call_count",
+        "reserved_step_upper_bound",
+    } or any(type(v) is not int or v < 0 for v in budget.values()):
+        raise ValueError("prediction accounting types")
+    if (
+        any(
+            budget[k] != account[k]
+            for k in (
+                "rollout_mj_step_count",
+                "fd_step_upper_bound_count",
+                "fd_call_count",
+            )
+        )
+        or budget["reserved_step_upper_bound"]
+        != account["private_step_upper_bound_reserved"]
+    ):
+        raise ValueError("prediction/actual response accounting mismatch")
+    q = vector(row["qpos"], 19, "actual qpos")
+    v = vector(row["qvel"], 18, "actual qvel")
+    order = [10, 11, 12, 7, 8, 9, 16, 17, 18, 13, 14, 15]
+    velocity = [9, 10, 11, 6, 7, 8, 15, 16, 17, 12, 13, 14]
+    if not np.allclose(
+        pred["states"][0]["qpos"], np.r_[q[:7], q[order]], atol=1e-9, rtol=0
+    ) or not np.allclose(
+        pred["states"][0]["qvel"], np.r_[v[:6], v[velocity]], atol=1e-9, rtol=0
+    ):
+        raise ValueError("selected prediction not anchored to delivered state")
+    d = mj.MjData(model)
+    for k, state in enumerate(pred["states"]):
+        if type(state["time_s"]) not in (int, float) or not np.isfinite(
+            state["time_s"]
+        ):
+            raise ValueError("prediction knot time type")
+        if abs(state["time_s"] - (pred["anchor_time_s"] + 0.01 * k)) > 1e-8:
+            raise ValueError("prediction knot clock")
+        d.qpos[:] = vector(state["qpos"], 19, "prediction qpos")
+        d.qvel[:] = vector(state["qvel"], 18, "prediction qvel")
+        d.ctrl[:] = vector(state["nominal_position_action"], 12, "prediction action")
+        d.time = state["time_s"]
+        mj.mj_forward(model, d)
+        active = [c for c in d.contact if c.efc_address >= 0]
+        contacts = state["active_contacts"]
+        if not isinstance(contacts, list) or len(contacts) != len(active):
+            raise ValueError("active contact reconstruction count")
+        for saved, actual in zip(contacts, active):
+            ids = saved["geom_ids"]
+            if (
+                not isinstance(ids, list)
+                or len(ids) != 2
+                or any(type(g) is not int or not 0 <= g < model.ngeom for g in ids)
+                or ids != [int(actual.geom1), int(actual.geom2)]
+                or saved["geom_names"]
+                != [mj.mj_id2name(model, mj.mjtObj.mjOBJ_GEOM, g) or "" for g in ids]
+                or type(saved["distance_m"]) not in (int, float)
+                or not np.isfinite(saved["distance_m"])
+                or abs(saved["distance_m"] - actual.dist) > 1e-9
+            ):
+                raise ValueError("active contact geometry/name/distance mapping")
+
+
+def audit_capture(capture_dir):
     import numpy as np
     from .evaluator import CanonicalEvaluator
     from .mjpc_diagnostic import validate_budget_record
@@ -285,13 +503,18 @@ def verify_capture(capture_dir, output):
     directory = Path(capture_dir).resolve()
     record = verify_bundle(directory)
     plan = spec.load_plan(directory / "protocol.json")
+    verify_capture_binding(directory, record, plan)
     ledger = ROOT / "_runs/substrate_attempts" / plan["raw"]["id"]
     if set(p.name for p in ledger.iterdir()) != {"campaign.json", "claim.json"}:
         raise ValueError("real external ledger membership")
     campaign = strict_json((ledger / "campaign.json").read_text())
     claim = strict_json((ledger / "claim.json").read_text())
     if (
-        campaign["output"] != str(directory)
+        campaign["task_id"] != plan["raw"]["id"]
+        or campaign["max_attempts"] != 1
+        or campaign["private_step_upper_bound_max"] != spec.LIMIT
+        or claim["boundary"] != "first_post_handoff_state_control_sample"
+        or campaign["output"] != str(directory)
         or campaign["head"] != record["head"]
         or claim["task_id"] != plan["raw"]["id"]
         or claim["head"] != record["head"]
@@ -315,9 +538,19 @@ def verify_capture(capture_dir, output):
         or outcome["steps"] != len(rows) - 1
     ):
         raise ValueError("canonical safety replay mismatch")
+    expected_status = (
+        "HORIZON_REACHED" if outcome["terminal_reason"] == "horizon" else "SAFETY_STOP"
+    )
+    if (
+        record["diagnostic_status"] != expected_status
+        or record["capability_status"] != "NOT_CLAIMED"
+    ):
+        raise ValueError("diagnostic outcome/classification binding")
     last = None
     by_id = {}
-    for row in rows[:-1]:
+    for tick, row in enumerate(rows[:-1]):
+        if row["tick"] != tick or abs(row["sim_time_s"] - tick * 0.002) > 1e-9:
+            raise ValueError("actual raw clock/order")
         if row["tick"] != len(by_id) * 10 and row["tick"] % 10 == 0:
             raise ValueError("planning clock shifted")
         target = row["target"]
@@ -333,6 +566,13 @@ def verify_capture(capture_dir, output):
         pd = np.asarray(target["kp"]) * (
             np.asarray(target["position_target"]) - q
         ) + np.asarray(target["kd"]) * (np.asarray(target["velocity_target"]) - dq)
+        if not (
+            np.array_equal(target["kp"], np.full(12, 60.0))
+            and np.array_equal(target["kd"], np.full(12, 5.0))
+            and np.array_equal(target["feedforward"], np.zeros(12))
+            and np.array_equal(target["velocity_target"], np.zeros(12))
+        ):
+            raise ValueError("source position PD semantics drift")
         total = pd + np.asarray(target["feedforward"])
         limits = np.array([40, 40, 45.43] * 4)
         if not (
@@ -351,63 +591,36 @@ def verify_capture(capture_dir, output):
             by_id[value["policy_id"]] = row
     if len(predictions) != len(by_id):
         raise ValueError("missing/extra selected prediction")
+    model = spec.optimization_model(plan["raw"]["mode"])
     for i, pred in enumerate(predictions, 1):
-        row = by_id[i]
-        if (
-            pred["policy_id"] != i
-            or pred["anchor_time_s"] != row["sim_time_s"]
-            or pred["mode"] != plan["raw"]["mode"]
-            or pred["optimization_model_id"] != plan["raw"]["mode"] + "-go2-soft-v1"
-            or pred["candidate_id"] < 0
-            or len(pred["states"]) != 36
-            or pred["contact_semantics"]
-            != "selected_states_forward_reconstruction_smoothed_private_model"
-        ):
-            raise ValueError("prediction identity/time/model mismatch")
-        q = np.asarray(row["qpos"])
-        v = np.asarray(row["qvel"])
-        order = [10, 11, 12, 7, 8, 9, 16, 17, 18, 13, 14, 15]
-        velocity = [9, 10, 11, 6, 7, 8, 15, 16, 17, 12, 13, 14]
-        if not np.allclose(
-            pred["states"][0]["qpos"], np.r_[q[:7], q[order]], atol=1e-9, rtol=0
-        ) or not np.allclose(
-            pred["states"][0]["qvel"], np.r_[v[:6], v[velocity]], atol=1e-9, rtol=0
-        ):
-            raise ValueError("selected prediction not anchored to delivered state")
-        for k, state in enumerate(pred["states"]):
-            if abs(state["time_s"] - (pred["anchor_time_s"] + 0.01 * k)) > 1e-8:
-                raise ValueError("prediction knot clock")
-            for name, size in [
-                ("qpos", 19),
-                ("qvel", 18),
-                ("nominal_position_action", 12),
-            ]:
-                values = np.asarray(state[name])
-                if values.shape != (size,) or not np.isfinite(values).all():
-                    raise ValueError("invalid prediction state/action")
-        a = pred["private_accounting"]
-        if (
-            a["rollout_mj_step_count"] + a["fd_step_upper_bound_count"]
-            > a["reserved_step_upper_bound"]
-            or a["reserved_step_upper_bound"] != i * 4096
-        ):
-            raise ValueError("prediction budget record")
+        validate_prediction(pred, by_id[i], plan["raw"]["mode"], model)
+    final = strict_json((directory / "last-controller-diagnostics.json").read_text())
+    if final["last_step"]["diagnostic"] != last:
+        raise ValueError("last actual response accounting mismatch")
+    if rows[-1]["tick"] != len(rows) - 1:
+        raise ValueError("terminal raw tick")
+    return {
+        "capture": str(directory),
+        "capture_manifest_sha256": digest(directory / "manifest.json"),
+        "status": "VERIFIED",
+        "external_ledger_checked": True,
+        "classification": record["diagnostic_status"],
+        "scientific_attempts": 1,
+        "canonical_steps": len(rows) - 1,
+        "selected_predictions": len(predictions),
+        "private_accounting": last,
+        "verification_integration_steps": 0,
+        "prepared_review_start_checked": True,
+        "active_contacts_reconstructed": True,
+        "prediction_actual_accounting_checked": True,
+    }
+
+
+def verify_capture(capture_dir, output):
+    with zero_step_guard():
+        summary = audit_capture(capture_dir)
     with EvidenceRun(Path(output), {"operation": "mjpc_diagnostic_raw_verify"}) as run:
-        write_new(
-            run.path / "verified-summary.json",
-            {
-                "capture": str(directory),
-                "capture_manifest_sha256": digest(directory / "manifest.json"),
-                "status": "VERIFIED",
-                "external_ledger_checked": True,
-                "classification": record["diagnostic_status"],
-                "scientific_attempts": 1,
-                "canonical_steps": len(rows) - 1,
-                "selected_predictions": len(predictions),
-                "private_accounting": last,
-                "verification_integration_steps": 0,
-            },
-        )
+        write_new(run.path / "verified-summary.json", summary)
         run.result.update(status="ENGINEERING_ADMITTED", verification="VERIFIED")
     return str(output)
 
@@ -419,6 +632,9 @@ def main():
     a.add_argument("--output", type=Path, required=True)
     a.add_argument("--protocol", type=Path, required=True)
     a.add_argument("--qualification", type=Path, required=True)
+    a = s.add_parser("verify-entry")
+    for name in ["prepared", "review", "output"]:
+        a.add_argument("--" + name, type=Path, required=True)
     a = s.add_parser("capture")
     for name in ["prepared", "review", "authorization", "output"]:
         a.add_argument("--" + name, type=Path, required=True)
@@ -426,7 +642,9 @@ def main():
     a.add_argument("--capture", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
-    if a.op == "prepare":
+    if a.op == "verify-entry":
+        result = verify_entry(a.prepared, a.review, a.output)
+    elif a.op == "prepare":
         result = prepare(a.output, a.protocol, a.qualification)
     elif a.op == "capture":
         result = capture(a.prepared, a.review, a.authorization, a.output)

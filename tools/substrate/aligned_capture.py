@@ -27,6 +27,8 @@ from .readiness import validate_authorization, validate_review
 from .rl import FrozenPolicy
 from .qualification import validate as validate_qualification, validate_reference
 
+TRANSPORT = "inprocess"
+
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PLAN = Path(__file__).with_name("protocols") / "aligned_flat_capture_v1.json"
 LOCK = Path(__file__).with_name("sources.lock.json")

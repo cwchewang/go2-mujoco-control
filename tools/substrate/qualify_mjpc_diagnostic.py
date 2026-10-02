@@ -11,7 +11,14 @@ import numpy as np
 from . import qualification as q
 from .build_identity import inputs, seal, seal_controller
 from .guards import zero_step_guard
-from .integrity import EvidenceRun, digest, experiment_lock, run_logged, write_new
+from .integrity import (
+    EvidenceRun,
+    digest,
+    experiment_lock,
+    run_logged,
+    write_new,
+    verify_bundle,
+)
 from .mjpc_diagnostic import ROOT, model_audit
 from .qualify_rl_friction import SUBSTRATE_TESTS, guarded_tests
 
@@ -82,8 +89,113 @@ def smoke(directory):
     }
 
 
+def retained_smoke(directory):
+    """Reuse only sealed native smoke evidence; all qualification checks rerun."""
+    source = (
+        ROOT
+        / "_runs/mjpc_adaptation_diagnostic_prep_20261002/qualification_20261002T145537Z"
+    )
+    development = (
+        ROOT
+        / "_runs/mjpc_adaptation_diagnostic_prep_20261002/engineering_smoke_20261002T143620582863Z"
+    )
+    refs = [
+        (
+            development,
+            "752d8ab69d7abf5abde7a1c36c81d22ea3d28c74b17d42fd52c2aee8f78f1d59",
+        ),
+        (source, "c826241af14d63e65c7a412652376a2064a5d66751ddc8d3f5602bffaee42228"),
+    ]
+    records = []
+    for path, expected in refs:
+        if digest(path / "manifest.json") != expected:
+            raise ValueError("sealed engineering smoke source changed")
+        record = verify_bundle(path)
+        value = record.get("private_accounting")
+        if value is None:
+            value = record["physics_accounting"]["accounting"]
+        if (
+            value["policy_id"] != 1
+            or value["rollout_mj_step_count"] != 700
+            or value["fd_step_upper_bound_count"] != 1801
+            or value["fd_call_count"] != 37
+            or value["private_step_upper_bound_reserved"] != 4096
+            or record["canonical_physics_steps"] != 0
+            or record["scientific_attempts"] != 0
+        ):
+            raise ValueError("engineering smoke total accounting source mismatch")
+        records.append(
+            {
+                "path": str(path),
+                "manifest_sha256": expected,
+                "optimizer_calls": 1,
+                "rollout_steps": 700,
+                "fd_step_upper_bound": 1801,
+                "combined_step_upper_bound": 2501,
+                "reserved_step_upper_bound": 4096,
+                "canonical_steps": 0,
+                "scientific_attempts": 0,
+            }
+        )
+    original = verify_bundle(source)
+    value = json.loads((source / "native-smoke-accounting.json").read_text())
+    binary = ROOT / ".substrate/headless-reliable/go2_mjpc_controller"
+    if value["binary_sha256"] != digest(binary):
+        raise ValueError("retained smoke binary changed; cannot reuse")
+    now = q.current_inputs()
+    old = original["qualification_inputs"]
+    if any(
+        now[k] != old[k]
+        for k in (
+            "runtime",
+            "native_build",
+            "native_binary_sha256",
+            "linked_libraries",
+            "interpreter_sha256",
+            "cpu_identity",
+        )
+    ):
+        raise ValueError("retained smoke native/runtime inputs changed")
+    ledger = {
+        "runs": records,
+        "optimizer_calls_total": sum(r["optimizer_calls"] for r in records),
+        "rollout_steps_total": sum(r["rollout_steps"] for r in records),
+        "fd_step_upper_bound_total": sum(r["fd_step_upper_bound"] for r in records),
+        "combined_step_upper_bound_total": sum(
+            r["combined_step_upper_bound"] for r in records
+        ),
+        "reserved_step_upper_bound_total": sum(
+            r["reserved_step_upper_bound"] for r in records
+        ),
+        "canonical_steps_total": 0,
+        "scientific_attempts_total": 0,
+        "new_optimizer_calls_in_this_qualification": 0,
+        "authorization_basis": {
+            "source_thread_id": "01a0f08f-d223-7240-813b-ee93267b700d",
+            "standing_third_stage_instruction_summary": "Continue minimum adaptation diagnostic preparation and bounded qualification; no user reauthorization for third stage.",
+            "scope": "engineering preparation only; genuine exact-head reviews still required before formal capture",
+            "task": "docs/research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md",
+            "direction_turn": "01a0fcef-18b2-753f-b7ef-ee6ca2ba89b6",
+            "direction_is_exact_head_approval": False,
+        },
+    }
+    write_new(directory / "engineering-total-ledger.json", ledger)
+    for name in (
+        "native-smoke.stdout",
+        "native-smoke.stderr",
+        "native-smoke-predictions.jsonl",
+    ):
+        (directory / name).write_bytes((source / name).read_bytes())
+    return dict(
+        value,
+        execution="reused_sealed_native_smoke_no_new_optimizer",
+        source_reference=records[1],
+        cumulative_engineering_accounting=ledger,
+    )
+
+
 def qualify(output):
-    with experiment_lock(), zero_step_guard():
+    with experiment_lock() as lock, zero_step_guard():
         if subprocess.check_output(
             ["git", "status", "--porcelain"], cwd=ROOT, text=True
         ):
@@ -194,7 +306,12 @@ def qualify(output):
             initial = None
             for name, argv, timeout in commands:
                 run.result["qualification_checks"][name] = run_logged(
-                    argv, run.path, name, timeout, ROOT
+                    argv,
+                    run.path,
+                    name,
+                    timeout,
+                    ROOT,
+                    pass_fds=(lock.fileno(),) if name == "substrate_tests" else (),
                 )
                 if name == "controller_build":
                     initial = q.current_inputs()
@@ -206,7 +323,7 @@ def qualify(output):
                         raise ValueError("qualification inputs changed during build")
             evidence = model_audit()
             write_new(run.path / "model-audit.json", evidence)
-            physics = smoke(run.path)
+            physics = retained_smoke(run.path)
             write_new(run.path / "native-smoke-accounting.json", physics)
             if (
                 q.current_inputs() != initial
@@ -227,7 +344,10 @@ def qualify(output):
                 qualification_fingerprint=q.fingerprint(initial),
                 canonical_physics_steps=0,
                 scientific_attempts=0,
-                private_engineering_optimizer_calls=1,
+                private_engineering_optimizer_calls=0,
+                cumulative_engineering_accounting=physics[
+                    "cumulative_engineering_accounting"
+                ],
                 physics_accounting=physics,
             )
             q.validate_record(run.result, initial)
