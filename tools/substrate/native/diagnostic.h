@@ -17,7 +17,7 @@ class Diagnostic {
   static constexpr long long kLimit = 614400;
   Diagnostic(mjModel* source, const char* mode, const char* canonical,
              const char* trace) : mode_(mode) {
-    if ((mode_ != "original" && mode_ != "corrected") ||
+    if ((mode_ != "original" && mode_ != "fixed") ||
         std::filesystem::exists(trace))
       throw std::runtime_error("invalid diagnostic mode/trace");
     char error[2048] = {};
@@ -53,13 +53,7 @@ class Diagnostic {
           source->actuator_forcelimited[i] ||
           source->actuator_gear[6*i] != 1 || plant->actuator_gear[6*pa] != 1)
         throw std::runtime_error("unproved diagnostic torque mapping");
-      if (mode_ == "corrected") {
-        source->actuator_forcelimited[i] = 1;
-        source->actuator_forcerange[2*i] = plant->actuator_ctrlrange[2*pa];
-        source->actuator_forcerange[2*i+1] = plant->actuator_ctrlrange[2*pa+1];
-      }
     }
-    if (mode_ == "corrected") source->geom_pos[3*sf+2] = 0;
     output_.open(trace);
     if (!output_) throw std::runtime_error("diagnostic trace cannot be created");
     active_private_budget=&budget_;

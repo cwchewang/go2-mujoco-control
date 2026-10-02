@@ -244,7 +244,7 @@ def run_trial(trial,anchor,binaries,identities,directory):
     directory.mkdir(parents=True,exist_ok=False)
     trace=directory/'fd-trace.jsonl'; native_log=directory/'native.jsonl'
     stderr_log=directory/'native.stderr.log'; predictions=directory/'predictions.jsonl'
-    argv=[str(binaries[trial['variant']]),str(TASK),'original',str(CANON),str(predictions)]
+    argv=[str(binaries[trial['variant']]),str(TASK),trial['variant'],str(CANON),str(predictions)]
     def popen(args,**kwargs):
         env=os.environ.copy(); env['GO2_MJPC_FD_TRACE_PATH']=str(trace)
         return subprocess.Popen(args,env=env,**kwargs)
