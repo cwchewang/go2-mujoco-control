@@ -75,7 +75,18 @@ def prepare(output, protocol, qualification):
     return str(output)
 
 
-def check_original_gate(capture_path, verification_path):
+def check_original_identity(
+    record, prepared_binding, expected_head, expected_fingerprint
+):
+    if record["head"] != expected_head or prepared_binding["head"] != expected_head:
+        raise ValueError("original/corrected HEAD mismatch")
+    if prepared_binding["qualification"]["fingerprint"] != expected_fingerprint:
+        raise ValueError("original/corrected qualification fingerprint mismatch")
+
+
+def check_original_gate(
+    capture_path, verification_path, expected_head, expected_fingerprint
+):
     import numpy as np
 
     if not capture_path or not verification_path:
@@ -84,6 +95,8 @@ def check_original_gate(capture_path, verification_path):
         )
     original = Path(capture_path).resolve()
     a = verify_bundle(original)
+    binding = strict_json((original / "prepared-reference.json").read_text())
+    check_original_identity(a, binding, expected_head, expected_fingerprint)
     v = verify_bundle(verification_path)
     summary = strict_json(
         (Path(verification_path) / "verified-summary.json").read_text()
@@ -188,6 +201,65 @@ def verify_entry(prepared, review_path, output):
     return str(output)
 
 
+def seal_preflight_failure(output, prepared, binding, review, auth, report, error):
+    """The already-reserved task stays closed; no controller has been created."""
+    with EvidenceRun(
+        Path(output), {"operation": "mjpc_diagnostic_preflight_failure"}
+    ) as run:
+        run.result.update(
+            head=prepared["head"],
+            task_id=prepared["task_id"],
+            scope="mjpc_single_arm_diagnostic",
+            diagnostic_status="PREFLIGHT_FAILURE",
+            terminal_stage="preflight",
+            scientific_attempts=0,
+            canonical_physics_steps=0,
+            private_optimizer_calls=0,
+            process_returncode=getattr(error, "returncode", None),
+        )
+        run.result["errors"].append(type(error).__name__ + ": " + str(error))
+        write_new(run.path / "prepared-reference.json", binding)
+        write_new(run.path / "review.json", review)
+        write_new(run.path / "authorization.json", auth)
+        write_new(
+            run.path / "preflight-failure.json",
+            {
+                "exception_type": type(error).__name__,
+                "message": str(error),
+                "process_returncode": getattr(error, "returncode", None),
+                "report": str(report),
+                "attempt_consumed": False,
+                "canonical_physics_steps": 0,
+                "private_optimizer_calls": 0,
+            },
+        )
+        for source, name in (
+            (report, "preflight.json"),
+            (report.parent / "preflight.stdout", "preflight.stdout"),
+            (report.parent / "preflight.stderr", "preflight.stderr"),
+        ):
+            if source.is_file():
+                shutil.copyfile(source, run.path / name)
+
+
+def classify_terminal(oracle, outcome):
+    reason = oracle["terminal_reason"]
+    failure = oracle["first_failure"]
+    if reason != outcome["terminal_reason"]:
+        raise ValueError("canonical terminal reason mismatch")
+    if failure is not None:
+        if (
+            failure["tick"] != outcome["steps"]
+            or failure["reason"] != reason
+            or reason in ("horizon", "incomplete_evidence")
+        ):
+            raise ValueError("canonical first safety failure mismatch")
+        return "SAFETY_STOP"
+    if reason == "horizon":
+        return "HORIZON_REACHED"
+    raise ValueError("incomplete evidence without a physical safety failure")
+
+
 def capture(prepared, review_path, authorization_path, output):
     with experiment_lock() as lock:
         p = verify_bundle(prepared)
@@ -214,7 +286,10 @@ def capture(prepared, review_path, authorization_path, output):
             raise ValueError("START task/private/canonical budget mismatch")
         if plan["raw"]["mode"] == "corrected":
             check_original_gate(
-                auth.get("original_capture"), auth.get("original_verification")
+                auth.get("original_capture"),
+                auth.get("original_verification"),
+                p["head"],
+                p["qualification"]["fingerprint"],
             )
         validate_reference(p["qualification"])
         if (
@@ -239,27 +314,31 @@ def capture(prepared, review_path, authorization_path, output):
         )
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         report = ROOT / "_runs/mjpc_diagnostic_preflight" / stamp / "report.json"
-        report.parent.mkdir(parents=True, exist_ok=False)
-        from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
+        try:
+            report.parent.mkdir(parents=True, exist_ok=False)
+            from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
 
-        if find_processes(DEFAULT_PROCESS_NAMES + ("go2_mjpc_controller",)):
-            raise ValueError("stale native/runtime process")
-        preflight(
-            lock,
-            head,
-            review,
-            report,
-            output,
-            {
-                "configuration": {
-                    "branch": spec.BRANCH,
-                    "diff_base": plan["raw"]["parent"],
-                }
-            },
-            p["qualification"],
-            runner=Path(__file__),
-            experiment_id=p["task_id"],
-        )
+            if find_processes(DEFAULT_PROCESS_NAMES + ("go2_mjpc_controller",)):
+                raise ValueError("stale native/runtime process")
+            preflight(
+                lock,
+                head,
+                review,
+                report,
+                output,
+                {
+                    "configuration": {
+                        "branch": spec.BRANCH,
+                        "diff_base": plan["raw"]["parent"],
+                    }
+                },
+                p["qualification"],
+                runner=Path(__file__),
+                experiment_id=p["task_id"],
+            )
+        except BaseException as exc:
+            seal_preflight_failure(output, p, binding, review, auth, report, exc)
+            raise
         with EvidenceRun(
             Path(output), {"operation": "mjpc_single_arm_diagnostic"}
         ) as run:
@@ -303,10 +382,13 @@ def capture(prepared, review_path, authorization_path, output):
                 )
                 run.result["scientific_attempts"] = 1
 
+            last_row = None
             try:
                 with (run.path / "raw.jsonl").open("x") as stream:
 
                     def emit(row):
+                        nonlocal last_row
+                        last_row = row
                         stream.write(
                             json.dumps(row, allow_nan=False, sort_keys=True) + "\n"
                         )
@@ -332,9 +414,15 @@ def capture(prepared, review_path, authorization_path, output):
             write_new(run.path / "outcome.json", outcome)
             run.result.update(
                 status="ENGINEERING_ADMITTED",
-                diagnostic_status="SAFETY_STOP"
-                if outcome["terminal_reason"] != "horizon"
-                else "HORIZON_REACHED",
+                diagnostic_status=classify_terminal(
+                    {
+                        "terminal_reason": last_row["terminal_reason"],
+                        "first_failure": None
+                        if last_row["failure"] is None
+                        else {"tick": last_row["tick"], "reason": last_row["failure"]},
+                    },
+                    outcome,
+                ),
                 capability_status="NOT_CLAIMED",
             )
         return str(output)
@@ -405,7 +493,10 @@ def verify_capture_binding(directory, record, plan):
         raise ValueError("capture model/build mapping binding")
     if plan["raw"]["mode"] == "corrected":
         check_original_gate(
-            auth.get("original_capture"), auth.get("original_verification")
+            auth.get("original_capture"),
+            auth.get("original_verification"),
+            p["head"],
+            p["qualification"]["fingerprint"],
         )
 
 
@@ -538,9 +629,7 @@ def audit_capture(capture_dir):
         or outcome["steps"] != len(rows) - 1
     ):
         raise ValueError("canonical safety replay mismatch")
-    expected_status = (
-        "HORIZON_REACHED" if outcome["terminal_reason"] == "horizon" else "SAFETY_STOP"
-    )
+    expected_status = classify_terminal(oracle, outcome)
     if (
         record["diagnostic_status"] != expected_status
         or record["capability_status"] != "NOT_CLAIMED"

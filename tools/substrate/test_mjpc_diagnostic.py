@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .mjpc_diagnostic import optimization_model
 from .mjpc_diagnostic_capture import (
+    check_original_identity,
     validate_capture_metadata,
     validate_prediction,
 )
@@ -73,6 +74,22 @@ class DiagnosticTests(unittest.TestCase):
         for p in values:
             self.assertEqual(p["task"].horizon_ticks, 1500)
             self.assertEqual(p["raw"]["scientific_attempts_max"], 1)
+
+    def test_original_corrected_head_and_qualification_identity(self):
+        head = "a" * 40
+        fingerprint = "b" * 64
+        record = {"head": head}
+        binding = {"head": head, "qualification": {"fingerprint": fingerprint}}
+        check_original_identity(record, binding, head, fingerprint)
+        # Identical runtime fingerprint never permits another source HEAD.
+        with self.assertRaisesRegex(ValueError, "HEAD mismatch"):
+            check_original_identity(record, binding, "c" * 40, fingerprint)
+        with self.assertRaisesRegex(ValueError, "fingerprint mismatch"):
+            check_original_identity(record, binding, head, "d" * 64)
+        altered = copy.deepcopy(binding)
+        altered["head"] = "c" * 40
+        with self.assertRaisesRegex(ValueError, "HEAD mismatch"):
+            check_original_identity(record, altered, head, fingerprint)
 
     def test_named_joint_and_unnamed_collision_mapping(self):
         v = model_audit()
@@ -156,6 +173,36 @@ class ProductionEvidenceRegression(unittest.TestCase):
             mutate(value)
             with self.subTest(mutation=str(mutate)), self.assertRaises(ValueError):
                 validate_prediction(value, self.row, "original", self.model)
+
+    def test_real_truncated_prefix_is_not_a_safety_stop(self):
+        from .evaluator import CanonicalEvaluator
+        from .mjpc_diagnostic_capture import classify_terminal
+
+        old = (
+            ROOT
+            / "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z/mjpc_baseline_1.jsonl"
+        )
+        with old.open() as stream:
+            rows = [json.loads(next(stream)) for _ in range(101)]
+        plan = load_plan(
+            ROOT / "tools/substrate/protocols/mjpc-adaptation-original-3s-v1.json"
+        )
+        oracle = CanonicalEvaluator(plan["task"], 0.002).evaluate(rows).as_dict()
+        self.assertEqual(oracle["terminal_reason"], "incomplete_evidence")
+        self.assertIsNone(oracle["first_failure"])
+        with self.assertRaisesRegex(ValueError, "incomplete evidence"):
+            classify_terminal(
+                oracle, {"terminal_reason": "incomplete_evidence", "steps": 100}
+            )
+        with old.open() as stream:
+            complete = [json.loads(line) for line in stream]
+        safety = CanonicalEvaluator(plan["task"], 0.002).evaluate(complete).as_dict()
+        self.assertEqual(
+            classify_terminal(
+                safety, {"terminal_reason": "nonfoot_contact", "steps": 1287}
+            ),
+            "SAFETY_STOP",
+        )
 
     def test_prepared_review_start_binding_negatives(self):
         # Explicit unit fixture only; never passed to capture/preflight.
@@ -335,6 +382,116 @@ class RealPreflightSubprocessRegression(unittest.TestCase):
                     )
                     self.assertFalse((root / "NEVER_CREATED").exists())
                     self.assertFalse(sentinel.exists())
+
+    def test_real_preflight_failure_seals_zero_attempt_and_original_rc(self):
+        from .integrity import verify_manifest, write_new
+        from .mjpc_diagnostic_capture import seal_preflight_failure
+
+        with tempfile.TemporaryDirectory() as temp:
+            top = Path(temp)
+            root = top / "repo"
+            root.mkdir()
+            sentinel = top / "EXPERIMENT_STARTED"
+            runner = root / "runner.py"
+            runner.write_text(
+                'TRANSPORT = "inprocess"\n__import__("pathlib").Path('
+                + repr(str(sentinel))
+                + ').write_text("started")\n'
+            )
+            subprocess.run(
+                ["git", "init", "-b", "entry-regression"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(["git", "add", "runner.py"], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Regression",
+                    "-c",
+                    "user.email=regression@example.invalid",
+                    "commit",
+                    "-m",
+                    "fixture",
+                ],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            head = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            report = top / "preflight" / "report.json"
+            argv = [
+                sys.executable,
+                str(ROOT / "tools/research/preflight.py"),
+                "--repo-root",
+                str(root),
+                "--experiment-id",
+                "UNIT_PREFLIGHT_FAILURE_ONLY",
+                "--expected-branch",
+                "entry-regression",
+                "--expected-head",
+                "f" * 40,
+                "--runner",
+                str(runner),
+                "--run-dir",
+                str(root / "NEVER_CREATED"),
+                "--transport",
+                "inprocess",
+                "--output",
+                str(report),
+            ]
+            with regression_lock() as fd:
+                result = subprocess.run(
+                    argv + ["--held-lock-fd", str(fd)],
+                    text=True,
+                    capture_output=True,
+                    timeout=30,
+                    pass_fds=(fd,),
+                )
+            self.assertEqual(result.returncode, 2)
+            self.assertFalse(json.loads(result.stdout)["pass"])
+            ledger = top / "unit-ledger"
+            ledger.mkdir()
+            write_new(ledger / "campaign.json", {"unit_fixture": True})
+            output = top / "failed-evidence"
+            prepared = {"head": head, "task_id": "UNIT_PREFLIGHT_FAILURE_ONLY"}
+            error = subprocess.CalledProcessError(result.returncode, argv)
+            with self.assertRaises(subprocess.CalledProcessError) as caught:
+                try:
+                    raise error
+                except BaseException as exc:
+                    seal_preflight_failure(
+                        output,
+                        prepared,
+                        prepared,
+                        {"unit_fixture": True},
+                        {"unit_fixture": True},
+                        report,
+                        exc,
+                    )
+                    raise
+            self.assertEqual(caught.exception.returncode, 2)
+            record = verify_manifest(output)
+            self.assertEqual(record["status"], "FAILED")
+            self.assertEqual(record["diagnostic_status"], "PREFLIGHT_FAILURE")
+            self.assertEqual(record["process_returncode"], 2)
+            for key in (
+                "scientific_attempts",
+                "canonical_physics_steps",
+                "private_optimizer_calls",
+            ):
+                self.assertEqual(record[key], 0)
+            self.assertEqual(digest(output / "preflight.json"), digest(report))
+            self.assertTrue((ledger / "campaign.json").is_file())
+            self.assertFalse((ledger / "claim.json").exists())
+            self.assertFalse((output / "raw.jsonl").exists())
+            self.assertFalse(sentinel.exists())
+            with self.assertRaises(ValueError):
+                verify_bundle(output)
 
 
 if __name__ == "__main__":
