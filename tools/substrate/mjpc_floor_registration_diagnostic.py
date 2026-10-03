@@ -12,7 +12,7 @@ from . import fd_duplicate_diagnostic as build, native_runtime
 from . import mjpc_fixed_baseline as baseline
 from .aligned_anchor import load_anchor, validate_canonical_model
 from .aligned_episode import replay_aligned_rows, run_aligned_episode
-from .contracts import PositionTargetControllerAdapter
+from .contracts import MOTOR_JOINTS, PositionTargetControllerAdapter
 from .episode import MujocoPlant
 from .guards import wall_deadline, zero_step_guard
 from .integrity import (
@@ -28,8 +28,9 @@ from .readiness import validate_authorization, validate_review
 from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
 
 ROOT = Path(__file__).resolve().parents[2]
-BRANCH = "research/mjpc-floor-registration-diagnostic-20261003"
+BRANCH = "research/mjpc-floor-registration-12s-20261003"
 PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_floor_registration_repeat_3s_v1.json"
+PROTOCOL_12S = ROOT / "tools/substrate/protocols/mjpc_floor_registration_sustained_12s_v1.json"
 R4_PREP = ROOT / "_runs/mjpc_fixed_baseline_prepared_r4_20261003"
 R4_RAW = ROOT / "_runs/mjpc_fixed_baseline_capture_r4_20261003T002510Z_repeat1"
 MODE = "floor0"
@@ -119,6 +120,86 @@ def protocol():
     if value != expected:
         raise ValueError("floor-only protocol drift")
     return value
+
+
+
+def protocol_12s():
+    expected = dict(protocol())
+    expected.update(
+        id="mjpc-floor-registration-sustained-12s-v1",
+        repeats=1,
+        max_attempts=1,
+        horizon_s=12.0,
+        canonical_steps_max=6000,
+        max_replan_calls=600,
+        capture_native_controller_processes_campaign_max=1,
+        private_step_upper_bound_per_repeat=2457600,
+        private_step_upper_bound_total_max=2457600,
+        private_step_upper_bound_max=2457600,
+        failure_policy="stop on first safety, execution, evidence, identity, warning, wall-time or private-budget failure; no retry",
+        one_shot_reservation="exclusive one-attempt record keyed by prepared packet SHA-256; slot 1 can be claimed once",
+        capability_claim="none; one-arm 12-second sustained-control diagnostic",
+        start_gate="fresh exact-head science and execution reviews plus one protocol/manifest-bound user authorization for one attempt",
+        parent_repeat_campaign_result_sha256="c92d3ae1d21f97f8d6c689eaf421fbb15187f3731bee7b0dcabdad5cb8fe855a",
+        parent_saturation_posthoc_sha256="0e56e77b75ec517773c461092f1a38913c40acf5ac5aca0d2741fce3e326fd39",
+        saturation_reporting={
+            "actuator_joint_order": "source actuator order with named mapping",
+            "per_joint": [
+                "peak_abs_requested_torque_Nm",
+                "max_excess_beyond_ctrlrange_Nm",
+                "saturated_action_ticks",
+                "saturated_action_share_pct",
+                "longest_consecutive_saturated_ticks",
+                "episode_start_end_and_duration_s",
+            ],
+            "whole_run": [
+                "total_saturated_action_ticks",
+                "total_saturated_joint_ticks",
+                "warnings_and_safety_stop_reason",
+            ],
+            "decision_threshold": "report only; no saturation pass/fail threshold",
+        },
+        inference_boundary="single-arm frozen-condition result; no causal attribution, repeatability, robustness, or baseline qualification",
+        task_spec={
+            "command_body_mps": [1.0, 0.0, 0.0],
+            "command_frame": "body",
+            "zero_command_ticks": 50,
+            "ramp_ticks": 100,
+            "measurement_start_tick": 150,
+            "physics_step_s": 0.002,
+            "stop_on": ["nonfinite", "orientation", "physics_warning", "nonfoot_contact", "posture", "lateral"],
+            "safety_thresholds": {
+                "height_min_m": 0.12,
+                "height_max_m": 0.55,
+                "tilt_max_rad": 0.8,
+                "lateral_max_m": 0.4,
+                "quaternion_norm_sq_abs_error_max": 0.000002,
+            },
+            "canonical_replay_thresholds": {
+                "progress_min_m": 0.05,
+                "body_vx_mae_max_mps": 2.0,
+            },
+        },
+    )
+    expected.pop("repeatability_checks")
+    value = strict_json(PROTOCOL_12S.read_text())
+    parent = ROOT / "_runs/mjpc_floor_registration_repeat_gate_20261003_r4"
+    if (
+        digest(parent / "CAMPAIGN_RESULT.json") != value["parent_repeat_campaign_result_sha256"]
+        or digest(parent / "SATURATION_POSTHOC.json") != value["parent_saturation_posthoc_sha256"]
+    ):
+        raise ValueError("12-second parent repeat evidence drift")
+    if value != expected:
+        raise ValueError("12-second floor-only protocol drift")
+    return value
+
+
+def protocol_for_id(task_id):
+    if task_id == protocol()["id"]:
+        return protocol()
+    if task_id == protocol_12s()["id"]:
+        return protocol_12s()
+    raise ValueError("unknown floor-registration protocol")
 
 
 def _floor(root):
@@ -280,8 +361,9 @@ def runtime_delta(rt):
     return diffs
 
 
-def prepare(binary, output):
-    p = protocol()
+def prepare(binary, output, protocol_id=None):
+    p = protocol() if protocol_id in (None, protocol()["id"]) else protocol_for_id(protocol_id)
+    protocol_path = PROTOCOL if p["id"] == protocol()["id"] else PROTOCOL_12S
     ident = identity()
     r4 = sealed_r4()
     old = strict_json((R4_PREP / "packet.json").read_text())
@@ -343,7 +425,8 @@ def prepare(binary, output):
                 | {
                     "tools/substrate/mjpc_floor_registration_diagnostic.py",
                     "tools/substrate/native/diagnostic.h",
-                    "tools/substrate/protocols/mjpc_floor_registration_repeat_3s_v1.json",
+                    protocol_path.relative_to(ROOT).as_posix(),
+                    "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md",
                 }
             )
         )
@@ -372,14 +455,17 @@ def prepare(binary, output):
             "canonical_xml_sha256": digest(canon),
             "private_model_delta": delta,
             "private_task_xml_sha256": digest(task),
-            "repeats": 2,
-            "attempts_per_repeat": 1,
+            "task_document_sha256": digest(
+                ROOT / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md"
+            ),
+            "repeats": p["repeats"],
+            "attempts_per_repeat": p["attempts_per_repeat"],
             "capture_native_controller_processes_per_repeat_max": 1,
-            "capture_native_controller_processes_campaign_max": 2,
-            "max_attempts": 2,
-            "canonical_steps_max": 1500,
-            "private_total_upper_bound_max": LIMIT,
-            "private_total_upper_bound_campaign_max": 2 * LIMIT,
+            "capture_native_controller_processes_campaign_max": p["repeats"],
+            "max_attempts": p["max_attempts"],
+            "canonical_steps_max": p["canonical_steps_max"],
+            "private_total_upper_bound_max": p["private_step_upper_bound_per_repeat"],
+            "private_total_upper_bound_campaign_max": p["private_step_upper_bound_total_max"],
             "canonical_physics_step_authorized": False,
             "scientific_attempts_authorized": 0,
             "readiness": "AWAITING_INDEPENDENT_REVIEWS_AND_FRESH_USER_START",
@@ -398,10 +484,10 @@ def prepare(binary, output):
             task_id=p["id"],
             head=ident["head"],
             readiness=packet["readiness"],
-            repeats=2,
-            max_attempts=2,
-            canonical_steps_max=1500,
-            private_total_upper_bound_max=LIMIT,
+            repeats=p["repeats"],
+            max_attempts=p["max_attempts"],
+            canonical_steps_max=p["canonical_steps_max"],
+            private_total_upper_bound_max=p["private_step_upper_bound_per_repeat"],
             canonical_physics_steps=0,
             optimizer_calls=0,
             native_processes_started=0,
@@ -415,14 +501,22 @@ def validate_packet(prepared):
     ad = verify_manifest(d)
     pkt = strict_json((d / "packet.json").read_text())
     ident = identity()
+    p = protocol_for_id(pkt.get("kind"))
+    protocol_path = PROTOCOL if p["id"] == protocol()["id"] else PROTOCOL_12S
     if (
         ad.get("status") != "ENGINEERING_ADMITTED"
-        or pkt.get("kind") != protocol()["id"]
         or any(pkt.get(k) != ident[k] for k in ("branch", "head"))
         or pkt.get("parent_floor0_single") != sealed_floor0_single()
+        or pkt.get("repeats") != p["repeats"]
+        or pkt.get("max_attempts") != p["max_attempts"]
+        or pkt.get("canonical_steps_max") != p["canonical_steps_max"]
+        or pkt.get("private_total_upper_bound_max") != p["private_step_upper_bound_per_repeat"]
+        or pkt.get("private_total_upper_bound_campaign_max") != p["private_step_upper_bound_total_max"]
+        or pkt.get("task_document_sha256")
+        != digest(ROOT / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md")
     ):
         raise ValueError("prepared packet/head invalid")
-    if pkt["protocol_sha256"] != digest(PROTOCOL) or pkt["runtime_code"] != {
+    if pkt["protocol_sha256"] != digest(protocol_path) or pkt["runtime_code"] != {
         x: digest(ROOT / x) for x in pkt["runtime_code"]
     }:
         raise ValueError("protocol/source drift")
@@ -555,12 +649,15 @@ class StrictWarningController:
 
 def capture(prepared, review, authorization, output, repeat_index):
     pkt, binary, side = validate_packet(prepared)
+    p = protocol_for_id(pkt["kind"])
+    repeat_count = p["repeats"]
+    run_limit = p["private_step_upper_bound_per_repeat"]
     d = Path(prepared).resolve()
     base = Path(output).resolve()
-    if base.parent != (ROOT / "_runs").resolve() or repeat_index not in (1, 2):
-        raise ValueError("repeat campaign output/slot invalid")
+    if base.parent != (ROOT / "_runs").resolve() or not 1 <= repeat_index <= repeat_count:
+        raise ValueError("campaign output/slot invalid")
     out = Path(str(base) + f"_repeat{repeat_index}")
-    outputs = [str(Path(str(base) + f"_repeat{i}").resolve()) for i in (1, 2)]
+    outputs = [str(Path(str(base) + f"_repeat{i}").resolve()) for i in range(1, repeat_count + 1)]
     if out.exists():
         raise ValueError("repeat output already exists; no retry")
     review = Path(review).resolve(strict=True)
@@ -572,14 +669,14 @@ def capture(prepared, review, authorization, output, repeat_index):
             "head": pkt["head"],
             "protocol_sha256": pkt["protocol_sha256"],
             "prepared_manifest_sha256": digest(d / "manifest.json"),
-            "max_attempts": 2,
+            "max_attempts": repeat_count,
         },
     )
     anchor = load_anchor()
     task = baseline.replace(
         anchor["task"],
         task_id=pkt["kind"],
-        horizon_ticks=1500,
+        horizon_ticks=p["canonical_steps_max"],
         measurement_start_tick=150,
     )
     timing = anchor["controllers"]["mjpc"]["timing"]
@@ -595,6 +692,9 @@ def capture(prepared, review, authorization, output, repeat_index):
     claim = reservation.with_name(
         reservation.stem + f"_attempt{repeat_index}.claim"
     )
+    reservation_status = (
+        "RESERVED_TWO_REPEAT_NO_RETRY" if repeat_count == 2 else "RESERVED_ONE_ATTEMPT_NO_RETRY"
+    )
     binding = {
         "head": pkt["head"],
         "packet_sha256": packet_sha,
@@ -602,24 +702,21 @@ def capture(prepared, review, authorization, output, repeat_index):
         "protocol_sha256": pkt["protocol_sha256"],
         "review_sha256": digest(review),
         "authorization_sha256": digest(authorization),
-        "max_attempts": 2,
+        "max_attempts": repeat_count,
         "capture_native_controller_processes_per_repeat_max": 1,
-        "capture_native_controller_processes_campaign_max": 2,
+        "capture_native_controller_processes_campaign_max": repeat_count,
         "outputs": outputs,
     }
     with experiment_lock():
         if repeat_index == 1:
             if reservation.exists():
-                raise ValueError("the two-repeat campaign is already reserved; no retry")
-            write_new(
-                reservation,
-                {**binding, "status": "RESERVED_TWO_REPEAT_NO_RETRY"},
-            )
+                raise ValueError("the campaign is already reserved; no retry")
+            write_new(reservation, {**binding, "status": reservation_status})
         else:
             if not reservation.exists():
                 raise ValueError("repeat 2 requires the existing campaign reservation")
             record = strict_json(reservation.read_text())
-            if record != {**binding, "status": "RESERVED_TWO_REPEAT_NO_RETRY"}:
+            if record != {**binding, "status": reservation_status}:
                 raise ValueError("repeat campaign reservation identity mismatch")
             claim1 = reservation.with_name(reservation.stem + "_attempt1.claim")
             if not claim1.exists():
@@ -628,15 +725,16 @@ def capture(prepared, review, authorization, output, repeat_index):
             first_admission = verify_manifest(first)
             first_result = strict_json((first / "RESULT.json").read_text())
             if (
-                first_admission.get("status") != "HORIZON_REACHED"
+                repeat_count != 2
+                or first_admission.get("status") != "HORIZON_REACHED"
                 or first_result.get("classification") != "HORIZON_REACHED"
                 or first_result.get("canonical_physics_steps") != 1500
                 or first_result.get("repeat_index") != 1
                 or first_result.get("retry") != "none"
                 or first_result.get("scientific_attempts") != 1
-                or first_result.get("optimizer_calls", 0) > 150
-                or first_result.get("private_observed_upper_bound", LIMIT + 1) > LIMIT
-                or first_result.get("private_reserved", LIMIT + 1) > LIMIT
+                or first_result.get("optimizer_calls", 0) > p["max_replan_calls"]
+                or first_result.get("private_observed_upper_bound", run_limit + 1) > run_limit
+                or first_result.get("private_reserved", run_limit + 1) > run_limit
                 or first_result.get("canonical_evaluation", {}).get("verdict") != "PASS"
             ):
                 raise ValueError("repeat 2 is blocked unless repeat 1 fully passes")
@@ -723,7 +821,7 @@ def capture(prepared, review, authorization, output, repeat_index):
                     f.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
                     f.flush()
 
-                with wall_deadline(300):
+                with wall_deadline(p["wall_timeout_s"]):
                     outcome = run_aligned_episode(
                         plant, controller, task, info, timing, emit, consume
                     )
@@ -741,8 +839,14 @@ def capture(prepared, review, authorization, output, repeat_index):
             "rollout_mj_step_count", 0
         )
         reserved = acc.get("private_step_upper_bound_reserved", 0)
-        if upper > reserved or reserved > LIMIT:
-            raise ValueError("private budget exceeded")
+        calls = acc.get("policy_id", 0)
+        if (
+            upper > reserved
+            or reserved > run_limit
+            or calls > p["max_replan_calls"]
+            or (outcome["terminal_reason"] == "horizon" and calls != p["max_replan_calls"])
+        ):
+            raise ValueError("private/call budget or horizon count mismatch")
         rows = [strict_json(x) for x in (out / "raw.jsonl").read_text().splitlines()]
         result = {
             "classification": "HORIZON_REACHED"
@@ -762,9 +866,9 @@ def capture(prepared, review, authorization, output, repeat_index):
             "r4_parent": pkt["parent_r4"],
             "parent_floor0_single": pkt["parent_floor0_single"],
             "repeat_index": repeat_index,
-            "repeat_count": 2,
+            "repeat_count": repeat_count,
             "campaign_id": packet_sha,
-            "prediction_contact_semantics": protocol()["prediction_contact_semantics"],
+            "prediction_contact_semantics": p["prediction_contact_semantics"],
             "retry": "none",
             "one_shot_reservation": str(reservation),
             "one_shot_reservation_sha256": digest(reservation),
@@ -788,12 +892,133 @@ def capture(prepared, review, authorization, output, repeat_index):
     return str(out / "RESULT.json")
 
 
+
+def analyze(capture_path, output):
+    capture_path = Path(capture_path).resolve(strict=True)
+    admission = verify_manifest(capture_path)
+    if admission.get("status") not in ("HORIZON_REACHED", "SAFETY_STOP"):
+        raise ValueError("capture status is not analyzable")
+    result = strict_json((capture_path / "RESULT.json").read_text())
+    rows = [
+        strict_json(line)
+        for line in (capture_path / "raw.jsonl").read_text().splitlines()
+    ]
+    actions = [row for row in rows if isinstance(row.get("action"), dict)]
+    if not actions:
+        raise ValueError("capture contains no action samples")
+    names = tuple(actions[0]["target"]["joint_names"])
+    if names != MOTOR_JOINTS:
+        raise ValueError("unexpected source actuator joint order")
+    per_joint = []
+    for index, name in enumerate(names):
+        saturated = []
+        requested = []
+        excess = []
+        episodes = []
+        active_start = None
+        for row in actions:
+            action = row["action"]
+            if any(
+                len(action.get(key, [])) != len(names)
+                for key in ("ctrl", "total_unclipped", "saturated")
+            ):
+                raise ValueError("invalid torque action vector in capture")
+            is_saturated = action["saturated"][index]
+            if type(is_saturated) is not bool:
+                raise ValueError("invalid saturation marker")
+            req = float(action["total_unclipped"][index])
+            applied = float(action["ctrl"][index])
+            requested.append(abs(req))
+            if is_saturated:
+                saturated.append(row["tick"])
+                excess.append(abs(req - applied))
+                if active_start is None:
+                    active_start = row["tick"]
+            elif active_start is not None:
+                end = row["tick"] - 1
+                ticks = end - active_start + 1
+                episodes.append(
+                    {
+                        "start_tick": active_start,
+                        "end_tick": end,
+                        "ticks": ticks,
+                        "duration_s": ticks * 0.002,
+                    }
+                )
+                active_start = None
+        if active_start is not None:
+            end = actions[-1]["tick"]
+            ticks = end - active_start + 1
+            episodes.append(
+                {
+                    "start_tick": active_start,
+                    "end_tick": end,
+                    "ticks": ticks,
+                    "duration_s": ticks * 0.002,
+                }
+            )
+        per_joint.append(
+            {
+                "joint": name,
+                "peak_abs_requested_torque_Nm": max(requested),
+                "max_excess_beyond_ctrlrange_Nm": max(excess, default=0.0),
+                "saturated_action_ticks": len(saturated),
+                "saturated_action_share_pct": 100.0 * len(saturated) / len(actions),
+                "longest_consecutive_saturated_ticks": max(
+                    (item["ticks"] for item in episodes), default=0
+                ),
+                "episodes": episodes,
+            }
+        )
+    report = {
+        "capture": str(capture_path),
+        "capture_status": admission["status"],
+        "result_sha256": digest(capture_path / "RESULT.json"),
+        "raw_sha256": digest(capture_path / "raw.jsonl"),
+        "physics_step_s": 0.002,
+        "action_samples": len(actions),
+        "terminal_reason": result.get("outcome", {}).get("terminal_reason"),
+        "canonical_physics_steps": result.get("canonical_physics_steps"),
+        "canonical_replay": result.get("canonical_evaluation"),
+        "stderr_bytes": result.get("stderr_bytes"),
+        "per_joint": per_joint,
+        "total_saturated_action_ticks": sum(
+            any(row["action"]["saturated"]) for row in actions
+        ),
+        "total_saturated_joint_ticks": sum(
+            sum(row["action"]["saturated"]) for row in actions
+        ),
+        "saturation_threshold": "report only; no pass/fail threshold",
+        "physics_steps_during_analysis": 0,
+    }
+    out = Path(output).resolve()
+    if out.parent != (ROOT / "_runs").resolve() or out.exists():
+        raise ValueError("analysis output must be a fresh _runs child")
+    with EvidenceRun(
+        out,
+        {
+            "operation": "floor_registration_saturation_analysis",
+            "source_raw_sha256": report["raw_sha256"],
+        },
+    ) as run:
+        write_new(out / "SATURATION_REPORT.json", report)
+        run.result.update(
+            status="ANALYZED",
+            source_raw_sha256=report["raw_sha256"],
+            action_samples=len(actions),
+            physics_steps=0,
+        )
+    return str(out / "SATURATION_REPORT.json")
+
+
+
 def main():
     p = argparse.ArgumentParser()
     s = p.add_subparsers(dest="cmd", required=True)
     q = s.add_parser("prepare")
     q.add_argument("--binary", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
+    q.add_argument("--protocol-id", choices=("mjpc-floor-registration-repeatability-3s-v1", "mjpc-floor-registration-sustained-12s-v1"))
     q = s.add_parser("handshake")
     q.add_argument("--prepared", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
@@ -803,13 +1028,18 @@ def main():
     q.add_argument("--authorization", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
     q.add_argument("--repeat-index", type=int, choices=(1, 2), required=True)
+    q = s.add_parser("analyze")
+    q.add_argument("--capture", type=Path, required=True)
+    q.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     print(
-        prepare(a.binary, a.output)
+        prepare(a.binary, a.output, a.protocol_id)
         if a.cmd == "prepare"
         else handshake(a.prepared, a.output)
         if a.cmd == "handshake"
         else capture(a.prepared, a.review, a.authorization, a.output, a.repeat_index)
+        if a.cmd == "capture"
+        else analyze(a.capture, a.output)
     )
 
 
