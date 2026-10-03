@@ -29,7 +29,7 @@ from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
 
 ROOT = Path(__file__).resolve().parents[2]
 BRANCH = "research/mjpc-floor-registration-diagnostic-20261003"
-PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_floor_registration_3s_v1.json"
+PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_floor_registration_repeat_3s_v1.json"
 R4_PREP = ROOT / "_runs/mjpc_fixed_baseline_prepared_r4_20261003"
 R4_RAW = ROOT / "_runs/mjpc_fixed_baseline_capture_r4_20261003T002510Z_repeat1"
 MODE = "floor0"
@@ -51,15 +51,22 @@ def identity():
 def protocol():
     expected = {
         "schema": 1,
-        "id": "mjpc-floor-registration-only-3s-v1",
+        "id": "mjpc-floor-registration-repeatability-3s-v1",
         "parent_r4_head": "6e829bed5dcd4a8b4dc6b575f70b1a5be422cb78",
-        "max_attempts": 1,
+        "parent_floor0_result_sha256": "47cf21600c3f56ab60b709242fcfa14454ffb67beaad6c6c1bed72aedb3f2c26",
+        "parent_floor0_packet_sha256": "7662c2d96ca664162888e8f5870b9013f2919c26eca295994d53bb73c04de402",
+        "repeats": 2,
+        "attempts_per_repeat": 1,
+        "max_attempts": 2,
         "horizon_s": 3.0,
         "canonical_steps_max": 1500,
         "max_replan_calls": 150,
         "native_controller_processes_max": 1,
+        "private_step_upper_bound_per_repeat": LIMIT,
+        "private_step_upper_bound_total_max": 1228800,
         "seed_rule": "xfrc_std=0; no seed",
-        "one_shot_reservation": "exclusive single-attempt campaign record keyed by prepared packet SHA-256",
+        "campaign_identity": "prepared packet SHA-256; repeat index 1 or 2",
+        "one_shot_reservation": "exclusive two-attempt campaign record keyed by prepared packet SHA-256; each repeat slot is claimed once",
         "private_reservation_per_replan": RESERVE,
         "private_step_upper_bound_max": LIMIT,
         "wall_timeout_s": 300,
@@ -90,10 +97,21 @@ def protocol():
             "four_workers",
             "FD_duplicate_fix",
         ],
-        "failure_policy": "stop on first safety, execution, evidence, identity, warning or budget failure; no retry",
+        "failure_policy": "stop before repeat 2 unless repeat 1 has a verified HORIZON_REACHED result; stop on first safety, execution, evidence, identity, warning or budget failure; no retry",
         "prediction_contact_semantics": "selected-state forward reconstruction on smoothed private model; not future rollout",
-        "capability_claim": "none; single bounded diagnostic",
-        "start_gate": "fresh exact-head independent science and execution reviews plus one protocol/manifest-bound user start authorization",
+        "capability_claim": "none; two-repeat 3-second reproducibility diagnostic",
+        "repeatability_checks": {
+            "both_reach_horizon": True,
+            "both_canonical_replays_pass": True,
+            "tick20_selected_state_contact_sets_match": True,
+            "progress_abs_difference_m_max": 0.05,
+            "body_height_envelope_abs_difference_m_max": 0.02,
+            "max_abs_roll_difference_rad_max": 0.03,
+            "max_abs_pitch_difference_rad_max": 0.03,
+            "first_torque_saturation_tick_difference_max": 200,
+            "interpretation": "predeclared engineering repeatability check only; not robustness or baseline qualification",
+        },
+        "start_gate": "fresh exact-head independent science and execution reviews plus one protocol/manifest-bound user authorization for exactly two one-shot repeat slots",
     }
     value = strict_json(PROTOCOL.read_text())
     if value != expected:
@@ -199,6 +217,39 @@ def sealed_r4():
     }
 
 
+
+def sealed_floor0_single():
+    capture = ROOT / "_runs/mjpc_floor_registration_capture_20261003_r2"
+    prepared = ROOT / "_runs/mjpc_floor_registration_prepared_20261003_r2"
+    verify_manifest(capture)
+    verify_manifest(prepared)
+    result = strict_json((capture / "RESULT.json").read_text())
+    attempt = strict_json((capture / "attempt.json").read_text())
+    packet = strict_json((prepared / "packet.json").read_text())
+    if (
+        digest(capture / "RESULT.json") != protocol()["parent_floor0_result_sha256"]
+        or digest(prepared / "packet.json") != protocol()["parent_floor0_packet_sha256"]
+        or attempt.get("head") != packet.get("head")
+        or attempt.get("packet_sha256") != digest(prepared / "packet.json")
+        or result.get("classification") != "HORIZON_REACHED"
+        or result.get("canonical_physics_steps") != 1500
+        or result.get("retry") != "none"
+        or packet.get("private_model_delta", {}).get("field")
+        != "private_task_flat.floor.pos.z"
+    ):
+        raise ValueError("sealed floor0 parent result/identity changed")
+    return {
+        "path": str(capture),
+        "head": packet["head"],
+        "packet_sha256": digest(prepared / "packet.json"),
+        "manifest_sha256": digest(capture / "manifest.json"),
+        "result_sha256": digest(capture / "RESULT.json"),
+        "classification": result["classification"],
+        "canonical_physics_steps": result["canonical_physics_steps"],
+        "retry": "none",
+        "reuse": "comparison only; never rerun",
+    }
+
 def runtime_delta(rt):
     old = R4_PREP / "runtime"
     files_old = {
@@ -290,7 +341,7 @@ def prepare(binary, output):
                 | {
                     "tools/substrate/mjpc_floor_registration_diagnostic.py",
                     "tools/substrate/native/diagnostic.h",
-                    "tools/substrate/protocols/mjpc_floor_registration_3s_v1.json",
+                    "tools/substrate/protocols/mjpc_floor_registration_repeat_3s_v1.json",
                 }
             )
         )
@@ -302,6 +353,7 @@ def prepare(binary, output):
             "protocol_sha256": digest(PROTOCOL),
             "design": p,
             "parent_r4": r4,
+            "parent_floor0_single": sealed_floor0_single(),
             "r4_packet_sha256": digest(R4_PREP / "packet.json"),
             "binary": {
                 "name": "runtime/" + binary.name,
@@ -318,9 +370,12 @@ def prepare(binary, output):
             "canonical_xml_sha256": digest(canon),
             "private_model_delta": delta,
             "private_task_xml_sha256": digest(task),
-            "max_attempts": 1,
+            "repeats": 2,
+            "attempts_per_repeat": 1,
+            "max_attempts": 2,
             "canonical_steps_max": 1500,
             "private_total_upper_bound_max": LIMIT,
+            "private_total_upper_bound_campaign_max": 2 * LIMIT,
             "canonical_physics_step_authorized": False,
             "scientific_attempts_authorized": 0,
             "readiness": "AWAITING_INDEPENDENT_REVIEWS_AND_FRESH_USER_START",
@@ -339,7 +394,8 @@ def prepare(binary, output):
             task_id=p["id"],
             head=ident["head"],
             readiness=packet["readiness"],
-            max_attempts=1,
+            repeats=2,
+            max_attempts=2,
             canonical_steps_max=1500,
             private_total_upper_bound_max=LIMIT,
             canonical_physics_steps=0,
@@ -359,6 +415,7 @@ def validate_packet(prepared):
         ad.get("status") != "ENGINEERING_ADMITTED"
         or pkt.get("kind") != protocol()["id"]
         or any(pkt.get(k) != ident[k] for k in ("branch", "head"))
+        or pkt.get("parent_floor0_single") != sealed_floor0_single()
     ):
         raise ValueError("prepared packet/head invalid")
     if pkt["protocol_sha256"] != digest(PROTOCOL) or pkt["runtime_code"] != {
@@ -492,20 +549,26 @@ class StrictWarningController:
         return action
 
 
-def capture(prepared, review, authorization, output):
+def capture(prepared, review, authorization, output, repeat_index):
     pkt, binary, side = validate_packet(prepared)
     d = Path(prepared).resolve()
-    out = Path(output).resolve()
-    if out.parent != (ROOT / "_runs").resolve() or out.exists():
-        raise ValueError("capture output must be fresh _runs child")
-    validate_review(strict_json(Path(review).read_text()), pkt["head"])
+    base = Path(output).resolve()
+    if base.parent != (ROOT / "_runs").resolve() or repeat_index not in (1, 2):
+        raise ValueError("repeat campaign output/slot invalid")
+    out = Path(str(base) + f"_repeat{repeat_index}")
+    outputs = [str(Path(str(base) + f"_repeat{i}").resolve()) for i in (1, 2)]
+    if out.exists():
+        raise ValueError("repeat output already exists; no retry")
+    review = Path(review).resolve(strict=True)
+    authorization = Path(authorization).resolve(strict=True)
+    validate_review(strict_json(review.read_text()), pkt["head"])
     validate_authorization(
-        strict_json(Path(authorization).read_text()),
+        strict_json(authorization.read_text()),
         {
             "head": pkt["head"],
             "protocol_sha256": pkt["protocol_sha256"],
             "prepared_manifest_sha256": digest(d / "manifest.json"),
-            "max_attempts": 1,
+            "max_attempts": 2,
         },
     )
     anchor = load_anchor()
@@ -525,22 +588,75 @@ def capture(prepared, review, authorization, output):
     reservation = (
         ROOT / "_runs" / ("mjpc_floor_registration_campaign_" + packet_sha + ".json")
     )
+    claim = reservation.with_name(
+        reservation.stem + f"_attempt{repeat_index}.claim"
+    )
+    binding = {
+        "head": pkt["head"],
+        "packet_sha256": packet_sha,
+        "prepared_manifest_sha256": digest(d / "manifest.json"),
+        "protocol_sha256": pkt["protocol_sha256"],
+        "review_sha256": digest(review),
+        "authorization_sha256": digest(authorization),
+        "max_attempts": 2,
+        "outputs": outputs,
+    }
     with experiment_lock():
-        if reservation.exists():
-            raise ValueError("the one-shot campaign reservation already exists")
+        if repeat_index == 1:
+            if reservation.exists():
+                raise ValueError("the two-repeat campaign is already reserved; no retry")
+            write_new(
+                reservation,
+                {**binding, "status": "RESERVED_TWO_REPEAT_NO_RETRY"},
+            )
+        else:
+            if not reservation.exists():
+                raise ValueError("repeat 2 requires the existing campaign reservation")
+            record = strict_json(reservation.read_text())
+            if record != {**binding, "status": "RESERVED_TWO_REPEAT_NO_RETRY"}:
+                raise ValueError("repeat campaign reservation identity mismatch")
+            claim1 = reservation.with_name(reservation.stem + "_attempt1.claim")
+            if not claim1.exists():
+                raise ValueError("repeat 1 has no consumed one-shot claim")
+            first = Path(outputs[0])
+            first_admission = verify_manifest(first)
+            first_result = strict_json((first / "RESULT.json").read_text())
+            if (
+                first_admission.get("status") != "HORIZON_REACHED"
+                or first_result.get("classification") != "HORIZON_REACHED"
+                or first_result.get("canonical_physics_steps") != 1500
+                or first_result.get("repeat_index") != 1
+                or first_result.get("retry") != "none"
+                or first_result.get("scientific_attempts") != 1
+                or first_result.get("optimizer_calls", 0) > 150
+                or first_result.get("private_observed_upper_bound", LIMIT + 1) > LIMIT
+                or first_result.get("private_reserved", LIMIT + 1) > LIMIT
+                or first_result.get("canonical_evaluation", {}).get("verdict") != "PASS"
+            ):
+                raise ValueError("repeat 2 is blocked unless repeat 1 fully passes")
         write_new(
-            reservation,
+            claim,
             {
-                "head": pkt["head"],
-                "packet_sha256": packet_sha,
-                "max_attempts": 1,
-                "status": "RESERVED_NO_RETRY",
+                "campaign_id": packet_sha,
+                "repeat_index": repeat_index,
+                "output": str(out),
             },
         )
+        directory_fd = os.open(reservation.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
     with (
         experiment_lock(),
         EvidenceRun(
-            out, {"operation": "floor0_single_attempt_capture", "head": pkt["head"]}
+            out,
+            {
+                "operation": "floor0_repeat_capture",
+                "head": pkt["head"],
+                "repeat_index": repeat_index,
+                "campaign_id": packet_sha,
+            },
         ) as run,
     ):
         plant = MujocoPlant(canon)
@@ -579,11 +695,14 @@ def capture(prepared, review, authorization, output):
         def consume():
             nonlocal consumed
             if consumed:
-                raise ValueError("one attempt only")
+                raise ValueError("one fresh process/attempt only")
             write_new(
                 out / "attempt.json",
                 {
-                    "attempt": 1,
+                    "attempt": repeat_index,
+                    "repeat_index": repeat_index,
+                    "repeat_count": 2,
+                    "campaign_id": packet_sha,
                     "head": pkt["head"],
                     "packet_sha256": packet_sha,
                     "first_sample_boundary": "first post-reset action before canonical step 1",
@@ -610,7 +729,7 @@ def capture(prepared, review, authorization, output):
             native.close()
         transport = diag.get("transport", {})
         if transport.get("stderr_bytes") or transport.get("stderr_read_error"):
-            raise ValueError("native warning/error; stop the single attempt")
+            raise ValueError("native warning/error; stop the campaign")
         acc = diag.get("last_step", {}).get("diagnostic", {})
         upper = acc.get("fd_step_upper_bound_count", 0) + acc.get(
             "rollout_mj_step_count", 0
@@ -628,19 +747,31 @@ def capture(prepared, review, authorization, output):
                 rows, task, timing.physics_period_s
             ),
             "canonical_physics_steps": plant.steps,
+            "native_processes_started": len(launches),
+            "stderr_bytes": transport["stderr_bytes"],
             "scientific_attempts": int(consumed),
             "optimizer_calls": acc.get("policy_id", 0),
             "private_observed_upper_bound": upper,
             "private_reserved": reserved,
             "r4_parent": pkt["parent_r4"],
+            "parent_floor0_single": pkt["parent_floor0_single"],
+            "repeat_index": repeat_index,
+            "repeat_count": 2,
+            "campaign_id": packet_sha,
             "prediction_contact_semantics": protocol()["prediction_contact_semantics"],
             "retry": "none",
             "one_shot_reservation": str(reservation),
             "one_shot_reservation_sha256": digest(reservation),
+            "one_shot_claim": str(claim),
+            "one_shot_claim_sha256": digest(claim),
         }
         write_new(out / "RESULT.json", result)
         run.result.update(
             status=result["classification"],
+            repeat_index=repeat_index,
+            campaign_id=packet_sha,
+            native_processes_started=len(launches),
+            stderr_bytes=transport["stderr_bytes"],
             canonical_physics_steps=plant.steps,
             scientific_attempts=int(consumed),
             optimizer_calls=result["optimizer_calls"],
@@ -665,13 +796,14 @@ def main():
     q.add_argument("--review", type=Path, required=True)
     q.add_argument("--authorization", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
+    q.add_argument("--repeat-index", type=int, choices=(1, 2), required=True)
     a = p.parse_args()
     print(
         prepare(a.binary, a.output)
         if a.cmd == "prepare"
         else handshake(a.prepared, a.output)
         if a.cmd == "handshake"
-        else capture(a.prepared, a.review, a.authorization, a.output)
+        else capture(a.prepared, a.review, a.authorization, a.output, a.repeat_index)
     )
 
 

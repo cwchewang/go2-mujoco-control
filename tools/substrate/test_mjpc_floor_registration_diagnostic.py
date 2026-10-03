@@ -8,9 +8,12 @@ from tools.substrate.mjpc_floor_registration_diagnostic import (
 
 
 class FloorRegistrationDiffTests(unittest.TestCase):
-    def test_protocol_is_single_attempt_and_floor_only(self):
+    def test_protocol_is_two_fresh_repeat_slots_and_floor_only(self):
         value = protocol()
-        self.assertEqual(value["max_attempts"], 1)
+        self.assertEqual(value["repeats"], 2)
+        self.assertEqual(value["attempts_per_repeat"], 1)
+        self.assertEqual(value["max_attempts"], 2)
+        self.assertEqual(value["private_step_upper_bound_total_max"], 1228800)
         self.assertEqual(value["canonical_steps_max"], 1500)
         self.assertEqual(
             value["intervention"]["field"], "private_task_flat.floor.pos.z"
