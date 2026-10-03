@@ -435,7 +435,7 @@ def prepare(binary, output, protocol_id=None):
             "schema": 1,
             "kind": p["id"],
             **ident,
-            "protocol_sha256": digest(PROTOCOL),
+            "protocol_sha256": digest(protocol_path),
             "design": p,
             "parent_r4": r4,
             "parent_floor0_single": sealed_floor0_single(),
