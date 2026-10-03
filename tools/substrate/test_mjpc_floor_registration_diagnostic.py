@@ -1,6 +1,8 @@
 import tempfile
 import unittest
 from pathlib import Path
+from tools.substrate.contracts import MOTOR_JOINTS
+from tools.substrate.qualify_mjpc_diagnostic import smoke_state_from_anchor
 from tools.substrate.mjpc_floor_registration_diagnostic import (
     assert_only_floor_z_changed,
     protocol,
@@ -32,6 +34,25 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         self.assertEqual(value["campaign_identity"], "prepared packet SHA-256; single allowed slot 1")
         self.assertEqual(value["capture_native_controller_processes_campaign_max"], 1)
         self.assertEqual(value["private_step_upper_bound_total_max"], 2457600)
+
+    def test_smoke_anchor_maps_qpos_and_qvel_to_motor_order(self):
+        row = {
+            "qpos": [0.0, 0.0, 0.27, 1.0, 0.0, 0.0, 0.0]
+            + [float(i) for i in range(12)],
+            "qvel": [float(i) for i in range(18)],
+            "sim_time_s": 0.0,
+        }
+        state = smoke_state_from_anchor(row)
+        self.assertEqual(
+            state.qpos(MOTOR_JOINTS).tolist(),
+            [0.0, 0.0, 0.27, 1.0, 0.0, 0.0, 0.0]
+            + [row["qpos"][i] for i in [10, 11, 12, 7, 8, 9, 16, 17, 18, 13, 14, 15]],
+        )
+        self.assertEqual(
+            state.qvel(MOTOR_JOINTS).tolist(),
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+            + [row["qvel"][i] for i in [9, 10, 11, 6, 7, 8, 15, 16, 17, 12, 13, 14]],
+        )
 
     def test_qualification_claim_binds_exact_consumer_binary_and_runtime(self):
         record = {

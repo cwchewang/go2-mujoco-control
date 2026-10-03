@@ -32,6 +32,22 @@ from .native_mjpc import NativeMJPCController
 from .qualify_rl_friction import SUBSTRATE_TESTS, guarded_tests
 
 
+def smoke_state_from_anchor(row):
+    qpos, qvel = row["qpos"], row["qvel"]
+    qpos_order = [10, 11, 12, 7, 8, 9, 16, 17, 18, 13, 14, 15]
+    qvel_order = [9, 10, 11, 6, 7, 8, 15, 16, 17, 12, 13, 14]
+    observation = Proprioception(
+        MOTOR_JOINTS,
+        [qpos[i] for i in qpos_order],
+        [qvel[i] for i in qvel_order],
+        qpos[3:7],
+        qvel[3:6],
+    )
+    return WholeBodyState(
+        observation, qpos[:3], qvel[:3], float(row["sim_time_s"])
+    )
+
+
 def smoke(directory, binary):
     """One bounded cold-start call on the exact fixed floor0 consumer runtime."""
     raw = (
@@ -71,18 +87,7 @@ def smoke(directory, binary):
     runtime_identity = native_runtime.verify(runtime / binary.name, sidecar)
     canonical = runtime / runtime_identity["canonical_xml"]
     row = json.loads(raw.read_text().splitlines()[0])
-    qpos, qvel = row["qpos"], row["qvel"]
-    motor_order = [10, 11, 12, 7, 8, 9, 16, 17, 18, 13, 14, 15]
-    observation = Proprioception(
-        MOTOR_JOINTS,
-        [qpos[i] for i in motor_order],
-        [qvel[i] for i in motor_order],
-        qpos[3:7],
-        qvel[3:6],
-    )
-    state = WholeBodyState(
-        observation, qpos[:3], qvel[:3], float(row["sim_time_s"])
-    )
+    state = smoke_state_from_anchor(row)
     predictions = Path(directory) / "native-smoke-predictions.jsonl"
     fd_trace = Path(directory) / "native-smoke-fd-trace.jsonl"
     stderr = Path(directory) / "native-smoke.stderr"
