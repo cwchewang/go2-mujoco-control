@@ -52,3 +52,18 @@ class FaithfulObserverTests(unittest.TestCase):
             write_new(p, value)
             with self.assertRaisesRegex(ValueError, "review binding"):
                 observer.review(p, "science", preflight)
+
+
+class PartialAccountingTests(unittest.TestCase):
+    def test_reserved_unreturned_call_is_explicitly_incomplete(self):
+        with tempfile.TemporaryDirectory() as folder:
+            sub = Path(folder) / "original_repeat1"
+            sub.mkdir()
+            (sub / "optimizer-attempts.jsonl").write_text(
+                '{"reserved_upper_bound":4096}\n'
+            )
+            result = observer.partial_accounting(folder)
+            self.assertEqual(result["reserved_optimizer_calls"], 1)
+            self.assertEqual(result["completed_optimizer_calls"], 0)
+            self.assertEqual(result["private_reserved"], 4096)
+            self.assertFalse(result["accounting_complete"])

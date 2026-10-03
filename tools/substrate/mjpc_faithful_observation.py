@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import importlib.metadata
 from pathlib import Path
 import subprocess
 import sys
@@ -74,6 +75,18 @@ def inputs():
         },
         "checkpoint_unused": digest(ROOT / ".substrate/rl/policy.pt"),
         "source_lock": digest(ROOT / "tools/substrate/sources.lock.json"),
+        "python_distributions": {
+            name: {
+                "version": importlib.metadata.version(name),
+                "record_sha256": digest(
+                    importlib.metadata.distribution(name).locate_file(
+                        str(importlib.metadata.distribution(name)._path.name)
+                        + "/RECORD"
+                    )
+                ),
+            }
+            for name in ("numpy", "mujoco")
+        },
         "cpu": [
             s
             for s in Path("/proc/cpuinfo").read_text().splitlines()
@@ -277,6 +290,38 @@ def compare(results):
     return comparisons
 
 
+def partial_accounting(directory):
+    """Reservations precede requests; only returned replans establish completed calls."""
+    attempted = completed = upper = reserved = 0
+    for trial in Path(directory).glob("original_repeat[12]"):
+        ledger = trial / "optimizer-attempts.jsonl"
+        if ledger.exists():
+            attempts = [strict_json(line) for line in ledger.read_text().splitlines()]
+            attempted += len(attempts)
+            reserved += sum(row["reserved_upper_bound"] for row in attempts)
+        log = trial / "native.jsonl"
+        if log.exists():
+            replans = [
+                row["response"]
+                for line in log.read_text().splitlines()
+                if (row := strict_json(line)).get("tick") in (0, 10)
+            ]
+            completed += len(replans)
+            if replans:
+                diag = replans[-1]["diagnostic"]
+                upper += (
+                    diag["fd_step_upper_bound_count"] + diag["rollout_mj_step_count"]
+                )
+    return {
+        "reserved_optimizer_calls": attempted,
+        "completed_optimizer_calls": completed,
+        "private_reserved": reserved,
+        "private_accounted_upper": upper,
+        "accounting_complete": attempted == completed,
+        "canonical_integration_steps": 0,
+    }
+
+
 def execute(packet_path, output, science, execution):
     with experiment_lock(), zero_step_guard(), wall_deadline(300):
         packet, binary, sidecar, preflight = precheck(packet_path, output)
@@ -299,104 +344,122 @@ def execute(packet_path, output, science, execution):
                     "source_thread": "01a0f08f-d223-7240-813b-ee93267b700d",
                 },
             )
-            results = []
-            runtime = packet["runtime"]
-            loader_argv, task = native_runtime.argv(binary, sidecar)
-
-            def popen(argv, **kwargs):
-                if argv[0] != str(binary) or argv[2] != "original":
-                    raise ValueError("non-original launch prohibited")
-                env = kwargs["env"]
-                for key in ("LD_PRELOAD", "LD_AUDIT", "LD_LIBRARY_PATH"):
-                    env.pop(key, None)
-                return subprocess.Popen(
-                    [
-                        *loader_argv,
-                        str(task),
-                        "original",
-                        str(sidecar.parent / runtime["canonical_xml"]),
-                        argv[4],
-                    ],
-                    **kwargs,
-                )
-
-            class BoundTransport(NativeTransport):
-                def read_json(self, timeout):
-                    response = super().read_json(timeout)
-                    loaded = native_runtime.loaded_libraries(self.process.pid, sidecar)
-                    path = self.stderr_path.parent / "loaded-libraries.json"
-                    if not path.exists():
-                        jwrite(path, loaded)
-                    return response
-
-            # No comparisons suppress either repeat; integrity/warning/budget errors stop immediately.
-            for repeat in (1, 2):
-                sub = run.path / ("original_repeat" + str(repeat))
-                result = sequence.run_sequence_trial(
-                    {"variant": "original", "repeat": repeat},
-                    packet["source"],
-                    {"original": binary},
-                    {"original": packet["native_build_provenance"]},
-                    sub,
-                    popen=popen,
-                    native_transport=BoundTransport,
-                )
-                jwrite(sub / "result.json", result)
-                results.append(result)
-            calls = sum(
-                len(
-                    (
-                        run.path
-                        / ("original_repeat" + str(i))
-                        / "optimizer-attempts.jsonl"
-                    )
-                    .read_text()
-                    .splitlines()
-                )
-                for i in (1, 2)
-            )
-            upper = 0
-            reserved = 0
-            for i in (1, 2):
-                rows = [
-                    strict_json(s)
-                    for s in (run.path / ("original_repeat" + str(i)) / "native.jsonl")
-                    .read_text()
-                    .splitlines()
-                ]
-                diag = rows[-1]["response"]["diagnostic"]
-                upper += (
-                    diag["fd_step_upper_bound_count"] + diag["rollout_mj_step_count"]
-                )
-                reserved += diag["private_step_upper_bound_reserved"]
-            if calls != 4 or upper != 10004 or reserved != 16384:
-                raise ValueError("campaign accounting mismatch")
-            report = {
-                "status": "OBSERVATION_COMPLETE",
-                "design": DESIGN,
-                "results": results,
-                "comparisons": compare(results),
-                "optimizer_calls": calls,
-                "private_accounted_upper": upper,
-                "private_reserved": reserved,
-                "canonical_integration_steps": 0,
-                **preflight,
-            }
-            report["status"] = "OBSERVATION_COMPLETE"
-            jwrite(run.path / "RESULT.json", report)
-            # Recheck sealed inputs and source after the bounded campaign.
-            verify_manifest(SOURCE)
-            native_runtime.verify(binary, sidecar)
-            if packet["inputs"] != inputs() or identity()["head"] != packet["head"]:
-                raise ValueError("execution inputs changed during observation")
             run.result.update(
-                status="ENGINEERING_ADMITTED",
-                scope="faithful_original_observation",
-                optimizer_calls_executed=calls,
-                private_accounted_upper=upper,
-                private_reserved=reserved,
-                canonical_integration_steps=0,
+                scope="faithful_original_observation", capability_status="STARTED"
             )
+            try:
+                results = []
+                runtime = packet["runtime"]
+                loader_argv, task = native_runtime.argv(binary, sidecar)
+
+                def popen(argv, **kwargs):
+                    if argv[0] != str(binary) or argv[2] != "original":
+                        raise ValueError("non-original launch prohibited")
+                    env = kwargs["env"]
+                    for key in ("LD_PRELOAD", "LD_AUDIT", "LD_LIBRARY_PATH"):
+                        env.pop(key, None)
+                    return subprocess.Popen(
+                        [
+                            *loader_argv,
+                            str(task),
+                            "original",
+                            str(sidecar.parent / runtime["canonical_xml"]),
+                            argv[4],
+                        ],
+                        **kwargs,
+                    )
+
+                class BoundTransport(NativeTransport):
+                    def read_json(self, timeout):
+                        response = super().read_json(timeout)
+                        loaded = native_runtime.loaded_libraries(
+                            self.process.pid, sidecar
+                        )
+                        path = self.stderr_path.parent / "loaded-libraries.json"
+                        if not path.exists():
+                            jwrite(path, loaded)
+                        return response
+
+                # No comparisons suppress either repeat; integrity/warning/budget errors stop immediately.
+                for repeat in (1, 2):
+                    sub = run.path / ("original_repeat" + str(repeat))
+                    result = sequence.run_sequence_trial(
+                        {"variant": "original", "repeat": repeat},
+                        packet["source"],
+                        {"original": binary},
+                        {"original": packet["native_build_provenance"]},
+                        sub,
+                        popen=popen,
+                        native_transport=BoundTransport,
+                    )
+                    jwrite(sub / "result.json", result)
+                    results.append(result)
+                calls = sum(
+                    len(
+                        (
+                            run.path
+                            / ("original_repeat" + str(i))
+                            / "optimizer-attempts.jsonl"
+                        )
+                        .read_text()
+                        .splitlines()
+                    )
+                    for i in (1, 2)
+                )
+                upper = 0
+                reserved = 0
+                for i in (1, 2):
+                    rows = [
+                        strict_json(s)
+                        for s in (
+                            run.path / ("original_repeat" + str(i)) / "native.jsonl"
+                        )
+                        .read_text()
+                        .splitlines()
+                    ]
+                    diag = rows[-1]["response"]["diagnostic"]
+                    upper += (
+                        diag["fd_step_upper_bound_count"]
+                        + diag["rollout_mj_step_count"]
+                    )
+                    reserved += diag["private_step_upper_bound_reserved"]
+                if calls != 4 or upper != 10004 or reserved != 16384:
+                    raise ValueError("campaign accounting mismatch")
+                report = {
+                    "status": "OBSERVATION_COMPLETE",
+                    "design": DESIGN,
+                    "results": results,
+                    "comparisons": compare(results),
+                    "optimizer_calls": calls,
+                    "private_accounted_upper": upper,
+                    "private_reserved": reserved,
+                    "canonical_integration_steps": 0,
+                    **preflight,
+                }
+                report["status"] = "OBSERVATION_COMPLETE"
+                jwrite(run.path / "RESULT.json", report)
+                # Recheck sealed inputs and source after the bounded campaign.
+                verify_manifest(SOURCE)
+                native_runtime.verify(binary, sidecar)
+                if packet["inputs"] != inputs() or identity()["head"] != packet["head"]:
+                    raise ValueError("execution inputs changed during observation")
+                run.result.update(
+                    status="ENGINEERING_ADMITTED",
+                    scope="faithful_original_observation",
+                    optimizer_calls_executed=calls,
+                    private_accounted_upper=upper,
+                    private_reserved=reserved,
+                    canonical_integration_steps=0,
+                )
+            finally:
+                counts = partial_accounting(run.path)
+                jwrite(run.path / "accounting.json", counts)
+                run.result.update(**counts)
+                run.result["capability_status"] = (
+                    "COMPLETE"
+                    if run.result["status"] == "ENGINEERING_ADMITTED"
+                    else "FAILED"
+                )
     return {
         "status": "OBSERVATION_COMPLETE",
         "manifest_sha256": digest(Path(output) / "manifest.json"),
