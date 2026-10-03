@@ -118,7 +118,7 @@ def prepare(output):
                     "from tools.substrate.mjpc_faithful_observation import SOURCE,PARENT; "
                     "d.CAPTURE=SOURCE; d.ROOT=PARENT; "
                     "suite=unittest.defaultTestLoader.loadTestsFromNames("
-                    "['tools.substrate.test_mjpc_retired_capture','tools.substrate.test_mjpc_diagnostic',"
+                    "['tools.substrate.test_mjpc_retired_capture','tools.substrate.test_mjpc_diagnostic.DiagnosticTests',"
                     "'tools.substrate.test_mjpc_sequence_reset','tools.substrate.test_mjpc_sequence_mapping',"
                     "'tools.substrate.test_mjpc_short_sequence','tools.substrate.test_native_transport',"
                     "'tools.substrate.test_native_mjpc','tools.substrate.test_mjpc_faithful_observation']); "
