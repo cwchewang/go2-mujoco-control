@@ -303,9 +303,10 @@ class Reliability(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "run"
             code = (
-                "from pathlib import Path; from tools.substrate.integrity import EvidenceRun; import time; r=EvidenceRun(Path("
+                "from pathlib import Path; from tools.substrate.integrity import EvidenceRun; import time\n"
+                "with EvidenceRun(Path("
                 + repr(str(p))
-                + ")); r.__enter__(); print('READY',flush=True);\ntry: time.sleep(30)\nexcept BaseException as e: r.__exit__(type(e),e,e.__traceback__)"
+                + ")):\n print('READY',flush=True)\n time.sleep(30)"
             )
             child = subprocess.Popen(
                 [sys.executable, "-c", code], stdout=subprocess.PIPE, text=True
