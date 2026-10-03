@@ -58,14 +58,22 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
         or record.get("canonical_physics_steps") != 0
         or record.get("scientific_attempts") != 0
         or record.get("private_engineering_optimizer_calls") != 1
-        or record.get("private_step_upper_bound_max") != 4096
         or controller.get("binary_sha256") != binary_sha256
         or smoke.get("binary_sha256") != binary_sha256
         or smoke.get("runtime_identity_sha256") != runtime_sha256
         or smoke.get("canonical_steps") != 0
         or smoke.get("scientific_attempts") != 0
         or smoke.get("optimizer_calls") != 1
+        or type(smoke.get("private_step_upper_bound_max")) is not int
         or smoke.get("private_step_upper_bound_max") != 4096
+        or (
+            "private_step_upper_bound_max" in record
+            and (
+                type(record["private_step_upper_bound_max"]) is not int
+                or record["private_step_upper_bound_max"]
+                != smoke.get("private_step_upper_bound_max")
+            )
+        )
     ):
         raise ValueError("qualification receipt does not bind the exact floor0 consumer")
     return True
