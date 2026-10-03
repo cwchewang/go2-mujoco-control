@@ -67,3 +67,56 @@ class PartialAccountingTests(unittest.TestCase):
             self.assertEqual(result["completed_optimizer_calls"], 0)
             self.assertEqual(result["private_reserved"], 4096)
             self.assertFalse(result["accounting_complete"])
+
+
+class FailureAndLoaderTests(unittest.TestCase):
+    def test_error_or_malformed_response_keeps_reservation_unverified(self):
+        import json
+
+        for response in (
+            {"ok": False},
+            {"ok": True, "replanned": True, "diagnostic": {}},
+            {"ok": True, "replanned": True, "diagnostic": {"policy_id": True}},
+        ):
+            with tempfile.TemporaryDirectory() as folder:
+                sub = Path(folder) / "original_repeat1"
+                sub.mkdir()
+                (sub / "optimizer-attempts.jsonl").write_text(
+                    '{"reserved_upper_bound":4096}\n'
+                )
+                (sub / "native.jsonl").write_text(
+                    json.dumps({"tick": 0, "response": response}) + "\n"
+                )
+                result = observer.partial_accounting(folder)
+                self.assertEqual(result["reserved_optimizer_calls"], 1)
+                self.assertEqual(result["completed_optimizer_calls"], 0)
+                self.assertEqual(result["unverified_reserved_upper"], 4096)
+                self.assertFalse(result["accounting_complete"])
+                self.assertTrue(result["accounting_errors"])
+
+    def test_loader_controller_and_direct_controller_are_detected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            proc = Path(folder)
+            for pid, executable, args in (
+                (
+                    11,
+                    "ld-linux-x86-64.so.2",
+                    [
+                        "loader",
+                        "--library-path",
+                        "lib",
+                        "/sealed/go2_mjpc_controller_fd_original",
+                    ],
+                ),
+                (12, "go2_mjpc_controller", ["controller"]),
+                (13, "ld-linux-x86-64.so.2", ["loader", "/usr/bin/ordinary"]),
+            ):
+                sub = proc / str(pid)
+                sub.mkdir()
+                (sub / "exe").symlink_to(proc / executable)
+                (sub / "cmdline").write_bytes(
+                    b"\0".join(a.encode() for a in args) + b"\0"
+                )
+            self.assertEqual(
+                {r["pid"] for r in observer.live_controller_processes(proc)}, {11, 12}
+            )

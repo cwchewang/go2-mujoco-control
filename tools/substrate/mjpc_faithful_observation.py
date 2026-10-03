@@ -20,7 +20,6 @@ from .integrity import (
     verify_manifest,
     write_new,
 )
-from .mjpc_short_sequence_launcher import live_controller_processes
 from .native_transport import NativeTransport
 from .qualification import tracked_inputs
 
@@ -203,6 +202,29 @@ def prepare(output):
     }
 
 
+def live_controller_processes(proc=Path("/proc")):
+    """Find direct and ELF-loader-launched controller children without launching."""
+    found = []
+    for process in proc.iterdir():
+        if not process.name.isdecimal():
+            continue
+        try:
+            executable = (process / "exe").resolve().name
+            args = (process / "cmdline").read_bytes().split(b"\0")
+            names = [Path(arg.decode(errors="replace")).name for arg in args if arg]
+        except (OSError, ValueError):
+            continue
+        direct = executable.startswith("go2_mjpc_controller")
+        loader = executable.startswith("ld-linux") and any(
+            name.startswith("go2_mjpc_controller") for name in names
+        )
+        if direct or loader:
+            found.append(
+                {"pid": int(process.name), "executable": executable, "argv": names}
+            )
+    return found
+
+
 def precheck(packet_path, output):
     packet_path = Path(packet_path).resolve(strict=True)
     admission = verify_manifest(packet_path.parent)
@@ -291,33 +313,77 @@ def compare(results):
 
 
 def partial_accounting(directory):
-    """Reservations precede requests; only returned replans establish completed calls."""
+    """Account only validated returned counters; preserve unknown reservations."""
     attempted = completed = upper = reserved = 0
+    errors = []
     for trial in Path(directory).glob("original_repeat[12]"):
-        ledger = trial / "optimizer-attempts.jsonl"
-        if ledger.exists():
-            attempts = [strict_json(line) for line in ledger.read_text().splitlines()]
-            attempted += len(attempts)
-            reserved += sum(row["reserved_upper_bound"] for row in attempts)
-        log = trial / "native.jsonl"
-        if log.exists():
-            replans = [
-                row["response"]
-                for line in log.read_text().splitlines()
-                if (row := strict_json(line)).get("tick") in (0, 10)
-            ]
-            completed += len(replans)
-            if replans:
-                diag = replans[-1]["diagnostic"]
-                upper += (
-                    diag["fd_step_upper_bound_count"] + diag["rollout_mj_step_count"]
+
+        def read_rows(path):
+            if not path.exists():
+                return []
+            values = []
+            for index, line in enumerate(path.read_text().splitlines()):
+                try:
+                    value = strict_json(line)
+                    if not isinstance(value, dict):
+                        raise ValueError("row is not an object")
+                    values.append(value)
+                except (ValueError, TypeError) as error:
+                    errors.append(f"{trial.name}/{path.name}:{index + 1}: {error}")
+            return values
+
+        attempts = read_rows(trial / "optimizer-attempts.jsonl")
+        attempted += len(attempts)
+        for row in attempts:
+            if (
+                type(row.get("reserved_upper_bound")) is int
+                and row["reserved_upper_bound"] == 4096
+            ):
+                reserved += row["reserved_upper_bound"]
+            else:
+                errors.append(trial.name + ": invalid reservation")
+        calls = 0
+        known_upper = 0
+        for row in read_rows(trial / "native.jsonl"):
+            if row.get("tick") not in (0, 10):
+                continue
+            response = row.get("response")
+            diag = response.get("diagnostic") if isinstance(response, dict) else None
+            expected = {
+                "policy_id": calls + 1,
+                "fd_call_count": (calls + 1) * 37,
+                "fd_step_upper_bound_count": (calls + 1) * 1801,
+                "rollout_mj_step_count": (calls + 1) * 700,
+                "private_step_upper_bound_reserved": (calls + 1) * 4096,
+                "private_step_limit": 614400,
+            }
+            if (
+                not isinstance(response, dict)
+                or response.get("ok") is not True
+                or response.get("replanned") is not True
+                or not isinstance(diag, dict)
+                or row["tick"] != (0 if calls == 0 else 10)
+                or any(
+                    type(diag.get(key)) is not int or diag[key] != value
+                    for key, value in expected.items()
                 )
+            ):
+                errors.append(trial.name + ": unverified replan response/counters")
+                continue
+            calls += 1
+            known_upper = (
+                diag["fd_step_upper_bound_count"] + diag["rollout_mj_step_count"]
+            )
+        completed += calls
+        upper += known_upper
     return {
         "reserved_optimizer_calls": attempted,
         "completed_optimizer_calls": completed,
         "private_reserved": reserved,
         "private_accounted_upper": upper,
-        "accounting_complete": attempted == completed,
+        "unverified_reserved_upper": max(0, reserved - completed * 4096),
+        "accounting_complete": attempted == completed and not errors,
+        "accounting_errors": errors,
         "canonical_integration_steps": 0,
     }
 
