@@ -112,16 +112,19 @@ def prepare(output):
                 [
                     sys.executable,
                     "-B",
-                    "-m",
-                    "unittest",
-                    "tools.substrate.test_mjpc_retired_capture",
-                    "tools.substrate.test_mjpc_diagnostic",
-                    "tools.substrate.test_mjpc_sequence_reset",
-                    "tools.substrate.test_mjpc_sequence_mapping",
-                    "tools.substrate.test_mjpc_short_sequence",
-                    "tools.substrate.test_native_transport",
-                    "tools.substrate.test_native_mjpc",
-                    "tools.substrate.test_mjpc_faithful_observation",
+                    "-c",
+                    "import unittest; from tools.substrate.guards import zero_step_guard; "
+                    "from tools.substrate import fd_duplicate_diagnostic as d; "
+                    "from tools.substrate.mjpc_faithful_observation import SOURCE,PARENT; "
+                    "d.CAPTURE=SOURCE; d.ROOT=PARENT; "
+                    "suite=unittest.defaultTestLoader.loadTestsFromNames("
+                    "['tools.substrate.test_mjpc_retired_capture','tools.substrate.test_mjpc_diagnostic',"
+                    "'tools.substrate.test_mjpc_sequence_reset','tools.substrate.test_mjpc_sequence_mapping',"
+                    "'tools.substrate.test_mjpc_short_sequence','tools.substrate.test_native_transport',"
+                    "'tools.substrate.test_native_mjpc','tools.substrate.test_mjpc_faithful_observation']); "
+                    "guard=zero_step_guard(); guard.__enter__(); "
+                    "result=unittest.TextTestRunner(verbosity=2).run(suite); "
+                    "guard.__exit__(None,None,None); raise SystemExit(not result.wasSuccessful())",
                 ],
             ),
             (

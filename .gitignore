@@ -71,3 +71,6 @@ example/cpp/experiments/go2_auto_environment_*/
 # Reproducible local substrate dependencies (pins remain tracked)
 .substrate/
 /_runs/
+
+# Linked immutable substrate for isolated diagnostic checkouts
+.substrate
