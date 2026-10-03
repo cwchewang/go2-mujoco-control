@@ -1,0 +1,10 @@
+{
+  "canonical_physics_steps": 0,
+  "capture_status": "CAPTURE_COMPLETE",
+  "external_claims_checked": true,
+  "head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+  "paired_prefix_exposure_and_auxiliary_checked": true,
+  "private_planning_calls": 0,
+  "scientific_attempts_checked": 2,
+  "status": "VERIFIED"
+}

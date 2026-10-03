@@ -1,0 +1,5 @@
+ninja: Entering directory `/tmp/go2-mjpc-fd-diagnostic'
+[1/4] Building CXX object CMakeFiles/go2_mjpc_controller_fd_original.dir/controller.cc.o
+[2/4] Building CXX object CMakeFiles/go2_mjpc_controller_fd_fixed.dir/controller.cc.o
+[3/4] Linking CXX executable go2_mjpc_controller_fd_original
+[4/4] Linking CXX executable go2_mjpc_controller_fd_fixed

@@ -1,0 +1,20 @@
+test_native_instrumentation_is_summary_only_and_does_not_reset_warmstart (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_packet_can_replay_logged_nonreplan_ticks (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_pair_comparison_reports_differences_without_rejecting_them (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_plan_is_four_fresh_processes_eight_optimizer_calls (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_policy_trajectory_summary_schema (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_real_old_a_inputs_are_complete_and_consecutive (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_trace_summary_rejects_missing_or_nonfinite_warmstart (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_trace_summary_schema_for_both_variants (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_exact_old_37_expectation_fails_on_complete_real_response (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_exact_raw_hashes_and_correct_contract (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_failed_trial_record_keeps_one_attempt_and_raw_cost (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_missing_response_has_unknown_cost_and_nonzero_reservation (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_required_native_fields_cannot_disappear (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_wrong_dimensions_fields_budgets_and_candidates_rejected (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+test_zero_physics_entire_parse_record_result_verification_path (tools.substrate.test_fd_duplicate_real_response.RealResponseTest) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.407s
+
+OK

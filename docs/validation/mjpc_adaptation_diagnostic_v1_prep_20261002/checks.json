@@ -1,0 +1,142 @@
+{
+  "qualification_checks": {
+    "controller_build": {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "-j",
+        "4"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.22189914601040073
+    },
+    "controller_configure": {
+      "argv": [
+        "cmake",
+        "-S",
+        "/home/che/dev/go2-workspace/current/example/cpp",
+        "-B",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.122337413020432
+    },
+    "controller_tests": {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/home/che/dev/go2-workspace/current/.substrate/controller-reliable",
+        "--output-on-failure"
+      ],
+      "returncode": 0,
+      "wall_time_s": 2.7846537370060105
+    },
+    "diff_check": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.00889530498534441
+    },
+    "preflight_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-c",
+        "import unittest; from tools.substrate.guards import zero_step_guard; guard=zero_step_guard(); guard.__enter__(); suite=unittest.defaultTestLoader.loadTestsFromNames(['tools.research.test_preflight', 'tools.research.test_preflight_integration']); result=unittest.TextTestRunner(verbosity=2).run(suite); guard.__exit__(None,None,None); raise SystemExit(not result.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.975002070015762
+    },
+    "quality": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-m",
+        "tools.check_quality"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.27472037900588475
+    },
+    "substrate_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-c",
+        "import unittest; from tools.substrate.guards import zero_step_guard; guard=zero_step_guard(); guard.__enter__(); suite=unittest.defaultTestLoader.loadTestsFromNames(['tools.substrate.test_substrate', 'tools.substrate.test_native_boundary', 'tools.substrate.test_reliability', 'tools.substrate.test_policy_runtime', 'tools.substrate.test_clock', 'tools.substrate.test_launch', 'tools.substrate.test_qualification', 'tools.substrate.test_baseline', 'tools.substrate.test_bounded_conditions', 'tools.substrate.test_shared_campaign', 'tools.substrate.test_rl_friction_reference', 'tools.substrate.test_rl_friction_campaign', 'tools.substrate.test_mjpc_diagnostic', 'tools.substrate.test_native_mjpc', 'tools.substrate.test_aligned_episode', 'tools.substrate.test_native_transport']); result=unittest.TextTestRunner(verbosity=2).run(suite); guard.__exit__(None,None,None); raise SystemExit(not result.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "wall_time_s": 46.11856312400778
+    },
+    "tooling_tests": {
+      "argv": [
+        "/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "wall_time_s": 0.47591169000952505
+    }
+  },
+  "native_checks": {
+    "build": {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/che/dev/go2-workspace/current/.substrate/headless-reliable",
+        "-j",
+        "4"
+      ],
+      "returncode": 0,
+      "wall_time_s": 1.6745253389817663
+    },
+    "configure": {
+      "argv": [
+        "cmake",
+        "-S",
+        "/home/che/dev/go2-workspace/current/tools/substrate/native",
+        "-B",
+        "/home/che/dev/go2-workspace/current/.substrate/headless-reliable",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFETCHCONTENT_SOURCE_DIR_ABSEIL=/home/che/dev/go2-workspace/current/.substrate/headless-reliable/_deps/abseil-src"
+      ],
+      "returncode": 0,
+      "wall_time_s": 1.3238535999844316
+    },
+    "tests": {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/home/che/dev/go2-workspace/current/.substrate/headless-reliable",
+        "--output-on-failure"
+      ],
+      "returncode": 0,
+      "wall_time_s": 1.2231081789941527
+    }
+  },
+  "physics_accounting": {
+    "accounting": {
+      "fd_call_count": 37,
+      "fd_step_upper_bound_count": 1801,
+      "policy_id": 1,
+      "private_step_limit": 614400,
+      "private_step_upper_bound_reserved": 4096,
+      "rollout_mj_step_count": 700
+    },
+    "binary_sha256": "a0c6198d65253d94863a40a92b0780ba376a4b6f358fdf83695ff1182ec04f24",
+    "canonical_steps": 0,
+    "max_initial_action_difference": 0.0,
+    "optimizer_calls": 1,
+    "private_step_upper_bound_max": 4096,
+    "scientific_attempts": 0,
+    "whole_episode_neutrality": "not established"
+  },
+  "canonical_steps": 0,
+  "formal_scientific_attempts": 0
+}

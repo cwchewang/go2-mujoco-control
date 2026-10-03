@@ -1,0 +1,50 @@
+{
+  "canonical_steps_max": 1500,
+  "capability_claim": "none; single bounded diagnostic",
+  "command_body_mps": [
+    1,
+    0,
+    0
+  ],
+  "failure_policy": "stop on first safety, execution, evidence, identity, warning or budget failure; no retry",
+  "horizon_s": 3,
+  "id": "mjpc-floor-registration-only-3s-v1",
+  "intervention": {
+    "field": "private_task_flat.floor.pos.z",
+    "from_m": -0.01,
+    "to_m": 0
+  },
+  "max_attempts": 1,
+  "max_replan_calls": 150,
+  "native_controller_processes_max": 1,
+  "one_shot_reservation": "exclusive single-attempt campaign record keyed by prepared packet SHA-256",
+  "parent_r4_head": "6e829bed5dcd4a8b4dc6b575f70b1a5be422cb78",
+  "prediction_contact_semantics": "selected-state forward reconstruction on smoothed private model; not future rollout",
+  "preserve": [
+    "canonical_model",
+    "home_reset",
+    "mass",
+    "damping",
+    "contact_smoothing",
+    "PD60_5",
+    "torque_limits",
+    "cost",
+    "gait_Trot_Manual",
+    "0.35s_horizon",
+    "10ms_planner_dt",
+    "20ms_replan",
+    "2ms_feedback",
+    "one_sided_fd1e-6",
+    "derivative_skip0",
+    "four_workers",
+    "FD_duplicate_fix"
+  ],
+  "private_reservation_per_replan": 4096,
+  "private_step_upper_bound_max": 614400,
+  "ramp_ticks": 100,
+  "schema": 1,
+  "seed_rule": "xfrc_std=0; no seed",
+  "start_gate": "fresh exact-head independent science and execution reviews plus one protocol/manifest-bound user start authorization",
+  "wall_timeout_s": 300,
+  "zero_command_ticks": 50
+}

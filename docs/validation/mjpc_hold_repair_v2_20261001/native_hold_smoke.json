@@ -1,0 +1,27 @@
+{
+  "all_failed_response": {
+    "error": "MJPC has no valid current planning candidate",
+    "ok": false
+  },
+  "canonical_steps": 0,
+  "canonical_time_s": 0.0,
+  "fallback_feedback_response": {
+    "error": "MJPC policy unavailable; replan required",
+    "ok": false
+  },
+  "generated_source_tamper_rejected": "stale build: inputs changed",
+  "malformed_request_response": {
+    "error": "unknown operation",
+    "ok": false
+  },
+  "max_torque_nm": 0.10329455263302645,
+  "old_qualification_rejected": "qualification inputs changed or receipt predates binding",
+  "private_planning_rollouts_executed": true,
+  "reset_recovery": "PASS",
+  "transport": {
+    "stderr_bytes": 2540,
+    "stderr_log": "/home/che/dev/go2-workspace/current/_runs/mjpc_hold_repair_20261001T223127/native_smoke_final/native.stderr.log",
+    "stderr_read_error": null,
+    "stderr_tail": "MUJOCO_WARNING: Nan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.\nRollout divergence at step\nRollout divergence at step\nRollout divergence at step\nMUJOCO_WARNING: Nan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.\nRollout divergence at step\nMUJOCO_WARNING: MUJOCO_WARNING: Rollout divergence at step\nNan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.\nNan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.MUJOCO_WARNING: Nan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.\n\nMUJOCO_WARNING: Nan, Inf or huge value in QVEL at DOF 0. The simulation is unstable. Time = 0.0200.\nRollout divergence at step\nRollout divergence at step\nRollout divergence at step\nRollout divergence at step\n"
+  }
+}

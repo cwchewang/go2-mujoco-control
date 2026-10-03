@@ -1,0 +1,240 @@
+{
+  "canonical_integration_steps": 0,
+  "canonical_physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+  "collision_map": [
+    {
+      "body": "base_link",
+      "canonical_geom": 6,
+      "source_geom": 7
+    },
+    {
+      "body": "base_link",
+      "canonical_geom": 7,
+      "source_geom": 8
+    },
+    {
+      "body": "base_link",
+      "canonical_geom": 8,
+      "source_geom": 9
+    },
+    {
+      "body": "FR_hip",
+      "canonical_geom": 23,
+      "source_geom": 12
+    },
+    {
+      "body": "FR_thigh",
+      "canonical_geom": 26,
+      "source_geom": 15
+    },
+    {
+      "body": "FR_calf",
+      "canonical_geom": 29,
+      "source_geom": 18
+    },
+    {
+      "body": "FR_calf",
+      "canonical_geom": 30,
+      "source_geom": 19
+    },
+    {
+      "body": "FR_calf",
+      "canonical_geom": 32,
+      "source_geom": 21
+    },
+    {
+      "body": "FL_hip",
+      "canonical_geom": 11,
+      "source_geom": 24
+    },
+    {
+      "body": "FL_thigh",
+      "canonical_geom": 14,
+      "source_geom": 27
+    },
+    {
+      "body": "FL_calf",
+      "canonical_geom": 17,
+      "source_geom": 30
+    },
+    {
+      "body": "FL_calf",
+      "canonical_geom": 18,
+      "source_geom": 31
+    },
+    {
+      "body": "FL_calf",
+      "canonical_geom": 20,
+      "source_geom": 33
+    },
+    {
+      "body": "RR_hip",
+      "canonical_geom": 47,
+      "source_geom": 36
+    },
+    {
+      "body": "RR_thigh",
+      "canonical_geom": 50,
+      "source_geom": 39
+    },
+    {
+      "body": "RR_calf",
+      "canonical_geom": 53,
+      "source_geom": 42
+    },
+    {
+      "body": "RR_calf",
+      "canonical_geom": 54,
+      "source_geom": 43
+    },
+    {
+      "body": "RR_calf",
+      "canonical_geom": 56,
+      "source_geom": 45
+    },
+    {
+      "body": "RL_hip",
+      "canonical_geom": 35,
+      "source_geom": 48
+    },
+    {
+      "body": "RL_thigh",
+      "canonical_geom": 38,
+      "source_geom": 51
+    },
+    {
+      "body": "RL_calf",
+      "canonical_geom": 41,
+      "source_geom": 54
+    },
+    {
+      "body": "RL_calf",
+      "canonical_geom": 42,
+      "source_geom": 55
+    },
+    {
+      "body": "RL_calf",
+      "canonical_geom": 44,
+      "source_geom": 57
+    }
+  ],
+  "corrected_fields": [
+    "floor_world_z",
+    "effective_pd_torque_clamp"
+  ],
+  "joint_map": [
+    {
+      "canonical_actuator": 0,
+      "joint": "FR_hip_joint",
+      "source_actuator": 0,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 1,
+      "joint": "FR_thigh_joint",
+      "source_actuator": 1,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 2,
+      "joint": "FR_calf_joint",
+      "source_actuator": 2,
+      "torque_range": [
+        -45.43,
+        45.43
+      ]
+    },
+    {
+      "canonical_actuator": 3,
+      "joint": "FL_hip_joint",
+      "source_actuator": 3,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 4,
+      "joint": "FL_thigh_joint",
+      "source_actuator": 4,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 5,
+      "joint": "FL_calf_joint",
+      "source_actuator": 5,
+      "torque_range": [
+        -45.43,
+        45.43
+      ]
+    },
+    {
+      "canonical_actuator": 6,
+      "joint": "RR_hip_joint",
+      "source_actuator": 6,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 7,
+      "joint": "RR_thigh_joint",
+      "source_actuator": 7,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 8,
+      "joint": "RR_calf_joint",
+      "source_actuator": 8,
+      "torque_range": [
+        -45.43,
+        45.43
+      ]
+    },
+    {
+      "canonical_actuator": 9,
+      "joint": "RL_hip_joint",
+      "source_actuator": 9,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 10,
+      "joint": "RL_thigh_joint",
+      "source_actuator": 10,
+      "torque_range": [
+        -40.0,
+        40.0
+      ]
+    },
+    {
+      "canonical_actuator": 11,
+      "joint": "RL_calf_joint",
+      "source_actuator": 11,
+      "torque_range": [
+        -45.43,
+        45.43
+      ]
+    }
+  ],
+  "mass_damping_contact_parameters_preserved": true,
+  "optimization_models": {
+    "corrected-go2-soft-v1": "a9e79d4d23e6637542a8d48d9ada2d5539572f86552e7cfb7d0556766ab94ba0",
+    "original-go2-soft-v1": "a5c516775846cca987df1c9c26f2a24cb57a1b46b60ab5eff6ce27640b6eedec"
+  }
+}

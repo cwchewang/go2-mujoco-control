@@ -1,0 +1,18 @@
+{
+  "canonical_physics_steps": 0,
+  "capture_exists": false,
+  "failed_head": "0402009534a6b91040327659c704d1f3768d1e08",
+  "job_files": {
+    "campaign.stderr": "db1d18d0b25ae792b5174bb637ae3dd1a8daccf898b07f063de717c945fd7318",
+    "campaign.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "launched.json": "d9aebd00a16ac3c264ebee43d594b5fe19c3dcf3b7d8399f3f8a092357b56ff2",
+    "requested.json": "680c8ab117f6c8027d6016014587c55d41d0f124998322dd9a67188af98a4c99",
+    "worker.py": "3cb52aff37bd2c8b1bdc43beb4f294253ce25445396f04edc62b6c332011b8a0",
+    "worker_failure.json": "c52c0fa128f8bed96756f025e2ab651774a24eec61005addc4a5c9f12e4dbbc8",
+    "worker_started.json": "adb809fe8839f75b24258ce8a32e107e169c69dd6f3e9a1fcab4ca19e6511167"
+  },
+  "no_retry": true,
+  "preflight_manifest_sha256": "6baf10a5ebaaa3880e19af96e67a3c93a17412309da10cada4d8c3e269a6d2ec",
+  "scientific_attempts": 0,
+  "scientific_claims_directory_exists": false
+}

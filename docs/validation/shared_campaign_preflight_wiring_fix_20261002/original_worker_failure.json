@@ -1,0 +1,7 @@
+{
+  "error": "Command '['/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python', '/home/che/dev/go2-workspace/current/tools/research/preflight.py', '--repo-root', '/home/che/dev/go2-workspace/current', '--experiment-id', 'shared-baseline-probes-v1', '--expected-branch', 'research/shared-baseline-probes-prep-20261002', '--expected-head', '0402009534a6b91040327659c704d1f3768d1e08', '--runner', '/home/che/dev/go2-workspace/current/tools/substrate/shared_campaign.py', '--run-dir', '/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T073915677730Z', '--transport', 'inprocess', '--held-lock-fd', '3', '--diff-base', 'ab27185f6c0ee47fdd09fecb367977bf4ab9cfde', '--requires-sol-review', '--approved-head', '0402009534a6b91040327659c704d1f3768d1e08', '--qualification', '/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/protocol_identity_qualification_20261002T065259919113Z', '--output', '/home/che/dev/go2-workspace/current/_runs/shared_campaign_preflight/20261002T073935805419Z/report.json']' returned non-zero exit status 2.",
+  "error_type": "CalledProcessError",
+  "no_retry": true,
+  "output": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T073915677730Z",
+  "utc": "2026-10-02T07:39:35.890852+00:00"
+}

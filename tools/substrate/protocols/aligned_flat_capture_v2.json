@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "aligned-flat-capture-v2",
+  "mode": "capture_preparation",
+  "anchor": "tools/substrate/protocols/aligned_flat_anchor_v1.json",
+  "anchor_sha256": "0d0e0061c3552ae0faf3f9b64d006054d8205f26901398ab0b160cbb9b4d900b",
+  "capture_order": [
+    "rl",
+    "mjpc"
+  ],
+  "planned_attempts_per_controller": 1,
+  "max_attempts": 2,
+  "wall_timeout_s": 300,
+  "requires_external_start_authorization": true,
+  "requires_exact_head_independent_review": true,
+  "raw_evidence": "jsonl",
+  "replay": "CanonicalEvaluator",
+  "self_authorizes_physics": false,
+  "self_authorized_scientific_attempts": 0,
+  "output_root": "example/cpp/experiments/_runs/aligned_flat_capture_v2",
+  "wall_timeout_scope": "per_arm_episode",
+  "safety_failure_policy": "stop_campaign",
+  "execution_evidence_failure_policy": "stop_campaign",
+  "horizon_performance_failure_policy": "retain_and_continue"
+}

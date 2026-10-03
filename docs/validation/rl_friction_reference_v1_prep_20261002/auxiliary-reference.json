@@ -1,0 +1,20 @@
+{
+  "rl_baseline_1": {
+    "affects_primary_classification": false,
+    "body_vx_mae_mps": 0.11459353106303045,
+    "body_vx_mean_mps": 0.8854064689369695,
+    "endpoint_in_performance_mean": false,
+    "measurement_samples": 3000,
+    "measurement_window": "[6,12)",
+    "status": "COMPLETE"
+  },
+  "rl_baseline_2": {
+    "affects_primary_classification": false,
+    "body_vx_mae_mps": 0.11459353106303045,
+    "body_vx_mean_mps": 0.8854064689369695,
+    "endpoint_in_performance_mean": false,
+    "measurement_samples": 3000,
+    "measurement_window": "[6,12)",
+    "status": "COMPLETE"
+  }
+}

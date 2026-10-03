@@ -1,0 +1,15 @@
+{
+  "canonical_physics_steps": 0,
+  "capability_status": "NOT_RUN",
+  "errors": [],
+  "failed_checks": [
+    "reviewed_inprocess_runner",
+    "changed_surface_has_no_live_test"
+  ],
+  "live_runs": 0,
+  "private_planning_calls": 0,
+  "qualification_validation_called": false,
+  "scientific_attempts": 0,
+  "scope": "offline_engineering_admission",
+  "status": "REPRODUCED_PRE_FIX_FAILURE"
+}

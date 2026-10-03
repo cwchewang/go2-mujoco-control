@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "id": "rl-sliding-friction-reference-v1",
+  "mode": "prospective_freeze",
+  "self_authorizes_physics": false,
+  "physics_step_authorized": false,
+  "self_authorized_scientific_attempts": 0,
+  "inherit_protocol": "tools/substrate/protocols/shared_baseline_probes_v1.json",
+  "inherit_protocol_sha256": "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+  "accepted_parent_head": "d4bccb60f4fb8c6a63ed85da409b29c0b642cec8",
+  "expected_branch": "research/rl-friction-reference-prep-20261002",
+  "output_root": "example/cpp/experiments/_runs/rl_sliding_friction_reference_v1",
+  "ledger_root": "_runs/substrate_attempts/rl-sliding-friction-reference-v1",
+  "controller": "rl",
+  "baseline_attempts": 0,
+  "challenge_attempts_max": 2,
+  "max_attempts": 2,
+  "replicates": 2,
+  "horizon_ticks": 6000,
+  "physics_steps_max": 12000,
+  "wall_timeout_s": 300,
+  "condition": {
+    "id": "sliding_friction",
+    "variable": "four_foot_geom_sliding_friction",
+    "from": 0.8,
+    "to": 0.3,
+    "start_tick": 3000,
+    "end_tick_exclusive": 6000,
+    "interface": "canonical_model.geom_friction[feet,0]",
+    "evidence": "active_foot_floor_contact_friction"
+  },
+  "reference_capture": "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z",
+  "reference_capture_manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+  "reference_capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "reference_ledger": "_runs/substrate_attempts/shared-baseline-probes-v1",
+  "reference_baselines": [
+    {
+      "id": "rl_baseline_1",
+      "repeat": 1,
+      "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+    },
+    {
+      "id": "rl_baseline_2",
+      "repeat": 2,
+      "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+    }
+  ],
+  "challenge_pairing": "fresh_repeat_j_to_sealed_rl_baseline_j",
+  "repeat_absolute_tolerance": 1e-9,
+  "paired_prefix_absolute_tolerance": 1e-9,
+  "prefix_evidence": "existing_verify_condition_raw_state_command_information_targets_actions_through_onset_snapshot",
+  "primary_measurement": {
+    "start_tick": 1000,
+    "end_tick_exclusive": 6000,
+    "samples": 5000,
+    "label": "[2,12)"
+  },
+  "performance": {
+    "body_vx_mean_min_mps": 0.8,
+    "body_vx_mae_max_mps": 0.2,
+    "episode_lateral_max_m": 0.3,
+    "episode_yaw_max_rad": 0.3
+  },
+  "auxiliary_measurement": {
+    "start_tick": 3000,
+    "end_tick_exclusive": 6000,
+    "samples": 3000,
+    "label": "[6,12)",
+    "metrics": [
+      "body_vx_mean_mps",
+      "body_vx_mae_mps",
+      "paired_mean_delta_mps",
+      "paired_mae_delta_mps"
+    ],
+    "thresholds": null,
+    "incomplete_window": "NOT_MEASURABLE_no_partial_score",
+    "endpoint_in_mean": false,
+    "affects_primary_classification": false
+  },
+  "retry": "none",
+  "safety_execution_evidence_failure": "stop_new_campaign",
+  "horizon_performance_failure": "retain_and_continue",
+  "unexposed_horizon_policy": "stop_campaign_without_robustness_pass",
+  "old_campaign_status": "PERMANENTLY_CLOSED_keep_17_NOT_RUN_unchanged",
+  "live_readiness": "AWAITING_INCREMENTAL_SCIENCE_AND_EXECUTION_REVIEW"
+}

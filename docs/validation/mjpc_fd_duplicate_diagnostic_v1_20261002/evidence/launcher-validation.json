@@ -1,0 +1,120 @@
+{
+  "actual_command_coverage": [
+    "committed wrapper from cwd=/tmp",
+    "committed wrapper from repo cwd",
+    "complete prepare/execute rejection under sealed parents",
+    "existing empty/nonempty output rejection without writes",
+    "core batch refusal before transport",
+    "no-launch runner denial",
+    "symlink bypass rejection"
+  ],
+  "binary_build_identity": {
+    "fixed": {
+      "binary_sha256": "3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08",
+      "build_ninja_sha256": "4cb937f8487cde9a510bc93dc3161ea9e31401e73b304fb66e0a84150d4b043f",
+      "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+      "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+      "diagnostic_patch_script_sha256": "a4dc87a00627c861de9607ff0945bf8716b44d1d6abe0badd8ceb029c71f2d49",
+      "generated_source_sha256": "140b6d02d08972d7f823a4309396a53dc1eea409d2a371dbe46c039d43d26aa4",
+      "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+      "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+      "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+      "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+      "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+      "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+      "variant": "fixed",
+      "workers": 4
+    },
+    "original": {
+      "binary_sha256": "92f7056463ae1f12cceea09b377712647716682254d3b911ce11d0e52bbe7f4b",
+      "build_ninja_sha256": "4cb937f8487cde9a510bc93dc3161ea9e31401e73b304fb66e0a84150d4b043f",
+      "cache_sha256": "70028cfa262195d427cef06bb1dedbab60d2c1c73fa4679c211960012c60a6b7",
+      "compile_commands_sha256": "b65d3ee8ddcc84ad50e3d707ad11f0b6bfd383481a60d54ff953b48c00bbcfc6",
+      "diagnostic_patch_script_sha256": "a4dc87a00627c861de9607ff0945bf8716b44d1d6abe0badd8ceb029c71f2d49",
+      "generated_source_sha256": "75376072097435b1c6a61d61fdfb428abb55b160dc90f491fe55718e768c073a",
+      "index_helper_header_sha256": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+      "index_patch_applier_sha256": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+      "index_patch_sha256": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+      "mjpc_commit": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+      "mjpc_source_sha256": "e44b7ab9941e9d6397527c1e5af77c70319329667436d8a45e1b2d10d80fa74b",
+      "path": "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+      "variant": "original",
+      "workers": 4
+    }
+  },
+  "canonical_integration_steps": 0,
+  "execute_argv": [
+    "/home/che/dev/go2-workspace/current/tools/substrate/run_mjpc_short_sequence",
+    "--execute",
+    "--packet",
+    "/home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_evidence_launcherfix_20261003/packet.json",
+    "--output",
+    "/home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_observation_launcherfix_20261003"
+  ],
+  "input_sha256_by_tick": {
+    "0": "55554fb04a33dacb1f082f43b80f3045d002118d3d2d5ccdb239325eb8bbdaeb",
+    "1": "ce84026cfb78099a6ddbd6fff18e030f8052760f0df6565c35a6b55afb03dad1",
+    "10": "4af96aefb94852dea9e3c0ac28c6574bd40d07e91ef19b6aeb0eda49fa93d61d",
+    "2": "4fa0e4463a66f0cb6a0946af99b06038b5e823e0c70f6e31343f3be5fbadc521",
+    "3": "bb57b9d83d419054b51c0487981857c5773c5878387218a9bc3af49c118da2bb",
+    "4": "5db46359baacbc9ed923b7b4b81d335c2699d27eaaf21dec9717384da8fa88bc",
+    "5": "00fb131a904268dec1c79aebd74d7f3e286d4111e77c4b605d0d8e0f71627299",
+    "6": "c64b568ab0d8a7511eca7e5d341b767a344b5cdfbe1ec0a3a3c75810331ec233",
+    "7": "df8d884be2fe0f97d4ab33c37fbfb6a7e595c19a026afeeb80b3edf0486a832b",
+    "8": "52418ad894608cc9667753ca670e64f3ff9509bf7d24aa6d79019149742a74f6",
+    "9": "af7b7130ecc876c9bdc17570565595bd6833a1853baa653bf3d4176f895f075f"
+  },
+  "new_packet_directory": "/home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_evidence_launcherfix_20261003",
+  "no_launch_verification_argv": [
+    "/home/che/dev/go2-workspace/current/tools/substrate/run_mjpc_short_sequence",
+    "--execute",
+    "--packet",
+    "/home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_evidence_launcherfix_20261003/packet.json",
+    "--output",
+    "/home/che/dev/go2-workspace/current/_runs/mjpc_short_sequence_observation_launcherfix_20261003",
+    "--no-launch"
+  ],
+  "optimizer_calls_executed": 0,
+  "preserved_failure_manifest_sha256": "eb1d857fb777ec381867a0c822ffa471436b5165fcb5201093f99274ad4655db",
+  "prior_prepared_file_set_nonconformance": "The pre-existing short_sequence_evidence child remains preserved. This repair adds nothing there and uses a new independent top-level bundle.",
+  "prior_prepared_original_members_preserved": true,
+  "runtime_source_sha256": {
+    "tools/substrate/fd_duplicate_diagnostic.py": "315e047bcdd1e40593699c92397353f7897455efbf8ec1861d90e46a1b9092d8",
+    "tools/substrate/guards.py": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+    "tools/substrate/integrity.py": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+    "tools/substrate/mjpc_short_sequence.py": "8197c45df42d55830d1e439de6226b936a4b138c9121e80c7297026fa9b6dd90",
+    "tools/substrate/mjpc_short_sequence_launcher.py": "a58b41a1e79d43a394ad648b8d33b5d34bd054b22b9d2be2b6bbcad6f028b164",
+    "tools/substrate/native/CMakeLists.txt": "095a046f6d4bb01aaf84b9cd7aee436c14b47dda2d28f30b4496584ccf2fe35c",
+    "tools/substrate/native/admit.cc": "7da12361aded30936888c3a44b555a0b5adfaae09f8cfde495f3051e8a491452",
+    "tools/substrate/native/controller.cc": "e287902b26f8963063b09af7472c56931526e127787476dbffd600770841c0f4",
+    "tools/substrate/native/diagnostic.h": "e400b7e35736ba30b16512a4e7aa83d3eee825d63aaad41cf3845a1ce1882ca4",
+    "tools/substrate/native/diagnostic_budget.cc": "e04019cc1f58d5e7a0b2cd0e511e190580ae3aeb608cfe3b7a7dbaba8cfb141a",
+    "tools/substrate/native/diagnostic_budget.h": "6f8c9ac95bc824561b64b2d9f21b5f927e57b6569a6b42df67be60af26e0c973",
+    "tools/substrate/native/diagnostic_contract_test.cc": "46a216d5dd1879838f01a6c47a2504e523154bde7c9bdb1fdbee0a75aa4c0613",
+    "tools/substrate/native/fresh_plan.h": "057e1b4915261a49d4e44fd1553ba503e458e4d4a9c31cb3ee73471df216e6ed",
+    "tools/substrate/native/fresh_plan_test.cc": "10aa90ede2e1cc686bd73a47f0178b9005ff5ea5dae89de42c6dc20b5e6d8df2",
+    "tools/substrate/native/ground_test.cc": "5c77ce18de27797063c0102f84b5e5baf6c20cc5678e88736640c1ea2c1475b3",
+    "tools/substrate/native/model_derivative_indices.h": "208e009c4fe66eb54acfec939d28b54d767b2e5860f3026ed610b95770128114",
+    "tools/substrate/native/model_derivative_indices_test.cc": "1424bd1f5bfb5b08c2f3850affdb5b9b05a8787c4f77bf708b4d42e2fdd20c59",
+    "tools/substrate/native/model_derivative_patch_record.json": "42ab0f157887085d1c5f3a97e07099bcea284afbc65d2366fb1fb3e0605e4c07",
+    "tools/substrate/native/patch_mjpc_model_derivatives.py": "24dda17e99a45ac796145e618a6bec4ed27c889d24cfebfd50e45f03b90a8ca6",
+    "tools/substrate/native/patch_mjpc_model_derivatives_diagnostic.py": "a4dc87a00627c861de9607ff0945bf8716b44d1d6abe0badd8ceb029c71f2d49",
+    "tools/substrate/native/patch_mjpc_utilities.py": "f98abd59920b81f4f75d59e289d8728bd04dd7306a1d3c8c69133f8eb2522f55",
+    "tools/substrate/native/patches/mjpc-model-derivatives-e00c47a5.patch": "75e399969b94eb690b680cb83c8624d6b4b0067d159ef02e9611c5dfbed32b0d",
+    "tools/substrate/native_transport.py": "81bc8d2119c959ed6246f9aec04042aca7e2d0eefa4c6ade527417eb96e506bb",
+    "tools/substrate/run_mjpc_short_sequence": "810484decf135bf42774876c825fc0d956e1cf598fff1b436686b7117e7cfe43"
+  },
+  "sealed_input": {
+    "source_capture": "/home/che/dev/go2-workspace/current/_runs/mjpc_adaptation_diagnostic_execution_20261002/original_capture_20261002T164948Z",
+    "source_manifest_sha256": "2bebb006bef0ab7635056f19ceb8f3513e0d3b5b4d99cc7f9018f7bfb69950f2",
+    "source_raw_sha256": "9a4f2711f558b80ac58c803406971f43be7c44f4c5e64f7a50c728e2a7440e55"
+  },
+  "status": "LAUNCHER_REGRESSION_PASS_SEQUENCE_NOT_RUN",
+  "test_command": "python3 -B -m unittest -v tools.substrate.test_mjpc_short_sequence_launcher tools.substrate.test_mjpc_short_sequence tools.substrate.test_fd_duplicate_real_response",
+  "test_logs": {
+    "launcher-tests-085e613.stderr": "7a1bae1798a876616a075a782fe5a96646c9b01dc48d0505aad95d06e144daa8",
+    "launcher-tests-085e613.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tested_source_commit": "085e61305b669fce9aaead2856e408cb3544c1a6",
+  "tests_passed": 24
+}

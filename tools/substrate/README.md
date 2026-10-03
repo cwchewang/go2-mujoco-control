@@ -46,8 +46,10 @@ are never cleaned or reused. A failed engineering invocation remains evidence.
 Native admission verifies the binary against a build identity covering actual
 MJPC/Abseil commits and tracked bytes, local native source, compiler binary,
 MuJoCo headers/library, CMake cache, Ninja rules and compile command database.
-The CMake target builds unchanged upstream iLQG sources directly, excluding demo
-models and GUI dependencies. MuJoCo Python/native libraries must match bytewise.
+The CMake target builds the pinned upstream iLQG sources, excluding demo
+models and GUI dependencies. The source-locked Ground miss hardening generates
+a separate utilities translation unit; it marks an invalid private rollout with
+BADQPOS instead of terminating the process. Canonical physics is unchanged. MuJoCo Python/native libraries must match bytewise.
 
 Runtime verification checks installed versions and installed payloads against
 wheel RECORD hashes, including source and shared libraries. Generated `.pyc`

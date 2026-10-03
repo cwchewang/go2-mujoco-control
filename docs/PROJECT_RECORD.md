@@ -1,6 +1,6 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-10-01**
+> **最后更新：2026-10-02**
 > **状态：R1 SHARED CONTRACTS IMPLEMENTED; NATIVE MJPC ADAPTER ENGINEERING-WIRED; GATE 0 INCOMPLETE**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
@@ -18,7 +18,7 @@
 
 状态词：`CURRENT / VERIFIED / LEGACY BASELINE / HOLD / RE-AUDIT / SUPERSEDED / HISTORICAL`。
 
-## 1. [2026-09-28 | CURRENT | SNAPSHOT] 当前项目
+## 1. [2026-10-02 | CURRENT | SNAPSHOT] 当前项目
 
 #189 已形成第一张 bounded RL capability map。其封存执行与原始 case 记录仍在
 [原结果](validation/rl_capability_map_successor_20260924/RESULTS.md)；
@@ -70,12 +70,106 @@ guardrails 与初始 body forward/left 对齐，并将该前提及 canonical dir
 actuator 边界加入 fail-closed preflight。状态提升为 REVIEWED / NOT_RUN，但
 physics_step_authorized 仍为 false、scientific attempts 仍为 0。
 
+首次 live aligned capture v1 随后在独立 capture task / exact HEAD
+2411c4af1f8ab95e50f7e07e672466b5c0abb406 上实际执行。RL 完成 500 个
+canonical physics steps，宽松 1 s integration anchor 的独立 replay 为 PASS
+(progress 0.612566 m，body-vx MAE 0.152334 m/s)。MJPC 的唯一 attempt 已消费，
+完成 140 physics steps 后在 tick 140 replan 遇到 source Ground() raycast
+no group 0 geom detected，通过严格 stdout JSON IPC 表现为 invalid JSON 并
+基础设施中止。最后保存状态未触发 canonical physical failure。v1 永久关闭、
+不得 retry；因此跨 controller comparison 仍 INCOMPLETE，不能产生排名或科学结论。
+
+The separately admitted aligned capture v2 is now permanently closed at
+ab27185f6c0ee47fdd09fecb367977bf4ab9cfde: RL and MJPC each completed500 canonical
+steps/501 frames and passed the broad1s engineering horizon without a canonical
+safety failure. The independent science closeout accepted only that frozen
+engineering scope. MJPC body-vx MAE was0.811741m/s, and median planning28.453ms
+does not establish20ms real-time performance. No mature-controller capability,
+ranking, safety-stop live validation or scientific bottleneck follows.
+See [v2 closeout](validation/aligned_flat_capture_v2_closeout_20261002/RESULTS.md).
+V1 and v2 remain sealed; scientific attempts for v2 remain0.
+
+The [shared baseline/probe campaign](research/TASK_SHARED_BASELINE_PROBES_V1_20261002.md)
+ran at b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d after final exact-head dual
+approval and fresh in-process preflight. Its frozen whole-campaign safety stop
+closed execution after3 scientific attempts and13287 canonical steps.
+Both RL12s baseline repeats passed the declared operational thresholds
+(mean body-vx0.885292m/s, MAE0.114708m/s), with identical raw bytes and maximum
+raw state/applied-control repeat difference0. Adapted MJPC baseline1 stopped
+at tick1287/2.574s for nonfoot_contact; zero-integration terminal reconstruction
+confirmed the floor/RR_calf pair. One MJPC trial does not establish a stable
+failure mechanism or controller-family ranking. The remaining17 arms, including
+all16 challenges, were NOT_RUN. The four-baseline stage did not complete;
+the old campaign challenge stage has no result and the MJPC useful-baseline gate remains unmet.
+The local official verifier checked raw integrity and the real external ledger.
+The campaign is permanently closed with no retry or replacement; see
+[verified safety-stop closeout](validation/shared_baseline_probes_v1_closeout_20261002/RESULTS.md).
+Native private rollouts were real and their total integration count is unknown.
+Gate0 remains incomplete. The read-only diagnosis is complete: all foot contact
+constraints disappear from2.450s, with floor/RR_calf safety stop at2.574s; sealed
+raw has no private predicted trajectory/contact sequence, so no causal mechanism
+is established. The separately delegated [RL friction task](research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md)
+now closes at live HEAD849b7aa13c82b13880cfc214083f2473e794e83e. Its independent
+mu0.8-to0.3-at6s card consumed2 fresh scientific attempts/12000 canonical steps,
+with0 private planning calls; both12s arms PASS. Primary mean body-vx is0.874101m/s
+and MAE0.125899m/s, giving paired mean delta−0.011191m/s. The predeclared [6,12)
+auxiliary mean is0.866755m/s, paired delta−0.018652m/s. Whole-episode lateral
+max0.215713m and yaw max0.058913rad pass their original0.3 bounds.
+Each arm verifies5726 changed active foot-floor contact-friction records over2948
+ticks, first exposed state tick3001/6.002s; these are contact records, not
+independent statistical samples or contact forces. Paired pre-intervention
+prefix difference is0. Identical raw SHA151dfa3c8a7a24418dd0fbbfcfaaa015788b00e0cf56002a6ad38397adb7fb58
+establishes deterministic reproduction, not independent statistical seeds.
+The official independent raw/real-ledger replay is VERIFIED; both original
+science and execution final read-only reviews approved. Current-input
+qualification ran292 fresh Python checks and explicitly reused unchanged
+sealed native checks. The failed initial wrapper entered no capture API and
+consumed0 attempts/physics; its source and full logs remain preserved alongside
+the actual CLI logs, claims and94-member archive.
+See the [verified friction closeout](validation/rl_sliding_friction_reference_v1_closeout_20261002/RESULTS.md).
+
+Together with the old RL baseline PASS and single adapted MJPC safety stop,
+this completes one local experiment: a frozen
+RL friction-condition point, without an aligned12s MJPC comparator. It does not
+complete the user's third stage of finding a research topic. It does not
+establish a controller ranking, stable MJPC failure mechanism, generic robustness
+or a complete Gate0. The old campaign and17 NOT_RUN remain closed, and #189's
+low-friction erratum remains unchanged. RL boundary and MJPC zero-forward-command
+studies remain conditional diagnostic proposals requiring independent
+prospective tasks. No fourth-stage method work is started.
+
+The user corrected the stage scope after local closeout: third-stage topic
+selection remains ACTIVE / OPEN. The premature stage-completion wording in the
+local closeout/navigation at3ae9a7c is superseded here; scientific raw, metrics,
+claims and two reviewers' local acceptance remain unchanged.
+The [new read-only diagnosis](validation/stage3_topic_diagnosis_20261002/RESULTS.md)
+confirms the correct pinned Go2 source branch, but finds private-versus-canonical
+joint damping2.0 versus0.1, root mass7.521 versus6.921kg, floor-0.01 versus0m,
+foot-contact impedance differences and missing private actuator force limits.
+Both use impratio100; home and named PD mapping agree. These are material
+prediction/adaptation confounds, not proof of the RR_calf cause or an iLQR limit.
+MuJoCo evaluation and passing RL remain usable; this adapted MJPC is not yet
+a useful strong comparator. Repair is engineering and must stay bounded.
+Zero-forward still forces Walk/Manual Trot and cannot isolate static stability.
+The minimum proposal is a source-bound parity/evidence audit followed only
+under new independent scopes by instrumented frozen-versus-corrected prediction
+one-arm3s diagnostics, total proposed canonical cap3000steps; none is launched.
+RL command-space and temporal-response candidates remain testable without this
+MJPC candidate; none is yet a novelty verdict or selected paper topic.
+[Terrain/command admission](research/STAGE3_TERRAIN_ADMISSION_NOTES_20261002.md)
+requires a new support-geom specification before any terrain capture: current
+flat episode.py treats foot contact outside phase2_floor as forbidden. MJPC
+lateral/reverse rejection is UNSUPPORTED, not capability FAIL. One-sided
+finite differences at1e-6, derivative_skip0 and impratio100 already exist.
+Stage-three selection still needs admissible terrain capability/failure evidence
+and a falsifiable research question; engineering repair is not its endpoint.
+
 ### Scientifically verified results
 
 已验证结论限于公开 RL checkpoint 在封存 adapter、reset、scene 和命令上的
 #189 九例 map。原始轨迹与尝试账本未改写；语义修正见 erratum。没有证据证明
 跨 controller bottleneck、普遍低摩擦鲁棒性或论文 gap；Gate 0 仍未完成。
-执行 frontier 跟随 `CURRENT.md`。
+2026-10-02 的12s shared baseline 两次 RL PASS 和一次 adapted MJPC 非足接触安全停止，亦限于该冻结条件；旧 shared campaign 的所有挑战未运行。独立 RL friction card 两次 PASS 已经 raw/真实账本验证和双末审通过，仅提供单一冻结条件点和确定性复现，不构成普遍 robustness map 或跨控制器排名。执行 frontier 跟随 `CURRENT.md`。
 
 ## 1D. [2026-09-24 | VERIFIED / BOUNDED; 2026-09-28 ERRATUM] RL capability map 正式完成
 
@@ -330,3 +424,38 @@ reviewer 首次发现。此前 contract-hash / approval-inheritance prototype PR
 4. 被替代结论标 `SUPERSEDED`；
 5. topic 变化同步 `docs/TOPIC_AUDIT.md`；
 6. 顶层 frontier 变化才同步 Library `RESEARCH_INDEX.md`。
+
+## 2026-10-01 | MJPC Ground/IPC engineering hardening
+
+The inherited source-locked Ground repair has passed zero-integration native
+regression and zero-canonical-step IPC/torque/reset acceptance, together with
+175 substrate tests and style checks. See
+[engineering acceptance](validation/mjpc_ground_hardening_v2_20261001/RESULTS.md).
+The private invalid-rollout handling is an intervention requiring independent
+review; this does not establish trajectory neutrality or controller performance.
+v1 remains permanently closed. A separately identified v2 retains the frozen
+canonical anchor and awaits exact-head independent reviews and explicit START;
+scientific attempts remain 0 and Gate 0 remains incomplete.
+
+### 2026-10-01 | Exact-head review HOLD repaired, not scientifically approved
+
+The 73fae9b independent review held readiness on four runtime/qualification
+findings. Those findings were confirmed and repaired with source-bound tests;
+see [HOLD repair](validation/mjpc_hold_repair_v2_20261001/RESULTS.md).
+The new runtime requires independent exact-head rereview. Canonical steps remain
+0 in engineering acceptance; private planning integrates private rollouts.
+Scientific attempts remain 0; v1 is closed and live v2 has not started.
+
+### 2026-10-01 | Science campaign-stop HOLD S1 repaired, rereview required
+
+Science review of c0c6e40 held v2 because canonical safety failure did not stop
+the whole campaign. The separate execution approval does not override that
+HOLD. The bounded repair now seals safety/execution/evidence stops and explicitly
+predeclares only horizon metric failure continuation; see
+[campaign-stop repair](validation/science_campaign_stop_v2_20261001/RESULTS.md).
+200 guarded substrate tests passed with canonical steps 0. Private C++ planning
+is a distinct integration surface. Both roles must review the new exact HEAD;
+scientific attempts remain 0, Gate 0 incomplete and live v2 NOT_RUN.
+
+
+2026-10-02 third-stage diagnostic increment: [bounded adapter task](research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md) implements separate3s original/corrected scopes. B retains source position-PD and corrects floor registration/effective torque clamp; source mass, damping and deliberate smoothing remain. Rollout and FD upper-bound accounting covers private integration; B requires A verified original prefix/stop reproduction. Formal attempts/canonical steps0 pending new exact-head reviews; qualification optimizer smoke is engineering only. This does not select a topic or start a new method.

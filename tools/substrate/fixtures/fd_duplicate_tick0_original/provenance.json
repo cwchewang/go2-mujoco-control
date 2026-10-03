@@ -1,0 +1,13 @@
+{
+  "files": {
+    "binary-identities.json": "87875b53d228603b54484686d31663579d62e471baafa08dc6d38fb5e4320240",
+    "fd-trace.jsonl": "dde0e7fd35f28e6a8269cc329b81dfe4e68aa2cf4311943570f41b8d8450ee61",
+    "inputs.json": "bb8c97657a3eeb18c580f443fad3aaa5c29ebc225a58444ede85ce25a4a45e0d",
+    "native.jsonl": "30ce919e5afae6839e66dcd2d1077b4c352368761d59b5c525e2a8f8b4fd0d35",
+    "native.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "predictions.jsonl": "47de54a6b91e2b1a7bc5489fc43844b0485b9553eed037220229d7d5c85b0139"
+  },
+  "source_head": "973db057ed4957f6606c532645887593aaa7a23c",
+  "source_manifest_sha256": "1b23584c12fee813211cbb97902e3d2d57c6e777306040282a7037a11c4a2576",
+  "source_run": "_runs/mjpc_fd_duplicate_diagnostic_prepare_external_records_20261002_run_records/result"
+}

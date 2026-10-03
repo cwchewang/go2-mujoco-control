@@ -1,0 +1,15 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "guarded": [
+    "mj_step",
+    "mj_step1",
+    "mj_step2"
+  ],
+  "output": "_runs/shared_campaign_runner_prep_20261002/protocol_identity_regression_20261002T060157857467Z",
+  "private_planning_calls": 0,
+  "qualification_invocations": 0,
+  "real_canonical_integration_steps": 0,
+  "success": true,
+  "tests": 254
+}

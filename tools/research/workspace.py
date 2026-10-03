@@ -10,6 +10,13 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def render_current(value):
+    related = value.get("related_result")
+    related_line = (
+        f"**Related bounded diagnostic:** [{related['title']}]({related['path']}) — "
+        f"{related['summary'].removesuffix('.')}."
+        if related
+        else ""
+    )
     return f"""# Go2 current research frontier
 
 Generated from `docs/research/current.json`; edit that source and regenerate.
@@ -20,11 +27,13 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 Branch: `{value["branch"]}`.
 Task: [{value["title"]}]({value["task"]}).
-Closeout: [{value["title"]} results]({value["result"]}).
+Closeout: [{value["title"]}]({value["result"]}).
 Stage: {value["stage"]}.
 Scientific status: {value["scientific_status"]}.
 Last live HEAD: `{value["last_live_head"]}`.
-Next: {value["next"]}.
+Next: {value["next"].removesuffix(".")}.
+
+{related_line}
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The

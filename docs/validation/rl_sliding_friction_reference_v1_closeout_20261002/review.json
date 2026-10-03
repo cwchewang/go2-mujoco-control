@@ -1,0 +1,13 @@
+{
+  "execution": {
+    "evidence": "Final formal APPROVED: thread 01a0f7d0, turn 01a0fca8-0745-7252-ab83-16631d52981d; exact HEAD849b7aa13c82b13880cfc214083f2473e794e83e; attested by delegating source thread 01a0f08f-d223-7240-813b-ee93267b700d.",
+    "reviewer": "execution-thread-01a0f7d0-411d-7446-9b73-68efe68130bf",
+    "verdict": "APPROVED"
+  },
+  "head": "849b7aa13c82b13880cfc214083f2473e794e83e",
+  "science": {
+    "evidence": "Final formal APPROVED: thread 01a0f819, turn 01a0fca8-62d1-7222-8f1f-d91778a4f867; exact HEAD849b7aa13c82b13880cfc214083f2473e794e83e; attested by delegating source thread 01a0f08f-d223-7240-813b-ee93267b700d.",
+    "reviewer": "science-thread-01a0f819-d2cc-728a-baf2-30ec9050b08e",
+    "verdict": "APPROVED"
+  }
+}

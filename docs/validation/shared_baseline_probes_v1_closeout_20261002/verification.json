@@ -1,0 +1,12 @@
+{
+  "baseline_eligibility_recomputed": false,
+  "canonical_physics_steps": 0,
+  "capture_status": "SAFETY_STOP",
+  "external_claims_checked": true,
+  "head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "private_planning_calls": 0,
+  "raw_sha_checked": true,
+  "scientific_attempts_checked": 3,
+  "skip_stop_sequence_checked": true,
+  "status": "VERIFIED"
+}

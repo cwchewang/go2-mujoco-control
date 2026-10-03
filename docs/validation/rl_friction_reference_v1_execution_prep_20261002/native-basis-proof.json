@@ -1,0 +1,15 @@
+{
+  "allowed_reviewed_increment_files": [
+    "tools/substrate/protocols/rl_sliding_friction_reference_v1.json",
+    "tools/substrate/qualify_rl_friction.py",
+    "tools/substrate/rl_friction_campaign.py",
+    "tools/substrate/rl_friction_reference.py",
+    "tools/substrate/shared_campaign.py",
+    "tools/substrate/test_rl_friction_campaign.py",
+    "tools/substrate/test_rl_friction_reference.py"
+  ],
+  "native_build_binary_link_compiler_model_environment_unchanged": true,
+  "source_fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+  "source_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "unchanged_remainder_fingerprint": "e731619c35ead69443a9e6336f746a72f177dffe84b1dbff5737ce8e79c67502"
+}

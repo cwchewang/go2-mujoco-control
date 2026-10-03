@@ -1,0 +1,20 @@
+{
+  "scope": "ENGINEERING_ONLY",
+  "scientific_attempts": 0,
+  "canonical_physics_steps": 0,
+  "canonical_time_s": 0,
+  "native_ground_ctest": "PASS",
+  "native_ipc_and_reset": "PASS",
+  "all_substrate_tests": 175,
+  "required_aggregate_development": "ENGINEERING_ADMITTED",
+  "style": "PASS",
+  "native_controller_sha256": "04ed9fbce629563a2e68d146fcf957253be42bc5ebbe820b05280e817f694ce3",
+  "raw_evidence_root": "/home/che/dev/go2-workspace/current/_runs/mjpc_ground_hardening_20261001T214815",
+  "preserved_failed_harness": "zero_step_smoke.log (underground initial state was not a guaranteed Ground miss; not a controller failure)",
+  "preserved_lock_fixture_failures": [
+    "all_substrate_tests.log",
+    "all_substrate_tests_v2.log"
+  ],
+  "clean_head_qualification": "Required after commit; use fresh qualification_clean output",
+  "v2_live": "NOT_RUN"
+}

@@ -1,0 +1,110 @@
+{
+  "attempts_per_repeat": 1,
+  "campaign_identity": "prepared packet SHA-256; single allowed slot 1",
+  "canonical_steps_max": 6000,
+  "capability_claim": "none; one-arm 12-second sustained-control diagnostic",
+  "capture_native_controller_processes_campaign_max": 1,
+  "capture_native_controller_processes_per_repeat_max": 1,
+  "command_body_mps": [
+    1,
+    0,
+    0
+  ],
+  "construction_handshake_native_processes_max": 1,
+  "failure_policy": "stop on first safety, execution, evidence, identity, warning, wall-time or private-budget failure; no retry",
+  "horizon_s": 12.0,
+  "id": "mjpc-floor-registration-sustained-12s-v1",
+  "inference_boundary": "single-arm frozen-condition result; no causal attribution, repeatability, robustness, or baseline qualification",
+  "intervention": {
+    "field": "private_task_flat.floor.pos.z",
+    "from_m": -0.01,
+    "to_m": 0
+  },
+  "max_attempts": 1,
+  "max_replan_calls": 600,
+  "one_shot_reservation": "exclusive one-attempt record keyed by prepared packet SHA-256; slot 1 can be claimed once",
+  "parent_floor0_packet_sha256": "7662c2d96ca664162888e8f5870b9013f2919c26eca295994d53bb73c04de402",
+  "parent_floor0_result_sha256": "47cf21600c3f56ab60b709242fcfa14454ffb67beaad6c6c1bed72aedb3f2c26",
+  "parent_r4_head": "6e829bed5dcd4a8b4dc6b575f70b1a5be422cb78",
+  "parent_repeat_campaign_result_sha256": "c92d3ae1d21f97f8d6c689eaf421fbb15187f3731bee7b0dcabdad5cb8fe855a",
+  "parent_saturation_posthoc_sha256": "0e56e77b75ec517773c461092f1a38913c40acf5ac5aca0d2741fce3e326fd39",
+  "prediction_contact_semantics": "selected-state forward reconstruction on smoothed private model; not future rollout",
+  "preserve": [
+    "canonical_model",
+    "home_reset",
+    "mass",
+    "damping",
+    "contact_smoothing",
+    "PD60_5",
+    "torque_limits",
+    "cost",
+    "gait_Trot_Manual",
+    "0.35s_horizon",
+    "10ms_planner_dt",
+    "20ms_replan",
+    "2ms_feedback",
+    "one_sided_fd1e-6",
+    "derivative_skip0",
+    "four_workers",
+    "FD_duplicate_fix"
+  ],
+  "private_reservation_per_replan": 4096,
+  "private_step_upper_bound_max": 2457600,
+  "private_step_upper_bound_per_repeat": 2457600,
+  "private_step_upper_bound_total_max": 2457600,
+  "ramp_ticks": 100,
+  "repeats": 1,
+  "saturation_reporting": {
+    "actuator_joint_order": "source actuator order with named mapping",
+    "decision_threshold": "report only; no saturation pass/fail threshold",
+    "per_joint": [
+      "peak_abs_requested_torque_Nm",
+      "max_excess_beyond_ctrlrange_Nm",
+      "saturated_action_ticks",
+      "saturated_action_share_pct",
+      "longest_consecutive_saturated_ticks",
+      "episode_start_end_and_duration_s"
+    ],
+    "whole_run": [
+      "total_saturated_action_ticks",
+      "total_saturated_joint_ticks",
+      "warnings_and_safety_stop_reason"
+    ]
+  },
+  "schema": 1,
+  "seed_rule": "xfrc_std=0; no seed",
+  "start_gate": "fresh exact-head science and execution reviews plus one protocol/manifest-bound user authorization for one attempt",
+  "task_spec": {
+    "canonical_replay_thresholds": {
+      "body_vx_mae_max_mps": 2.0,
+      "progress_min_m": 0.05
+    },
+    "command_body_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "command_frame": "body",
+    "measurement_start_tick": 150,
+    "physics_step_s": 0.002,
+    "ramp_ticks": 100,
+    "safety_thresholds": {
+      "height_max_m": 0.55,
+      "height_min_m": 0.12,
+      "lateral_max_m": 0.4,
+      "quaternion_norm_sq_abs_error_max": 2e-06,
+      "tilt_max_rad": 0.8
+    },
+    "stop_on": [
+      "nonfinite",
+      "orientation",
+      "physics_warning",
+      "nonfoot_contact",
+      "posture",
+      "lateral"
+    ],
+    "zero_command_ticks": 50
+  },
+  "wall_timeout_s": 300,
+  "zero_command_ticks": 50
+}

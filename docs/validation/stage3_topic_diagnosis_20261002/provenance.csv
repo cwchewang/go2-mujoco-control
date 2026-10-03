@@ -1,0 +1,3 @@
+artifact,source,sha256,operation
+evidence.json,sealed MJPC raw; pinned source/model files hashed inside evidence; inspection HEAD3ae9a7cdf6afb59cf42f0f8fe2a7a68d0178e120,f0b74aad60a7874f380773830b15b413ce2db680ce6939bfe4624a1dec001fbc,read_only_compilation_and_algebra
+RESULTS.md,evidence.json; sealed prior diagnosis; TOPIC_AUDIT at inspection HEAD; cited public primary sources; delegated stage correction,f5666ca28a5730c25e786648f4677f93a9d73d5c5d04589e79e26cfdab394a8b,bounded_interpretation_and_proposal

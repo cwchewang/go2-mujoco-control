@@ -1,0 +1,12 @@
+{
+  "mjpc": {
+    "fake_trace_sha256": "361a59a04ee6955860fc4a72eb7d704db1136a73eef1fc0a3dced7eb4bef5891",
+    "frames": 6001,
+    "same_raw_rows": true
+  },
+  "rl": {
+    "fake_trace_sha256": "5159943749e41abb24432fc8b300111e620fbf397c11430b3a70a2a5f0efa091",
+    "frames": 6001,
+    "same_raw_rows": true
+  }
+}

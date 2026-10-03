@@ -1,0 +1,581 @@
+{
+  "mode": "read_only_raw_algebra_and_model_compilation",
+  "canonical_integration_steps": 0,
+  "private_rollouts": 0,
+  "optimizer_calls": 0,
+  "mj_forward_calls": 0,
+  "model_data_objects_created": 0,
+  "inspection_head": "3ae9a7cdf6afb59cf42f0f8fe2a7a68d0178e120",
+  "capture_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+  "models": {
+    "canonical": {
+      "xml": "unitree_robots/go2/phase2_flat.xml",
+      "robot_mass_excluding_mocap_goal_kg": 15.206408,
+      "root_mass_kg": 6.921,
+      "floor_z_m": 0.0,
+      "joint_damping": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "xml_timestep_s": 0.002,
+      "actuator_forcelimited": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "control_range": [
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -40.0,
+          40.0
+        ],
+        [
+          -45.43,
+          45.43
+        ]
+      ]
+    },
+    "private_source": {
+      "xml": ".substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml",
+      "robot_mass_excluding_mocap_goal_kg": 15.806408000000001,
+      "root_mass_kg": 7.521,
+      "floor_z_m": -0.01,
+      "joint_damping": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ],
+      "xml_timestep_s": 0.002,
+      "actuator_forcelimited": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "control_range": [
+        [
+          -1.0472,
+          1.0472
+        ],
+        [
+          -1.5708,
+          3.4907
+        ],
+        [
+          -2.7227,
+          -0.83776
+        ],
+        [
+          -1.0472,
+          1.0472
+        ],
+        [
+          -1.5708,
+          3.4907
+        ],
+        [
+          -2.7227,
+          -0.83776
+        ],
+        [
+          -1.0472,
+          1.0472
+        ],
+        [
+          -0.5236,
+          4.5379
+        ],
+        [
+          -2.7227,
+          -0.83776
+        ],
+        [
+          -1.0472,
+          1.0472
+        ],
+        [
+          -0.5236,
+          4.5379
+        ],
+        [
+          -2.7227,
+          -0.83776
+        ]
+      ]
+    }
+  },
+  "private_runtime": {
+    "planner_dt_s": 0.01,
+    "canonical_dt_s": 0.002,
+    "kp": 60,
+    "kd": 5,
+    "mode": "Walk",
+    "gait_switch": "Manual",
+    "gait": "Trot",
+    "duty_ratio": 0.45,
+    "cadence_hz": 2,
+    "swing_amplitude_m": 0.03,
+    "compatibility_correction": "private_model_mjBIAS_AFFINE",
+    "optimization_solimp": "MakeDifferentiable during OptimizePolicy; restore before feedback",
+    "notes": "Total source body mass includes7.238229kg mocap goal and must not be used as robot mass. Runtime overwrites source XML timestep to0.01."
+  },
+  "raw": {
+    "path": "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z/mjpc_baseline_1.jsonl",
+    "sha256": "e5f760c54a57d12e8da6150972cb084414c3f9d84f1827ac9582b292532a3841",
+    "frames": 1288,
+    "stop_tick": 1287,
+    "stop_time_s": 2.574,
+    "last_foot_contact_tick": 1224,
+    "first_final_empty_contact_tick": 1225,
+    "terminal_forbidden_contacts": [
+      [
+        0,
+        53
+      ]
+    ],
+    "motor_clipped_action_frames": 20,
+    "motor_clipped_entries": 22,
+    "last_motor_clip_tick": 1075
+  },
+  "algebraic_extra_private_passive_damping_torque_nm": {
+    "definition": "(plant_damping0.1 - private_damping2.0)*sealed_raw_joint_qvel; hypothetical same-state force difference only, not a private rollout replay or causal attribution",
+    "all_joint_mean_absolute": 3.3227895522221305,
+    "all_joint_max_absolute": 32.71511376645744,
+    "rr_calf_mean_absolute": 4.2876538029726,
+    "rr_calf_max_absolute": 21.10832283930673,
+    "rr_calf_last_action": 4.797602001552441
+  },
+  "inspected_source_sha256": {
+    "tools/substrate/native/controller.cc": "6e132479d728c3782ec2affdca316baab17fa5fb28fb1bf3a9ad8bfc2ab4d662",
+    ".substrate/mjpc/mjpc/tasks/quadruped/quadruped.cc": "5b49563c6281d39b7b36bf449a48097699d6508375053a5e188173d4fa53a264",
+    ".substrate/mjpc/mjpc/tasks/quadruped/quadruped.h": "4569428a5925ec3e0bbbf7ce492d7bf584dafe855d47734ec371d76ae0213319",
+    ".substrate/mjpc/mjpc/tasks/quadruped/go2.xml": "e45356dd7bccbd17a837a7e2e201da46129953a48b431feff767f4edd5cc65ab",
+    ".substrate/mjpc/mjpc/tasks/quadruped/task_flat.xml": "a99762b6209d3a71e9004d49643cc861340b00188bfc7ceae58bf7a0f1c798e1",
+    "unitree_robots/go2/go2.xml": "01acff1a72a10cd38ab3c95142bfc63db197c5fba39a11b45b15b6fc4899ba10",
+    "unitree_robots/go2/phase2_flat.xml": "7573636c293f03cb918a86eb11c08968031c2378ba82b4a99267eb3b3e68fc3e",
+    "docs/TOPIC_AUDIT.md": "e5640e1c8c3d651fe021ea033e5eecabd3ab4d02c1db0b685224bb7aa41f19b3",
+    "docs/validation/rl_friction_reference_v1_prep_20261002/mjpc-readonly-diagnostic.md": "90d95b868384839dd5ba0e345f8d43885746fedc08ebe0f8a39fdb57e56a2b4b"
+  },
+  "additional_compiled_options_reset_order": {
+    "canonical": {
+      "impratio": 100.0,
+      "cone": 1,
+      "iterations": 100,
+      "home_qpos": [
+        0.0,
+        0.0,
+        0.27,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8
+      ],
+      "joints": [
+        null,
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint"
+      ]
+    },
+    "private_source": {
+      "impratio": 100.0,
+      "cone": 1,
+      "iterations": 100,
+      "home_qpos": [
+        0.0,
+        0.0,
+        0.27,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8,
+        0.0,
+        0.9,
+        -1.8
+      ],
+      "joints": [
+        null,
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ]
+    }
+  },
+  "pinned_mjpc_source_identity": {
+    "head": "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+    "containing_refs": [
+      "go2",
+      "origin/go2"
+    ],
+    "commit_subject": "working go2 model",
+    "source_condition_closed_loop_reproduction": "not established"
+  },
+  "compiled_foot_contact_parameters": {
+    "canonical": {
+      "FL": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.9,
+          0.95,
+          0.001,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "FR": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.9,
+          0.95,
+          0.001,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "RL": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.9,
+          0.95,
+          0.001,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "RR": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.9,
+          0.95,
+          0.001,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      }
+    },
+    "private_source": {
+      "FL": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.015,
+          1.0,
+          0.022,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "FR": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.015,
+          1.0,
+          0.022,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "RL": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.015,
+          1.0,
+          0.022,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      },
+      "RR": {
+        "size": [
+          0.022,
+          0.0,
+          0.0
+        ],
+        "pos": [
+          -0.002,
+          0.0,
+          -0.213
+        ],
+        "friction": [
+          0.8,
+          0.02,
+          0.01
+        ],
+        "solimp": [
+          0.015,
+          1.0,
+          0.022,
+          0.5,
+          2.0
+        ],
+        "solref": [
+          0.02,
+          1.0
+        ],
+        "condim": 6,
+        "priority": 1,
+        "margin": 0.001
+      }
+    }
+  }
+}

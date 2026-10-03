@@ -8,6 +8,7 @@ import sys
 from .admit import admit, source_manifest
 from .integrity import EvidenceRun, experiment_lock, run_logged
 from .environment import verify_environment
+from .guards import zero_step_guard
 from .qualification import current_inputs, fingerprint
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -73,6 +74,8 @@ def main():
                         "tools.substrate.test_launch",
                         "tools.substrate.test_qualification",
                         "tools.substrate.test_baseline",
+                        "tools.substrate.test_bounded_conditions",
+                        "tools.substrate.test_shared_campaign",
                         "-v",
                     ],
                     120,
@@ -119,11 +122,27 @@ def main():
                         if key != "controller_build"
                     ):
                         raise ValueError("qualification inputs changed during build")
-            admit(
-                run,
-                ROOT / ".substrate/rl/policy.pt",
-                ROOT / ".substrate/headless-reliable/go2_mjpc_admit",
+            # Python canonical model integration is forbidden. The native static
+            # optimizer intentionally integrates its own private rollout copies.
+            run.result["physics_accounting"] = {
+                "canonical_physics_steps": 0,
+                "canonical_python_integrators_guarded": True,
+                "private_rollouts_expected": True,
+                "private_rollout_horizon_steps": 21,
+                "private_integration_step_count": None,
+                "private_step_count_status": "not_instrumented; real private integration occurs",
+                "private_static_admission_completed": False,
+            }
+            with zero_step_guard():
+                admit(
+                    run,
+                    ROOT / ".substrate/rl/policy.pt",
+                    ROOT / ".substrate/headless-reliable/go2_mjpc_admit",
+                )
+            run.result["physics_accounting"]["private_static_admission_completed"] = (
+                True
             )
+            run.result["physics_accounting"]["private_static_optimizer_invocations"] = 1
             after = subprocess.check_output(
                 ["git", "status", "--porcelain"], cwd=ROOT, text=True
             )

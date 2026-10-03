@@ -1,0 +1,20 @@
+{
+  "candidate_input_fingerprint": "8c066c5fe8e817c8a289800cc9d7fe3163982a4a6b42dea1022aa55a1815cd3a",
+  "canonical_steps": 0,
+  "capture_plan_sha256": "42f509301c8d24e94121bddf4e100476c5849d465326ea93959e8e527d2e494d",
+  "errors": 0,
+  "failures": 0,
+  "final_dual_reviews": "PENDING_NEW_EXACT_HEAD",
+  "live_start": "PROHIBITED",
+  "new_preparation": "NOT_STARTED_REQUIRED_FOR_CHANGED_RUNTIME",
+  "new_qualification": "NOT_STARTED_REQUIRED_FOR_CHANGED_RUNTIME",
+  "new_real_byte_reference_chain_tests": 6,
+  "private_planning_calls": 0,
+  "producer_parent_head": "afa786312fa842c7bc44bef804e827bf19d888f8",
+  "protocol_sha256": "76c94c60b98d4dc452ea3c18e2746f6b39990b061e894013462173715e467265",
+  "qualification_invocations": 0,
+  "recovery_note": "The transport error obscured a completed run. Reconnection verified the preserved254-test PASS and no source edits since that run; the suite was not repeated.",
+  "scientific_attempts": 0,
+  "scope": "protocol_identity_fix_zero_integration_precheck",
+  "tests": 254
+}

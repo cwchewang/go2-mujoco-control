@@ -34,6 +34,9 @@ class NativeMJPCProtocolTest(unittest.TestCase):
             "canonical_evaluation_plant_modified": False,
             "gait_switch": "Manual",
             "gait": "Trot",
+            "ground_miss_handling": "rollout_warning_failure",
+            "warning_channel": "stderr",
+            "policy_freshness": "current_candidate_required",
             "joint_names": list(MOTOR_JOINTS),
             "position_lower": [-2.0] * 12,
             "position_upper": [2.0] * 12,
@@ -69,6 +72,14 @@ class NativeMJPCProtocolTest(unittest.TestCase):
             validate_ready(self.ready(compatibility_correction="silent_patch"))
         with self.assertRaisesRegex(ValueError, "PD gains"):
             validate_ready(self.ready(kp=[59.0] * 12))
+
+    def test_ready_rejects_ground_failure_or_warning_channel_drift(self):
+        for fields in (
+            {"ground_miss_handling": "ignore"},
+            {"warning_channel": "stdout"},
+        ):
+            with self.assertRaises(ValueError):
+                validate_ready(self.ready(**fields))
 
     def test_planning_and_feedback_cadence_are_distinct(self):
         timing = TimingSpec(0.002, 0.02, feedback_period_s=0.002)
@@ -111,6 +122,23 @@ class NativeMJPCProtocolTest(unittest.TestCase):
             reorder(state.proprioception.velocity, POLICY_JOINTS, MOTOR_JOINTS),
         )
 
+    def test_stale_fallback_metadata_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "step metadata"):
+            parse_step_response(
+                {
+                    "ok": True,
+                    "time_s": 1.25,
+                    "cost": 1,
+                    "replanned": True,
+                    "current_rollout_valid": False,
+                    "planning_compute_us": 1,
+                    "action_compute_us": 1,
+                    "q_des": [0] * 12,
+                },
+                1.25,
+                True,
+            )
+
     def test_step_response_separates_plan_and_feedback_cost(self):
         action, meta = parse_step_response(
             {
@@ -118,6 +146,7 @@ class NativeMJPCProtocolTest(unittest.TestCase):
                 "time_s": 1.25,
                 "cost": 3.0,
                 "replanned": True,
+                "current_rollout_valid": True,
                 "planning_compute_us": 1200,
                 "action_compute_us": 40,
                 "q_des": [0.0] * 12,
@@ -135,6 +164,7 @@ class NativeMJPCProtocolTest(unittest.TestCase):
                 "time_s": 1.252,
                 "cost": 3.0,
                 "replanned": False,
+                "current_rollout_valid": True,
                 "planning_compute_us": 0,
                 "action_compute_us": 30,
                 "q_des": [0.0] * 12,
@@ -150,6 +180,7 @@ class NativeMJPCProtocolTest(unittest.TestCase):
                     "time_s": 1.252,
                     "cost": 3.0,
                     "replanned": False,
+                    "current_rollout_valid": True,
                     "planning_compute_us": 1,
                     "action_compute_us": 30,
                     "q_des": [0.0] * 12,

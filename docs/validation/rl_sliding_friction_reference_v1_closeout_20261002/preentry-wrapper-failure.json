@@ -1,0 +1,14 @@
+{
+  "canonical_physics_steps": 0,
+  "correction": "invoke reviewed module directly with repository cwd; same admission and output paths",
+  "error": "ModuleNotFoundError: tools; absolute script path omitted repository import path",
+  "formal_campaign_ledger_created": false,
+  "phase": "wrapper_import_before_reviewed_capture_entry",
+  "pid": 772778,
+  "private_planning_calls": 0,
+  "query_utc": "2026-10-02T13:13:51.590404+00:00",
+  "scientific_attempts": 0,
+  "stderr_sha256": "7dcccf7f55aecfb958c3741307d1c6370e864442f7fdc99fb89a30e013687c5d",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "worker_source_sha256": "828503353f6a2f56487b4dd49751bffcabbe155dc5a59a7669f880f0485dce8a"
+}

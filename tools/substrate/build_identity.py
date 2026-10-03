@@ -1,6 +1,7 @@
 """Bind an executable to the exact local build inputs, not merely a git label."""
 
 import json
+import shlex
 from pathlib import Path
 import subprocess
 from .integrity import digest, strict_json
@@ -41,6 +42,66 @@ def cache_values(build):
     return values
 
 
+def compilation_files(build):
+    """Bind generated translation units and actual Ninja-discovered dependencies."""
+    build = Path(build).resolve()
+    commands = strict_json((build / "compile_commands.json").read_text())
+    sources = {}
+    planned = {}
+    for entry in commands:
+        path = Path(entry["file"])
+        if not path.is_absolute():
+            path = Path(entry["directory"]) / path
+        path = path.resolve(strict=True)
+        sources[str(path)] = digest(path)
+        if path.is_relative_to(ROOT / "tools/substrate/native") or path.is_relative_to(
+            build / "generated"
+        ):
+            argv = entry.get("arguments") or shlex.split(entry["command"])
+            cleaned = []
+            skip = False
+            for arg in argv:
+                if skip:
+                    skip = False
+                    continue
+                if arg in ("-o", "-MF", "-MT", "-MQ"):
+                    skip = True
+                elif arg not in ("-c", "-MD", "-MMD", "-MP"):
+                    cleaned.append(arg)
+            dependency_text = subprocess.check_output(
+                cleaned + ["-M", "-MT", "identity", "-MF", "-"],
+                cwd=entry["directory"],
+                text=True,
+                timeout=30,
+            )
+            names = shlex.split(
+                dependency_text.split(":", 1)[1].replace(chr(92) + chr(10), " ")
+            )
+            for name in names:
+                dependency = Path(name)
+                if not dependency.is_absolute():
+                    dependency = Path(entry["directory"]) / dependency
+                dependency = dependency.resolve(strict=True)
+                planned[str(dependency)] = digest(dependency)
+    dependencies = {}
+    output = subprocess.check_output(
+        ["ninja", "-C", str(build), "-t", "deps"], text=True
+    )
+    for line in output.splitlines():
+        if not line.startswith("    "):
+            continue
+        path = Path(line.strip())
+        if not path.is_absolute():
+            path = build / path
+        path = path.resolve(strict=True)
+        dependencies[str(path)] = digest(path)
+    return {
+        "translation_units": sources,
+        "planned_native_dependencies": planned,
+        "actual_dependencies": dependencies,
+    }
+
+
 def inputs(build):
     build = Path(build).resolve()
     cache = cache_values(build)
@@ -52,7 +113,7 @@ def inputs(build):
     source_files = {
         str(p.relative_to(ROOT)): digest(p)
         for p in sorted((ROOT / "tools/substrate/native").rglob("*"))
-        if p.is_file()
+        if p.is_file() and "__pycache__" not in p.parts
     }
     # Include MuJoCo headers, not only its runtime library.
     headers = {
@@ -62,6 +123,7 @@ def inputs(build):
     compiler = Path(cache["CMAKE_CXX_COMPILER"]).resolve()
     return {
         "sources": source_files,
+        "compilation_files": compilation_files(build),
         "mjpc": git_identity(source, lock["mjpc"]["commit"]),
         "abseil": git_identity(abseil, lock["abseil_commit"]),
         "mujoco_headers": headers,
@@ -77,7 +139,21 @@ def inputs(build):
 def _seal_binary(build, before, binary_name, identity_name):
     build = Path(build).resolve()
     after = inputs(build)
-    if before != after:
+
+    def planned(value):
+        result = dict(value)
+        compilation = dict(result.get("compilation_files", {}))
+        compilation.pop("actual_dependencies", None)
+        result["compilation_files"] = compilation
+        return result
+
+    previous_dependencies = before.get("compilation_files", {}).get(
+        "actual_dependencies", {}
+    )
+    if planned(before) != planned(after) or any(
+        digest(Path(path)) != expected
+        for path, expected in previous_dependencies.items()
+    ):
         raise ValueError("build inputs changed during compilation")
     binary = build / binary_name
     result = {

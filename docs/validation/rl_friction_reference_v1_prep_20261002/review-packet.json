@@ -1,0 +1,174 @@
+{
+  "accepted_parent_head": "d4bccb60f4fb8c6a63ed85da409b29c0b642cec8",
+  "auxiliary_measurement": {
+    "affects_primary_classification": false,
+    "end_tick_exclusive": 6000,
+    "endpoint_in_mean": false,
+    "incomplete_window": "NOT_MEASURABLE_no_partial_score",
+    "label": "[6,12)",
+    "metrics": [
+      "body_vx_mean_mps",
+      "body_vx_mae_mps",
+      "paired_mean_delta_mps",
+      "paired_mae_delta_mps"
+    ],
+    "samples": 3000,
+    "start_tick": 3000,
+    "thresholds": null
+  },
+  "budget": {
+    "canonical_steps_max": 12000,
+    "new_scientific_attempts_max": 2,
+    "per_repeat_canonical_steps_max": 6000,
+    "retry": "none"
+  },
+  "capture_entry_implemented": false,
+  "expected_branch": "research/rl-friction-reference-prep-20261002",
+  "frozen_source_head": "eaa9976627bbb6df4e67df385e236f14df93db1d",
+  "live_execution_admission": "NOT_CREATED",
+  "new_canonical_physics_steps": 0,
+  "new_scientific_attempts": 0,
+  "old_NOT_RUN_count_unchanged": 17,
+  "old_campaign": "PERMANENTLY_CLOSED",
+  "old_whole_campaign_eligibility_not_modified": true,
+  "physical_sha256": "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+  "planned_arms": [
+    {
+      "condition": "sliding_friction",
+      "controller": "rl",
+      "id": "rl_friction_1",
+      "reference_baseline": "rl_baseline_1",
+      "repeat": 1,
+      "stage": "challenge"
+    },
+    {
+      "condition": "sliding_friction",
+      "controller": "rl",
+      "id": "rl_friction_2",
+      "reference_baseline": "rl_baseline_2",
+      "repeat": 2,
+      "stage": "challenge"
+    }
+  ],
+  "precheck": {
+    "manifest_sha256": "72bc4db5e8b29c6ef8e641be6aaec17171dd6f6da20ad9b973cf9de3e789fb57",
+    "path": "/home/che/dev/go2-workspace/current/_runs/rl_friction_reference_prep_20261002/freeze_precheck_20261002T101816347837Z",
+    "status": "PRECHECK_PASS"
+  },
+  "primary_measurement": {
+    "end_tick_exclusive": 6000,
+    "label": "[2,12)",
+    "samples": 5000,
+    "start_tick": 1000
+  },
+  "private_planning_calls": 0,
+  "protocol": "tools/substrate/protocols/rl_sliding_friction_reference_v1.json",
+  "protocol_sha256": "d10719424809db2037a01f755786b4f93c20ad6cfe2db1455e847ef0f57da89d",
+  "qualification_reuse_for_new_inputs": false,
+  "reference_chain": {
+    "capture": "/home/che/dev/go2-workspace/current/example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z",
+    "external_ledger_files": {
+      "campaign.json": "bc1fa92d724758d14750fa1b84364a40c6ed6458a3ff901c264bf392170b5f1c",
+      "mjpc_baseline_1.json": "02b803bb9b929f94bbe610ac9a00e8ebed649b07699182eab95cbaff12e28332",
+      "rl_baseline_1.json": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+      "rl_baseline_2.json": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a"
+    },
+    "manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+    "old_campaign_status": "PERMANENTLY_CLOSED",
+    "old_not_run_count": 17,
+    "own_rl_baseline_eligibility": {
+      "baseline_statuses": [
+        "PASS",
+        "PASS"
+      ],
+      "baselines": [
+        {
+          "classification": "PASS",
+          "id": "rl_baseline_1",
+          "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+        },
+        {
+          "classification": "PASS",
+          "id": "rl_baseline_2",
+          "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8"
+        }
+      ],
+      "eligible": true,
+      "reason": "repeatable_own_baseline",
+      "repeat_comparison": {
+        "maximum_absolute_state_control_difference": 0.0,
+        "repeatable": true
+      }
+    },
+    "paired_references": [
+      {
+        "capture_claim_sha256": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+        "classification": "PASS",
+        "external_claim_sha256": "5ae9afd2d1fbb83e42c21441edb357eb76d7bc09599720001f69f119ee018fb2",
+        "id": "rl_baseline_1",
+        "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "repeat": 1,
+        "role": "read_only_reference_not_new_attempt"
+      },
+      {
+        "capture_claim_sha256": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a",
+        "classification": "PASS",
+        "external_claim_sha256": "9ec9a70c56ea57965d9bd8ab9b9c5532dd1e636ab29fafe9369facd815a86c4a",
+        "id": "rl_baseline_2",
+        "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+        "raw_sha256": "61259f7cd8d4398e307a798419f60cd3f1cce349a62f96e9973c7a4d168d07c8",
+        "repeat": 2,
+        "role": "read_only_reference_not_new_attempt"
+      }
+    ],
+    "prepared": {
+      "manifest_sha256": "abc8db97e07a6fbd5cdd8c5953541f1402e107ba38b6437ce43df87b8af3542e",
+      "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_prepared_20261002T082653659619Z"
+    },
+    "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d",
+    "source_qualification": {
+      "fingerprint": "8b06a40752041645e38be6b2e7e8167181bc8c9e3aa2ad1e7c851458c0534048",
+      "manifest_sha256": "1db729ccb7723becfc4eadaca3948bf13cb438db3c003f99ba048f1bd423d621",
+      "path": "/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/preflight_wiring_qualification_20261002T082220356151Z",
+      "producer_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+    },
+    "source_qualification_is_new_head_admission": false
+  },
+  "review_scope": {
+    "execution": [
+      "Review frozen preparation/reference ownership; source-preserving no-physics precheck",
+      "Plan smallest two-arm/sealed-reference binding to unchanged shared engine",
+      "New applicable exact-head qualification and locked fresh preflight required before START",
+      "No re-review or re-run of unchanged controller behavior; no new MJPC physics"
+    ],
+    "science": [
+      "Independent adoption of two sealed passing RL references despite closure of old global campaign",
+      "Single fixed-strength friction card, fixed paired prefix/exposure checks and inherited safety",
+      "Prospective [6,12) auxiliary metrics, no new thresholds or general robustness claim",
+      "Two-attempt/12000-step/no-retry stop policy"
+    ]
+  },
+  "safety_and_operational_thresholds": "inherited unchanged; safety stop always takes precedence",
+  "schema": 1,
+  "scientific_claim_scope": "bounded fixed-condition effect only; no ranking, statistical success rate, private-prediction mechanism or method claim",
+  "stage": "PROSPECTIVE_FROZEN_SPEC_PRECHECK_ONLY",
+  "task": "docs/research/TASK_RL_FRICTION_REFERENCE_V1_20261002.md",
+  "unchanged_runtime_source_hashes": {
+    "tools/substrate/aligned_anchor.py": "a8898d0dde9eab8b845f653f8195313504c00d76e9f5fa49dde175b0ae25fd15",
+    "tools/substrate/aligned_episode.py": "5d4533c78ef9d7b7cc97e6a3bc998e138d6b75fc37432d724b0f3641e8fa25f0",
+    "tools/substrate/bounded_conditions.py": "7833e449a8d4ee10be0ea8e603dee51717388babfb5f109338d25a4d96e36a0c",
+    "tools/substrate/condition_evidence.py": "3debeabe2a61f5a452957be4c6257368e56bedbba9a0eabb950d3af88c9cf458",
+    "tools/substrate/episode.py": "70286dc75981c843551f847f2e2e86e27760327b4ee1f00e96c82aaacc6ec9c4",
+    "tools/substrate/evaluator.py": "aa60995a50a370c6a7b650f2abe32c3b40986b3ddcb497dcdf420baea79025d5",
+    "tools/substrate/guards.py": "a9f101efdd066e9561f9736113ecf0b57b6e6e22b7ad19a41f1fa4e8851e7210",
+    "tools/substrate/integrity.py": "ae529932ae2807db45d4206e23dee7fa7464f37f498b48d981372c8d96ded71e",
+    "tools/substrate/launch.py": "135407d9dd6aae9579f3e41cc9ba47e843bcd5342fafee5bd43f06be99a9eb9b",
+    "tools/substrate/model.py": "7969d6f772489984837c33a53516d69db758ce01ea607a09d557b464ec3b1f5f",
+    "tools/substrate/qualification.py": "912007812e6ac13da56c8a3626b59bc613f98d51f5117444ed1b8cf009ebe009",
+    "tools/substrate/readiness.py": "389f8131aa38bd6ff776681ac9290545505df330c7b873c2d0179dbeb2e5dae7",
+    "tools/substrate/rl.py": "2182d643e5a26d5038f52359634f777223d875a2ed81fc84c4a97eff05d4a09c",
+    "tools/substrate/shared_baseline.py": "c34d6c53b9453ad83004afbe751c5aa4649716b3b1dcf157511c0edea7cdff15",
+    "tools/substrate/shared_campaign.py": "da6d79d4fa9c73124473e824eff49d3d944f86ed8079e31e301fa7c2bf262b6d"
+  }
+}

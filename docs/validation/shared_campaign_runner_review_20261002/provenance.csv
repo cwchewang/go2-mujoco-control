@@ -1,0 +1,3 @@
+raw_path,curated_file,sha256,bytes
+/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/regression_20261002T042713564155Z/summary.json,test_summary.json,4c868d99f632113310b60e3f7f2087da836ffbee474d2b82cb634c228783fae9,300
+/home/che/dev/go2-workspace/current/_runs/shared_campaign_runner_prep_20261002/regression_20261002T042713564155Z/tests.log,substrate_tests.log,c62910fdec62578bf64d0c99ad77891fdcdf900a63d74cfa4cc181db6edfdc9f,26027

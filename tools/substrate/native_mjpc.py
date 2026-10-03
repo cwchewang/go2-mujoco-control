@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 import subprocess
 
@@ -11,6 +12,7 @@ import numpy as np
 
 from .build_identity import cache_values, verify_controller
 from .clock import TimingSpec
+from .native_transport import NativeTransport
 from .contracts import (
     POLICY_JOINTS,
     PositionPDActuatorSpec,
@@ -33,6 +35,9 @@ def validate_ready(value):
         "canonical_evaluation_plant_modified": False,
         "gait_switch": "Manual",
         "gait": "Trot",
+        "ground_miss_handling": "rollout_warning_failure",
+        "warning_channel": "stderr",
+        "policy_freshness": "current_candidate_required",
     }
     for key, expected in exact.items():
         if value.get(key) != expected:
@@ -142,6 +147,7 @@ def parse_step_response(value, expected_time, expected_replan):
         or not math.isfinite(cost)
         or type(replanned) is not bool
         or replanned is not expected_replan
+        or value.get("current_rollout_valid") is not True
         or type(planning_us) not in (int, float)
         or isinstance(planning_us, bool)
         or not math.isfinite(planning_us)
@@ -157,36 +163,89 @@ def parse_step_response(value, expected_time, expected_replan):
         "time_s": float(time_s),
         "cost": float(cost),
         "replanned": replanned,
+        "current_rollout_valid": True,
         "planning_compute_s": float(planning_us) * 1e-6,
         "action_compute_s": float(action_us) * 1e-6,
     }
 
 
 class NativeMJPCController:
-    def __init__(self, binary, timing, *, popen=subprocess.Popen):
+    def __init__(
+        self,
+        binary,
+        timing,
+        *,
+        popen=subprocess.Popen,
+        stderr_log_path=None,
+        startup_timeout_s=10.0,
+        response_timeout_s=30.0,
+        diagnostic=None,
+        runtime_identity=None,
+        fd_trace_path=None,
+    ):
         if not isinstance(timing, TimingSpec):
             raise ValueError("native MJPC controller requires TimingSpec")
         self.timing = timing
         self.binary = Path(binary).resolve(strict=True)
-        self.build_identity = verify_controller(self.binary)
-        cache = cache_values(self.binary.parent)
-        source = Path(cache["MJPC_SOURCE_DIR"]).resolve(strict=True)
-        self.task_xml = source / "mjpc/tasks/quadruped/task_flat.xml"
+        launch_env = None
+        if runtime_identity is None:
+            if fd_trace_path is not None:
+                raise ValueError("FD trace requires explicit sealed runtime")
+            self.build_identity = verify_controller(self.binary)
+            cache = cache_values(self.binary.parent)
+            source = Path(cache["MJPC_SOURCE_DIR"]).resolve(strict=True)
+            self.task_xml = source / "mjpc/tasks/quadruped/task_flat.xml"
+            argv = [str(self.binary)]
+        else:
+            from . import native_runtime
+
+            self.build_identity = native_runtime.verify(self.binary, runtime_identity)
+            argv, self.task_xml = native_runtime.argv(self.binary, runtime_identity)
+            launch_env = os.environ.copy()
+            for key in (
+                "LD_PRELOAD",
+                "LD_AUDIT",
+                "LD_LIBRARY_PATH",
+                "GO2_MJPC_FD_TRACE_PATH",
+            ):
+                launch_env.pop(key, None)
+            if fd_trace_path is not None:
+                launch_env["GO2_MJPC_FD_TRACE_PATH"] = str(
+                    Path(fd_trace_path).resolve()
+                )
         if not self.task_xml.is_file():
             raise ValueError("pinned QuadrupedFlat task XML is missing")
-        self.process = popen(
-            [str(self.binary), str(self.task_xml)],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
+        argv += [str(self.task_xml)]
+        self._diagnostic = diagnostic
+        self._diagnostic_step = None
+        if diagnostic is not None:
+            mode, canonical, trace = diagnostic
+            if mode not in ("original", "corrected", "floor0") or Path(trace).exists():
+                raise ValueError("invalid/fresh diagnostic trace required")
+            argv += [mode, str(Path(canonical).resolve(strict=True)), str(trace)]
+        self._transport = NativeTransport(
+            argv,
+            popen=popen,
+            stderr_log_path=stderr_log_path,
+            **({"env": launch_env} if launch_env is not None else {}),
         )
+        self.process = self._transport.process
         self._closed = False
+        self._requires_reset = False
+        self._response_timeout_s = response_timeout_s
         self._last_feedback_tick = None
         self._held_command = None
-        ready = self._read_json()
-        self.joint_names, self.actuator_spec = validate_ready(ready)
+        try:
+            ready = self._transport.read_json(startup_timeout_s)
+            self.joint_names, self.actuator_spec = validate_ready(ready)
+            if (
+                runtime_identity is not None
+                and ready.get("worker_count") != self.build_identity["workers"]
+            ):
+                raise ValueError("native worker count differs from sealed identity")
+        except Exception:
+            self.close()
+            raise
         self.ready = ready
         self._diagnostics = {
             "planner": ready["planner"],
@@ -197,31 +256,16 @@ class NativeMJPCController:
             "canonical_evaluation_plant_modified": False,
             "gait_switch": ready["gait_switch"],
             "gait": ready["gait"],
+            "ground_miss_handling": ready["ground_miss_handling"],
+            "warning_channel": ready["warning_channel"],
+            "policy_freshness": ready["policy_freshness"],
             "control_period_s": timing.control_period_s,
             "feedback_period_s": timing.feedback_period_s,
             "compute_semantics": timing.compute_semantics,
         }
 
-    def _read_json(self):
-        line = self.process.stdout.readline()
-        if not line:
-            code = self.process.poll()
-            detail = self.process.stderr.read() if code is not None else ""
-            raise RuntimeError(
-                "native MJPC controller closed output"
-                + (f": {detail.strip()}" if detail.strip() else "")
-            )
-        try:
-            return json.loads(line)
-        except json.JSONDecodeError as error:
-            raise ValueError("native MJPC emitted invalid JSON") from error
-
     def _request(self, line):
-        if self._closed or self.process.poll() is not None:
-            raise RuntimeError("native MJPC controller is not running")
-        self.process.stdin.write(line + "\n")
-        self.process.stdin.flush()
-        return self._read_json()
+        return self._transport.request(line, self._response_timeout_s)
 
     def reset(self, observation):
         if not isinstance(observation, WholeBodyState):
@@ -230,18 +274,35 @@ class NativeMJPCController:
         response = self._request("reset")
         if response != {"ok": True, "reset": True}:
             raise RuntimeError("native MJPC reset failed")
+        self._requires_reset = False
         self._last_feedback_tick = None
         self._held_command = None
         self._diagnostics.pop("last_step", None)
 
     def step(self, observation, command):
+        if self._requires_reset:
+            raise RuntimeError("native MJPC requires reset after failed step")
         tick, replan = cadence_tick(
             observation.time_s, self.timing, self._last_feedback_tick
         )
         requested, sampled = sample_command(command, replan, self._held_command)
         packet = step_packet(observation, sampled, self.joint_names, replan=replan)
-        response = self._request(packet)
-        action, metadata = parse_step_response(response, observation.time_s, replan)
+        response = None
+        try:
+            response = self._request(packet)
+            action, metadata = parse_step_response(response, observation.time_s, replan)
+            if self._diagnostic is not None:
+                from .mjpc_diagnostic import validate_budget_record
+
+                self._diagnostic_step = validate_budget_record(
+                    response.get("diagnostic"), tick, self._diagnostic_step
+                )
+                metadata["diagnostic"] = self._diagnostic_step
+        except Exception:
+            if self._diagnostic is not None and response is not None:
+                self._diagnostics["last_failed_response"] = response
+            self._requires_reset = True
+            raise
         self._last_feedback_tick = tick
         if replan:
             self._held_command = sampled.copy()
@@ -252,20 +313,15 @@ class NativeMJPCController:
         return action
 
     def diagnostics(self):
-        return json.loads(json.dumps(self._diagnostics))
+        result = json.loads(json.dumps(self._diagnostics))
+        result["transport"] = self._transport.diagnostics()
+        return result
 
     def close(self):
         if self._closed:
             return
         self._closed = True
-        if self.process.poll() is None:
-            try:
-                self.process.stdin.write("quit\n")
-                self.process.stdin.flush()
-                self.process.wait(timeout=2)
-            except Exception:
-                self.process.kill()
-                self.process.wait(timeout=2)
+        self._transport.close()
 
     def __enter__(self):
         return self

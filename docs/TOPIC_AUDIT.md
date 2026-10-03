@@ -1,6 +1,6 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-09-28**
+> **最后更新：2026-10-02**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
@@ -200,3 +200,23 @@ scientific attempt。
 - 路线变化先改 CURRENT，再补历史；
 - 执行状态变化同步 `docs/PROJECT_RECORD.md`；
 - 普通工程流水不写。
+
+
+## 12. [2026-10-02 | ACTIVE] Third-stage topic selection remains open
+
+The user's third-stage delegation concerns finding a research topic. Local
+two-repeat RL friction acceptance does not complete that stage. The
+[read-only MJPC diagnosis and minimum proposal](validation/stage3_topic_diagnosis_20261002/RESULTS.md)
+finds concrete private-model/plant confounds on the correctly pinned Go2 branch;
+the single RR_calf stop cannot establish a stable algorithmic failure.
+Model/actuator correction is engineering, not novelty. MuJoCo evaluation and
+RL anchors remain useful; the adapted MJPC comparator needs bounded admission,
+not unlimited repair or a blind switch to a new planner.
+
+Current decision: retain substrate, keep this MJPC candidate conditional, first
+complete configuration/force/contact evidence audit, then consider separately
+reviewed minimum diagnostics. Zero-forward/Manual Trot is not a static-standing
+test. No new physics or fourth-stage method is authorized by this audit.
+RL command-space and timing-response questions remain testable independently;
+their deployment falsifiers and recent prior-work checks precede topic selection.
+Warm-start/contact basin and other old DOWNRANK/HOLD entries remain unchanged.
