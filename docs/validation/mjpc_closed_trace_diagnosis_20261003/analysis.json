@@ -1,0 +1,658 @@
+{
+  "archived_dependency_equality": {
+    "abseil": true,
+    "compiler": true,
+    "lock_sha256": true,
+    "mjpc": true,
+    "mujoco_headers": true,
+    "mujoco_library": true
+  },
+  "canonical_integration_steps": 0,
+  "closed_scopes": {
+    "A": "CLOSED_NO_RETRY",
+    "B": "NOT_RUN_REPRODUCTION_GATE_FAILED"
+  },
+  "comparisons": {
+    "command": {
+      "first_above": {
+        "0": null,
+        "0.001": null,
+        "0.1": null,
+        "1": null,
+        "1e-06": null,
+        "1e-09": null,
+        "1e-12": null
+      },
+      "max_prefix_abs": 0.0
+    },
+    "ctrl": {
+      "first_above": {
+        "0": {
+          "A": 6.238688426947084,
+          "index": 8,
+          "max_abs": 1.6098722355195605e-09,
+          "reference": 6.2386884253372115,
+          "tick": 10
+        },
+        "0.001": {
+          "A": -0.33516926930211155,
+          "index": 10,
+          "max_abs": 0.001009689931173785,
+          "reference": -0.33415957937093776,
+          "tick": 41
+        },
+        "0.1": {
+          "A": 18.725408891654027,
+          "index": 8,
+          "max_abs": 0.16251157895696977,
+          "reference": 18.562897312697057,
+          "tick": 70
+        },
+        "1": {
+          "A": -0.18826696180269842,
+          "index": 3,
+          "max_abs": 1.2034114618810765,
+          "reference": 1.015144500078378,
+          "tick": 85
+        },
+        "1e-06": {
+          "A": 0.4065534922969501,
+          "index": 3,
+          "max_abs": 5.6353462253078135e-05,
+          "reference": 0.40660984575920317,
+          "tick": 30
+        },
+        "1e-09": {
+          "A": 6.238688426947084,
+          "index": 8,
+          "max_abs": 1.6098722355195605e-09,
+          "reference": 6.2386884253372115,
+          "tick": 10
+        },
+        "1e-12": {
+          "A": 6.238688426947084,
+          "index": 8,
+          "max_abs": 1.6098722355195605e-09,
+          "reference": 6.2386884253372115,
+          "tick": 10
+        }
+      },
+      "max_prefix_abs": 55.19622940245794
+    },
+    "q_des": {
+      "first_above": {
+        "0": {
+          "A": -1.8040519341768886,
+          "index": 8,
+          "max_abs": 2.6831203925326008e-11,
+          "reference": -1.8040519342037198,
+          "tick": 10
+        },
+        "0.001": {
+          "A": -1.4131058303923565,
+          "index": 8,
+          "max_abs": 0.002707507471817694,
+          "reference": -1.4158133378641742,
+          "tick": 70
+        },
+        "0.1": {
+          "A": 0.43324859624593387,
+          "index": 6,
+          "max_abs": 0.1249082301002506,
+          "reference": 0.5581568263461845,
+          "tick": 90
+        },
+        "1": {
+          "A": -2.028001376048642,
+          "index": 5,
+          "max_abs": 1.1354956969847472,
+          "reference": -0.892505679063895,
+          "tick": 114
+        },
+        "1e-06": {
+          "A": -0.006519927402332844,
+          "index": 3,
+          "max_abs": 1.0303455666403616e-06,
+          "reference": -0.006518897056766204,
+          "tick": 33
+        },
+        "1e-09": {
+          "A": -1.8024511433707973,
+          "index": 2,
+          "max_abs": 8.226478609429932e-09,
+          "reference": -1.8024511515972759,
+          "tick": 20
+        },
+        "1e-12": {
+          "A": -1.8040519341768886,
+          "index": 8,
+          "max_abs": 2.6831203925326008e-11,
+          "reference": -1.8040519342037198,
+          "tick": 10
+        }
+      },
+      "max_prefix_abs": 1.7649006883168903
+    },
+    "qpos": {
+      "first_above": {
+        "0": {
+          "A": -1.8239186027093746,
+          "index": 18,
+          "max_abs": 1.1790568521519162e-13,
+          "reference": -1.8239186027094925,
+          "tick": 11
+        },
+        "0.001": {
+          "A": 0.020049392203015267,
+          "index": 10,
+          "max_abs": 0.001100788348508002,
+          "reference": 0.02115018055152327,
+          "tick": 86
+        },
+        "0.1": {
+          "A": -1.6026525794307167,
+          "index": 9,
+          "max_abs": 0.12150489752900939,
+          "reference": -1.4811476819017073,
+          "tick": 118
+        },
+        "1": null,
+        "1e-06": {
+          "A": 0.9123468954007824,
+          "index": 8,
+          "max_abs": 1.1000751359846461e-06,
+          "reference": 0.9123479954759184,
+          "tick": 44
+        },
+        "1e-09": {
+          "A": 0.9039806781594752,
+          "index": 17,
+          "max_abs": 2.659279685346405e-09,
+          "reference": 0.9039806808187549,
+          "tick": 32
+        },
+        "1e-12": {
+          "A": -1.851111390326705,
+          "index": 12,
+          "max_abs": 2.423017342323419e-11,
+          "reference": -1.851111390350935,
+          "tick": 21
+        }
+      },
+      "max_prefix_abs": 0.6520275642160447
+    },
+    "qvel": {
+      "first_above": {
+        "0": {
+          "A": -0.9609055453346329,
+          "index": 17,
+          "max_abs": 5.896094723567558e-11,
+          "reference": -0.9609055453935939,
+          "tick": 11
+        },
+        "0.001": {
+          "A": -0.8251108755638311,
+          "index": 10,
+          "max_abs": 0.0038129212254292,
+          "reference": -0.8212979543384019,
+          "tick": 71
+        },
+        "0.1": {
+          "A": 0.9751034035978903,
+          "index": 9,
+          "max_abs": 0.11020691331957377,
+          "reference": 1.085310316917464,
+          "tick": 84
+        },
+        "1": {
+          "A": 6.126592114151522,
+          "index": 11,
+          "max_abs": 1.0542597599095158,
+          "reference": 7.180851874061037,
+          "tick": 95
+        },
+        "1e-06": {
+          "A": -0.02478124290452697,
+          "index": 6,
+          "max_abs": 1.1881827594283079e-06,
+          "reference": -0.02478005472176754,
+          "tick": 33
+        },
+        "1e-09": {
+          "A": -0.5352683546882309,
+          "index": 11,
+          "max_abs": 1.2109907854274127e-08,
+          "reference": -0.5352683667981387,
+          "tick": 21
+        },
+        "1e-12": {
+          "A": -0.9609055453346329,
+          "index": 17,
+          "max_abs": 5.896094723567558e-11,
+          "reference": -0.9609055453935939,
+          "tick": 11
+        }
+      },
+      "max_prefix_abs": 16.13123920336715
+    }
+  },
+  "early_prediction_actual_gaps": [
+    {
+      "anchor_tick": 0,
+      "candidate_id": 8,
+      "canonical_tick": 5,
+      "private_contacts": [
+        {
+          "distance_m": -0.009146910053097411,
+          "geom_ids": [
+            0,
+            21
+          ],
+          "geom_names": [
+            "floor",
+            "FR"
+          ]
+        },
+        {
+          "distance_m": -0.009146923788977983,
+          "geom_ids": [
+            0,
+            33
+          ],
+          "geom_names": [
+            "floor",
+            "FL"
+          ]
+        },
+        {
+          "distance_m": -0.009060069969686517,
+          "geom_ids": [
+            0,
+            45
+          ],
+          "geom_names": [
+            "floor",
+            "RR"
+          ]
+        },
+        {
+          "distance_m": -0.0090600775180308,
+          "geom_ids": [
+            0,
+            57
+          ],
+          "geom_names": [
+            "floor",
+            "RL"
+          ]
+        }
+      ],
+      "qpos_abs": 0.012161492602785984,
+      "qvel_abs": 1.6418917133625748
+    },
+    {
+      "anchor_tick": 10,
+      "candidate_id": 8,
+      "canonical_tick": 15,
+      "private_contacts": [
+        {
+          "distance_m": -0.005579030830147727,
+          "geom_ids": [
+            0,
+            21
+          ],
+          "geom_names": [
+            "floor",
+            "FR"
+          ]
+        },
+        {
+          "distance_m": -0.0055578136375002,
+          "geom_ids": [
+            0,
+            33
+          ],
+          "geom_names": [
+            "floor",
+            "FL"
+          ]
+        },
+        {
+          "distance_m": -0.003889948026686782,
+          "geom_ids": [
+            0,
+            45
+          ],
+          "geom_names": [
+            "floor",
+            "RR"
+          ]
+        },
+        {
+          "distance_m": -0.003912974897271923,
+          "geom_ids": [
+            0,
+            57
+          ],
+          "geom_names": [
+            "floor",
+            "RL"
+          ]
+        }
+      ],
+      "qpos_abs": 0.029003435668334854,
+      "qvel_abs": 2.696229138051045
+    },
+    {
+      "anchor_tick": 20,
+      "candidate_id": 8,
+      "canonical_tick": 25,
+      "private_contacts": [
+        {
+          "distance_m": 0.0007938925511338096,
+          "geom_ids": [
+            0,
+            21
+          ],
+          "geom_names": [
+            "floor",
+            "FR"
+          ]
+        },
+        {
+          "distance_m": 0.0009080768374593179,
+          "geom_ids": [
+            0,
+            33
+          ],
+          "geom_names": [
+            "floor",
+            "FL"
+          ]
+        }
+      ],
+      "qpos_abs": 0.017902977424424815,
+      "qvel_abs": 1.69450282940763
+    },
+    {
+      "anchor_tick": 30,
+      "candidate_id": 8,
+      "canonical_tick": 35,
+      "private_contacts": [],
+      "qpos_abs": 0.012611282148438763,
+      "qvel_abs": 1.2416245553147334
+    }
+  ],
+  "first_contact_semantics_difference": {
+    "A_forbidden": [],
+    "A_supports": [
+      "RR"
+    ],
+    "reference_forbidden": [],
+    "reference_supports": [
+      "FL",
+      "RR"
+    ],
+    "tick": 113
+  },
+  "first_saturation_tick": {
+    "A": 178,
+    "reference": 105
+  },
+  "first_warning_tick": {
+    "A": 130,
+    "reference": 110
+  },
+  "frames": {
+    "A": 887,
+    "paired": 887,
+    "reference": 1288
+  },
+  "hidden_state_missing": [
+    "reference selected trajectories",
+    "old worker mjData warmstart arrays",
+    "old planner feedback/policy arrays",
+    "FD task schedule at old tick10"
+  ],
+  "optimizer_calls": 0,
+  "prediction_caveat": "private 10ms nominal versus canonical 2ms closed-loop; not pure model error",
+  "raw_sha256": {
+    "_runs/mjpc_adaptation_diagnostic_execution_20261002/original_capture_20261002T164948Z/raw.jsonl": "9a4f2711f558b80ac58c803406971f43be7c44f4c5e64f7a50c728e2a7440e55",
+    "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z/mjpc_baseline_1.jsonl": "e5f760c54a57d12e8da6150972cb084414c3f9d84f1827ac9582b292532a3841"
+  },
+  "schema": 1,
+  "scope": "offline_closed_trace_diagnosis",
+  "sealed_bundles": [
+    {
+      "manifest_sha256": "2bebb006bef0ab7635056f19ceb8f3513e0d3b5b4d99cc7f9018f7bfb69950f2",
+      "path": "_runs/mjpc_adaptation_diagnostic_execution_20261002/original_capture_20261002T164948Z",
+      "verified_members": 14
+    },
+    {
+      "manifest_sha256": "66630a6c749c10891e59cfd454c7cf3174d7c310ac65ddd73076308a49a9bf8f",
+      "path": "example/cpp/experiments/_runs/shared_baseline_probes_v1/run_20261002T085338452324Z",
+      "verified_members": 19
+    },
+    {
+      "manifest_sha256": "f25395406e10ae9ef0f4ffa723d5784fedfebe6888803c5c4da79ba2a4f10f9f",
+      "path": "_runs/mjpc_short_sequence_observation_launcherfix_20261003",
+      "verified_members": 25
+    }
+  ],
+  "short_sequence_initialization_audit": [
+    {
+      "canonical_joint_names": [
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint"
+      ],
+      "first_production_wire_difference": {
+        "max_abs": 0.008324372889734847,
+        "tick": 1
+      },
+      "first_q_des_difference_from_A": {
+        "index": 3,
+        "max_abs": 2.199039369439929e-06,
+        "old_A_q_des": 1.2817538422078033e-05,
+        "sequence_q_des": 1.0618499052638104e-05,
+        "tick": 1
+      },
+      "native_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "reset_requests": 0,
+      "tick10_A_cost": 0.06179009604427559,
+      "tick10_cost": 0.06179540548852948,
+      "trial": "original_repeat1",
+      "wire_vs_raw_unreordered_max_abs_difference": 0.0
+    },
+    {
+      "canonical_joint_names": [
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint"
+      ],
+      "first_production_wire_difference": {
+        "max_abs": 0.008324372889734847,
+        "tick": 1
+      },
+      "first_q_des_difference_from_A": {
+        "index": 3,
+        "max_abs": 2.199039369439929e-06,
+        "old_A_q_des": 1.2817538422078033e-05,
+        "sequence_q_des": 1.0618499052638104e-05,
+        "tick": 1
+      },
+      "native_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "reset_requests": 0,
+      "tick10_A_cost": 0.06179009604427559,
+      "tick10_cost": 0.06179540548852948,
+      "trial": "original_repeat2",
+      "wire_vs_raw_unreordered_max_abs_difference": 0.0
+    },
+    {
+      "canonical_joint_names": [
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint"
+      ],
+      "first_production_wire_difference": {
+        "max_abs": 0.008324372889734847,
+        "tick": 1
+      },
+      "first_q_des_difference_from_A": {
+        "index": 3,
+        "max_abs": 2.199039369439929e-06,
+        "old_A_q_des": 1.2817538422078033e-05,
+        "sequence_q_des": 1.0618499052638104e-05,
+        "tick": 1
+      },
+      "native_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "reset_requests": 0,
+      "tick10_A_cost": 0.06179009604427559,
+      "tick10_cost": 0.06179540548852948,
+      "trial": "fixed_repeat1",
+      "wire_vs_raw_unreordered_max_abs_difference": 0.0
+    },
+    {
+      "canonical_joint_names": [
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint"
+      ],
+      "first_production_wire_difference": {
+        "max_abs": 0.008324372889734847,
+        "tick": 1
+      },
+      "first_q_des_difference_from_A": {
+        "index": 3,
+        "max_abs": 2.199039369439929e-06,
+        "old_A_q_des": 1.2817538422078033e-05,
+        "sequence_q_des": 1.0618499052638104e-05,
+        "tick": 1
+      },
+      "native_joint_names": [
+        "FR_hip_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
+        "FL_hip_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
+        "RR_hip_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
+        "RL_hip_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint"
+      ],
+      "reset_requests": 0,
+      "tick10_A_cost": 0.06179009604427559,
+      "tick10_cost": 0.06179540548852948,
+      "trial": "fixed_repeat2",
+      "wire_vs_raw_unreordered_max_abs_difference": 0.0
+    }
+  ],
+  "tick10": {
+    "PD60_difference_residual_max": 8.881784197001252e-16,
+    "command_exact": true,
+    "cost": 0.06179009604427559,
+    "cost_exact": true,
+    "joint": "RR_calf_joint",
+    "kp": 60.0,
+    "qpos_exact": true,
+    "qvel_exact": true,
+    "replanned": [
+      true,
+      true
+    ]
+  },
+  "version": {
+    "A_head": "61e543cfd657b455585637b92e8ad3b7a80decad",
+    "binary_sha256": [
+      "8f6867c911067db654f4af45b98407fd72066e9ba5316ca5dcf8706a0147784a",
+      "a0c6198d65253d94863a40a92b0780ba376a4b6f358fdf83695ff1182ec04f24"
+    ],
+    "mjpc_source_commits": [
+      "e00c47a5adb9856af2e0f24231bb3a60d5be23c4",
+      "e00c47a5adb9856af2e0f24231bb3a60d5be23c4"
+    ],
+    "physical_fingerprints": [
+      "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94",
+      "1c7ec61af1297fe1715e3d412481709bf4ad3ad42196e483c444d1a54db73e94"
+    ],
+    "reference_head": "b1ac4f700cc0f8ed3bd431e28a230bc1ae71058d"
+  }
+}

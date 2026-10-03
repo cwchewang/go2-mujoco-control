@@ -6,13 +6,13 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 
 ## Active research frontier
 
-Branch: `research/mjpc-fd-duplicate-fix-20261003`.
-Task: [Third-stage topic diagnosis: bounded MJPC adapter check](docs/research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md).
-Closeout: [Third-stage topic diagnosis: bounded MJPC adapter check](docs/validation/mjpc_adaptation_diagnostic_v1_prep_20261002/RESULTS.md).
-Stage: Third-stage topic selection ACTIVE / OPEN; minimum adapter diagnostic qualification passed; two prepared scopes before genuine exact-head reviews; formal NOT_RUN.
-Scientific status: Two independent one-arm3s protocols propose total2 attempts/3000 canonical steps/private upper1228800. B changes only floor registration and post-PD torque clamp; source mass/damping/contact smoothing retained. Formal attempts/canonical steps0; old campaigns/17 NOT_RUN closed.
-Last live HEAD: `849b7aa13c82b13880cfc214083f2473e794e83e`.
-Next: Review the exact-head source-bound packet and both new prepared scopes, then separate bound START records. B requires A verified prefix/stop reproduction; no fourth-stage method work.
+Branch: `research/mjpc-floor-registration-12s-20261003`.
+Task: [MJPC closed-trace diagnosis and observer parity repair](docs/research/TASK_MJPC_CLOSED_TRACE_DIAGNOSIS_20261003.md).
+Closeout: [MJPC closed-trace diagnosis and observer parity repair](docs/validation/mjpc_closed_trace_diagnosis_20261003/RESULTS.md).
+Stage: Stage 3 ACTIVE / OPEN; offline diagnosis and three admission/observer repairs; old adaptation v1 closed.
+Scientific status: Original A consumed one attempt/886 steps at 61e543c and failed reference reproduction; CLOSED_NO_RETRY. B NOT_RUN_REPRODUCTION_GATE_FAILED. R4 two 3s replay PASS runs fail saturation repeat tolerance (860 > 200 ticks); no 12s capture. This increment adds zero integration/optimizer/scientific attempts..
+Last live HEAD: `829f3c40f86f6f8a35dff33c1ff83d230f6f2d54`.
+Next: Finish source-bound qualification/precheck and independent reviews for a NEW four-call, zero-canonical-step original-only observation with production joint mapping and explicit live reset. Do not relaunch A/B v1.
 
 **Related bounded diagnostic:** [Duplicate-FD cold-start diagnostic](docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md) — The fixed-index bug removes duplicate t34 tasks. The reviewed same-process 8-call observation completed at HEAD 6c2dbad: all calls passed, canonical integration 0, costs identical and tick-10 q_des differed by at most 1.01e-10. Planner/warmstart hashes varied across processes; causal interpretation remains open.
 

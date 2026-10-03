@@ -459,3 +459,18 @@ scientific attempts remain 0, Gate 0 incomplete and live v2 NOT_RUN.
 
 
 2026-10-02 third-stage diagnostic increment: [bounded adapter task](research/TASK_MJPC_ADAPTATION_DIAGNOSTIC_V1_20261002.md) implements separate3s original/corrected scopes. B retains source position-PD and corrects floor registration/effective torque clamp; source mass, damping and deliberate smoothing remain. Rollout and FD upper-bound accounting covers private integration; B requires A verified original prefix/stop reproduction. Formal attempts/canonical steps0 pending new exact-head reviews; qualification optimizer smoke is engineering only. This does not select a topic or start a new method.
+
+
+## 2026-10-03 | Closed-trace engineering diagnosis
+
+[Offline diagnosis and repairs](validation/mjpc_closed_trace_diagnosis_20261003/RESULTS.md)
+correct the stale formal-NOT_RUN pointer: adaptation A consumed its sole
+attempt, stopped at tick886 and failed the tick1287 reproduction gate;
+B stays NOT_RUN_REPRODUCTION_GATE_FAILED. Live logs first differ at the
+second replan, before contact classifications; the hidden trigger is unproven.
+Current capture refuses the old identifiers despite a checkout-local empty
+ledger. The observer now restores the live reset and production named-joint
+state packing. Previous tick10 observer inputs were misordered and cannot
+exclude production A configuration/history effects. No new optimizer or
+canonical step was run. Existing scientific claims and Stage3 ACTIVE/OPEN
+remain unchanged. R4's saturation-repeat failure and no12s capture are retained.

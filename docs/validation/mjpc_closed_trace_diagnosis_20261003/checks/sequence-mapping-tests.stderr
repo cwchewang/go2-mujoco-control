@@ -1,0 +1,20 @@
+test_live_reset_is_logged_before_encoding_or_attempt_reservation (tools.substrate.test_mjpc_sequence_reset.SequenceResetTests) ... ok
+test_reset_rejection_never_reserves_optimizer_attempt (tools.substrate.test_mjpc_sequence_reset.SequenceResetTests) ... ok
+test_reset_timeout_never_reserves_optimizer_attempt (tools.substrate.test_mjpc_sequence_reset.SequenceResetTests) ... ok
+test_reset_warning_stops_before_optimizer_attempt (tools.substrate.test_mjpc_sequence_reset.SequenceResetTests) ... ok
+test_all_sealed_external_rows_match_production_wire_encoder (tools.substrate.test_mjpc_sequence_mapping.SequenceMappingTests) ... ok
+test_asymmetric_canonical_state_is_permuted_for_native (tools.substrate.test_mjpc_sequence_mapping.SequenceMappingTests) ... ok
+test_prediction_validator_rejects_legacy_wrong_order_anchor (tools.substrate.test_mjpc_sequence_mapping.SequenceMappingTests) ... ok
+test_native_instrumentation_is_summary_only_and_does_not_reset_warmstart (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_packet_can_replay_logged_nonreplan_ticks (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_pair_comparison_reports_differences_without_rejecting_them (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_plan_is_four_fresh_processes_eight_optimizer_calls (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_policy_trajectory_summary_schema (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_real_old_a_inputs_are_complete_and_consecutive (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_trace_summary_rejects_missing_or_nonfinite_warmstart (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+test_trace_summary_schema_for_both_variants (tools.substrate.test_mjpc_short_sequence.ShortSequenceContractTest) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.170s
+
+OK
