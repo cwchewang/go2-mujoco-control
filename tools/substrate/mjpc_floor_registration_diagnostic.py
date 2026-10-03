@@ -61,7 +61,9 @@ def protocol():
         "horizon_s": 3.0,
         "canonical_steps_max": 1500,
         "max_replan_calls": 150,
-        "native_controller_processes_max": 1,
+        "capture_native_controller_processes_per_repeat_max": 1,
+        "capture_native_controller_processes_campaign_max": 2,
+        "construction_handshake_native_processes_max": 1,
         "private_step_upper_bound_per_repeat": LIMIT,
         "private_step_upper_bound_total_max": 1228800,
         "seed_rule": "xfrc_std=0; no seed",
@@ -372,6 +374,8 @@ def prepare(binary, output):
             "private_task_xml_sha256": digest(task),
             "repeats": 2,
             "attempts_per_repeat": 1,
+            "capture_native_controller_processes_per_repeat_max": 1,
+            "capture_native_controller_processes_campaign_max": 2,
             "max_attempts": 2,
             "canonical_steps_max": 1500,
             "private_total_upper_bound_max": LIMIT,
@@ -599,6 +603,8 @@ def capture(prepared, review, authorization, output, repeat_index):
         "review_sha256": digest(review),
         "authorization_sha256": digest(authorization),
         "max_attempts": 2,
+        "capture_native_controller_processes_per_repeat_max": 1,
+        "capture_native_controller_processes_campaign_max": 2,
         "outputs": outputs,
     }
     with experiment_lock():

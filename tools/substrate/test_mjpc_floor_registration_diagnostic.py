@@ -13,6 +13,9 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         self.assertEqual(value["repeats"], 2)
         self.assertEqual(value["attempts_per_repeat"], 1)
         self.assertEqual(value["max_attempts"], 2)
+        self.assertEqual(value["capture_native_controller_processes_per_repeat_max"], 1)
+        self.assertEqual(value["capture_native_controller_processes_campaign_max"], 2)
+        self.assertEqual(value["construction_handshake_native_processes_max"], 1)
         self.assertEqual(value["private_step_upper_bound_total_max"], 1228800)
         self.assertEqual(value["canonical_steps_max"], 1500)
         self.assertEqual(

@@ -3,11 +3,14 @@
   "campaign_identity": "prepared packet SHA-256; repeat index 1 or 2",
   "canonical_steps_max": 1500,
   "capability_claim": "none; two-repeat 3-second reproducibility diagnostic",
+  "capture_native_controller_processes_campaign_max": 2,
+  "capture_native_controller_processes_per_repeat_max": 1,
   "command_body_mps": [
     1,
     0,
     0
   ],
+  "construction_handshake_native_processes_max": 1,
   "failure_policy": "stop before repeat 2 unless repeat 1 has a verified HORIZON_REACHED result; stop on first safety, execution, evidence, identity, warning or budget failure; no retry",
   "horizon_s": 3,
   "id": "mjpc-floor-registration-repeatability-3s-v1",
@@ -18,7 +21,6 @@
   },
   "max_attempts": 2,
   "max_replan_calls": 150,
-  "native_controller_processes_max": 1,
   "one_shot_reservation": "exclusive two-attempt campaign record keyed by prepared packet SHA-256; each repeat slot is claimed once",
   "parent_floor0_packet_sha256": "7662c2d96ca664162888e8f5870b9013f2919c26eca295994d53bb73c04de402",
   "parent_floor0_result_sha256": "47cf21600c3f56ab60b709242fcfa14454ffb67beaad6c6c1bed72aedb3f2c26",
