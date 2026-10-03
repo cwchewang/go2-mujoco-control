@@ -31,4 +31,4 @@ Protocol: tools/substrate/protocols/mjpc_floor_registration_sustained_12s_v1.jso
 
 Prepare the packet and run the zero-step construction handshake only. The offline analyzer is not run until a future capture exists. The handshake may construct the canonical model and start one native controller to verify readiness, but must record zero canonical physics steps, optimizer calls and scientific attempts. It is not a capture authorization. Capture remains NOT AUTHORIZED until fresh exact-head science and execution reviews and a user start record bind the resulting packet, manifest, protocol hash and one-attempt limit.
 
-Preparation outputs are new _runs/mjpc_floor_registration_sustained_12s_*_20261003_r1 paths. Never reuse or overwrite sealed 3-second or R4 evidence.
+For the final exact HEAD, prepare at _runs/mjpc_floor_registration_sustained_12s_prepared_20261003_r3 and run the zero-step handshake at _runs/mjpc_floor_registration_sustained_12s_handshake_20261003_r3. Preserve earlier r1/r2 preparation and handshake records; never reuse or overwrite sealed 3-second or R4 evidence.

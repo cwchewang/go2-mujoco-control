@@ -1,6 +1,6 @@
 {
   "attempts_per_repeat": 1,
-  "campaign_identity": "prepared packet SHA-256; repeat index 1 or 2",
+  "campaign_identity": "prepared packet SHA-256; single allowed slot 1",
   "canonical_steps_max": 6000,
   "capability_claim": "none; one-arm 12-second sustained-control diagnostic",
   "capture_native_controller_processes_campaign_max": 1,

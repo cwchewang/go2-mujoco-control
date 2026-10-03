@@ -4,6 +4,7 @@ from pathlib import Path
 from tools.substrate.mjpc_floor_registration_diagnostic import (
     assert_only_floor_z_changed,
     protocol,
+    protocol_12s,
 )
 
 
@@ -21,8 +22,15 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         self.assertEqual(
             value["intervention"]["field"], "private_task_flat.floor.pos.z"
         )
-        self.assertEqual(value["native_controller_processes_max"], 1)
         self.assertIn("not future rollout", value["prediction_contact_semantics"])
+
+    def test_12s_protocol_is_one_slot_and_one_capture_process(self):
+        value = protocol_12s()
+        self.assertEqual(value["repeats"], 1)
+        self.assertEqual(value["max_attempts"], 1)
+        self.assertEqual(value["campaign_identity"], "prepared packet SHA-256; single allowed slot 1")
+        self.assertEqual(value["capture_native_controller_processes_campaign_max"], 1)
+        self.assertEqual(value["private_step_upper_bound_total_max"], 2457600)
 
     def test_accepts_only_floor_height_change(self):
         a = '<mujoco><worldbody><geom name="floor" type="plane" pos="0 0 -0.01" size="1 1 0.1"/><body name="robot"/></worldbody></mujoco>'

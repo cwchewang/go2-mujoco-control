@@ -140,6 +140,7 @@ def protocol_12s():
         one_shot_reservation="exclusive one-attempt record keyed by prepared packet SHA-256; slot 1 can be claimed once",
         capability_claim="none; one-arm 12-second sustained-control diagnostic",
         start_gate="fresh exact-head science and execution reviews plus one protocol/manifest-bound user authorization for one attempt",
+        campaign_identity="prepared packet SHA-256; single allowed slot 1",
         parent_repeat_campaign_result_sha256="c92d3ae1d21f97f8d6c689eaf421fbb15187f3731bee7b0dcabdad5cb8fe855a",
         parent_saturation_posthoc_sha256="0e56e77b75ec517773c461092f1a38913c40acf5ac5aca0d2741fce3e326fd39",
         saturation_reporting={

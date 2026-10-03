@@ -271,6 +271,7 @@ def qualify(output):
                             "tools.substrate.test_native_mjpc",
                             "tools.substrate.test_aligned_episode",
                             "tools.substrate.test_native_transport",
+                            "tools.substrate.test_mjpc_floor_registration_diagnostic",
                         )
                     ),
                     180,
