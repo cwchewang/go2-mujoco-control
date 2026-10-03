@@ -32,7 +32,9 @@ from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
 ROOT = Path(__file__).resolve().parents[2]
 BRANCH = "research/mjpc-floor-registration-12s-20261003"
 PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_floor_registration_repeat_3s_v1.json"
-PROTOCOL_12S = ROOT / "tools/substrate/protocols/mjpc_floor_registration_sustained_12s_v1.json"
+PROTOCOL_12S = (
+    ROOT / "tools/substrate/protocols/mjpc_floor_registration_sustained_12s_v1.json"
+)
 R4_PREP = ROOT / "_runs/mjpc_fixed_baseline_prepared_r4_20261003"
 R4_RAW = ROOT / "_runs/mjpc_fixed_baseline_capture_r4_20261003T002510Z_repeat1"
 MODE = "floor0"
@@ -60,7 +62,8 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
         or record.get("scientific_attempts") != 0
         or type(record.get("private_engineering_optimizer_calls")) is not int
         or record.get("private_engineering_optimizer_calls") != (0 if retained else 1)
-        or record.get("reused_private_engineering_optimizer_calls", 0) != (1 if retained else 0)
+        or record.get("reused_private_engineering_optimizer_calls", 0)
+        != (1 if retained else 0)
         or controller.get("binary_sha256") != binary_sha256
         or smoke.get("binary_sha256") != binary_sha256
         or smoke.get("runtime_identity_sha256") != runtime_sha256
@@ -78,7 +81,9 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
             )
         )
     ):
-        raise ValueError("qualification receipt does not bind the exact floor0 consumer")
+        raise ValueError(
+            "qualification receipt does not bind the exact floor0 consumer"
+        )
     if retained:
         from .mjpc_smoke_reuse import validate_reuse_record
 
@@ -166,7 +171,6 @@ def protocol():
     return value
 
 
-
 def protocol_12s():
     expected = dict(protocol())
     expected.update(
@@ -212,7 +216,14 @@ def protocol_12s():
             "ramp_ticks": 100,
             "measurement_start_tick": 150,
             "physics_step_s": 0.002,
-            "stop_on": ["nonfinite", "orientation", "physics_warning", "nonfoot_contact", "posture", "lateral"],
+            "stop_on": [
+                "nonfinite",
+                "orientation",
+                "physics_warning",
+                "nonfoot_contact",
+                "posture",
+                "lateral",
+            ],
             "safety_thresholds": {
                 "height_min_m": 0.12,
                 "height_max_m": 0.55,
@@ -230,8 +241,10 @@ def protocol_12s():
     value = strict_json(PROTOCOL_12S.read_text())
     parent = ROOT / "_runs/mjpc_floor_registration_repeat_gate_20261003_r4"
     if (
-        digest(parent / "CAMPAIGN_RESULT.json") != value["parent_repeat_campaign_result_sha256"]
-        or digest(parent / "SATURATION_POSTHOC.json") != value["parent_saturation_posthoc_sha256"]
+        digest(parent / "CAMPAIGN_RESULT.json")
+        != value["parent_repeat_campaign_result_sha256"]
+        or digest(parent / "SATURATION_POSTHOC.json")
+        != value["parent_saturation_posthoc_sha256"]
     ):
         raise ValueError("12-second parent repeat evidence drift")
     if value != expected:
@@ -345,7 +358,6 @@ def sealed_r4():
     }
 
 
-
 def sealed_floor0_single():
     capture = ROOT / "_runs/mjpc_floor_registration_capture_20261003_r2"
     prepared = ROOT / "_runs/mjpc_floor_registration_prepared_20261003_r2"
@@ -378,6 +390,7 @@ def sealed_floor0_single():
         "reuse": "comparison only; never rerun",
     }
 
+
 def runtime_delta(rt):
     old = R4_PREP / "runtime"
     files_old = {
@@ -407,7 +420,11 @@ def runtime_delta(rt):
 
 
 def prepare(binary, output, qualification_path, protocol_id=None):
-    p = protocol() if protocol_id in (None, protocol()["id"]) else protocol_for_id(protocol_id)
+    p = (
+        protocol()
+        if protocol_id in (None, protocol()["id"])
+        else protocol_for_id(protocol_id)
+    )
     protocol_path = PROTOCOL if p["id"] == protocol()["id"] else PROTOCOL_12S
     ident = identity()
     qualification_reference = qualification.validate(qualification_path)
@@ -512,7 +529,8 @@ def prepare(binary, output, qualification_path, protocol_id=None):
             "private_model_delta": delta,
             "private_task_xml_sha256": digest(task),
             "task_document_sha256": digest(
-                ROOT / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md"
+                ROOT
+                / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md"
             ),
             "repeats": p["repeats"],
             "attempts_per_repeat": p["attempts_per_repeat"],
@@ -521,7 +539,9 @@ def prepare(binary, output, qualification_path, protocol_id=None):
             "max_attempts": p["max_attempts"],
             "canonical_steps_max": p["canonical_steps_max"],
             "private_total_upper_bound_max": p["private_step_upper_bound_per_repeat"],
-            "private_total_upper_bound_campaign_max": p["private_step_upper_bound_total_max"],
+            "private_total_upper_bound_campaign_max": p[
+                "private_step_upper_bound_total_max"
+            ],
             "canonical_physics_step_authorized": False,
             "scientific_attempts_authorized": 0,
             "readiness": "AWAITING_INDEPENDENT_REVIEWS_AND_FRESH_USER_START",
@@ -567,10 +587,15 @@ def validate_packet(prepared):
         or pkt.get("repeats") != p["repeats"]
         or pkt.get("max_attempts") != p["max_attempts"]
         or pkt.get("canonical_steps_max") != p["canonical_steps_max"]
-        or pkt.get("private_total_upper_bound_max") != p["private_step_upper_bound_per_repeat"]
-        or pkt.get("private_total_upper_bound_campaign_max") != p["private_step_upper_bound_total_max"]
+        or pkt.get("private_total_upper_bound_max")
+        != p["private_step_upper_bound_per_repeat"]
+        or pkt.get("private_total_upper_bound_campaign_max")
+        != p["private_step_upper_bound_total_max"]
         or pkt.get("task_document_sha256")
-        != digest(ROOT / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md")
+        != digest(
+            ROOT
+            / "docs/research/TASK_MJPC_FLOOR_REGISTRATION_SUSTAINED_12S_20261003.md"
+        )
     ):
         raise ValueError("prepared packet/head invalid")
     if pkt["protocol_sha256"] != digest(protocol_path) or pkt["runtime_code"] != {
@@ -586,9 +611,7 @@ def validate_packet(prepared):
         raise ValueError("runtime identity mismatch")
     native_runtime.verify(binary, side)
     qualification.validate_reference(pkt.get("qualification_reference"))
-    qualification_record = verify_bundle(
-        pkt["qualification_reference"]["path"]
-    )
+    qualification_record = verify_bundle(pkt["qualification_reference"]["path"])
     validate_qualification_claim(
         qualification_record,
         ident["head"],
@@ -721,10 +744,16 @@ def capture(prepared, review, authorization, output, repeat_index):
     run_limit = p["private_step_upper_bound_per_repeat"]
     d = Path(prepared).resolve()
     base = Path(output).resolve()
-    if base.parent != (ROOT / "_runs").resolve() or not 1 <= repeat_index <= repeat_count:
+    if (
+        base.parent != (ROOT / "_runs").resolve()
+        or not 1 <= repeat_index <= repeat_count
+    ):
         raise ValueError("campaign output/slot invalid")
     out = Path(str(base) + f"_repeat{repeat_index}")
-    outputs = [str(Path(str(base) + f"_repeat{i}").resolve()) for i in range(1, repeat_count + 1)]
+    outputs = [
+        str(Path(str(base) + f"_repeat{i}").resolve())
+        for i in range(1, repeat_count + 1)
+    ]
     if out.exists():
         raise ValueError("repeat output already exists; no retry")
     review = Path(review).resolve(strict=True)
@@ -756,11 +785,11 @@ def capture(prepared, review, authorization, output, repeat_index):
     reservation = (
         ROOT / "_runs" / ("mjpc_floor_registration_campaign_" + packet_sha + ".json")
     )
-    claim = reservation.with_name(
-        reservation.stem + f"_attempt{repeat_index}.claim"
-    )
+    claim = reservation.with_name(reservation.stem + f"_attempt{repeat_index}.claim")
     reservation_status = (
-        "RESERVED_TWO_REPEAT_NO_RETRY" if repeat_count == 2 else "RESERVED_ONE_ATTEMPT_NO_RETRY"
+        "RESERVED_TWO_REPEAT_NO_RETRY"
+        if repeat_count == 2
+        else "RESERVED_ONE_ATTEMPT_NO_RETRY"
     )
     binding = {
         "head": pkt["head"],
@@ -800,7 +829,8 @@ def capture(prepared, review, authorization, output, repeat_index):
                 or first_result.get("retry") != "none"
                 or first_result.get("scientific_attempts") != 1
                 or first_result.get("optimizer_calls", 0) > p["max_replan_calls"]
-                or first_result.get("private_observed_upper_bound", run_limit + 1) > run_limit
+                or first_result.get("private_observed_upper_bound", run_limit + 1)
+                > run_limit
                 or first_result.get("private_reserved", run_limit + 1) > run_limit
                 or first_result.get("canonical_evaluation", {}).get("verdict") != "PASS"
             ):
@@ -911,7 +941,10 @@ def capture(prepared, review, authorization, output, repeat_index):
             upper > reserved
             or reserved > run_limit
             or calls > p["max_replan_calls"]
-            or (outcome["terminal_reason"] == "horizon" and calls != p["max_replan_calls"])
+            or (
+                outcome["terminal_reason"] == "horizon"
+                and calls != p["max_replan_calls"]
+            )
         ):
             raise ValueError("private/call budget or horizon count mismatch")
         rows = [strict_json(x) for x in (out / "raw.jsonl").read_text().splitlines()]
@@ -957,7 +990,6 @@ def capture(prepared, review, authorization, output, repeat_index):
             capability_status="DIAGNOSTIC_ONLY",
         )
     return str(out / "RESULT.json")
-
 
 
 def analyze(capture_path, output):
@@ -1078,7 +1110,6 @@ def analyze(capture_path, output):
     return str(out / "SATURATION_REPORT.json")
 
 
-
 def main():
     p = argparse.ArgumentParser()
     s = p.add_subparsers(dest="cmd", required=True)
@@ -1086,7 +1117,13 @@ def main():
     q.add_argument("--binary", type=Path, required=True)
     q.add_argument("--qualification", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
-    q.add_argument("--protocol-id", choices=("mjpc-floor-registration-repeatability-3s-v1", "mjpc-floor-registration-sustained-12s-v1"))
+    q.add_argument(
+        "--protocol-id",
+        choices=(
+            "mjpc-floor-registration-repeatability-3s-v1",
+            "mjpc-floor-registration-sustained-12s-v1",
+        ),
+    )
     q = s.add_parser("handshake")
     q.add_argument("--prepared", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)

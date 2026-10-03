@@ -35,7 +35,9 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         value = protocol_12s()
         self.assertEqual(value["repeats"], 1)
         self.assertEqual(value["max_attempts"], 1)
-        self.assertEqual(value["campaign_identity"], "prepared packet SHA-256; single allowed slot 1")
+        self.assertEqual(
+            value["campaign_identity"], "prepared packet SHA-256; single allowed slot 1"
+        )
         self.assertEqual(value["capture_native_controller_processes_campaign_max"], 1)
         self.assertEqual(value["private_step_upper_bound_total_max"], 2457600)
 
@@ -66,9 +68,7 @@ class FloorRegistrationDiffTests(unittest.TestCase):
                 "clean_head": True,
                 "development": False,
             },
-            "qualification_inputs": {
-                "fd_fixed_controller": {"binary_sha256": "b"}
-            },
+            "qualification_inputs": {"fd_fixed_controller": {"binary_sha256": "b"}},
             "canonical_physics_steps": 0,
             "scientific_attempts": 0,
             "private_engineering_optimizer_calls": 1,
@@ -81,13 +81,16 @@ class FloorRegistrationDiffTests(unittest.TestCase):
                 "private_step_upper_bound_max": 4096,
             },
         }
+
     def test_qualification_claim_binds_exact_consumer_binary_and_runtime(self):
         record = self.qualification_record()
         self.assertTrue(validate_qualification_claim(record, "h", "b", "r"))
         with self.assertRaisesRegex(ValueError, "exact floor0 consumer"):
             validate_qualification_claim(record, "h", "other", "r")
 
-    def test_qualification_budget_requires_real_nested_integer_and_consistent_alias(self):
+    def test_qualification_budget_requires_real_nested_integer_and_consistent_alias(
+        self,
+    ):
         original = self.qualification_record()
         self.assertNotIn("private_step_upper_bound_max", original)
         self.assertTrue(validate_qualification_claim(original, "h", "b", "r"))
@@ -110,8 +113,9 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         conflict["physics_accounting"]["private_step_upper_bound_max"] = 4095
         cases.append(("conflicting_nested_and_top_level", conflict))
         for name, record in cases:
-            with self.subTest(name=name), self.assertRaisesRegex(
-                ValueError, "exact floor0 consumer"
+            with (
+                self.subTest(name=name),
+                self.assertRaisesRegex(ValueError, "exact floor0 consumer"),
             ):
                 validate_qualification_claim(record, "h", "b", "r")
 
@@ -142,20 +146,30 @@ class FloorRegistrationDiffTests(unittest.TestCase):
                 else:
                     value = parent[path[-1]]
                     parent[path[-1]] = (
-                        not value if type(value) is bool else
-                        value + 1 if type(value) is int else "wrong-identity"
+                        not value
+                        if type(value) is bool
+                        else value + 1
+                        if type(value) is int
+                        else "wrong-identity"
                     )
-                with self.subTest(path=path, mutation=mutation), self.assertRaisesRegex(
-                    ValueError, "exact floor0 consumer"
+                with (
+                    self.subTest(path=path, mutation=mutation),
+                    self.assertRaisesRegex(ValueError, "exact floor0 consumer"),
                 ):
                     validate_qualification_claim(record, "h", "b", "r")
 
     @unittest.skipUnless(
-        (ROOT / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7").is_dir(),
+        (
+            ROOT
+            / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7"
+        ).is_dir(),
         "sealed Atlas r7 receipt is not present",
     )
     def test_original_sealed_r7_json_is_accepted_without_top_level_alias(self):
-        directory = ROOT / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7"
+        directory = (
+            ROOT
+            / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7"
+        )
         before = digest(directory / "manifest.json")
         self.assertEqual(
             before,

@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def render_current(value):
     related = value.get("related_result")
     related_line = (
-        f'**Related bounded diagnostic:** [{related["title"]}]({related["path"]}) — '
-        f'{related["summary"].removesuffix(".") }.'
+        f"**Related bounded diagnostic:** [{related['title']}]({related['path']}) — "
+        f"{related['summary'].removesuffix('.')}."
         if related
         else ""
     )
@@ -31,7 +31,7 @@ Closeout: [{value["title"]}]({value["result"]}).
 Stage: {value["stage"]}.
 Scientific status: {value["scientific_status"]}.
 Last live HEAD: `{value["last_live_head"]}`.
-Next: {value["next"].removesuffix(".") }.
+Next: {value["next"].removesuffix(".")}.
 
 {related_line}
 

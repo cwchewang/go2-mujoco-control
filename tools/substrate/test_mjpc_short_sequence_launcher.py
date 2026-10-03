@@ -1,4 +1,5 @@
 """No-native end-to-end tests of the exact repo launcher command."""
+
 import hashlib
 import json
 from pathlib import Path
@@ -14,8 +15,11 @@ from . import mjpc_short_sequence_launcher as launcher
 
 
 def snapshot(directory):
-    return {p.relative_to(directory).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in directory.rglob("*") if p.is_file()}
+    return {
+        p.relative_to(directory).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in directory.rglob("*")
+        if p.is_file()
+    }
 
 
 class LauncherEndToEndTest(unittest.TestCase):
@@ -23,20 +27,37 @@ class LauncherEndToEndTest(unittest.TestCase):
     def setUpClass(cls):
         cls.root = d.ROOT
         cls.wrapper = launcher.WRAPPER
-        cls.old_prepared = cls.root / "_runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002"
-        cls.failed = cls.root / "_runs/mjpc_fd_duplicate_sequence_execution_84e85199f6b3"
+        cls.old_prepared = (
+            cls.root / "_runs/mjpc_fd_duplicate_diagnostic_prepare_contractfix_20261002"
+        )
+        cls.failed = (
+            cls.root / "_runs/mjpc_fd_duplicate_sequence_execution_84e85199f6b3"
+        )
         originals = Path("/tmp/go2-mjpc-fd-diagnostic")
-        if not d.CAPTURE.exists() or not (originals / "go2_mjpc_controller_fd_original").exists():
+        if (
+            not d.CAPTURE.exists()
+            or not (originals / "go2_mjpc_controller_fd_original").exists()
+        ):
             raise unittest.SkipTest("Atlas sealed inputs and diagnostic build required")
         if d.git("status", "--porcelain"):
-            raise AssertionError("full launcher tests require the committed clean checkout")
-        cls.preserved = {path: snapshot(path) for path in (cls.old_prepared, cls.failed)}
+            raise AssertionError(
+                "full launcher tests require the committed clean checkout"
+            )
+        cls.preserved = {
+            path: snapshot(path) for path in (cls.old_prepared, cls.failed)
+        }
         cls.tag = uuid.uuid4().hex
         cls.bundle = cls.root / ("_runs/mjpc_short_sequence_launcher_e2e_" + cls.tag)
-        argv = [str(cls.wrapper), "--prepare",
-                "--original-binary", str(originals / "go2_mjpc_controller_fd_original"),
-                "--fixed-binary", str(originals / "go2_mjpc_controller_fd_fixed"),
-                "--output", str(cls.bundle)]
+        argv = [
+            str(cls.wrapper),
+            "--prepare",
+            "--original-binary",
+            str(originals / "go2_mjpc_controller_fd_original"),
+            "--fixed-binary",
+            str(originals / "go2_mjpc_controller_fd_fixed"),
+            "--output",
+            str(cls.bundle),
+        ]
         result = subprocess.run(argv, cwd="/tmp", text=True, capture_output=True)
         if result.returncode:
             raise AssertionError(result.stdout + result.stderr)
@@ -54,11 +75,20 @@ class LauncherEndToEndTest(unittest.TestCase):
             raise AssertionError("sealed test packet changed")
 
     def command(self, output):
-        return [str(self.wrapper), "--execute", "--packet", str(self.packet),
-                "--output", str(output), "--no-launch"]
+        return [
+            str(self.wrapper),
+            "--execute",
+            "--packet",
+            str(self.packet),
+            "--output",
+            str(output),
+            "--no-launch",
+        ]
 
     def check_from(self, cwd, suffix):
-        output = self.root / ("_runs/mjpc_short_sequence_no_launch_" + self.tag + "_" + suffix)
+        output = self.root / (
+            "_runs/mjpc_short_sequence_no_launch_" + self.tag + "_" + suffix
+        )
         command = self.command(output)
         result = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -79,28 +109,46 @@ class LauncherEndToEndTest(unittest.TestCase):
     def test_existing_empty_and_nonempty_outputs_are_rejected_without_writes(self):
         for label, content in (("empty", None), ("nonempty", "keep exact bytes\n")):
             with self.subTest(label=label):
-                output = self.root / ("_runs/mjpc_short_sequence_existing_" + self.tag + "_" + label)
+                output = self.root / (
+                    "_runs/mjpc_short_sequence_existing_" + self.tag + "_" + label
+                )
                 output.mkdir()
                 if content is not None:
                     (output / "sentinel.txt").write_text(content)
                 before = snapshot(output)
-                result = subprocess.run(self.command(output), cwd="/tmp", text=True, capture_output=True)
+                result = subprocess.run(
+                    self.command(output), cwd="/tmp", text=True, capture_output=True
+                )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("output must be fresh", result.stderr)
                 self.assertEqual(snapshot(output), before)
 
-    def test_complete_prepare_and_execute_reject_sealed_parent_without_new_members(self):
+    def test_complete_prepare_and_execute_reject_sealed_parent_without_new_members(
+        self,
+    ):
         for parent in (self.old_prepared, self.bundle):
             before = snapshot(parent)
             output = parent / "must-not-be-created"
-            execute_result = subprocess.run(self.command(output), cwd="/tmp", text=True, capture_output=True)
+            execute_result = subprocess.run(
+                self.command(output), cwd="/tmp", text=True, capture_output=True
+            )
             self.assertNotEqual(execute_result.returncode, 0)
             self.assertIn("outside sealed evidence", execute_result.stderr)
             prepare_result = subprocess.run(
-                [str(self.wrapper), "--prepare",
-                 "--original-binary", "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
-                 "--fixed-binary", "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
-                 "--output", str(output)], cwd=self.root, text=True, capture_output=True)
+                [
+                    str(self.wrapper),
+                    "--prepare",
+                    "--original-binary",
+                    "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_original",
+                    "--fixed-binary",
+                    "/tmp/go2-mjpc-fd-diagnostic/go2_mjpc_controller_fd_fixed",
+                    "--output",
+                    str(output),
+                ],
+                cwd=self.root,
+                text=True,
+                capture_output=True,
+            )
             self.assertNotEqual(prepare_result.returncode, 0)
             self.assertIn("outside sealed evidence", prepare_result.stderr)
             self.assertFalse(output.exists())
@@ -109,8 +157,14 @@ class LauncherEndToEndTest(unittest.TestCase):
     def test_actual_batch_rejects_sealed_parent_before_transport(self):
         forbidden = Mock(side_effect=AssertionError("native transport must not start"))
         with self.assertRaisesRegex(ValueError, "outside sealed evidence"):
-            sequence.run_sequence_batch(d.CAPTURE, {}, {}, self.bundle / "core-must-not-create",
-                                        popen=forbidden, native_transport=forbidden)
+            sequence.run_sequence_batch(
+                d.CAPTURE,
+                {},
+                {},
+                self.bundle / "core-must-not-create",
+                popen=forbidden,
+                native_transport=forbidden,
+            )
         forbidden.assert_not_called()
         self.assertEqual(snapshot(self.bundle), self.bundle_before)
 
@@ -123,8 +177,10 @@ class LauncherEndToEndTest(unittest.TestCase):
         self.assertFalse(output.exists())
 
     def test_failed_manifest_and_members_are_preserved(self):
-        self.assertEqual(d.digest(self.failed / "manifest.json"),
-                         "eb1d857fb777ec381867a0c822ffa471436b5165fcb5201093f99274ad4655db")
+        self.assertEqual(
+            d.digest(self.failed / "manifest.json"),
+            "eb1d857fb777ec381867a0c822ffa471436b5165fcb5201093f99274ad4655db",
+        )
         admission = d.verify_manifest(self.failed)
         self.assertEqual(admission["optimizer_calls_executed"], 0)
         self.assertEqual(admission["status"], "FAILED")

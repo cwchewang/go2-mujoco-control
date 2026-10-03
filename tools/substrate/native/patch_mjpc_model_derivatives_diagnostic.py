@@ -32,7 +32,7 @@ OLD_INSTRUMENTED = """  // Evaluate in source order and retain one event slot pe
 FIXED_INSTRUMENTED = """  // Use the unique-index patch; all FD event tracing matches the baseline.
   evaluate_ = go2_substrate::ModelDerivativeEvaluateIndices(T, skip);
 """
-TRACE_TYPES = 'struct FDSummary {\n  std::uint64_t hash = 14695981039346656037ULL;\n  double norm = 0.0;\n  double max_abs = 0.0;\n};\nstruct FDEvent {\n  int t=-1; int worker=-1; std::uint64_t call=0;\n  std::int64_t start_ns=0; std::int64_t end_ns=0;\n  FDSummary before; FDSummary after;\n};\nnamespace {\nstd::atomic<std::uint64_t> g_fd_call_index{0};\nstd::int64_t FDTraceNowNs() {\n return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();\n}\nstd::uint64_t FDTraceHash(const double* data,std::size_t count,std::uint64_t hash) {\n const auto* bytes=reinterpret_cast<const unsigned char*>(data);\n for(std::size_t i=0;i<count*sizeof(double);++i){hash^=bytes[i];hash*=1099511628211ULL;} return hash;\n}\nFDSummary FDTraceSummary(const double* data,int count) {\n FDSummary result; double squared_norm=0.0;\n for(int i=0;i<count;++i){double magnitude=std::abs(data[i]);squared_norm+=data[i]*data[i];if(magnitude>result.max_abs)result.max_abs=magnitude;}\n result.norm=std::sqrt(squared_norm);result.hash=FDTraceHash(data,count,result.hash);return result;\n}\n}  // namespace'
+TRACE_TYPES = "struct FDSummary {\n  std::uint64_t hash = 14695981039346656037ULL;\n  double norm = 0.0;\n  double max_abs = 0.0;\n};\nstruct FDEvent {\n  int t=-1; int worker=-1; std::uint64_t call=0;\n  std::int64_t start_ns=0; std::int64_t end_ns=0;\n  FDSummary before; FDSummary after;\n};\nnamespace {\nstd::atomic<std::uint64_t> g_fd_call_index{0};\nstd::int64_t FDTraceNowNs() {\n return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();\n}\nstd::uint64_t FDTraceHash(const double* data,std::size_t count,std::uint64_t hash) {\n const auto* bytes=reinterpret_cast<const unsigned char*>(data);\n for(std::size_t i=0;i<count*sizeof(double);++i){hash^=bytes[i];hash*=1099511628211ULL;} return hash;\n}\nFDSummary FDTraceSummary(const double* data,int count) {\n FDSummary result; double squared_norm=0.0;\n for(int i=0;i<count;++i){double magnitude=std::abs(data[i]);squared_norm+=data[i]*data[i];if(magnitude>result.max_abs)result.max_abs=magnitude;}\n result.norm=std::sqrt(squared_norm);result.hash=FDTraceHash(data,count,result.hash);return result;\n}\n}  // namespace"
 OLD_SCHEDULE = """  // evaluate derivatives
   int count_before = pool.GetCount();
   for (int t : evaluate_) {
@@ -82,7 +82,11 @@ def _base(data: bytes) -> str:
     if blob != EXPECTED_GIT_BLOB:
         raise ValueError("pinned MJPC model_derivatives.cc git blob drifted")
     text = data.decode()
-    if text.count(INCLUDE) != 1 or text.count(OLD) != 1 or text.count(OLD_SCHEDULE) != 1:
+    if (
+        text.count(INCLUDE) != 1
+        or text.count(OLD) != 1
+        or text.count(OLD_SCHEDULE) != 1
+    ):
         raise ValueError("pinned MJPC diagnostic patch anchors mismatch")
     text = text.replace(INCLUDE, INCLUDE_WITH_TRACE, 1)
     text = text.replace("namespace mjpc {\n", "namespace mjpc {\n" + TRACE_TYPES, 1)
@@ -99,7 +103,9 @@ def render(data: bytes, fixed: bool) -> str:
 
 def main() -> None:
     if len(sys.argv) != 4:
-        raise SystemExit("usage: patch_mjpc_model_derivatives_diagnostic.py SOURCE ORIGINAL_OUT FIXED_OUT")
+        raise SystemExit(
+            "usage: patch_mjpc_model_derivatives_diagnostic.py SOURCE ORIGINAL_OUT FIXED_OUT"
+        )
     source, original, fixed = map(Path, sys.argv[1:])
     data = source.read_bytes()
     original_text = render(data, False)

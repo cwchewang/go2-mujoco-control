@@ -2,7 +2,6 @@
 
 import copy
 import json
-import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,7 +13,9 @@ from .guards import zero_step_guard
 from .integrity import digest
 from .mjpc_floor_registration_diagnostic import validate_qualification_claim
 
-SOURCE = reuse.ROOT / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7"
+SOURCE = (
+    reuse.ROOT / "_runs/mjpc_floor_registration_sustained_12s_qualification_20261003_r7"
+)
 MANIFEST = "b7567ac69bc7d29ed2bdb633f8b2e8cd711aa7a03e248c058b4110befad6dbad"
 
 
@@ -26,13 +27,25 @@ class SmokeReuseTests(unittest.TestCase):
             SOURCE, MANIFEST
         )
         cls.current = q.current_inputs()
-        cls.native_fingerprint = reuse.matching_native_inputs(cls.record, cls.current)
+        cls.compatible_current = copy.deepcopy(cls.current)
+        for name in (
+            "tools/substrate/fd_duplicate_contract_replay.py",
+            "tools/substrate/fd_duplicate_diagnostic.py",
+            "tools/substrate/test_fd_duplicate_diagnostic.py",
+            "tools/substrate/test_fd_duplicate_real_response.py",
+        ):
+            cls.compatible_current["tracked_files"][name] = cls.record[
+                "qualification_inputs"
+            ]["tracked_files"][name]
+        cls.native_fingerprint = reuse.matching_native_inputs(
+            cls.record, cls.compatible_current
+        )
 
     def reused_record(self):
         record = copy.deepcopy(self.record)
         record.update(
-            qualification_inputs=copy.deepcopy(self.current),
-            qualification_fingerprint=q.fingerprint(self.current),
+            qualification_inputs=copy.deepcopy(self.compatible_current),
+            qualification_fingerprint=q.fingerprint(self.compatible_current),
             private_engineering_optimizer_calls=0,
             reused_private_engineering_optimizer_calls=1,
             smoke_provenance={
@@ -52,16 +65,19 @@ class SmokeReuseTests(unittest.TestCase):
         )
         return record
 
-    def test_actual_r7_and_current_smoke_inputs_match(self):
+    def test_actual_r7_is_rejected_after_current_tracked_source_changes(self):
         self.assertEqual(digest(SOURCE / "manifest.json"), MANIFEST)
         self.assertEqual(self.physics["optimizer_calls"], 1)
         self.assertEqual(self.physics["private_step_upper_bound_max"], 4096)
+        with self.assertRaisesRegex(ValueError, "retained smoke inputs changed"):
+            reuse.matching_native_inputs(self.record, self.current)
         self.assertEqual(
-            reuse.matching_native_inputs(self.record, self.current),
+            reuse.matching_native_inputs(self.record, self.compatible_current),
             self.native_fingerprint,
         )
         for name in (
-            reuse.PRODUCER, reuse.CONSUMER,
+            reuse.PRODUCER,
+            reuse.CONSUMER,
             "tools/substrate/mjpc_smoke_reuse.py",
             "tools/substrate/test_mjpc_smoke_reuse.py",
         ):
@@ -90,14 +106,22 @@ class SmokeReuseTests(unittest.TestCase):
         ):
             record = copy.deepcopy(self.record)
             record["physics_accounting"][field] = value
-            with self.subTest(field=field, value=value), self.assertRaisesRegex(
-                ValueError, "accounting/profile"
+            with (
+                self.subTest(field=field, value=value),
+                self.assertRaisesRegex(ValueError, "accounting/profile"),
             ):
                 reuse.validate_source_record(record)
-        for key in ("fd_call_count", "rollout_mj_step_count", "private_step_upper_bound_reserved"):
+        for key in (
+            "fd_call_count",
+            "rollout_mj_step_count",
+            "private_step_upper_bound_reserved",
+        ):
             record = copy.deepcopy(self.record)
             record["physics_accounting"]["accounting"][key] += 1
-            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "accounting/profile"):
+            with (
+                self.subTest(key=key),
+                self.assertRaisesRegex(ValueError, "accounting/profile"),
+            ):
                 reuse.validate_source_record(record)
         record = copy.deepcopy(self.record)
         record["private_engineering_optimizer_calls"] = 0
@@ -108,13 +132,17 @@ class SmokeReuseTests(unittest.TestCase):
         for key in ("binary_sha256", "binary_build_identity"):
             record = copy.deepcopy(self.record)
             record["physics_accounting"][key] = "other-consumer"
-            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "consumer identity"):
+            with (
+                self.subTest(key=key),
+                self.assertRaisesRegex(ValueError, "consumer identity"),
+            ):
                 reuse.validate_source_record(record)
 
     def test_model_protocol_transport_binary_and_environment_drift_rejected(self):
         tracked = self.current["tracked_files"]
         protocol = next(
-            name for name in tracked
+            name
+            for name in tracked
             if "/protocols/" in name and "floor" in name and "12s" in name
         )
         mutations = (
@@ -125,10 +153,11 @@ class SmokeReuseTests(unittest.TestCase):
             ("runtime", "schema"),
         )
         for group, key in mutations:
-            current = copy.deepcopy(self.current)
+            current = copy.deepcopy(self.compatible_current)
             current[group][key] = "changed"
-            with self.subTest(group=group, key=key), self.assertRaisesRegex(
-                ValueError, "inputs changed"
+            with (
+                self.subTest(group=group, key=key),
+                self.assertRaisesRegex(ValueError, "inputs changed"),
             ):
                 reuse.matching_native_inputs(self.record, current)
 
@@ -145,16 +174,21 @@ class SmokeReuseTests(unittest.TestCase):
             )
 
     def test_reuses_actual_runtime_and_logs_with_no_native_launch(self):
-        with tempfile.TemporaryDirectory() as tmp, zero_step_guard(), patch(
-            "tools.substrate.qualify_mjpc_diagnostic.smoke",
-            side_effect=AssertionError("new smoke forbidden"),
-        ), patch(
-            "tools.substrate.native_mjpc.NativeMJPCController",
-            side_effect=AssertionError("native launch forbidden"),
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            zero_step_guard(),
+            patch(
+                "tools.substrate.qualify_mjpc_diagnostic.smoke",
+                side_effect=AssertionError("new smoke forbidden"),
+            ),
+            patch(
+                "tools.substrate.native_mjpc.NativeMJPCController",
+                side_effect=AssertionError("native launch forbidden"),
+            ),
         ):
             output = Path(tmp)
             physics, provenance = reuse.reuse_smoke(
-                SOURCE, MANIFEST, output, self.current
+                SOURCE, MANIFEST, output, self.compatible_current
             )
             self.assertEqual(physics, self.physics)
             self.assertEqual(provenance["new_optimizer_calls"], 0)
@@ -170,10 +204,14 @@ class SmokeReuseTests(unittest.TestCase):
     def test_reuse_record_is_accepted_without_claiming_a_new_call(self):
         record = self.reused_record()
         self.assertTrue(reuse.validate_reuse_record(record))
-        self.assertTrue(validate_qualification_claim(
-            record, record["qualification"]["head"],
-            self.physics["binary_sha256"], self.physics["runtime_identity_sha256"],
-        ))
+        self.assertTrue(
+            validate_qualification_claim(
+                record,
+                record["qualification"]["head"],
+                self.physics["binary_sha256"],
+                self.physics["runtime_identity_sha256"],
+            )
+        )
 
     def test_missing_or_conflicting_provenance_is_rejected(self):
         for mutation in (
@@ -181,9 +219,15 @@ class SmokeReuseTests(unittest.TestCase):
             lambda r: r.update(reused_private_engineering_optimizer_calls=2),
             lambda r: r["smoke_provenance"].update(new_optimizer_calls=1),
             lambda r: r["smoke_provenance"].update(native_inputs_fingerprint="wrong"),
-            lambda r: r["smoke_provenance"].update(source_smoke_accounting_sha256="wrong"),
-            lambda r: r["smoke_provenance"]["source_qualification"].update(producer_head="wrong"),
-            lambda r: r["smoke_provenance"]["source_qualification"].update(manifest_sha256="0"*64),
+            lambda r: r["smoke_provenance"].update(
+                source_smoke_accounting_sha256="wrong"
+            ),
+            lambda r: r["smoke_provenance"]["source_qualification"].update(
+                producer_head="wrong"
+            ),
+            lambda r: r["smoke_provenance"]["source_qualification"].update(
+                manifest_sha256="0" * 64
+            ),
         ):
             record = self.reused_record()
             mutation(record)
@@ -193,15 +237,19 @@ class SmokeReuseTests(unittest.TestCase):
         del record["smoke_provenance"]
         with self.assertRaises(ValueError):
             validate_qualification_claim(
-                record, record["qualification"]["head"],
-                self.physics["binary_sha256"], self.physics["runtime_identity_sha256"],
+                record,
+                record["qualification"]["head"],
+                self.physics["binary_sha256"],
+                self.physics["runtime_identity_sha256"],
             )
 
     def test_partial_reuse_arguments_fail_before_any_native_work(self):
         from .qualify_mjpc_diagnostic import qualify
 
-        with patch("tools.substrate.qualify_mjpc_diagnostic.smoke",
-                   side_effect=AssertionError("smoke forbidden")):
+        with patch(
+            "tools.substrate.qualify_mjpc_diagnostic.smoke",
+            side_effect=AssertionError("smoke forbidden"),
+        ):
             with self.assertRaisesRegex(ValueError, "supplied together"):
                 qualify(Path("/unused"), reuse_smoke_from=SOURCE)
 

@@ -41,13 +41,15 @@ def source_projection(source, name):
     tree = ast.parse(source)
     ignored = PROJECTED_FUNCTIONS[name]
     found = {
-        node.name for node in tree.body
+        node.name
+        for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     }
     if not ignored.issubset(found):
         raise ValueError("smoke projection expected function missing: " + name)
     tree.body = [
-        node for node in tree.body
+        node
+        for node in tree.body
         if not (
             isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
             and node.name in ignored
@@ -128,7 +130,8 @@ def validate_source_record(record):
             or physics["accounting"][key] != value
             for key, value in expected.items()
         )
-        or physics.get("private_model_delta") != {
+        or physics.get("private_model_delta")
+        != {
             "field": "private_task_flat.floor.pos.z",
             "from_m": -0.01,
             "to_m": 0.0,
@@ -137,10 +140,9 @@ def validate_source_record(record):
     ):
         raise ValueError("retained smoke accounting/profile is invalid")
     binary = record["qualification_inputs"].get("fd_fixed_controller", {})
-    if (
-        physics.get("binary_sha256") != binary.get("binary_sha256")
-        or physics.get("binary_build_identity") != binary.get("build_identity")
-    ):
+    if physics.get("binary_sha256") != binary.get("binary_sha256") or physics.get(
+        "binary_build_identity"
+    ) != binary.get("build_identity"):
         raise ValueError("retained smoke consumer identity is inconsistent")
     return physics
 
@@ -178,7 +180,9 @@ def load_source(directory, expected_manifest):
     ]
     predictions = [
         strict_json(line)
-        for line in (directory / "native-smoke-predictions.jsonl").read_text().splitlines()
+        for line in (directory / "native-smoke-predictions.jsonl")
+        .read_text()
+        .splitlines()
     ]
     if (
         len(traces) != 1
@@ -188,7 +192,8 @@ def load_source(directory, expected_manifest):
         or any(e.get("call_index") != 1 for e in traces[0].get("events", []))
         or len(predictions) != 1
         or predictions[0].get("policy_id") != 1
-        or predictions[0].get("private_accounting") != {
+        or predictions[0].get("private_accounting")
+        != {
             "fd_call_count": 36,
             "fd_step_upper_bound_count": 1752,
             "rollout_mj_step_count": 700,
@@ -211,7 +216,8 @@ def _package_current(directory, current):
     binary = ROOT / ".substrate/headless-reliable/go2_mjpc_controller_fd_fixed"
     identity = build_identity(binary, "fixed")
     if current["fd_fixed_controller"] != {
-        "binary_sha256": digest(binary), "build_identity": identity
+        "binary_sha256": digest(binary),
+        "build_identity": identity,
     }:
         raise ValueError("current consumer changed while preparing retained smoke")
     rt = Path(directory) / "consumer-runtime"
@@ -219,7 +225,9 @@ def _package_current(directory, current):
     task = rt / "source/mjpc/tasks/quadruped/task_flat.xml"
     text, count = re.subn(
         r'(<geom\b[^>]*\bname="floor"[^>]*\bpos="[^"]*?)-0\.01([^"]*")',
-        r"\g<1>0\g<2>", task.read_text(), count=1,
+        r"\g<1>0\g<2>",
+        task.read_text(),
+        count=1,
     )
     if count != 1:
         raise ValueError("unique private floor z edit not found")
@@ -231,7 +239,8 @@ def _package_current(directory, current):
     value = strict_json(side.read_text())
     value["files"] = {
         f.relative_to(rt).as_posix(): digest(f)
-        for f in sorted(rt.rglob("*")) if f.is_file() and f != side
+        for f in sorted(rt.rglob("*"))
+        if f.is_file() and f != side
     }
     side.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
     native_runtime.verify(rt / binary.name, side)
@@ -243,10 +252,14 @@ def reuse_smoke(source, expected_manifest, output, current):
     fingerprint = matching_native_inputs(record, current)
     rt = _package_current(output, current)
     old_rt = directory / "consumer-runtime"
-    hashes = lambda base: {
-        f.relative_to(base).as_posix(): digest(f)
-        for f in base.rglob("*") if f.is_file()
-    }
+
+    def hashes(base):
+        return {
+            f.relative_to(base).as_posix(): digest(f)
+            for f in base.rglob("*")
+            if f.is_file()
+        }
+
     changes = _differences(hashes(old_rt), hashes(rt))
     if changes:
         raise ValueError("current sealed runtime differs: " + ", ".join(changes))
@@ -294,9 +307,8 @@ def validate_reuse_record(record):
         != digest(directory / SMOKE_LOGS[0])
         or provenance.get("native_inputs_fingerprint")
         != matching_native_inputs(source, record["qualification_inputs"])
-        or provenance.get("copied_log_sha256") != {
-            name: digest(directory / name) for name in SMOKE_LOGS[1:]
-        }
+        or provenance.get("copied_log_sha256")
+        != {name: digest(directory / name) for name in SMOKE_LOGS[1:]}
     ):
         raise ValueError("retained smoke provenance/input fingerprint differs")
     return True

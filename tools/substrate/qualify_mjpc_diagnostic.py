@@ -43,9 +43,7 @@ def smoke_state_from_anchor(row):
         qpos[3:7],
         qvel[3:6],
     )
-    return WholeBodyState(
-        observation, qpos[:3], qvel[:3], float(row["sim_time_s"])
-    )
+    return WholeBodyState(observation, qpos[:3], qvel[:3], float(row["sim_time_s"]))
 
 
 def smoke(directory, binary):
@@ -108,15 +106,11 @@ def smoke(directory, binary):
         controller.close()
     accounting = diagnostics["last_step"]["diagnostic"]
     total = (
-        accounting["rollout_mj_step_count"]
-        + accounting["fd_step_upper_bound_count"]
+        accounting["rollout_mj_step_count"] + accounting["fd_step_upper_bound_count"]
     )
     action_delta = float(
         np.max(
-            np.abs(
-                np.asarray(action)
-                - np.asarray(row["target"]["position_target"])
-            )
+            np.abs(np.asarray(action) - np.asarray(row["target"]["position_target"]))
         )
     )
     if (
@@ -150,9 +144,12 @@ def smoke(directory, binary):
         "whole_episode_neutrality": "not established",
     }
 
+
 def qualify(output, reuse_smoke_from=None, reuse_smoke_manifest_sha256=None):
     if (reuse_smoke_from is None) != (reuse_smoke_manifest_sha256 is None):
-        raise ValueError("retained smoke path and manifest pin must be supplied together")
+        raise ValueError(
+            "retained smoke path and manifest pin must be supplied together"
+        )
     with experiment_lock() as lock, zero_step_guard():
         if subprocess.check_output(
             ["git", "status", "--porcelain"], cwd=ROOT, text=True
@@ -336,7 +333,9 @@ def main():
     p.add_argument("--reuse-smoke-from", type=Path)
     p.add_argument("--reuse-smoke-manifest-sha256")
     a = p.parse_args()
-    print(json.dumps(qualify(a.output, a.reuse_smoke_from, a.reuse_smoke_manifest_sha256)))
+    print(
+        json.dumps(qualify(a.output, a.reuse_smoke_from, a.reuse_smoke_manifest_sha256))
+    )
 
 
 if __name__ == "__main__":

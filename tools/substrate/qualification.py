@@ -100,7 +100,9 @@ def current_inputs(include_controller=True):
         and line.split(":", 1)[0].strip()
         in ("vendor_id", "model name", "microcode", "flags")
     }
-    fixed_controller = ROOT / ".substrate/headless-reliable/go2_mjpc_controller_fd_fixed"
+    fixed_controller = (
+        ROOT / ".substrate/headless-reliable/go2_mjpc_controller_fd_fixed"
+    )
     fixed_controller_input = None
     if fixed_controller.is_file():
         from .fd_duplicate_diagnostic import build_identity as fd_build_identity
