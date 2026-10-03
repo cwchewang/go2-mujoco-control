@@ -1,0 +1,679 @@
+"""Single-arm private floor registration diagnostic."""
+
+import argparse
+import json
+import math
+import os
+import re
+import subprocess
+import xml.etree.ElementTree as ET
+from pathlib import Path
+from . import fd_duplicate_diagnostic as build, native_runtime
+from . import mjpc_fixed_baseline as baseline
+from .aligned_anchor import load_anchor, validate_canonical_model
+from .aligned_episode import replay_aligned_rows, run_aligned_episode
+from .contracts import PositionTargetControllerAdapter
+from .episode import MujocoPlant
+from .guards import wall_deadline, zero_step_guard
+from .integrity import (
+    EvidenceRun,
+    digest,
+    experiment_lock,
+    strict_json,
+    verify_manifest,
+    write_new,
+)
+from .native_mjpc import NativeMJPCController
+from .readiness import validate_authorization, validate_review
+from tools.research.preflight import DEFAULT_PROCESS_NAMES, find_processes
+
+ROOT = Path(__file__).resolve().parents[2]
+BRANCH = "research/mjpc-floor-registration-diagnostic-20261003"
+PROTOCOL = ROOT / "tools/substrate/protocols/mjpc_floor_registration_3s_v1.json"
+R4_PREP = ROOT / "_runs/mjpc_fixed_baseline_prepared_r4_20261003"
+R4_RAW = ROOT / "_runs/mjpc_fixed_baseline_capture_r4_20261003T002510Z_repeat1"
+MODE = "floor0"
+LIMIT = 614400
+RESERVE = 4096
+
+
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def identity():
+    branch, head = git("branch", "--show-current"), git("rev-parse", "HEAD")
+    if branch != BRANCH or git("status", "--porcelain"):
+        raise ValueError("requires exact clean named diagnostic branch")
+    return {"branch": branch, "head": head}
+
+
+def protocol():
+    expected = {
+        "schema": 1,
+        "id": "mjpc-floor-registration-only-3s-v1",
+        "parent_r4_head": "6e829bed5dcd4a8b4dc6b575f70b1a5be422cb78",
+        "max_attempts": 1,
+        "horizon_s": 3.0,
+        "canonical_steps_max": 1500,
+        "max_replan_calls": 150,
+        "native_controller_processes_max": 1,
+        "seed_rule": "xfrc_std=0; no seed",
+        "one_shot_reservation": "exclusive single-attempt campaign record keyed by prepared packet SHA-256",
+        "private_reservation_per_replan": RESERVE,
+        "private_step_upper_bound_max": LIMIT,
+        "wall_timeout_s": 300,
+        "zero_command_ticks": 50,
+        "ramp_ticks": 100,
+        "command_body_mps": [1.0, 0.0, 0.0],
+        "intervention": {
+            "field": "private_task_flat.floor.pos.z",
+            "from_m": -0.01,
+            "to_m": 0.0,
+        },
+        "preserve": [
+            "canonical_model",
+            "home_reset",
+            "mass",
+            "damping",
+            "contact_smoothing",
+            "PD60_5",
+            "torque_limits",
+            "cost",
+            "gait_Trot_Manual",
+            "0.35s_horizon",
+            "10ms_planner_dt",
+            "20ms_replan",
+            "2ms_feedback",
+            "one_sided_fd1e-6",
+            "derivative_skip0",
+            "four_workers",
+            "FD_duplicate_fix",
+        ],
+        "failure_policy": "stop on first safety, execution, evidence, identity, warning or budget failure; no retry",
+        "prediction_contact_semantics": "selected-state forward reconstruction on smoothed private model; not future rollout",
+        "capability_claim": "none; single bounded diagnostic",
+        "start_gate": "fresh exact-head independent science and execution reviews plus one protocol/manifest-bound user start authorization",
+    }
+    value = strict_json(PROTOCOL.read_text())
+    if value != expected:
+        raise ValueError("floor-only protocol drift")
+    return value
+
+
+def _floor(root):
+    xs = [e for e in root.iter("geom") if e.get("name") == "floor"]
+    if len(xs) != 1:
+        raise ValueError("expected unique private floor")
+    p = xs[0].get("pos", "").split()
+    if len(p) != 3:
+        raise ValueError("bad floor position")
+    return xs[0], p
+
+
+def assert_only_floor_z_changed(a_path, b_path):
+    a, b = ET.parse(a_path).getroot(), ET.parse(b_path).getroot()
+    ga, pa = _floor(a)
+    gb, pb = _floor(b)
+    if pa[2] != "-0.01" or pb[2] != "0":
+        raise ValueError("floor z must be -0.01 -> 0")
+    if pa[:2] != pb[:2]:
+        raise ValueError("floor x/y changed")
+    normalized = " ".join(pa[:2] + ["0"])
+    ga.set("pos", normalized)
+    gb.set("pos", normalized)
+    if ET.tostring(a) != ET.tostring(b):
+        raise ValueError("private XML changed beyond floor.pos.z")
+    return {
+        "field": "private_task_flat.floor.pos.z",
+        "from_m": -0.01,
+        "to_m": 0.0,
+        "other_xml_values_equal": True,
+    }
+
+
+def sealed_r4():
+    verify_manifest(R4_PREP)
+    verify_manifest(R4_RAW)
+    old = strict_json((R4_PREP / "packet.json").read_text())
+    out = strict_json((R4_RAW / "outcome.json").read_text())
+    rawsha, predsha = digest(R4_RAW / "raw.jsonl"), digest(R4_RAW / "predictions.jsonl")
+    man = strict_json((R4_RAW / "manifest.json").read_text())
+    if (
+        old.get("head") != protocol()["parent_r4_head"]
+        or man.get("raw.jsonl") != rawsha
+        or out.get("classification") != "SAFETY_STOP"
+        or out.get("canonical_physics_steps") != 260
+    ):
+        raise ValueError("sealed R4 identity/outcome changed")
+    rows = [strict_json(x) for x in (R4_RAW / "raw.jsonl").read_text().splitlines()]
+    by = {x["tick"]: x for x in rows}
+    sat = min(
+        x["tick"]
+        for x in rows
+        if x.get("action") and any(x["action"].get("saturated") or [])
+    )
+    preds = [
+        strict_json(x) for x in (R4_RAW / "predictions.jsonl").read_text().splitlines()
+    ]
+    pred = next(
+        x
+        for x in preds
+        if x["policy_id"] == 3
+        and math.isclose(x["anchor_time_s"], 0.04, rel_tol=0, abs_tol=1e-12)
+    )["states"][0]
+    labels = sorted(
+        {
+            n
+            for c in pred["active_contacts"]
+            for n in c["geom_names"]
+            if n in ("FR", "FL", "RR", "RL")
+        }
+    )
+    diff = max(abs(a - b) for a, b in zip(pred["qpos"], by[20]["qpos"]))
+    if (
+        sat != 105
+        or labels
+        or set(by[20]["supports"]) != {"FR", "FL", "RR", "RL"}
+        or diff >= 0.001
+    ):
+        raise ValueError("R4 contact/saturation facts differ")
+    return {
+        "path": str(R4_RAW),
+        "manifest_sha256": digest(R4_RAW / "manifest.json"),
+        "raw_sha256": rawsha,
+        "predictions_sha256": predsha,
+        "outcome_sha256": digest(R4_RAW / "outcome.json"),
+        "stop_tick": 260,
+        "stop_reason": "nonfoot_contact",
+        "canonical_steps": 260,
+        "optimizer_calls": out["optimizer_calls"],
+        "first_pd_saturation_tick": sat,
+        "tick20": {
+            "actual_supports": by[20]["supports"],
+            "selected_state_reconstructed_feet": labels,
+            "qpos_max_abs_diff": diff,
+            "semantics": "selected-state forward reconstruction on smoothed private model; not future rollout",
+        },
+        "reuse": "comparison only; never rerun",
+    }
+
+
+def runtime_delta(rt):
+    old = R4_PREP / "runtime"
+    files_old = {
+        x.relative_to(old).as_posix(): digest(x) for x in old.rglob("*") if x.is_file()
+    }
+    files_new = {
+        x.relative_to(rt).as_posix(): digest(x) for x in rt.rglob("*") if x.is_file()
+    }
+    if set(files_old) != set(files_new):
+        raise ValueError("runtime closure file set changed")
+    diffs = [
+        {"path": k, "r4_sha256": files_old[k], "floor0_sha256": files_new[k]}
+        for k in sorted(files_old)
+        if files_old[k] != files_new[k]
+    ]
+    allowed = {
+        "go2_mjpc_controller_fd_fixed",
+        "build-provenance.json",
+        "source/mjpc/tasks/quadruped/task_flat.xml",
+        native_runtime.SIDECAR,
+    }
+    if not diffs or {x["path"] for x in diffs} - allowed:
+        raise ValueError(
+            "runtime changed outside binary/provenance/private floor/sidecar"
+        )
+    return diffs
+
+
+def prepare(binary, output):
+    p = protocol()
+    ident = identity()
+    r4 = sealed_r4()
+    old = strict_json((R4_PREP / "packet.json").read_text())
+    if verify_manifest(R4_PREP).get("status") != "PREPARED_NOT_RUN":
+        raise ValueError("R4 preparation not sealed")
+    bi = build.build_identity(binary, "fixed")
+    if bi["binary_sha256"] == old["binary"]["sha256"]:
+        raise ValueError("binary lacks floor0 label")
+    for key in (
+        "variant",
+        "workers",
+        "mjpc_commit",
+        "mjpc_source_sha256",
+        "generated_source_sha256",
+        "diagnostic_patch_script_sha256",
+        "index_patch_sha256",
+        "index_patch_applier_sha256",
+        "index_helper_header_sha256",
+    ):
+        if bi.get(key) != old["build"].get(key):
+            raise ValueError("fixed controller source/build input drift: " + key)
+    out = Path(output).resolve()
+    if out.parent != (ROOT / "_runs").resolve() or out.exists():
+        raise ValueError("output must be fresh child of _runs")
+    with (
+        experiment_lock(),
+        zero_step_guard(),
+        EvidenceRun(out, {"operation": "floor0_prepare", **ident}) as run,
+    ):
+        rt = out / "runtime"
+        native_runtime.package(binary, rt, ROOT, bi)
+        task = rt / "source/mjpc/tasks/quadruped/task_flat.xml"
+        base = R4_PREP / "runtime/source/mjpc/tasks/quadruped/task_flat.xml"
+        s = task.read_text()
+        pat = r'(<geom\b[^>]*\bname="floor"[^>]*\bpos="[^"]*?)-0\.01([^"]*")'
+        s, n = re.subn(pat, r"\g<1>0\g<2>", s, count=1)
+        if n != 1:
+            raise ValueError("unique private floor z edit not found")
+        task.write_text(s)
+        delta = assert_only_floor_z_changed(base, task)
+        side = rt / native_runtime.SIDECAR
+        m = strict_json(side.read_text())
+        m["files"] = {
+            x.relative_to(rt).as_posix(): digest(x)
+            for x in sorted(rt.rglob("*"))
+            if x.is_file() and x != side
+        }
+        side.write_text(json.dumps(m, indent=2, sort_keys=True) + "\n")
+        native_runtime.verify(rt / binary.name, side)
+        anchor = load_anchor()
+        canon = rt / m["canonical_xml"]
+        plant = MujocoPlant(canon)
+        validate_canonical_model(anchor, plant.model)
+        if plant.steps or plant.data.time:
+            raise ValueError("canonical physics advanced")
+        files = tuple(
+            sorted(
+                set(baseline.RUNTIME)
+                | {
+                    "tools/substrate/mjpc_floor_registration_diagnostic.py",
+                    "tools/substrate/native/diagnostic.h",
+                    "tools/substrate/protocols/mjpc_floor_registration_3s_v1.json",
+                }
+            )
+        )
+        rd = runtime_delta(rt)
+        packet = {
+            "schema": 1,
+            "kind": p["id"],
+            **ident,
+            "protocol_sha256": digest(PROTOCOL),
+            "design": p,
+            "parent_r4": r4,
+            "r4_packet_sha256": digest(R4_PREP / "packet.json"),
+            "binary": {
+                "name": "runtime/" + binary.name,
+                "sha256": digest(rt / binary.name),
+                "build_identity": bi,
+            },
+            "runtime_identity": {
+                "name": "runtime/" + native_runtime.SIDECAR,
+                "sha256": digest(side),
+            },
+            "runtime_code": {x: digest(ROOT / x) for x in files},
+            "runtime_file_differences": rd,
+            "canonical_physical_sha256": anchor["raw"]["canonical"]["physical_sha256"],
+            "canonical_xml_sha256": digest(canon),
+            "private_model_delta": delta,
+            "private_task_xml_sha256": digest(task),
+            "max_attempts": 1,
+            "canonical_steps_max": 1500,
+            "private_total_upper_bound_max": LIMIT,
+            "canonical_physics_step_authorized": False,
+            "scientific_attempts_authorized": 0,
+            "readiness": "AWAITING_INDEPENDENT_REVIEWS_AND_FRESH_USER_START",
+        }
+        write_new(out / "protocol.json", p)
+        write_new(out / "packet.json", packet)
+        write_new(
+            out / "comparison.json",
+            {
+                "r4": r4,
+                "interpretation": "tick20 selected-state contact labels are reconstructed, not future rollout; first PD saturation is later at tick105.",
+            },
+        )
+        run.result.update(
+            status="ENGINEERING_ADMITTED",
+            task_id=p["id"],
+            head=ident["head"],
+            readiness=packet["readiness"],
+            max_attempts=1,
+            canonical_steps_max=1500,
+            private_total_upper_bound_max=LIMIT,
+            canonical_physics_steps=0,
+            optimizer_calls=0,
+            native_processes_started=0,
+            scientific_attempts=0,
+        )
+    return str(out)
+
+
+def validate_packet(prepared):
+    d = Path(prepared).resolve(strict=True)
+    ad = verify_manifest(d)
+    pkt = strict_json((d / "packet.json").read_text())
+    ident = identity()
+    if (
+        ad.get("status") != "ENGINEERING_ADMITTED"
+        or pkt.get("kind") != protocol()["id"]
+        or any(pkt.get(k) != ident[k] for k in ("branch", "head"))
+    ):
+        raise ValueError("prepared packet/head invalid")
+    if pkt["protocol_sha256"] != digest(PROTOCOL) or pkt["runtime_code"] != {
+        x: digest(ROOT / x) for x in pkt["runtime_code"]
+    }:
+        raise ValueError("protocol/source drift")
+    side = d / pkt["runtime_identity"]["name"]
+    binary = d / pkt["binary"]["name"]
+    if (
+        digest(side) != pkt["runtime_identity"]["sha256"]
+        or digest(binary) != pkt["binary"]["sha256"]
+    ):
+        raise ValueError("runtime identity mismatch")
+    native_runtime.verify(binary, side)
+    if runtime_delta(d / "runtime") != pkt.get("runtime_file_differences"):
+        raise ValueError("runtime changed outside predeclared paths")
+    if (
+        assert_only_floor_z_changed(
+            R4_PREP / "runtime/source/mjpc/tasks/quadruped/task_flat.xml",
+            d / "runtime/source/mjpc/tasks/quadruped/task_flat.xml",
+        )
+        != pkt["private_model_delta"]
+    ):
+        raise ValueError("model delta mismatch")
+    return pkt, binary, side
+
+
+def handshake(prepared, output):
+    pkt, binary, side = validate_packet(prepared)
+    out = Path(output).resolve()
+    if out.parent != (ROOT / "_runs").resolve() or out.exists():
+        raise ValueError("handshake output must be fresh _runs child")
+    anchor = load_anchor()
+    with (
+        experiment_lock(),
+        zero_step_guard(),
+        EvidenceRun(
+            out, {"operation": "floor0_construction_handshake", "head": pkt["head"]}
+        ) as run,
+    ):
+        rt = native_runtime.verify(binary, side)
+        plant = MujocoPlant(side.parent / rt["canonical_xml"])
+        validate_canonical_model(anchor, plant.model)
+        launches = []
+
+        def popen(argv, **kw):
+            x = subprocess.Popen(argv, **kw)
+            launches.append({"pid": x.pid, "argv": argv})
+            return x
+
+        pred, fd = out / "predictions.jsonl", out / "fd-trace.jsonl"
+        native = NativeMJPCController(
+            binary,
+            anchor["controllers"]["mjpc"]["timing"],
+            popen=popen,
+            stderr_log_path=out / "native.stderr.log",
+            diagnostic=(MODE, side.parent / rt["canonical_xml"], pred),
+            runtime_identity=side,
+            fd_trace_path=fd,
+        )
+        try:
+            PositionTargetControllerAdapter(
+                native, native.actuator_spec, native.joint_names
+            )
+            if (
+                native.ready.get("worker_count") != 4
+                or native.ready.get("horizon_steps") != 36
+                or native.ready.get("planner_dt") != 0.01
+            ):
+                raise ValueError("controller readiness identity drift")
+            libs = native_runtime.loaded_libraries(native.process.pid, side)
+            if (
+                len(launches) != 1
+                or native.ready.get("worker_count") != 4
+                or native.ready.get("horizon_steps") != 36
+                or native.ready.get("planner_dt") != 0.01
+            ):
+                raise ValueError("native process count/controller readiness drift")
+            if (
+                plant.steps
+                or plant.data.time
+                or native.diagnostics().get("last_step") is not None
+            ):
+                raise ValueError("handshake advanced physics/optimizer")
+            write_new(out / "controller-ready.json", native.ready)
+            write_new(out / "loaded-libraries.json", libs)
+        finally:
+            native.close()
+        tr = native.diagnostics()["transport"]
+        if (
+            tr["stderr_bytes"]
+            or tr["stderr_read_error"]
+            or (pred.exists() and pred.stat().st_size)
+            or (fd.exists() and fd.stat().st_size)
+        ):
+            raise ValueError("startup warning/optimizer evidence")
+        write_new(
+            out / "construction.json",
+            {
+                "launches": launches,
+                "canonical_physics_steps": plant.steps,
+                "optimizer_calls": 0,
+                "scientific_attempts": 0,
+                "binary_sha256": digest(binary),
+                "runtime_identity_sha256": digest(side),
+                "stderr_bytes": tr["stderr_bytes"],
+            },
+        )
+        run.result.update(
+            status="CONSTRUCTION_PRECHECK_PASS",
+            canonical_physics_steps=0,
+            optimizer_calls=0,
+            scientific_attempts=0,
+            native_processes_started=len(launches),
+        )
+    return str(out)
+
+
+class StrictWarningController:
+    def __init__(self, inner):
+        self.inner = inner
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+    def step(self, *args, **kwargs):
+        action = self.inner.step(*args, **kwargs)
+        transport = self.inner.diagnostics().get("transport", {})
+        if transport.get("stderr_bytes") or transport.get("stderr_read_error"):
+            raise ValueError("native warning/error; stop the single attempt")
+        return action
+
+
+def capture(prepared, review, authorization, output):
+    pkt, binary, side = validate_packet(prepared)
+    d = Path(prepared).resolve()
+    out = Path(output).resolve()
+    if out.parent != (ROOT / "_runs").resolve() or out.exists():
+        raise ValueError("capture output must be fresh _runs child")
+    validate_review(strict_json(Path(review).read_text()), pkt["head"])
+    validate_authorization(
+        strict_json(Path(authorization).read_text()),
+        {
+            "head": pkt["head"],
+            "protocol_sha256": pkt["protocol_sha256"],
+            "prepared_manifest_sha256": digest(d / "manifest.json"),
+            "max_attempts": 1,
+        },
+    )
+    anchor = load_anchor()
+    task = baseline.replace(
+        anchor["task"],
+        task_id=pkt["kind"],
+        horizon_ticks=1500,
+        measurement_start_tick=150,
+    )
+    timing = anchor["controllers"]["mjpc"]["timing"]
+    info = anchor["controllers"]["mjpc"]["information"]
+    rt = native_runtime.verify(binary, side)
+    canon = side.parent / rt["canonical_xml"]
+    if find_processes(DEFAULT_PROCESS_NAMES + ("go2_mjpc_controller_fd_fixed",)):
+        raise ValueError("stale Go2/native process")
+    packet_sha = digest(d / "packet.json")
+    reservation = (
+        ROOT / "_runs" / ("mjpc_floor_registration_campaign_" + packet_sha + ".json")
+    )
+    with experiment_lock():
+        if reservation.exists():
+            raise ValueError("the one-shot campaign reservation already exists")
+        write_new(
+            reservation,
+            {
+                "head": pkt["head"],
+                "packet_sha256": packet_sha,
+                "max_attempts": 1,
+                "status": "RESERVED_NO_RETRY",
+            },
+        )
+    with (
+        experiment_lock(),
+        EvidenceRun(
+            out, {"operation": "floor0_single_attempt_capture", "head": pkt["head"]}
+        ) as run,
+    ):
+        plant = MujocoPlant(canon)
+        validate_canonical_model(anchor, plant.model)
+        launches = []
+
+        def popen(argv, **kw):
+            x = subprocess.Popen(argv, **kw)
+            launches.append({"pid": x.pid, "argv": argv})
+            return x
+
+        native = NativeMJPCController(
+            binary,
+            timing,
+            popen=popen,
+            stderr_log_path=out / "native.stderr.log",
+            diagnostic=(MODE, canon, out / "predictions.jsonl"),
+            runtime_identity=side,
+            fd_trace_path=out / "fd-trace.jsonl",
+        )
+        if (
+            len(launches) != 1
+            or native.ready.get("worker_count") != 4
+            or native.ready.get("horizon_steps") != 36
+            or native.ready.get("planner_dt") != 0.01
+        ):
+            native.close()
+            raise ValueError("native process count/controller readiness drift")
+        controller = StrictWarningController(
+            PositionTargetControllerAdapter(
+                native, native.actuator_spec, native.joint_names
+            )
+        )
+        consumed = False
+
+        def consume():
+            nonlocal consumed
+            if consumed:
+                raise ValueError("one attempt only")
+            write_new(
+                out / "attempt.json",
+                {
+                    "attempt": 1,
+                    "head": pkt["head"],
+                    "packet_sha256": packet_sha,
+                    "first_sample_boundary": "first post-reset action before canonical step 1",
+                },
+            )
+            consumed = True
+
+        try:
+            with (out / "raw.jsonl").open("x") as f:
+
+                def emit(row):
+                    f.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
+                    f.flush()
+
+                with wall_deadline(300):
+                    outcome = run_aligned_episode(
+                        plant, controller, task, info, timing, emit, consume
+                    )
+                f.flush()
+                os.fsync(f.fileno())
+            diag = native.diagnostics()
+            write_new(out / "native-diagnostics.json", diag)
+        finally:
+            native.close()
+        transport = diag.get("transport", {})
+        if transport.get("stderr_bytes") or transport.get("stderr_read_error"):
+            raise ValueError("native warning/error; stop the single attempt")
+        acc = diag.get("last_step", {}).get("diagnostic", {})
+        upper = acc.get("fd_step_upper_bound_count", 0) + acc.get(
+            "rollout_mj_step_count", 0
+        )
+        reserved = acc.get("private_step_upper_bound_reserved", 0)
+        if upper > reserved or reserved > LIMIT:
+            raise ValueError("private budget exceeded")
+        rows = [strict_json(x) for x in (out / "raw.jsonl").read_text().splitlines()]
+        result = {
+            "classification": "HORIZON_REACHED"
+            if outcome["terminal_reason"] == "horizon"
+            else "SAFETY_STOP",
+            "outcome": outcome,
+            "canonical_evaluation": replay_aligned_rows(
+                rows, task, timing.physics_period_s
+            ),
+            "canonical_physics_steps": plant.steps,
+            "scientific_attempts": int(consumed),
+            "optimizer_calls": acc.get("policy_id", 0),
+            "private_observed_upper_bound": upper,
+            "private_reserved": reserved,
+            "r4_parent": pkt["parent_r4"],
+            "prediction_contact_semantics": protocol()["prediction_contact_semantics"],
+            "retry": "none",
+            "one_shot_reservation": str(reservation),
+            "one_shot_reservation_sha256": digest(reservation),
+        }
+        write_new(out / "RESULT.json", result)
+        run.result.update(
+            status=result["classification"],
+            canonical_physics_steps=plant.steps,
+            scientific_attempts=int(consumed),
+            optimizer_calls=result["optimizer_calls"],
+            private_observed_upper_bound=upper,
+            private_reserved=reserved,
+            capability_status="DIAGNOSTIC_ONLY",
+        )
+    return str(out / "RESULT.json")
+
+
+def main():
+    p = argparse.ArgumentParser()
+    s = p.add_subparsers(dest="cmd", required=True)
+    q = s.add_parser("prepare")
+    q.add_argument("--binary", type=Path, required=True)
+    q.add_argument("--output", type=Path, required=True)
+    q = s.add_parser("handshake")
+    q.add_argument("--prepared", type=Path, required=True)
+    q.add_argument("--output", type=Path, required=True)
+    q = s.add_parser("capture")
+    q.add_argument("--prepared", type=Path, required=True)
+    q.add_argument("--review", type=Path, required=True)
+    q.add_argument("--authorization", type=Path, required=True)
+    q.add_argument("--output", type=Path, required=True)
+    a = p.parse_args()
+    print(
+        prepare(a.binary, a.output)
+        if a.cmd == "prepare"
+        else handshake(a.prepared, a.output)
+        if a.cmd == "handshake"
+        else capture(a.prepared, a.review, a.authorization, a.output)
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -220,7 +220,7 @@ class NativeMJPCController:
         self._diagnostic_step = None
         if diagnostic is not None:
             mode, canonical, trace = diagnostic
-            if mode not in ("original", "corrected") or Path(trace).exists():
+            if mode not in ("original", "corrected", "floor0") or Path(trace).exists():
                 raise ValueError("invalid/fresh diagnostic trace required")
             argv += [mode, str(Path(canonical).resolve(strict=True)), str(trace)]
         self._transport = NativeTransport(

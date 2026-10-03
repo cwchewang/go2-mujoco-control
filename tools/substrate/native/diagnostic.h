@@ -20,7 +20,7 @@ class Diagnostic {
   static constexpr long long kLimit = 614400;
   Diagnostic(mjModel* source, const char* mode, const char* canonical,
              const char* trace) : mode_(mode) {
-    if ((mode_ != "original" && mode_ != "fixed") ||
+    if ((mode_ != "original" && mode_ != "fixed" && mode_ != "floor0") ||
         std::filesystem::exists(trace))
       throw std::runtime_error("invalid diagnostic mode/trace");
     char error[2048] = {};
@@ -36,7 +36,8 @@ class Diagnostic {
     const int pf = mj_name2id(plant.get(), mjOBJ_GEOM, "phase2_floor");
     if (sf < 0 || pf < 0 || source->geom_type[sf] != mjGEOM_PLANE ||
         plant->geom_type[pf] != mjGEOM_PLANE ||
-        source->geom_pos[3*sf+2] != -0.01 || plant->geom_pos[3*pf+2] != 0)
+        source->geom_pos[3*sf+2] != (mode_ == "floor0" ? 0.0 : -0.01) ||
+        plant->geom_pos[3*pf+2] != 0)
       throw std::runtime_error("unproved diagnostic floor mapping");
     for (int i = 0; i < source->nu; ++i) {
       int sj = source->actuator_trnid[2*i];
