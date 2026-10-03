@@ -150,7 +150,9 @@ def smoke(directory, binary):
         "whole_episode_neutrality": "not established",
     }
 
-def qualify(output):
+def qualify(output, reuse_smoke_from=None, reuse_smoke_manifest_sha256=None):
+    if (reuse_smoke_from is None) != (reuse_smoke_manifest_sha256 is None):
+        raise ValueError("retained smoke path and manifest pin must be supplied together")
     with experiment_lock() as lock, zero_step_guard():
         if subprocess.check_output(
             ["git", "status", "--porcelain"], cwd=ROOT, text=True
@@ -230,6 +232,7 @@ def qualify(output):
                             "tools.substrate.test_aligned_episode",
                             "tools.substrate.test_native_transport",
                             "tools.substrate.test_mjpc_floor_registration_diagnostic",
+                            "tools.substrate.test_mjpc_smoke_reuse",
                         )
                     ),
                     180,
@@ -282,10 +285,18 @@ def qualify(output):
                         raise ValueError("qualification inputs changed during build")
             evidence = model_audit()
             write_new(run.path / "model-audit.json", evidence)
-            physics = smoke(
-                run.path,
-                ROOT / ".substrate/headless-reliable/go2_mjpc_controller_fd_fixed",
-            )
+            provenance = None
+            if reuse_smoke_from is None:
+                physics = smoke(
+                    run.path,
+                    ROOT / ".substrate/headless-reliable/go2_mjpc_controller_fd_fixed",
+                )
+            else:
+                from .mjpc_smoke_reuse import reuse_smoke
+
+                physics, provenance = reuse_smoke(
+                    reuse_smoke_from, reuse_smoke_manifest_sha256, run.path, initial
+                )
             write_new(run.path / "native-smoke-accounting.json", physics)
             if (
                 q.current_inputs() != initial
@@ -306,7 +317,13 @@ def qualify(output):
                 qualification_fingerprint=q.fingerprint(initial),
                 canonical_physics_steps=0,
                 scientific_attempts=0,
-                private_engineering_optimizer_calls=physics["optimizer_calls"],
+                private_engineering_optimizer_calls=(
+                    0 if provenance is not None else physics["optimizer_calls"]
+                ),
+                reused_private_engineering_optimizer_calls=(
+                    1 if provenance is not None else 0
+                ),
+                smoke_provenance=provenance,
                 physics_accounting=physics,
             )
             q.validate_record(run.result, initial)
@@ -316,8 +333,10 @@ def qualify(output):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--reuse-smoke-from", type=Path)
+    p.add_argument("--reuse-smoke-manifest-sha256")
     a = p.parse_args()
-    print(json.dumps(qualify(a.output)))
+    print(json.dumps(qualify(a.output, a.reuse_smoke_from, a.reuse_smoke_manifest_sha256)))
 
 
 if __name__ == "__main__":

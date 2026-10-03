@@ -49,6 +49,7 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
     inputs = record.get("qualification_inputs", {})
     controller = inputs.get("fd_fixed_controller") or {}
     smoke = record.get("physics_accounting", {})
+    retained = record.get("smoke_provenance") is not None
     if (
         record.get("qualification_profile")
         != "mjpc_floor_registration_sustained_12s_v1"
@@ -57,7 +58,9 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
         or qualification_record.get("development") is not False
         or record.get("canonical_physics_steps") != 0
         or record.get("scientific_attempts") != 0
-        or record.get("private_engineering_optimizer_calls") != 1
+        or type(record.get("private_engineering_optimizer_calls")) is not int
+        or record.get("private_engineering_optimizer_calls") != (0 if retained else 1)
+        or record.get("reused_private_engineering_optimizer_calls", 0) != (1 if retained else 0)
         or controller.get("binary_sha256") != binary_sha256
         or smoke.get("binary_sha256") != binary_sha256
         or smoke.get("runtime_identity_sha256") != runtime_sha256
@@ -76,6 +79,10 @@ def validate_qualification_claim(record, expected_head, binary_sha256, runtime_s
         )
     ):
         raise ValueError("qualification receipt does not bind the exact floor0 consumer")
+    if retained:
+        from .mjpc_smoke_reuse import validate_reuse_record
+
+        validate_reuse_record(record)
     return True
 
 
