@@ -5,6 +5,7 @@ from tools.substrate.mjpc_floor_registration_diagnostic import (
     assert_only_floor_z_changed,
     protocol,
     protocol_12s,
+    validate_qualification_claim,
 )
 
 
@@ -31,6 +32,34 @@ class FloorRegistrationDiffTests(unittest.TestCase):
         self.assertEqual(value["campaign_identity"], "prepared packet SHA-256; single allowed slot 1")
         self.assertEqual(value["capture_native_controller_processes_campaign_max"], 1)
         self.assertEqual(value["private_step_upper_bound_total_max"], 2457600)
+
+    def test_qualification_claim_binds_exact_consumer_binary_and_runtime(self):
+        record = {
+            "qualification_profile": "mjpc_floor_registration_sustained_12s_v1",
+            "qualification": {
+                "head": "h",
+                "clean_head": True,
+                "development": False,
+            },
+            "qualification_inputs": {
+                "fd_fixed_controller": {"binary_sha256": "b"}
+            },
+            "canonical_physics_steps": 0,
+            "scientific_attempts": 0,
+            "private_engineering_optimizer_calls": 1,
+            "private_step_upper_bound_max": 4096,
+            "physics_accounting": {
+                "binary_sha256": "b",
+                "runtime_identity_sha256": "r",
+                "canonical_steps": 0,
+                "scientific_attempts": 0,
+                "optimizer_calls": 1,
+                "private_step_upper_bound_max": 4096,
+            },
+        }
+        self.assertTrue(validate_qualification_claim(record, "h", "b", "r"))
+        with self.assertRaisesRegex(ValueError, "exact floor0 consumer"):
+            validate_qualification_claim(record, "h", "other", "r")
 
     def test_accepts_only_floor_height_change(self):
         a = '<mujoco><worldbody><geom name="floor" type="plane" pos="0 0 -0.01" size="1 1 0.1"/><body name="robot"/></worldbody></mujoco>'

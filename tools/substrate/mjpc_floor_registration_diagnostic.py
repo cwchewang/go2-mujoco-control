@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from . import fd_duplicate_diagnostic as build, native_runtime
 from . import mjpc_fixed_baseline as baseline
+from . import qualification
 from .aligned_anchor import load_anchor, validate_canonical_model
 from .aligned_episode import replay_aligned_rows, run_aligned_episode
 from .contracts import MOTOR_JOINTS, PositionTargetControllerAdapter
@@ -21,6 +22,7 @@ from .integrity import (
     experiment_lock,
     strict_json,
     verify_manifest,
+    verify_bundle,
     write_new,
 )
 from .native_mjpc import NativeMJPCController
@@ -40,6 +42,33 @@ RESERVE = 4096
 
 def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def validate_qualification_claim(record, expected_head, binary_sha256, runtime_sha256):
+    qualification_record = record.get("qualification", {})
+    inputs = record.get("qualification_inputs", {})
+    controller = inputs.get("fd_fixed_controller") or {}
+    smoke = record.get("physics_accounting", {})
+    if (
+        record.get("qualification_profile")
+        != "mjpc_floor_registration_sustained_12s_v1"
+        or qualification_record.get("head") != expected_head
+        or qualification_record.get("clean_head") is not True
+        or qualification_record.get("development") is not False
+        or record.get("canonical_physics_steps") != 0
+        or record.get("scientific_attempts") != 0
+        or record.get("private_engineering_optimizer_calls") != 1
+        or record.get("private_step_upper_bound_max") != 4096
+        or controller.get("binary_sha256") != binary_sha256
+        or smoke.get("binary_sha256") != binary_sha256
+        or smoke.get("runtime_identity_sha256") != runtime_sha256
+        or smoke.get("canonical_steps") != 0
+        or smoke.get("scientific_attempts") != 0
+        or smoke.get("optimizer_calls") != 1
+        or smoke.get("private_step_upper_bound_max") != 4096
+    ):
+        raise ValueError("qualification receipt does not bind the exact floor0 consumer")
+    return True
 
 
 def identity():
@@ -362,10 +391,13 @@ def runtime_delta(rt):
     return diffs
 
 
-def prepare(binary, output, protocol_id=None):
+def prepare(binary, output, qualification_path, protocol_id=None):
     p = protocol() if protocol_id in (None, protocol()["id"]) else protocol_for_id(protocol_id)
     protocol_path = PROTOCOL if p["id"] == protocol()["id"] else PROTOCOL_12S
     ident = identity()
+    qualification_reference = qualification.validate(qualification_path)
+    if qualification_reference["producer_head"] != ident["head"]:
+        raise ValueError("qualification receipt producer HEAD differs")
     r4 = sealed_r4()
     old = strict_json((R4_PREP / "packet.json").read_text())
     if verify_manifest(R4_PREP).get("status") != "PREPARED_NOT_RUN":
@@ -414,6 +446,13 @@ def prepare(binary, output, protocol_id=None):
         }
         side.write_text(json.dumps(m, indent=2, sort_keys=True) + "\n")
         native_runtime.verify(rt / binary.name, side)
+        qualification_record = verify_bundle(qualification_path)
+        validate_qualification_claim(
+            qualification_record,
+            ident["head"],
+            digest(rt / binary.name),
+            digest(side),
+        )
         anchor = load_anchor()
         canon = rt / m["canonical_xml"]
         plant = MujocoPlant(canon)
@@ -438,6 +477,7 @@ def prepare(binary, output, protocol_id=None):
             **ident,
             "protocol_sha256": digest(protocol_path),
             "design": p,
+            "qualification_reference": qualification_reference,
             "parent_r4": r4,
             "parent_floor0_single": sealed_floor0_single(),
             "r4_packet_sha256": digest(R4_PREP / "packet.json"),
@@ -483,6 +523,7 @@ def prepare(binary, output, protocol_id=None):
         run.result.update(
             status="ENGINEERING_ADMITTED",
             task_id=p["id"],
+            qualification_reference=qualification_reference,
             head=ident["head"],
             readiness=packet["readiness"],
             repeats=p["repeats"],
@@ -529,6 +570,16 @@ def validate_packet(prepared):
     ):
         raise ValueError("runtime identity mismatch")
     native_runtime.verify(binary, side)
+    qualification.validate_reference(pkt.get("qualification_reference"))
+    qualification_record = verify_bundle(
+        pkt["qualification_reference"]["path"]
+    )
+    validate_qualification_claim(
+        qualification_record,
+        ident["head"],
+        pkt["binary"]["sha256"],
+        pkt["runtime_identity"]["sha256"],
+    )
     if runtime_delta(d / "runtime") != pkt.get("runtime_file_differences"):
         raise ValueError("runtime changed outside predeclared paths")
     if (
@@ -1018,6 +1069,7 @@ def main():
     s = p.add_subparsers(dest="cmd", required=True)
     q = s.add_parser("prepare")
     q.add_argument("--binary", type=Path, required=True)
+    q.add_argument("--qualification", type=Path, required=True)
     q.add_argument("--output", type=Path, required=True)
     q.add_argument("--protocol-id", choices=("mjpc-floor-registration-repeatability-3s-v1", "mjpc-floor-registration-sustained-12s-v1"))
     q = s.add_parser("handshake")
@@ -1034,7 +1086,7 @@ def main():
     q.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     print(
-        prepare(a.binary, a.output, a.protocol_id)
+        prepare(a.binary, a.output, a.qualification, a.protocol_id)
         if a.cmd == "prepare"
         else handshake(a.prepared, a.output)
         if a.cmd == "handshake"
