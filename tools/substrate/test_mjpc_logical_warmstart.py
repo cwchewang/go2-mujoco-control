@@ -67,6 +67,46 @@ class LogicalContracts(unittest.TestCase):
             self.assertEqual(result["differences"]["target"]["first_over_1e_9"], 0)
             self.assertEqual(result["differences"]["target"]["max_abs"], 2e-9)
 
+    def test_first_request_timeout_retains_unresolved_reservation(self):
+        with tempfile.TemporaryDirectory() as d:
+
+            def timeout(line):
+                raise TimeoutError("synthetic first request")
+
+            journal = m.RequestJournal(timeout, Path(d))
+            wire = "step 1 0 " + " ".join(["0"] * 40)
+            with self.assertRaises(TimeoutError):
+                journal(wire)
+            partial = journal.partial(mock.Mock(steps=0), False)
+            self.assertEqual(partial["optimizer_calls_reserved"], 1)
+            self.assertEqual(partial["optimizer_calls_completed"], 0)
+            self.assertEqual(partial["unresolved_private_upper"], 4096)
+            self.assertEqual(partial["canonical_steps"], 0)
+            self.assertEqual(partial["attempts"], 0)
+            self.assertEqual(
+                json.loads(
+                    (Path(d) / "private_calls/reservation_001.json").read_text()
+                )["request"],
+                wire,
+            )
+
+    def test_valid_counter_response_is_accounted_without_physics(self):
+        acc = {
+            "policy_id": 1,
+            "private_step_upper_bound_reserved": 4096,
+            "private_step_limit": 614400,
+            "rollout_mj_step_count": 700,
+            "fd_step_upper_bound_count": 1752,
+            "fd_call_count": 36,
+        }
+        with tempfile.TemporaryDirectory() as d:
+            journal = m.RequestJournal(lambda line: {"diagnostic": acc}, Path(d))
+            journal("step 1 0 " + " ".join(["0"] * 40))
+            partial = journal.partial(mock.Mock(steps=0), False)
+            self.assertEqual(partial["optimizer_calls_completed"], 1)
+            self.assertEqual(partial["private_completed_upper"], 2452)
+            self.assertEqual(partial["unresolved_calls"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

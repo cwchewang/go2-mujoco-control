@@ -1,6 +1,7 @@
 """Four fresh closed-loop attempts with new logical warmstart ownership."""
 
 import argparse
+from contextlib import ExitStack
 from dataclasses import replace
 import json
 import os
@@ -40,7 +41,7 @@ BRANCH = "research/mjpc-logical-warmstart-closed-loop-20261004"
 PROTOCOL = (
     ROOT / "tools/substrate/protocols/mjpc_logical_warmstart_closed_loop_3s_v1.json"
 )
-BUILD = ROOT / "_runs/mjpc_logical_warmstart_native_build_20261004_v3"
+BUILD = ROOT / "_runs/mjpc_logical_warmstart_native_build_20261004_v4"
 RAW = ROOT / "_runs/mjpc_logical_warmstart_closed_loop_20261004"
 
 
@@ -288,6 +289,130 @@ def precheck(packet_path, output):
     return pkt
 
 
+class RequestJournal:
+    """Preserve pending reservations before calling the real transport."""
+
+    def __init__(self, request, directory):
+        self.request = request
+        self.directory = Path(directory)
+        self.calls = self.directory / "private_calls"
+        self.calls.mkdir()
+        self.feedback_requests = 0
+
+    def __call__(self, line):
+        parts = line.split()
+        step = bool(parts and parts[0] == "step")
+        replan = step and parts[1] == "1"
+        tick = self.feedback_requests
+        if step:
+            if (
+                len(parts) != 43
+                or parts[1] not in ("0", "1")
+                or abs(float(parts[2]) - tick * 0.002) > 1e-12
+                or replan != (tick % 10 == 0)
+                or tick >= 1500
+            ):
+                raise ValueError("journal production wire/cadence drift")
+            self.feedback_requests += 1
+        call = tick // 10 + 1
+        if replan:
+            write_new(
+                self.calls / f"reservation_{call:03d}.json",
+                {
+                    "call": call,
+                    "tick": tick,
+                    "private_reserved": 4096,
+                    "request": line,
+                    "status": "PENDING_BEFORE_TRANSPORT",
+                },
+            )
+        path = self.directory / "wire.jsonl"
+        with path.open("a" if path.exists() else "x") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "step": step,
+                        "tick": tick if step else None,
+                        "replan": replan,
+                        "request": line,
+                    }
+                )
+                + "\n"
+            )
+            f.flush()
+            os.fsync(f.fileno())
+        try:
+            response = self.request(line)
+        except BaseException as error:
+            write_new(
+                self.directory / f"request_error_{tick:04d}.json",
+                {
+                    "tick": tick,
+                    "replan": replan,
+                    "call": call if replan else None,
+                    "type": type(error).__name__,
+                    "error": str(error),
+                    "response": "UNRESOLVED",
+                    "private_reserved": 4096 if replan else 0,
+                },
+            )
+            raise
+        with (self.directory / "responses.jsonl").open(
+            "a" if (self.directory / "responses.jsonl").exists() else "x"
+        ) as f:
+            f.write(
+                json.dumps(
+                    {
+                        "tick": tick if step else None,
+                        "replan": replan,
+                        "response": response,
+                    }
+                )
+                + "\n"
+            )
+            f.flush()
+            os.fsync(f.fileno())
+        if replan:
+            from .mjpc_diagnostic import validate_budget_record
+
+            acc = validate_budget_record(response.get("diagnostic"), tick)
+            if (
+                acc["fd_call_count"] != call * 36
+                or acc["fd_step_upper_bound_count"] != call * 1752
+                or acc["rollout_mj_step_count"] != call * 700
+            ):
+                raise ValueError("journal fixed native counters drift")
+            write_new(
+                self.calls / f"completed_{call:03d}.json",
+                {
+                    "call": call,
+                    "tick": tick,
+                    "private_upper_delta": 2452,
+                    "response": response,
+                    "accounting": acc,
+                },
+            )
+        return response
+
+    def partial(self, plant, consumed):
+        reservations = list(self.calls.glob("reservation_*.json"))
+        complete = list(self.calls.glob("completed_*.json"))
+        if len(complete) > len(reservations):
+            raise ValueError("completed call without reservation")
+        return {
+            "canonical_steps": plant.steps,
+            "attempts": int(consumed),
+            "feedback_requests": self.feedback_requests,
+            "optimizer_calls_reserved": len(reservations),
+            "optimizer_calls_completed": len(complete),
+            "private_completed_upper": 2452 * len(complete),
+            "private_reserved": 4096 * len(reservations),
+            "unresolved_calls": len(reservations) - len(complete),
+            "unresolved_private_upper": 4096 * (len(reservations) - len(complete)),
+            "canonical_per_slot_reserved_upper": 1500,
+        }
+
+
 def metrics(rows):
     actions = [x for x in rows if x.get("action")]
     saturated = [x["tick"] for x in actions if any(x["action"]["saturated"])]
@@ -349,8 +474,13 @@ def compare(first, second):
         }
     thresholds = protocol()["repeatability_checks"]
     sa, sb = ma["first_saturation_tick"], mb["first_saturation_tick"]
-    sat_gap = (
-        abs(sa - sb) if sa is not None and sb is not None else (0 if sa == sb else None)
+    sat_gap = abs(sa - sb) if sa is not None and sb is not None else None
+    saturation_censoring = (
+        "observed_both"
+        if sa is not None and sb is not None
+        else "both_right_censored"
+        if sa is None and sb is None
+        else "one_right_censored"
     )
     checks = {
         "both_reach_horizon": ma["terminal_reason"]
@@ -386,7 +516,7 @@ def compare(first, second):
         if abs(predictions[2]["states"][0]["time_s"] - 0.04) > 1e-12:
             raise ValueError("tick20 prediction time")
         return [
-            [sorted(c["geom_ids"]) for c in state["active_contacts"]]
+            sorted({tuple(sorted(c["geom_ids"])) for c in state["active_contacts"]})
             for state in predictions[2]["states"]
         ]
 
@@ -396,6 +526,7 @@ def compare(first, second):
         "first": ma,
         "second": mb,
         "first_saturation_gap": sat_gap,
+        "saturation_timing": saturation_censoring,
         "differences": detail,
         "engineering_checks": checks,
     }
@@ -470,7 +601,7 @@ def _capture(packet_path, review_path, authorization_path, output):
                     },
                 )
                 d = output / label
-                with EvidenceRun(d) as run:
+                with EvidenceRun(d) as run, ExitStack() as cleanup:
                     side = Path(packet_path).parent / "runtime" / native_runtime.SIDECAR
                     rt = native_runtime.verify(
                         side.parent / "go2_mjpc_controller_fd_fixed", side
@@ -481,6 +612,7 @@ def _capture(packet_path, review_path, authorization_path, output):
                     native, launches, maps = construct(
                         side.parent / "go2_mjpc_controller_fd_fixed", side, mode, d
                     )
+                    cleanup.callback(native.close)
                     write_new(
                         d / "launch.json",
                         {"launches": launches, "maps": maps, "ready": native.ready},
@@ -490,6 +622,8 @@ def _capture(packet_path, review_path, authorization_path, output):
                             native, native.actuator_spec, native.joint_names
                         )
                     )
+                    journal = RequestJournal(native._request, d)
+                    native._request = journal
                     consumed = False
 
                     def consume():
@@ -538,8 +672,18 @@ def _capture(packet_path, review_path, authorization_path, output):
                             os.fsync(f.fileno())
                         diag = native.diagnostics()
                     finally:
-                        native.close()
-                        write_new(d / "partial-diagnostics.json", native.diagnostics())
+                        try:
+                            write_new(
+                                d / "partial-resources.json",
+                                journal.partial(plant, consumed),
+                            )
+                        finally:
+                            try:
+                                native.close()
+                            finally:
+                                write_new(
+                                    d / "partial-diagnostics.json", native.diagnostics()
+                                )
                     diag = native.diagnostics()
                     if diag["transport"]["stderr_bytes"] or diag["transport"].get(
                         "stderr_read_error"
@@ -632,12 +776,49 @@ def capture(packet_path, review_path, authorization_path, output):
         return _capture(packet_path, review_path, authorization_path, output)
     finally:
         if ledger.exists() and not closed.exists():
+            records = {
+                p.parent.name: strict_json(p.read_text())
+                for p in Path(output).glob("*/partial-resources.json")
+            }
+            totals = {
+                k: sum(v[k] for v in records.values())
+                for k in (
+                    "canonical_steps",
+                    "attempts",
+                    "optimizer_calls_reserved",
+                    "optimizer_calls_completed",
+                    "private_completed_upper",
+                    "private_reserved",
+                    "unresolved_calls",
+                    "unresolved_private_upper",
+                )
+            }
+            missing = [
+                str(strict_json(x.read_text())["output"])
+                for x in ledger.parent.glob(ledger.stem + "_slot*.claim")
+                if not (
+                    Path(strict_json(x.read_text())["output"])
+                    / "partial-resources.json"
+                ).exists()
+            ]
             write_new(
                 closed,
                 {
                     "budget": "CLOSED",
+                    "known_partial_totals": totals,
+                    "missing_partial_slots": missing,
+                    "unverified_slot_upper_bounds": {
+                        "attempts": len(missing),
+                        "canonical_steps": 1500 * len(missing),
+                        "private_reserved": 614400 * len(missing),
+                        "optimizer_calls": 150 * len(missing),
+                    },
                     "retry": "none",
                     "ledger_sha256": digest(ledger),
+                    "partial_resources": {
+                        p.parent.name: strict_json(p.read_text())
+                        for p in Path(output).glob("*/partial-resources.json")
+                    },
                     "output": str(output),
                     "claims": [
                         str(x)
