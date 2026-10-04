@@ -474,3 +474,12 @@ state packing. Previous tick10 observer inputs were misordered and cannot
 exclude production A configuration/history effects. No new optimizer or
 canonical step was run. Existing scientific claims and Stage3 ACTIVE/OPEN
 remain unchanged. R4's saturation-repeat failure and no12s capture are retained.
+
+
+### 2026-10-04：修复后 original 固定输入前缀观察
+
+[四次求解结果](validation/mjpc_faithful_original_observation_20261004/RESULTS.md)在 producer HEAD3b4e25b 完成并经独立证据审计：两次 fresh original 进程、4次私有 optimizer 调用、10004私有步计数上界/16384预留，canonical0、正式 live scientific attempts0。生产 reset 与命名关节编码修正后，tick0–9 的目标/成本与 A/reference 完全一致；tick10 两次目标最大差8.549605468033405e-12，成本一致，对 A 最大差1.8034018722801193e-11，均满足原1e-9前缀阈值。
+
+较大的旧观察器前缀偏差已消除，但私有优化器存在微小重复差异。首次求解后的 worker warmstart 摘要集合相同、worker槽位分配不同；第二次 FD 在 knot1 已见 warmstart差异，早于重复t34。t34任务并行重叠且共享 Jacobian输出块，第二次 t34/policy哈希不同。worker历史依赖与重复写入都是有证据的机制，贡献尚未隔离，不能宣称 duplicate t34 唯一解释历史 A/reference 首次差异。输出和成本一致不证明完整内部状态一致。
+
+本观察不重开 A/B、不改变旧阈值、R4结论或12s状态，不构成新的行走成功。8915b0d及旧sealed证据保留；本次还修复 loader启动的残留进程检测和异常响应的部分预算记录。四次私有预算已关闭，下一判别必须对 warmstart历史与唯一FD索引作独立干预，并绑定新的任务/预算；没有自动追加运行。
