@@ -372,8 +372,8 @@ def execute(packet_path, output, science, execution):
                 write_new(
                     run.path / "RESULT.json",
                     {
-                        "status": "OBSERVATION_COMPLETE",
                         **preflight,
+                        "status": "OBSERVATION_COMPLETE",
                         "design": DESIGN,
                         "results": results,
                         "accounting": counts,
