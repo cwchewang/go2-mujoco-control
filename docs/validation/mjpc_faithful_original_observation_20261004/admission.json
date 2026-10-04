@@ -1,0 +1,14 @@
+{
+  "budget_closed": true,
+  "canonical_integration_steps": 0,
+  "capability_status": "COMPLETE",
+  "errors": [],
+  "formal_live_scientific_attempts": 0,
+  "independent_evidence_status": "VERIFIED",
+  "new_integration_in_closeout": 0,
+  "optimizer_calls_executed": 4,
+  "private_accounted_upper": 10004,
+  "private_reserved": 16384,
+  "scope": "faithful_original_curated_closeout",
+  "status": "ENGINEERING_ADMITTED"
+}
