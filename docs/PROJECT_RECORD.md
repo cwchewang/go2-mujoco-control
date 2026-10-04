@@ -495,3 +495,7 @@ remain unchanged. R4's saturation-repeat failure and no12s capture are retained.
 [已完成并独立核验的对照](validation/mjpc_fd_warmstart_observation_20261004/RESULTS.md)采用同一封存 fixed 二进制和 shim，仅在 FD 入口保留或清零 18 个 qacc_warmstart。两组各两次 fresh 进程，共 8 次新私有求解；19616 私有步上界/32768 预留，canonical0/formal0，预算 CLOSED。保留组最早 tick10 目标差 2.052338680946786e-11，成本一致；清零组 11 个输出及两次 Jacobian/policy 完全一致。288 条 FD seed 与 44 个 wire 输入均独立核验。
 
 结果支持 FD warmstart 干预在当前条件下的因果作用；不是唯一根因或普遍充分性结论。跨组 tick0–3 超过原 1e-9 阈值，最大 4.495396499493154e-9，因此清零不是已经验证的等行为生产修复。历史 tick10→state tick11 和后续接触差异仍与反馈放大一致，但本次没有闭环证据，不能解释历史 A 的唯一触发或消除 886/1287 停止差异。终态记录覆盖缺陷已在任何求解前修复并重新复核；旧 BLOCK/证据保留。旧 A/B、R4 failed、no12s、原阈值不变，Stage3 ACTIVE/OPEN。
+
+### 2026-10-04：逻辑 warmstart 修复通过资格，闭环启动前被拒绝
+
+[修复与拒绝收据](validation/mjpc_logical_warmstart_closed_loop_20261004/RESULTS.md)：190e569 保留逻辑 rollout/状态 knot 有效 warmstart，独立科学与执行复核均通过。修复 fixed overlay 范围、异常预算持久化、接触/饱和比较；全目标编译、25测试通过/2明确跳过、双模式零求解 readiness 成功。唯一闭环任务 px_1a104c0ea54_a2026843e1 因 workspace-exec 必须 maintenance mode 在执行前被拒绝。实际新增正式尝试、canonical、optimizer 均0，输出/账本不存在；不得推断原 A 未跑或闭环改善/等行为修复。四组预算未消费，公开工具无失败请求 reconsideration 入口；未换路绕过拒绝。原 A/B、R4 FAIL/no12s 与 Stage3 ACTIVE/OPEN 保留。

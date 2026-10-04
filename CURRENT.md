@@ -7,12 +7,12 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 ## Active research frontier
 
 Branch: `research/mjpc-floor-registration-12s-20261003`.
-Task: [FD warmstart clearing removes observed repeat drift; control neutrality unproven](docs/research/TASK_MJPC_FD_WARMSTART_OBSERVATION_20261004.md).
-Closeout: [FD warmstart clearing removes observed repeat drift; control neutrality unproven](docs/validation/mjpc_fd_warmstart_observation_20261004/RESULTS.md).
-Stage: Stage 3 ACTIVE / OPEN; matched FD warmstart private diagnostic COMPLETE / VERIFIED.
-Scientific status: Eight new private calls completed:19616 upper/32768 reserved,canonical0/formal0. Retain tick10 repeat delta2.052338680946786e-11; zero exact. Warmstart intervention has supported causal role under these inputs. Cross-mode ticks0-3 exceed unchanged1e-9; max4.495396499493154e-9. No production neutrality or historical closed-loop claim. A/B closed,R4failed,no12s..
+Task: [Logical warmstart candidate qualified; scientific launch rejected before execution](docs/research/TASK_MJPC_LOGICAL_WARMSTART_CLOSED_LOOP_20261004.md).
+Closeout: [Logical warmstart candidate qualified; scientific launch rejected before execution](docs/validation/mjpc_logical_warmstart_closed_loop_20261004/RESULTS.md).
+Stage: Stage 3 ACTIVE / OPEN; logical ownership QUALIFIED / INDEPENDENTLY APPROVED; closed loop NOT_RUN_PLATFORM_MODE_REJECTED.
+Scientific status: Scientific task px_1a104c0ea54_a2026843e1 rejected before command: workspace-exec tasks must use maintenance mode. No new formal attempts/canonical steps/optimizer calls; no output or ledger. Four-slot protocol unconsumed. A/B closed, R4 failed, no12s..
 Last live HEAD: `829f3c40f86f6f8a35dff33c1ff83d230f6f2d54`.
-Next: Eight-call budget CLOSED. Remaining gap is a separately authorized prospective closed-loop test with explicit scope, budget and reviews; no old A/B or completed-ledger rerun.
+Next: Resolve supported scientific admission/reconsideration without permission changes or relabeling as zero-science maintenance. Preserve clean producer190e569 and qualified packet; no duplicate or alternate launch.
 
 **Related bounded diagnostic:** [Duplicate-FD cold-start diagnostic](docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md) — The fixed-index bug removes duplicate t34 tasks. The reviewed same-process 8-call observation completed at HEAD 6c2dbad: all calls passed, canonical integration 0, costs identical and tick-10 q_des differed by at most 1.01e-10. Planner/warmstart hashes varied across processes; causal interpretation remains open.
 

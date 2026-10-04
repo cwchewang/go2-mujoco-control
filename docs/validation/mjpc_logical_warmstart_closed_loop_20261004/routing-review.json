@@ -1,0 +1,19 @@
+{
+  "classification": "PLATFORM_REJECTED_BEFORE_EXECUTION",
+  "documented_permitted_public_route_found": false,
+  "evidence": [
+    "px_1a104c0ea54_a2026843e1",
+    "px_1a104c223c6_c028b0b532",
+    "/Users/wangche/.codex/skills/praxis-unattended/SKILL.md"
+  ],
+  "rationale": [
+    "Failed capability validator is not a waiting before-host approval; approve_task cannot reconsider it.",
+    "No public reconsideration action exposed. Relabeling four formal attempts maintenance/zero-science contradicts the frozen scope.",
+    "No command, host, capability or session change permitted to bypass rejection. No campaign output/ledger/closure exists."
+  ],
+  "raw_error": "workspace-exec tasks must use maintenance mode",
+  "reviewer": "/root/execution_review",
+  "role": "execution",
+  "task_id": "px_1a104c0ea54_a2026843e1",
+  "verdict": "BLOCK"
+}

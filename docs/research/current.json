@@ -1,12 +1,12 @@
 {
   "branch": "research/mjpc-floor-registration-12s-20261003",
-  "title": "FD warmstart clearing removes observed repeat drift; control neutrality unproven",
-  "task": "docs/research/TASK_MJPC_FD_WARMSTART_OBSERVATION_20261004.md",
-  "result": "docs/validation/mjpc_fd_warmstart_observation_20261004/RESULTS.md",
-  "stage": "Stage 3 ACTIVE / OPEN; matched FD warmstart private diagnostic COMPLETE / VERIFIED",
-  "scientific_status": "Eight new private calls completed:19616 upper/32768 reserved,canonical0/formal0. Retain tick10 repeat delta2.052338680946786e-11; zero exact. Warmstart intervention has supported causal role under these inputs. Cross-mode ticks0-3 exceed unchanged1e-9; max4.495396499493154e-9. No production neutrality or historical closed-loop claim. A/B closed,R4failed,no12s.",
+  "title": "Logical warmstart candidate qualified; scientific launch rejected before execution",
+  "task": "docs/research/TASK_MJPC_LOGICAL_WARMSTART_CLOSED_LOOP_20261004.md",
+  "result": "docs/validation/mjpc_logical_warmstart_closed_loop_20261004/RESULTS.md",
+  "stage": "Stage 3 ACTIVE / OPEN; logical ownership QUALIFIED / INDEPENDENTLY APPROVED; closed loop NOT_RUN_PLATFORM_MODE_REJECTED",
+  "scientific_status": "Scientific task px_1a104c0ea54_a2026843e1 rejected before command: workspace-exec tasks must use maintenance mode. No new formal attempts/canonical steps/optimizer calls; no output or ledger. Four-slot protocol unconsumed. A/B closed, R4 failed, no12s.",
   "last_live_head": "829f3c40f86f6f8a35dff33c1ff83d230f6f2d54",
-  "next": "Eight-call budget CLOSED. Remaining gap is a separately authorized prospective closed-loop test with explicit scope, budget and reviews; no old A/B or completed-ledger rerun.",
+  "next": "Resolve supported scientific admission/reconsideration without permission changes or relabeling as zero-science maintenance. Preserve clean producer190e569 and qualified packet; no duplicate or alternate launch.",
   "related_result": {
     "title": "Duplicate-FD cold-start diagnostic",
     "path": "docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md",
@@ -14,5 +14,8 @@
   },
   "private_observation_producer_head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
   "private_observation_receipt": "px_1a1047e1251_d29d3a031c",
-  "private_observation_raw_root": "/home/che/dev/go2-workspace/fd-warmstart-observation/_runs/mjpc_fd_warmstart_observation_20261004"
+  "private_observation_raw_root": "/home/che/dev/go2-workspace/fd-warmstart-observation/_runs/mjpc_fd_warmstart_observation_20261004",
+  "logical_warmstart_producer_head": "190e56939de0d8f57670747b73b4252b4d9ae603",
+  "logical_warmstart_dispatch": "px_1a104c0ea54_a2026843e1",
+  "logical_warmstart_packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639"
 }
