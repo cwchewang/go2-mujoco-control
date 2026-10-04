@@ -174,7 +174,7 @@ def jwrite(path, value):
     write_new(path, value)
 
 
-def prepare(output):
+def prepare(output, *, runtime_packager=native_runtime.package, extra_checks=()):
     with experiment_lock(), zero_step_guard(), EvidenceRun(output) as run:
         before = identity()
         source = sequence.load_sequence(SOURCE)
@@ -190,7 +190,7 @@ def prepare(output):
         if digest(binary) != BINARY_SHA or build["binary_sha256"] != BINARY_SHA:
             raise ValueError("original binary changed")
         snapshot = inputs()
-        runtime = native_runtime.package(binary, run.path / "runtime", ROOT, build)
+        runtime = runtime_packager(binary, run.path / "runtime", ROOT, build)
         if (
             digest(run.path / "runtime/lib/libmujoco.so.3.3.6")
             != "b9173509d0c282a9b24b7f5825a40177a9967df0cd6395a9dc39522196e44495"
@@ -240,6 +240,7 @@ def prepare(output):
             ),
             ("diff_check", ["git", "diff", "--check"]),
         ]
+        commands += list(extra_checks)
         checks = []
         for name, argv in commands:
             result = subprocess.run(
@@ -393,11 +394,11 @@ def compare(results):
     return comparisons
 
 
-def partial_accounting(directory):
+def partial_accounting(directory, pattern="fixed_repeat[12]"):
     """Account only validated returned counters; preserve unknown reservations."""
     attempted = completed = upper = reserved = 0
     errors = []
-    for trial in Path(directory).glob("fixed_repeat[12]"):
+    for trial in Path(directory).glob(pattern):
 
         def read_rows(path):
             if not path.exists():
