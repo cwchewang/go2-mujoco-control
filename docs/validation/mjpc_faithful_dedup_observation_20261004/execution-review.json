@@ -1,0 +1,54 @@
+{
+  "evidence": [
+    "Independent standard-library audit receipt px_1a10463f3e5_c683f4f0aa.",
+    "Actual execution receipt px_1a104619055_698d10e5af.",
+    "Sealed manifests, packet/preflight, raw native/reset/wire logs, optimizer ledgers, FD traces, predictions, loaded libraries, campaign reservation, accounting and terminal admission."
+  ],
+  "limitations": [
+    "No solver, native program, test, qualification, dynamics replay or write was performed.",
+    "Fresh-process evidence combines separate ready/reset streams, restarting process-global trace indexes, and previously reviewed launch/cleanup code; distinct native OS PIDs are not sealed.",
+    "Process inspection covers controllers visible in the review environment.",
+    "This verifies closeout only. It does not authorize another call, identify the remaining numerical mechanism, or establish locomotion performance."
+  ],
+  "manifest_sha256": "2e5fa41e23f9334037c59aeffe0fc064473286bb68af2d81a1006a9f546aecb2",
+  "producer_head": "fd9a9205a8bdd5fe3a9ff2423fa7e42a968ebfb8",
+  "rationale": [
+    "Independently verified exact sealed membership and every member hash, qualification binding, loaded-library hashes, and unchanged original-control and historical-A manifests/raw.",
+    "Recomputed from raw ledgers and responses: four 4096 reservations; cumulative per-process FD calls 36/72, FD upper 1752/3504, rollout steps 700/1400. Totals are 9808 accounted upper and 16384 reserved, with complete accounting.",
+    "Both streams contain ready, successful reset, and exactly eleven inputs. All 22 wire strings exactly match independently reconstructed production formatting and named-joint ordering. Only ticks 0 and 10 replan.",
+    "Each process has exactly two prediction and FD-trace records. All four traces contain exactly 36 events, one per index 0..35. Logs, cumulative counters and trace indexes show no additional optimizer calls.",
+    "Actual receipt px_1a104619055_698d10e5af confirms approved bubblewrap execution, return code 0, and scientific_attempt_consumed=false. Four private calls remain separately recorded.",
+    "Producer HEAD is unchanged. The only current dirt is the expected untracked post-capture validation directory, outside sealed raw. Completed admission plus exhausted ledger and exclusive-output guards close this task's new budget."
+  ],
+  "raw_repeat_comparison": {
+    "first_exact_q_des_difference_tick": 10,
+    "interpretation": "A numerical repeat difference survives with one t34 event per call; duplicate t34 writes are not necessary for this observed difference.",
+    "max_abs_cost_difference": 0,
+    "max_abs_q_des_difference": 1.3625101047409771e-11,
+    "within_1e_9": true
+  },
+  "reviewer": "/root/execution_review",
+  "role": "execution-closeout",
+  "verdict": "VERIFIED",
+  "verified": {
+    "calls_with_exact_unique_indices_0_through_35": 4,
+    "canonical_integration_steps": 0,
+    "exact_members_and_hashes": {
+      "historical_A": 14,
+      "observation": 21,
+      "original_control": 21,
+      "qualification": 60
+    },
+    "formal_live_scientific_attempts": 0,
+    "new_budget": "CLOSED",
+    "private_accounted_upper": 9808,
+    "private_optimizer_calls_reserved_and_completed": 4,
+    "private_reserved_upper": 16384,
+    "production_wire_strings": 22,
+    "ready_then_reset_sequences": 2,
+    "stderr_bytes": 0,
+    "t34_events_per_call": 1,
+    "unverified_reservations": 0,
+    "visible_active_controller_processes": 0
+  }
+}

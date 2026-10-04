@@ -483,3 +483,9 @@ remain unchanged. R4's saturation-repeat failure and no12s capture are retained.
 较大的旧观察器前缀偏差已消除，但私有优化器存在微小重复差异。首次求解后的 worker warmstart 摘要集合相同、worker槽位分配不同；第二次 FD 在 knot1 已见 warmstart差异，早于重复t34。t34任务并行重叠且共享 Jacobian输出块，第二次 t34/policy哈希不同。worker历史依赖与重复写入都是有证据的机制，贡献尚未隔离，不能宣称 duplicate t34 唯一解释历史 A/reference 首次差异。输出和成本一致不证明完整内部状态一致。
 
 本观察不重开 A/B、不改变旧阈值、R4结论或12s状态，不构成新的行走成功。8915b0d及旧sealed证据保留；本次还修复 loader启动的残留进程检测和异常响应的部分预算记录。四次私有预算已关闭，下一判别必须对 warmstart历史与唯一FD索引作独立干预，并绑定新的任务/预算；没有自动追加运行。
+
+### 2026-10-04：唯一FD索引单因素诊断
+
+[新四次私有诊断](validation/mjpc_faithful_dedup_observation_20261004/RESULTS.md)只移除重复t34索引，保留warmstart行为；复用封存匹配二进制、模型与输入。独立审计验证4次求解均只有一个t34，总9808私有步上界/16384预留，canonical0/formal0。tick10两次目标仍差1.3625101047409771e-11，成本一致，排除“重复t34并行写入是这次重复差异唯一来源”。首次求解后的worker历史已不同，第二次FD在knot0就有warmstart seed差异；warmstart单独的因果贡献仍未隔离。不是历史A唯一根因或行走成功结论。
+
+原8.549605468033405e-12仅为1e-9门槛的0.855%，本次差异也在原门槛内；数值不完全一致不能写成门槛失败。两轮四次预算均已封账，没有追加求解、重跑A/B或改变R4/no12s结论。下一正交判别是warmstart初始化单因素干预，需要独立前瞻范围和预算。Stage3仍ACTIVE/OPEN。

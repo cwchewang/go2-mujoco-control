@@ -1,0 +1,552 @@
+{
+  "accounting": {
+    "budget_status": "CLOSED",
+    "canonical_steps": 0,
+    "formal_scientific_attempts": 0,
+    "optimizer_calls": 4,
+    "per_call": [
+      {
+        "accounted_upper": 2452,
+        "fd_calls": 36,
+        "fd_upper": 1752,
+        "repeat": 1,
+        "reserved": 4096,
+        "rollout_steps": 700,
+        "tick": 0
+      },
+      {
+        "accounted_upper": 2452,
+        "fd_calls": 36,
+        "fd_upper": 1752,
+        "repeat": 1,
+        "reserved": 4096,
+        "rollout_steps": 700,
+        "tick": 10
+      },
+      {
+        "accounted_upper": 2452,
+        "fd_calls": 36,
+        "fd_upper": 1752,
+        "repeat": 2,
+        "reserved": 4096,
+        "rollout_steps": 700,
+        "tick": 0
+      },
+      {
+        "accounted_upper": 2452,
+        "fd_calls": 36,
+        "fd_upper": 1752,
+        "repeat": 2,
+        "reserved": 4096,
+        "rollout_steps": 700,
+        "tick": 10
+      }
+    ],
+    "private_accounted_upper": 9808,
+    "private_reserved": 16384
+  },
+  "all_comparisons_within_original_tolerance": true,
+  "causal_limits": [
+    "two repeats cannot estimate frequency",
+    "hidden worker histories not controlled across source variants",
+    "not a warmstart-only intervention",
+    "does not prove unique cause of historical A/reference drift"
+  ],
+  "duplicate_parallel_t34_writes_necessary_for_observed_repeat_drift": false,
+  "evidence": {
+    "control_manifest_sha256": "8b3e6fc4c36a7a188715b8221d7bf4d9347683f1637355c24e4a9fcefe8e79d9",
+    "manifest_members": {
+      "fixed": 21,
+      "original_control": 21,
+      "qualification": 60
+    },
+    "manifest_sha256": "2e5fa41e23f9334037c59aeffe0fc064473286bb68af2d81a1006a9f546aecb2",
+    "qualification_manifest_sha256": "30bd091bfa733021d205f118fc366c4746dc3da30a7cb8a74146b7f3577e5980",
+    "run": "/home/che/dev/go2-workspace/faithful-dedup-observation/_runs/mjpc_faithful_dedup_observation_20261004"
+  },
+  "fixed_repeat_comparisons": [
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 0
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 1
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 2
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 3
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 4
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 5
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 6
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 7
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 8
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 9
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "q_des_max_abs_diff": 1.3625101047409771e-11,
+      "tick": 10
+    }
+  ],
+  "fixed_vs_original_comparisons": [
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 0
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 0
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 1
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 1
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 2
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 2
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 3
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 3
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 4
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 4
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 5
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 5
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 6
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 6
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 7
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 7
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 8
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 8
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 9
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 9
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 2.549982447419552e-11,
+      "tick": 10
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 1,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 2.120037478903214e-11,
+      "tick": 10
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 0
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 0
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 1
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 1
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 2
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 2
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 3
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 3
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 4
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 4
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 5
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 5
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 6
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 6
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 7
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 7
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 8
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 8
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 9
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 0.0,
+      "tick": 9
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 1,
+      "q_des_max_abs_diff": 1.383426706524915e-11,
+      "tick": 10
+    },
+    {
+      "cost_abs_diff": 0.0,
+      "fixed_repeat": 2,
+      "original_repeat": 2,
+      "q_des_max_abs_diff": 2.2383872533282556e-11,
+      "tick": 10
+    }
+  ],
+  "interpretation": "Drift survives without duplicate t34; duplicate simultaneous writes are not necessary.",
+  "intervention": "unique FD indices only; warmstart untouched",
+  "not_exactly_repeatable": true,
+  "optimizer": [
+    {
+      "call": 1,
+      "candidate_ids": [
+        8,
+        8
+      ],
+      "different_seed_knots": [],
+      "first_logged_seed_difference": null,
+      "post_worker_assignments_equal": false,
+      "post_worker_summary_multisets_equal": false,
+      "pre_policy_summaries_equal": true,
+      "pre_previous_policy_summaries_equal": true,
+      "pre_worker_assignments_equal": true,
+      "selected_policy_hashes": [
+        "783924e4fe084d93",
+        "783924e4fe084d93"
+      ],
+      "selected_trajectory_max_abs_differences": {
+        "nominal_position_action": 0.0,
+        "qpos": 0,
+        "qvel": 0
+      },
+      "t34_jacobian_hashes": [
+        "0aa12e12d06c1ff1",
+        "0aa12e12d06c1ff1"
+      ],
+      "t34_tasks_per_repeat": [
+        1,
+        1
+      ],
+      "tick": 0
+    },
+    {
+      "call": 2,
+      "candidate_ids": [
+        8,
+        8
+      ],
+      "different_seed_knots": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "first_logged_seed_difference": {
+        "hashes": [
+          "69078ca7d2004bce",
+          "f023c14c1fcf18b1"
+        ],
+        "knot": 0,
+        "norms": [
+          1.7784,
+          1.77856
+        ],
+        "slot": 0
+      },
+      "post_worker_assignments_equal": false,
+      "post_worker_summary_multisets_equal": false,
+      "pre_policy_summaries_equal": true,
+      "pre_previous_policy_summaries_equal": true,
+      "pre_worker_assignments_equal": false,
+      "selected_policy_hashes": [
+        "5e1eb39bcb597aa2",
+        "3b2daf3100bc1e34"
+      ],
+      "selected_trajectory_max_abs_differences": {
+        "nominal_position_action": 4.720956958692568e-11,
+        "qpos": 0.0,
+        "qvel": 0.0
+      },
+      "t34_jacobian_hashes": [
+        "410d9d024fd2cd07",
+        "8bb844d6231cf282"
+      ],
+      "t34_tasks_per_repeat": [
+        1,
+        1
+      ],
+      "tick": 10
+    }
+  ],
+  "original_repeat_q_des_max_abs_diff": 8.549605468033405e-12,
+  "original_repeat_threshold_fraction": 0.008549605468033405,
+  "producer_head": "fd9a9205a8bdd5fe3a9ff2423fa7e42a968ebfb8",
+  "schema": 1,
+  "status": "VERIFIED_SINGLE_FACTOR_OBSERVATION",
+  "tolerance": 1e-09,
+  "wire_inputs_verified": 22
+}
