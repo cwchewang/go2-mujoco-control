@@ -489,3 +489,9 @@ remain unchanged. R4's saturation-repeat failure and no12s capture are retained.
 [新四次私有诊断](validation/mjpc_faithful_dedup_observation_20261004/RESULTS.md)只移除重复t34索引，保留warmstart行为；复用封存匹配二进制、模型与输入。独立审计验证4次求解均只有一个t34，总9808私有步上界/16384预留，canonical0/formal0。tick10两次目标仍差1.3625101047409771e-11，成本一致，排除“重复t34并行写入是这次重复差异唯一来源”。首次求解后的worker历史已不同，第二次FD在knot0就有warmstart seed差异；warmstart单独的因果贡献仍未隔离。不是历史A唯一根因或行走成功结论。
 
 原8.549605468033405e-12仅为1e-9门槛的0.855%，本次差异也在原门槛内；数值不完全一致不能写成门槛失败。两轮四次预算均已封账，没有追加求解、重跑A/B或改变R4/no12s结论。下一正交判别是warmstart初始化单因素干预，需要独立前瞻范围和预算。Stage3仍ACTIVE/OPEN。
+
+### 2026-10-04：FD 入口 warmstart 单因素因果对照
+
+[已完成并独立核验的对照](validation/mjpc_fd_warmstart_observation_20261004/RESULTS.md)采用同一封存 fixed 二进制和 shim，仅在 FD 入口保留或清零 18 个 qacc_warmstart。两组各两次 fresh 进程，共 8 次新私有求解；19616 私有步上界/32768 预留，canonical0/formal0，预算 CLOSED。保留组最早 tick10 目标差 2.052338680946786e-11，成本一致；清零组 11 个输出及两次 Jacobian/policy 完全一致。288 条 FD seed 与 44 个 wire 输入均独立核验。
+
+结果支持 FD warmstart 干预在当前条件下的因果作用；不是唯一根因或普遍充分性结论。跨组 tick0–3 超过原 1e-9 阈值，最大 4.495396499493154e-9，因此清零不是已经验证的等行为生产修复。历史 tick10→state tick11 和后续接触差异仍与反馈放大一致，但本次没有闭环证据，不能解释历史 A 的唯一触发或消除 886/1287 停止差异。终态记录覆盖缺陷已在任何求解前修复并重新复核；旧 BLOCK/证据保留。旧 A/B、R4 failed、no12s、原阈值不变，Stage3 ACTIVE/OPEN。

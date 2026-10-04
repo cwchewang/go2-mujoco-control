@@ -1,0 +1,47 @@
+[
+  {
+    "role": "science",
+    "reviewer": "/root/science_review",
+    "verdict": "PASS",
+    "head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
+    "packet_sha256": "f6a2a7e9b4133e0d53d996842ec2c34c921447d1443c9a96a0d707ae376a384a",
+    "rationale": [
+      "Independent targeted receipt px_1a1047c4df1_557b477527 confirms clean HEAD and the sole change: OBSERVATION_COMPLETE now follows preflight expansion, preventing status overwrite.",
+      "Verified packet/manifest hashes, all member hashes and exact membership. Manifest is c3c755d4abd1aba5250348d6238f9886e10acb4e50055a2f5c4ee2b3cb15739c.",
+      "Design, sealed external inputs and native build provenance equal the prior reviewed packet. Shim remains bb948f8764792afcec0fa5ad675f102c61f1b2f5ade7f05774d4c6d9461935aa.",
+      "Recorded v2 qualification passed 51 existing Python contracts, two warmstart contracts, three native zero-integration checks, quality and diff checks. Fake forwarding contracts passed; real optimizer calls and canonical steps remain zero.",
+      "The substantive review in receipts px_1a104783324_8df95b3692 and px_1a104792082_18e57f67ce remains applicable: matched controller/shim, FD-entry-only warmstart clearing, one delegation, unchanged rollout code and independent eight-call budget of 19616 upper steps within 32768 reservations."
+    ],
+    "limitations": [
+      "A retain-drift/zero-stable result supports an FD-entry intervention effect under these conditions, not a sole or universally sufficient explanation.",
+      "Clearing can indirectly affect scheduling and later worker/rollout history; two repeats per arm do not estimate nondeterminism frequency.",
+      "Exact-repeatability differences remain separate from the unchanged 1e-9 threshold.",
+      "No historical A unique-trigger, closed-loop or locomotion claim is supported.",
+      "Execution still requires its independent review and fresh preflight. This reviewer performed only read-only inspection and standard-library hashing."
+    ]
+  },
+  {
+    "role": "execution",
+    "reviewer": "/root/execution_review",
+    "verdict": "PASS",
+    "head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
+    "packet_sha256": "f6a2a7e9b4133e0d53d996842ec2c34c921447d1443c9a96a0d707ae376a384a",
+    "rationale": [
+      "Prior BLOCK resolved: the only source change moves preflight expansion before literal OBSERVATION_COMPLETE, preserving the terminal RESULT status.",
+      "Verified exact clean branch/HEAD, v2 manifest c3c755d4abd1aba5250348d6238f9886e10acb4e50055a2f5c4ee2b3cb15739c, exact membership and all 76 member hashes. Admission and owner PRECHECK_PASS bind the new HEAD/packet with zero optimizer calls.",
+      "Verified unchanged design, sealed inputs, native provenance and shim bb948f8764792afcec0fa5ad675f102c61f1b2f5ade7f05774d4c6d9461935aa. The completed independent interposer, compiler/header, delegation and sealed-runtime audit remains applicable.",
+      "V2 retained logs report 51 existing plus two new Python tests, three native zero-integration checks, and current quality checks passing. No additional reviewer execution was performed.",
+      "Output remains absent and no visible direct or loader-launched controller was found. Continuous locking, exact review binding, reset/encoder, declared preload/maps checks, durable new reservations, fixed counters, partial accounting and no-retry stopping remain intact.",
+      "Scope is eight separately reserved private calls across four fresh processes: 19616 accounted upper, 32768 reserved, zero canonical integration and zero formal live scientific attempts."
+    ],
+    "evidence": [
+      "Targeted repair diff, v2 packet/admission/manifest/runtime/logs, owner task px_1a1047b08b0_1903e22e9d.",
+      "Follow-up read-only receipt px_1a1047ceab5_b326d41d56; unaffected substantive audit receipts px_1a104793289_ae8a215692 and px_1a1047b3b48_c07f319d33."
+    ],
+    "limitations": [
+      "Execution must repeat current precheck under the continuous lock and consume this exact binding.",
+      "No native launches, tests, optimizer calls, rebuilds, writes or permission changes were performed by this reviewer.",
+      "This PASS covers only the new matched incoming-FD-warmstart diagnostic; previous budgets remain closed."
+    ]
+  }
+]

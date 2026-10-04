@@ -1,0 +1,305 @@
+{
+  "arms": {
+    "retain": {
+      "calls": [
+        {
+          "candidate_ids": [
+            8,
+            8
+          ],
+          "nominal_action_max_abs_diff": 0.0,
+          "policy_hashes": [
+            "783924e4fe084d93",
+            "783924e4fe084d93"
+          ],
+          "post_worker_assignments_equal": false,
+          "qpos_max_abs_diff": 0,
+          "qvel_max_abs_diff": 0,
+          "t34_jacobian_hashes": [
+            "0aa12e12d06c1ff1",
+            "0aa12e12d06c1ff1"
+          ],
+          "tick": 0
+        },
+        {
+          "candidate_ids": [
+            8,
+            8
+          ],
+          "nominal_action_max_abs_diff": 3.905875622933763e-11,
+          "policy_hashes": [
+            "5b8a2a4ae81f224a",
+            "120b393dc54bd13b"
+          ],
+          "post_worker_assignments_equal": false,
+          "qpos_max_abs_diff": 0.0,
+          "qvel_max_abs_diff": 0.0,
+          "t34_jacobian_hashes": [
+            "182fb14e89fa8770",
+            "f60f593f0beb6e41"
+          ],
+          "tick": 10
+        }
+      ],
+      "exact_q_des_and_cost": false,
+      "repeat_comparisons": [
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 0
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 1
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 2
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 3
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 4
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 5
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 6
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 7
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 8
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 9
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 2.052338680946786e-11,
+          "tick": 10
+        }
+      ],
+      "within_1e_9": true
+    },
+    "zero": {
+      "calls": [
+        {
+          "candidate_ids": [
+            8,
+            8
+          ],
+          "nominal_action_max_abs_diff": 0.0,
+          "policy_hashes": [
+            "d14a7bb7c1c20870",
+            "d14a7bb7c1c20870"
+          ],
+          "post_worker_assignments_equal": false,
+          "qpos_max_abs_diff": 0,
+          "qvel_max_abs_diff": 0,
+          "t34_jacobian_hashes": [
+            "89f830943a5db4d6",
+            "89f830943a5db4d6"
+          ],
+          "tick": 0
+        },
+        {
+          "candidate_ids": [
+            8,
+            8
+          ],
+          "nominal_action_max_abs_diff": 0.0,
+          "policy_hashes": [
+            "2a3cd207d830f146",
+            "2a3cd207d830f146"
+          ],
+          "post_worker_assignments_equal": false,
+          "qpos_max_abs_diff": 0.0,
+          "qvel_max_abs_diff": 0.0,
+          "t34_jacobian_hashes": [
+            "65c84f27f6657742",
+            "65c84f27f6657742"
+          ],
+          "tick": 10
+        }
+      ],
+      "exact_q_des_and_cost": true,
+      "repeat_comparisons": [
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 0
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 1
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 2
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 3
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 4
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 5
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 6
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 7
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 8
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 9
+        },
+        {
+          "cost_abs_diff": 0.0,
+          "q_des_max_abs_diff": 0.0,
+          "tick": 10
+        }
+      ],
+      "within_1e_9": true
+    }
+  },
+  "budget": {
+    "canonical_steps": 0,
+    "formal_live_attempts": 0,
+    "optimizer_calls": 8,
+    "per_call": [
+      {
+        "mode": "retain",
+        "repeat": 1,
+        "reserved": 4096,
+        "tick": 0,
+        "upper": 2452
+      },
+      {
+        "mode": "retain",
+        "repeat": 1,
+        "reserved": 4096,
+        "tick": 10,
+        "upper": 2452
+      },
+      {
+        "mode": "retain",
+        "repeat": 2,
+        "reserved": 4096,
+        "tick": 0,
+        "upper": 2452
+      },
+      {
+        "mode": "retain",
+        "repeat": 2,
+        "reserved": 4096,
+        "tick": 10,
+        "upper": 2452
+      },
+      {
+        "mode": "zero",
+        "repeat": 1,
+        "reserved": 4096,
+        "tick": 0,
+        "upper": 2452
+      },
+      {
+        "mode": "zero",
+        "repeat": 1,
+        "reserved": 4096,
+        "tick": 10,
+        "upper": 2452
+      },
+      {
+        "mode": "zero",
+        "repeat": 2,
+        "reserved": 4096,
+        "tick": 0,
+        "upper": 2452
+      },
+      {
+        "mode": "zero",
+        "repeat": 2,
+        "reserved": 4096,
+        "tick": 10,
+        "upper": 2452
+      }
+    ],
+    "private_accounted_upper": 19616,
+    "private_reserved": 32768,
+    "status": "CLOSED"
+  },
+  "cross_mode_comparisons": [
+    {
+      "max_cost_difference": 0.0,
+      "max_q_des_difference": 4.495396499493154e-09,
+      "tick": 0
+    },
+    {
+      "max_cost_difference": 6.823951126389005e-12,
+      "max_q_des_difference": 9.973715187072685e-10,
+      "tick": 10
+    }
+  ],
+  "historical_feedback_evidence": "Old traces first differ at target tick10 then state tick11, consistent with amplification; this private test does not establish cause of886/1287 stops.",
+  "intercepted_real_FD_calls_verified": 288,
+  "limitations": [
+    "FD incoming warmstart only; rollout warmstarts retained",
+    "two repeats cannot estimate frequency",
+    "no new canonical feedback or historical A stop reproduction",
+    "same logging exists in both arms, but scheduling effects remain downstream"
+  ],
+  "manifest_members": {
+    "previous_unique_index": 21,
+    "qualification": 76,
+    "raw": 39
+  },
+  "outcome": "FD_WARMSTART_CLEAR_REMOVES_OBSERVED_REPEAT_DRIFT",
+  "producer_head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
+  "qualification_manifest_sha256": "c3c755d4abd1aba5250348d6238f9886e10acb4e50055a2f5c4ee2b3cb15739c",
+  "raw_manifest_sha256": "43d68bb104338cd322fb1ae1742b84b374f920c6d809fd17989dedde42118844",
+  "status": "VERIFIED_MATCHED_FD_WARMSTART_OBSERVATION",
+  "tolerance": 1e-09,
+  "wire_inputs_verified": 44,
+  "zero_effective_seed_hash": "ec32669a74fcae65"
+}

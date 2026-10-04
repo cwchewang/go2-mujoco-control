@@ -1,0 +1,48 @@
+{
+  "task_id": "px_1a1047e1251_d29d3a031c",
+  "status": "complete",
+  "transport": "routed",
+  "receipt": {
+    "receipt": {
+      "endpoint": "http://127.0.0.1:8790",
+      "machine_id": "atlas",
+      "task_id": "px_1a1047e1251_d29d3a031c"
+    },
+    "route": "machine-agent"
+  },
+  "remote": {
+    "approved": true,
+    "cancel_requested": false,
+    "capability": "workspace-exec",
+    "created_at": "2026-10-04T01:18:53.586Z",
+    "error": null,
+    "machine_id": "atlas",
+    "result": {
+      "access": "workspace-write",
+      "capability": "workspace-exec",
+      "command_sha256": "5761a88410d6352c147d144aaefbab283aec0d520417f8f303bef9faa0f08e9d",
+      "cwd": "/home/che/dev/go2-workspace",
+      "duration_ms": 6329,
+      "host_mutation_authorized": false,
+      "machine_id": "atlas",
+      "network": false,
+      "returncode": 0,
+      "sandbox": "bubblewrap",
+      "scientific_attempt_consumed": false,
+      "status": "complete",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_truncated": false,
+      "stdout": "{\"manifest_sha256\": \"43d68bb104338cd322fb1ae1742b84b374f920c6d809fd17989dedde42118844\", \"status\": \"OBSERVATION_COMPLETE\"}\n",
+      "stdout_bytes": 122,
+      "stdout_truncated": false,
+      "timed_out": false,
+      "workspace_mutation_authorized": true
+    },
+    "spec_sha256": "9a5f06906ccf3aec66fbda9f5c43fe84b6088bb1f925c401226a707c811ff319",
+    "status": "complete",
+    "task_id": "px_1a1047e1251_d29d3a031c",
+    "updated_at": "2026-10-04T01:18:59.970Z"
+  },
+  "error": null
+}
