@@ -263,6 +263,17 @@ def classify_terminal(oracle, outcome):
 def capture(prepared, review_path, authorization_path, output):
     with experiment_lock() as lock:
         p = verify_bundle(prepared)
+        # These identifiers are permanently closed across every checkout. The
+        # sealed A consumed its sole attempt and failed B's reproduction gate.
+        # A worktree-local empty ledger cannot reopen either historical scope.
+        if p.get("task_id") in {
+            "mjpc-adaptation-original-3s-v1",
+            "mjpc-adaptation-corrected-3s-v1",
+        }:
+            raise ValueError(
+                "mjpc adaptation v1 permanently closed: A CLOSED_NO_RETRY; "
+                "B NOT_RUN_REPRODUCTION_GATE_FAILED; use a new prospective task"
+            )
         plan = spec.load_plan(Path(prepared) / "protocol.json")
         head = identity()
         review = strict_json(Path(review_path).read_text())

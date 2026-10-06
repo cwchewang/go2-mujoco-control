@@ -1,0 +1,29 @@
+{
+  "role": "science",
+  "reviewer": "/root/science_review",
+  "verdict": "PASS",
+  "assessment": "FD-entry warmstart clearing removed observed repeat drift in this matched pair, supporting a causal role under these conditions. It changed selected controls and is not a trajectory-neutral replacement.",
+  "evidence_pins": {
+    "capture_head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
+    "packet_sha256": "f6a2a7e9b4133e0d53d996842ec2c34c921447d1443c9a96a0d707ae376a384a",
+    "manifest_sha256": "43d68bb104338cd322fb1ae1742b84b374f920c6d809fd17989dedde42118844",
+    "result_sha256": "2dd0e6c983ee738c2fb59fddd8843c6465c581fc9c736b2862fa1efefcd9157c",
+    "independent_read_receipt": "px_1a10480b007_2b4f1d7339"
+  },
+  "verified_facts": [
+    "All 39 sealed members and hashes verify. Independently reconstructed 44 mapped wire packets and verified 288 FD seed records, sealed delegate identity and the same shim hash in every process.",
+    "Eight calls completed: 19616 accounted private upper-bound steps within 32768 reservations, no unverified reservations or accounting errors, and zero canonical integration. Reset responses are valid; stderr logs are empty.",
+    "Retain repeats agree through tick 9; tick-10 q_des difference is 2.052338680946786e-11 with zero cost difference. Tick-10 Jacobian and policy hashes differ.",
+    "Zero repeats agree exactly on all eleven q_des/cost outputs and serialized predicted qpos/qvel/actions. All 144 zero-arm FD entries have effective_zero=true and hash ec32669a74fcae65.",
+    "Zero-arm t34 hashes match at both solves: 89f830943a5db4d6 and 65c84f27f6657742. Selected policy hashes also match.",
+    "Cross-arm q_des exceeds the unchanged 1e-9 threshold at ticks 0\u20133, peaking at 4.495396499493154e-9. Tick-10 maximum is 9.973715187072685e-10; its cost difference is 6.823951126389005e-12."
+  ],
+  "limitations": [
+    "PASS applies to evidence and the narrow interpretation, not approval of clearing as a production replacement.",
+    "Two repeats per arm do not establish a nondeterminism rate, universal repeatability or incoming warmstart as the sole explanation.",
+    "Clearing can change scheduling and subsequent worker/rollout history; those downstream effects remain part of the intervention.",
+    "The retain repeat difference remains below 1e-9. Cross-arm threshold exceedance must be retained and not concealed by exact zero-arm repeatability.",
+    "No historical A/reference unique-trigger, later stop, closed-loop or locomotion claim is established.",
+    "The eight-call budget is closed. This reviewer performed only read-only standard-library analysis and authorized no further calls."
+  ]
+}

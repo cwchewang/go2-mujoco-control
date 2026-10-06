@@ -80,16 +80,37 @@ if(GO2_MJPC_BUILD_FD_DIAGNOSTIC)
     "${MJPC_SOURCE_DIR}/mjpc/planners/model_derivatives.cc")
   set(MJPC_DIAGNOSTIC_COMMON_FILES ${MJPC_FILES})
   list(REMOVE_ITEM MJPC_DIAGNOSTIC_COMMON_FILES "${MJPC_PATCHED_DERIVATIVES}")
+  option(GO2_MJPC_LOGICAL_WARMSTART "Build matched logical warmstart ownership diagnostic" OFF)
+  if(GO2_MJPC_LOGICAL_WARMSTART)
+    execute_process(COMMAND "${Python3_EXECUTABLE}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/patch_logical_warmstart.py"
+      "${MJPC_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/generated/logical"
+      "${MJPC_FD_FIXED_SOURCE}" COMMAND_ERROR_IS_FATAL ANY)
+    set(MJPC_LOGICAL_COMMON_FILES ${MJPC_DIAGNOSTIC_COMMON_FILES})
+    list(REMOVE_ITEM MJPC_LOGICAL_COMMON_FILES
+      "${MJPC_SOURCE_DIR}/mjpc/trajectory.cc" "${MJPC_SOURCE_DIR}/mjpc/planners/ilqg/planner.cc")
+    list(APPEND MJPC_LOGICAL_COMMON_FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/generated/logical/mjpc/trajectory.cc"
+      "${CMAKE_CURRENT_BINARY_DIR}/generated/logical/mjpc/planners/ilqg/planner.cc")
+  endif()
   foreach(variant IN ITEMS original fixed)
     if(variant STREQUAL "original")
       set(MJPC_FD_VARIANT_SOURCE "${MJPC_FD_ORIGINAL_SOURCE}")
     else()
       set(MJPC_FD_VARIANT_SOURCE "${MJPC_FD_FIXED_SOURCE}")
     endif()
+    set(MJPC_VARIANT_COMMON_FILES ${MJPC_DIAGNOSTIC_COMMON_FILES})
+    if(GO2_MJPC_LOGICAL_WARMSTART AND variant STREQUAL "fixed")
+      set(MJPC_VARIANT_COMMON_FILES ${MJPC_LOGICAL_COMMON_FILES})
+    endif()
     add_library(go2_mjpc_fd_${variant}_core STATIC
-      ${MJPC_DIAGNOSTIC_COMMON_FILES} "${MJPC_FD_VARIANT_SOURCE}")
+      ${MJPC_VARIANT_COMMON_FILES} "${MJPC_FD_VARIANT_SOURCE}")
     target_include_directories(go2_mjpc_fd_${variant}_core PUBLIC
       "${MJPC_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${MUJOCO_INCLUDE_DIR}")
+    if(GO2_MJPC_LOGICAL_WARMSTART AND variant STREQUAL "fixed")
+      target_include_directories(go2_mjpc_fd_${variant}_core BEFORE PUBLIC
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/logical")
+    endif()
     target_link_libraries(go2_mjpc_fd_${variant}_core PUBLIC
       "${MUJOCO_LIBRARY}" Threads::Threads absl::base absl::any_invocable
       absl::check absl::flat_hash_map absl::log absl::random_random absl::span)

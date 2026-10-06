@@ -1,0 +1,22 @@
+{
+  "analysis_recomputed_byte_identical": true,
+  "canonical_steps": 0,
+  "capture_qualification_for_changed_inputs": "NOT_RUN",
+  "native_zero_integration_tests_passed": 3,
+  "next_observation_optimizer_calls_max": 4,
+  "next_observation_private_step_reservation_max": 16384,
+  "old_A": "CLOSED_NO_RETRY",
+  "old_B": "NOT_RUN_REPRODUCTION_GATE_FAILED",
+  "optimizer_calls": 0,
+  "python_tests_passed": 29,
+  "quality_passed": true,
+  "scientific_attempts": 0,
+  "scope": "offline_engineering",
+  "source_sha256": {
+    "tools/substrate/mjpc_diagnostic_capture.py": "066428f2f4d9cb2477ce011b55603bceb7b312672bea3cd745777a64169a6a66",
+    "tools/substrate/mjpc_short_sequence.py": "e1c7eb98c7eacd9464f3608e38305bc788d9b7a8c7104db7336b450d90984230",
+    "tools/substrate/test_mjpc_retired_capture.py": "cfa12615a074be76f0d7d1fde56a9eb3113da1eb69c03240f635019cbf87df2b",
+    "tools/substrate/test_mjpc_sequence_mapping.py": "421f58d91d8dcc682ca4feb895264aad585142ed5be21a226bfbfa3730ed2466",
+    "tools/substrate/test_mjpc_sequence_reset.py": "9fbceab65e19e4ed62e798decf4511d0dd2f1a20ce70ea1b19af1f47a3991ecb"
+  }
+}

@@ -1,0 +1,19 @@
+test_empty_worktree_cannot_reopen_either_retired_scope (tools.substrate.test_mjpc_retired_capture.RetiredCaptureTests) ... ok
+test_budget_covers_fd_and_rollouts (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_feedback_cannot_integrate_or_change_policy (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_missing_bool_regressed_accounting_rejected (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_named_joint_and_unnamed_collision_mapping (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_original_corrected_head_and_qualification_identity (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_two_protocols_have_separate_single_attempt_ownership (tools.substrate.test_mjpc_diagnostic.DiagnosticTests) ... ok
+test_prepared_review_start_binding_negatives (tools.substrate.test_mjpc_diagnostic.ProductionEvidenceRegression) ... ok
+test_real_native_response_types_and_position_pd_boundary (tools.substrate.test_mjpc_diagnostic.ProductionEvidenceRegression) ... ok
+test_real_selected_prediction_reconstructs_contacts_zero_step (tools.substrate.test_mjpc_diagnostic.ProductionEvidenceRegression) ... ok
+test_real_truncated_prefix_is_not_a_safety_stop (tools.substrate.test_mjpc_diagnostic.ProductionEvidenceRegression) ... ok
+test_selected_prediction_mapping_and_count_negatives (tools.substrate.test_mjpc_diagnostic.ProductionEvidenceRegression) ... ok
+test_all_formal_runners_declaration_and_experiment_sentinel (tools.substrate.test_mjpc_diagnostic.RealPreflightSubprocessRegression) ... ok
+test_real_preflight_failure_seals_zero_attempt_and_original_rc (tools.substrate.test_mjpc_diagnostic.RealPreflightSubprocessRegression) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.198s
+
+OK

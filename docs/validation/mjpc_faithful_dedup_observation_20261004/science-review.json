@@ -1,0 +1,30 @@
+{
+  "assessment": "Duplicate simultaneous t34 writes are not necessary for the observed fixed-input repeat drift. Worker-history differences remain consistent with the drift; warmstart's unique causal contribution is unisolated.",
+  "evidence_pins": {
+    "capture_head": "fd9a9205a8bdd5fe3a9ff2423fa7e42a968ebfb8",
+    "independent_read_receipt": "px_1a1046370d4_e476667b20",
+    "manifest_sha256": "2e5fa41e23f9334037c59aeffe0fc064473286bb68af2d81a1006a9f546aecb2",
+    "packet_sha256": "05dc9d690e78f0d9c07fe2958a9137afbbc6ff44ff48dd366c06a0252cfbb35b",
+    "result_sha256": "eedb13089bec4c31b7a96cdc13b38e342d7458824d3d9013bf0dc3d08459fc25"
+  },
+  "limitations": [
+    "The surviving drift excludes duplicate simultaneous t34 writes as a necessary mechanism for this fixed observation, not as a possible contributor to original or historical drift.",
+    "Scheduling, retained worker state and warmstart were not independently controlled. Their individual causal contributions cannot be separated.",
+    "Two repeats provide no frequency estimate, historical A/reference unique-cause attribution, later trajectory or locomotion claim.",
+    "The repeat difference is approximately 1.36% of the 1e-9 threshold and is not a threshold failure.",
+    "Trajectory equality refers to serialized values, not complete hidden-state identity.",
+    "The budget is closed. This assessment authorizes no further calls; the reviewer performed only read-only standard-library analysis."
+  ],
+  "reviewer": "/root/science_review",
+  "role": "science",
+  "verdict": "PASS",
+  "verified_facts": [
+    "All sealed member hashes and exact manifest membership match. Independently reconstructed all 22 mapped wire inputs from qualified external states.",
+    "Four calls completed with 9808 accounted private upper-bound steps, 16384 reserved steps, zero unverified reservations and zero canonical integration. Reset responses are valid and both stderr logs are empty.",
+    "Every FD trace contains exactly indices 0..35, including one t34. Per-call counters are 36 FD evaluations, 1752 FD upper steps and 700 rollout steps.",
+    "Fixed outputs agree exactly through tick 9. Tick-10 q_des difference is 1.3625101047409771e-11; cost difference is zero. All four fixed/original comparisons remain within the unchanged 1e-9 threshold.",
+    "First-solve selected policy and outputs agree, while post-worker warmstart assignments and multisets differ. Second-solve incoming seed hashes differ already at knot 0: 69078ca7d2004bce versus f023c14c1fcf18b1.",
+    "Second-solve t34 Jacobian hashes are 410d9d024fd2cd07 and 8bb844d6231cf282; selected policy hashes are 5e1eb39bcb597aa2 and 3b2daf3100bc1e34. Candidate ID remains 8.",
+    "Serialized selected qpos/qvel agree exactly; nominal position actions differ by at most 4.720956958692568e-11."
+  ]
+}

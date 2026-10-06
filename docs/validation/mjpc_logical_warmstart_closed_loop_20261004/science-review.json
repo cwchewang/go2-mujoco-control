@@ -1,0 +1,31 @@
+{
+  "head": "190e56939de0d8f57670747b73b4252b4d9ae603",
+  "limitations": [
+    "Three-second horizon completion right-censors later stops and cannot prove improved historical stopping.",
+    "Two repeats per arm provide no frequency estimate; fixed arm order and unchanged hidden worker fields limit attribution.",
+    "Previous-end warmstart seeds are heuristics at changed initial states; production equivalence and a unique historical cause remain unproven.",
+    "Execution approval is separate. No capture was performed by this reviewer."
+  ],
+  "packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639",
+  "prior_substantive_read_receipts": [
+    "px_1a104a4900a_45c5fc2c26",
+    "px_1a104a5dba4_f6ed384595",
+    "px_1a104a6b039_28e28a6276"
+  ],
+  "qualification_manifest_sha256": "be3a8f98fe347ed8dbda413f426308db38e73e51d7a48c88d3de57b2896f0578",
+  "rationale": [
+    "Verified clean exact HEAD, matching packet/manifest hashes and all 61 sealed member hashes.",
+    "Protocol, native warmstart patch and ownership helper are byte-identical to the previously reviewed version. Binary hash remains b161f969ca5d8e48c7cc3fc7ab98b4e9c93d94b0d67fa721acf1ba4bfef45fef.",
+    "Prior conclusions about nominal rollout initialization before FD, complete trajectory copying and reset/retained-history semantics remain applicable.",
+    "Contact comparisons now use order-insensitive sets. Unobserved saturation times have explicit censoring labels and a null timing gap rather than an observed zero gap.",
+    "Target-scoped CMake and durable request/reservation accounting repairs preserve the scientific intervention, four-process matrix, physical conditions, thresholds, budget and no-retry rule.",
+    "Qualification logs show 25 passing tests and two explicit historical-path skips, plus quality pass. Both mode handshakes report zero optimizer calls/canonical steps, matching library hashes and no stderr."
+  ],
+  "read_receipts": [
+    "px_1a104b95de7_6939326bf3",
+    "px_1a104b9ed7a_40d5efd6cd"
+  ],
+  "reviewer": "/root/science_review",
+  "role": "science",
+  "verdict": "APPROVED"
+}

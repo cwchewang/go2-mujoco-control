@@ -1,3 +1,4 @@
+#include "logical_warmstart.h"
 #include "fresh_plan.h"
 #include "diagnostic.h"
 // Persistent headless controller for the pinned Go2 MJPC QuadrupedFlat+iLQG.
@@ -145,6 +146,7 @@ class Controller {
               << "\"worker_count\":" << pool_.NumThreads()
               << ",\"planner\":\"MJPC iLQG\",\"planner_dt\":" << planner_dt_
               << ",\"horizon_steps\":" << horizon_
+              << ",\"warmstart_owner\":\"" << (go2_substrate::LogicalWarmstart() ? "logical" : "worker") << "\""
               << ",\"source_nominal_biastype\":\"mjBIAS_NONE\""
               << ",\"compatibility_correction\":\"private_model_mjBIAS_AFFINE\""
               << ",\"canonical_evaluation_plant_modified\":false"

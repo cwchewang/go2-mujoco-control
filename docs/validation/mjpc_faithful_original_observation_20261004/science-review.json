@@ -1,0 +1,32 @@
+{
+  "assessment": "COARSE_OBSERVER_MISMATCH_CLOSED_FOR_PREFIX; PRIVATE_OPTIMIZER_REPEATABILITY_DIFFERENCE_OBSERVED",
+  "causal_interpretation": [
+    "The repaired observer removes the coarse prefix discrepancy. Tiny repeat differences now arise within private optimization at identical external inputs, before any canonical feedback.",
+    "Worker-history dependence and overlapping duplicate writes are credible mechanisms consistent with the observations. This experiment does not isolate their individual contributions."
+  ],
+  "evidence_pins": {
+    "head": "3b4e25bcf9d12a0704e6dc9ca4e4cf8277b343aa",
+    "independent_read_receipt": "px_1a104383a46_c2f59c7933",
+    "observation_manifest_sha256": "8b3e6fc4c36a7a188715b8221d7bf4d9347683f1637355c24e4a9fcefe8e79d9",
+    "qualification_packet_sha256": "4010063e644aa9fdbe3e42c1eceffe16cfef625da49d7418b572491ee1b9c73a",
+    "result_sha256": "e15e49e729ee48ee6ea805bc7c4f144ea2606f41f9bfbc81ecf68f31137daad0"
+  },
+  "findings": [
+    "Independently verified every manifest member hash and exact membership. Admission and accounting report four reserved/completed calls, 10004 accounted private upper-bound steps, 16384 reserved steps, no accounting errors or unverified reservations, and zero canonical integration.",
+    "Both trials log the production reset and native joint order. External input hashes agree at all eleven ticks. Outputs and costs equal historical A and reference exactly through tick 9.",
+    "At tick 10, maximum repeat q_des difference is 8.549605468033405e-12. Deviations from A are 1.8034018722801193e-11 and 1.4180878693537124e-11; deviations from reference are 2.9003144070421927e-11 and 2.926214826004525e-11. Reported costs remain exact. All differences satisfy the unchanged 1e-9 comparison.",
+    "Tick-0 Jacobian and policy hashes agree. Post-call worker warmstart summaries form the same multiset but occupy different worker slots; those assignments persist into tick 10.",
+    "Tick-10 pre-policy and previous-policy summaries agree, while t34 Jacobian hashes differ: 182fb14e89fa8770 versus f60f593f0beb6e41. Selected policy hashes also differ despite equal reported costs and candidate ID 8.",
+    "Duplicate t34 FD intervals overlap by 655349 and 480128 ns. Their incoming warmstart hashes differ within each repeat. Warmstart differences also appear earlier at knot t1, before the duplicate jobs.",
+    "Consulted source receipts px_1a10432e09f_d19aec644b and px_1a10438af8f_fe34245234: FD tasks use worker mjData, SetState copies qpos/qvel/act without resetting warmstart, and duplicate t34 jobs target shared A/B/C/D blocks. Instrumentation records this behavior without clearing warmstart."
+  ],
+  "limitations": [
+    "The reused instrumented binary differs from historical A's binary; historical hidden worker state was not captured.",
+    "No unique causal attribution to duplicate t34, no proof of the historical A/reference drift mechanism, and no later trajectory or locomotion-success claim is supported.",
+    "Reported trajectory values have serialization limits; matching summaries or candidate IDs do not establish complete internal-state identity.",
+    "Two repeats demonstrate an observed repeatability difference, not its frequency or distribution.",
+    "No additional calls are authorized by this assessment. This reviewer performed only read-only standard-library analysis."
+  ],
+  "reviewer": "/root/science_review",
+  "role": "science"
+}

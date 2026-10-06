@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "remote": {
+    "approved": true,
+    "cancel_requested": false,
+    "capability": "workspace-exec",
+    "created_at": "2026-10-04T02:31:54.264Z",
+    "error": "workspace-exec tasks must use maintenance mode",
+    "machine_id": "atlas",
+    "result": {
+      "capability": "workspace-exec",
+      "error": "workspace-exec tasks must use maintenance mode",
+      "status": "failed"
+    },
+    "spec_sha256": "3748b4cee2f032d81ed9ecd069e8626ed54fc583791b9ffd4bdd50a1a59f33fa",
+    "status": "failed",
+    "task_id": "px_1a104c0ea54_a2026843e1",
+    "updated_at": "2026-10-04T02:31:54.320Z"
+  },
+  "spec": {
+    "allowed_mutations": [
+      "workspace:/home/che/dev/go2-workspace"
+    ],
+    "approval_policy": {
+      "reason": null,
+      "required_before": "none"
+    },
+    "attempt_policy": {
+      "max_scientific_attempts": 4,
+      "retry_preflight": false,
+      "scientific_boundary": "first valid post-reset state/control sample of each fresh process; pending optimizer reservations are charged before transport"
+    },
+    "capability": "workspace-exec",
+    "capability_request": {
+      "access": "workspace-write",
+      "capability": "workspace-exec",
+      "command": "set -eu\ncd logical-warmstart-closed-loop\n.substrate/venv-reliable/bin/python -B -m tools.substrate.mjpc_logical_warmstart capture --packet /home/che/dev/go2-workspace/logical-warmstart-closed-loop/_runs/mjpc_logical_warmstart_qualification_20261004_v2/packet.json --output /home/che/dev/go2-workspace/logical-warmstart-closed-loop/_runs/mjpc_logical_warmstart_closed_loop_20261004 --review /home/che/dev/go2-workspace/logical-warmstart-closed-loop/_runs/mjpc_logical_warmstart_reviews_20261004/review.json --authorization /home/che/dev/go2-workspace/logical-warmstart-closed-loop/_runs/mjpc_logical_warmstart_reviews_20261004/authorization.json",
+      "cwd": "/home/che/dev/go2-workspace",
+      "network": false,
+      "schema_version": 1,
+      "timeout_seconds": 350
+    },
+    "closeout_schema": [],
+    "constraints": [
+      "Only new logical-warmstart campaign on exact clean HEAD190e569; no original A/B or old qualification rerun",
+      "Preserve 1e-9 and original R4 engineering thresholds; first safety/execution/evidence/identity/warning/budget failure stops whole campaign",
+      "No retry, replacement, additional optimizer call, push, permission change or real hardware"
+    ],
+    "context_paths": [],
+    "frozen_parameters": {
+      "binary_sha256": "b161f969ca5d8e48c7cc3fc7ab98b4e9c93d94b0d67fa721acf1ba4bfef45fef",
+      "head": "190e56939de0d8f57670747b73b4252b4d9ae603",
+      "internal_wall_timeout_s": 300,
+      "max_canonical_steps": 6000,
+      "max_formal_attempts": 4,
+      "max_optimizer_calls": 600,
+      "max_private_reserved": 2457600,
+      "max_private_upper": 1471200,
+      "order": [
+        "logical1",
+        "logical2",
+        "worker1",
+        "worker2"
+      ],
+      "packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639",
+      "protocol": "mjpc-logical-warmstart-closed-loop-3s-v1",
+      "qualification_manifest_sha256": "be3a8f98fe347ed8dbda413f426308db38e73e51d7a48c88d3de57b2896f0578"
+    },
+    "instructions": [],
+    "mode": "scientific",
+    "objective": "Execute exactly one new frozen four-slot 3-second closed-loop campaign comparing logical trajectory/knot warmstart ownership with legacy worker ownership; retain first failure and close budget without retry",
+    "project": {
+      "profile_path": ".atlas/project.json",
+      "project_id": "go2",
+      "repository": "cwchewang/go2-mujoco-control"
+    },
+    "required_evidence": [
+      "Sealed raw, wire requests/responses, reservations and completions, native runtime identity, replay, pair comparisons, partial resource records, external no-retry ledger closure"
+    ],
+    "resources": {
+      "cpu_slots": 4,
+      "gpu_count": 0,
+      "memory_gb": null,
+      "wall_time_seconds": 350
+    },
+    "schema_version": 1,
+    "stop_rule": "First failure stops entire campaign; all evidence and pending reservation charges retained; no retry or replacement, budget CLOSED"
+  },
+  "status": "failed",
+  "task_id": "px_1a104c0ea54_a2026843e1"
+}

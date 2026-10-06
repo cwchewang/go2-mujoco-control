@@ -1,0 +1,67 @@
+{
+  "attempt_policy": {
+    "max_scientific_attempts": 0,
+    "retry_preflight": false,
+    "scientific_boundary": "No formal capture boundary: zero new canonical post-handoff samples. Separate durable private optimizer ledger permits exactly four calls/16384 reserved private steps; first private call prohibits replacement or retry."
+  },
+  "frozen_parameters": {
+    "canonical_integration_steps": 0,
+    "head": "3b4e25bcf9d12a0704e6dc9ca4e4cf8277b343aa",
+    "optimizer_calls_max": 4,
+    "packet_sha256": "4010063e644aa9fdbe3e42c1eceffe16cfef625da49d7418b572491ee1b9c73a",
+    "private_reserved_max": 16384,
+    "repeats": 2,
+    "tolerance": 1e-09,
+    "variant": "original"
+  },
+  "mode": "maintenance",
+  "receipt": {
+    "receipt": {
+      "endpoint": "http://127.0.0.1:8790",
+      "machine_id": "atlas",
+      "task_id": "px_1a104358d2f_3e24940cea"
+    },
+    "route": "machine-agent"
+  },
+  "remote": {
+    "approved": true,
+    "cancel_requested": false,
+    "capability": "workspace-exec",
+    "created_at": "2026-10-03T23:59:40.914Z",
+    "error": null,
+    "machine_id": "atlas",
+    "result": {
+      "access": "workspace-write",
+      "capability": "workspace-exec",
+      "command_sha256": "476d9b6736392b822fef7e6132d63bcb4b5e778e01440d59201a6d15cfc2e2f3",
+      "cwd": "/home/che/dev/go2-workspace",
+      "duration_ms": 3526,
+      "host_mutation_authorized": false,
+      "machine_id": "atlas",
+      "network": false,
+      "returncode": 0,
+      "sandbox": "bubblewrap",
+      "scientific_attempt_consumed": false,
+      "status": "complete",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_truncated": false,
+      "stdout": "{\"manifest_sha256\": \"8b3e6fc4c36a7a188715b8221d7bf4d9347683f1637355c24e4a9fcefe8e79d9\", \"status\": \"OBSERVATION_COMPLETE\"}\n",
+      "stdout_bytes": 122,
+      "stdout_truncated": false,
+      "timed_out": false,
+      "workspace_mutation_authorized": true
+    },
+    "spec_sha256": "abec773573ba965e6dbcb2407a448ce6e2f0c54b1205302b0226cba85675d62d",
+    "status": "complete",
+    "task_id": "px_1a104358d2f_3e24940cea",
+    "updated_at": "2026-10-03T23:59:44.495Z"
+  },
+  "resources": {
+    "cpu_slots": 4,
+    "gpu_count": 0,
+    "memory_gb": null,
+    "wall_time_seconds": 60
+  },
+  "task_id": "px_1a104358d2f_3e24940cea"
+}

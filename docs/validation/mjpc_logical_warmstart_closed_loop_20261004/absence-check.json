@@ -1,0 +1,47 @@
+{
+  "error": null,
+  "receipt": {
+    "receipt": {
+      "endpoint": "http://127.0.0.1:8790",
+      "machine_id": "atlas",
+      "task_id": "px_1a104c223c6_c028b0b532"
+    },
+    "route": "machine-agent"
+  },
+  "remote": {
+    "approved": true,
+    "cancel_requested": false,
+    "capability": "workspace-exec",
+    "created_at": "2026-10-04T02:33:14.497Z",
+    "error": null,
+    "machine_id": "atlas",
+    "result": {
+      "access": "read-only",
+      "capability": "workspace-exec",
+      "command_sha256": "97e2d014fe3bd22933ff41ef19a26a1082bbc35b976d957d017318fe3d42d99b",
+      "cwd": "/home/che/dev/go2-workspace",
+      "duration_ms": 63,
+      "host_mutation_authorized": false,
+      "machine_id": "atlas",
+      "network": false,
+      "returncode": 0,
+      "sandbox": "bubblewrap",
+      "scientific_attempt_consumed": false,
+      "status": "complete",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_truncated": false,
+      "stdout_bytes": 4283,
+      "stdout_sha256_note": "Full stdout retained by Praxis task ID; curated receipt omits verbose log.",
+      "stdout_truncated": false,
+      "timed_out": false,
+      "workspace_mutation_authorized": false
+    },
+    "spec_sha256": "6a7e20ff65e0c019b1434e81b4f8e00631d2d0cbfffdd184fc8c92a5c7cf6516",
+    "status": "complete",
+    "task_id": "px_1a104c223c6_c028b0b532",
+    "updated_at": "2026-10-04T02:33:14.615Z"
+  },
+  "status": "complete",
+  "task_id": "px_1a104c223c6_c028b0b532"
+}

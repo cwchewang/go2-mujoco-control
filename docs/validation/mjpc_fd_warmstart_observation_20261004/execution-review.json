@@ -1,0 +1,62 @@
+{
+  "role": "execution-closeout",
+  "reviewer": "/root/execution_review",
+  "verdict": "VERIFIED",
+  "producer_head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
+  "manifest_sha256": "43d68bb104338cd322fb1ae1742b84b374f920c6d809fd17989dedde42118844",
+  "verified": {
+    "exact_members_and_hashes": {
+      "campaign": 39,
+      "qualification": 76,
+      "historical_A": 14,
+      "original_control": 21,
+      "dedup_control": 21
+    },
+    "production_wire_strings": 44,
+    "ready_then_reset_streams": 4,
+    "private_optimizer_calls_reserved_and_completed": 8,
+    "private_accounted_upper": 19616,
+    "private_reserved_upper": 32768,
+    "unverified_reservations": 0,
+    "interposed_FD_entries": 288,
+    "zero_mode_effective_zero_entries": 144,
+    "zero_effective_hash": "ec32669a74fcae65",
+    "retain_effective_seeds_unchanged": true,
+    "unique_indices_per_optimizer_call": 36,
+    "stderr_bytes": 0,
+    "canonical_integration_steps": 0,
+    "formal_live_scientific_attempts": 0,
+    "visible_active_controller_processes": 0,
+    "terminal_result_status": "OBSERVATION_COMPLETE",
+    "budget": "CLOSED"
+  },
+  "rationale": [
+    "Independently recomputed inputs, reservations and cumulative fixed counters from raw logs. All eight calls use indices 0..35, with exactly one t34 event.",
+    "Verified the same sealed controller/shim, loaded-library hashes and MuJoCo delegate in all four processes. All 288 shim entries admit complete hash/call/interval-constrained correspondence with outer FD events.",
+    "Actual receipt px_1a1047e1251_d29d3a031c confirms approved bubblewrap execution, return code 0 and scientific_attempt_consumed=false. Eight private calls remain separately accounted.",
+    "Historical source/control bytes remain unchanged. Producer HEAD is unchanged; current dirt is only the expected post-capture validation directory.",
+    "Complete sealed admission, exhausted eight-call ledger and exclusive-output guards close the new budget."
+  ],
+  "observations": {
+    "retain_first_exact_control_difference_tick": 10,
+    "retain_max_q_des_difference": 2.052338680946786e-11,
+    "retain_cost_difference": 0,
+    "retain_second_solve_jacobian_and_policy_hashes_equal": false,
+    "zero_q_des_and_cost_equal_all_11_ticks": true,
+    "zero_jacobian_and_policy_hashes_equal_both_solves": true,
+    "cross_mode_tick0_q_des_difference": 4.495396499493154e-09,
+    "cross_mode_difference_exceeds_1e_9": true,
+    "trajectory_neutrality": "NOT_ESTABLISHED; cross-mode difference exceeds the unchanged threshold"
+  },
+  "evidence": [
+    "Successful independent read-only audit px_1a104829444_d3c49a45f0; execution receipt px_1a1047e1251_d29d3a031c.",
+    "Sealed manifests, qualification/runtime identity, native/reset/wire logs, reservation ledgers, predictions, FD traces, effective-seed logs, library maps, accounting and admission.",
+    "Earlier read-only audit px_1a104818005_f984c1e11e used an overly strict interval-only correspondence; corrected audit accounts for overlapping workers."
+  ],
+  "limitations": [
+    "No native execution, solver, test, qualification, dynamics replay or write was performed.",
+    "FD timing correspondence is a complete feasible bijection; overlapping intervals alone do not uniquely identify worker associations.",
+    "Process inspection covers controllers visible in the review environment.",
+    "This verifies closeout only and authorizes no further calls. Two repeats do not establish frequencies or the historical A trigger."
+  ]
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "head": "fd9a9205a8bdd5fe3a9ff2423fa7e42a968ebfb8",
+    "limitations": [
+      "Removing one job changes worker assignments and retained histories; this design cannot independently estimate the direct write-race effect versus those downstream effects.",
+      "The original control is historical, not a contemporaneous randomized arm. Matching sealed runtime and inputs narrows, but does not eliminate, scheduling variation.",
+      "Two fixed repeats cannot estimate nondeterminism frequency. Exact agreement would not prove the duplicate mechanism necessary for every original difference.",
+      "No historical A/reference unique-cause attribution, later trajectory reproduction or locomotion claim is supported.",
+      "Execution readiness remains subject to the independent execution review and fresh preflight.",
+      "This reviewer performed only read-only source/evidence inspection and standard-library hashing; no tests, native processes, optimizer calls, integration or writes."
+    ],
+    "packet_sha256": "05dc9d690e78f0d9c07fe2958a9137afbbc6ff44ff48dd366c06a0252cfbb35b",
+    "rationale": [
+      "Independently read the task, observer and tests in receipt px_1a1045da23a_1326761905; inspected packet, qualification logs and source/runtime bytes in px_1a1045e9878_0854f170a3. Clean HEAD and supplied packet/manifest hashes match.",
+      "Static reconstruction independently reproduces both archived generated-source hashes and confirms their sole difference is the derivative-index block. The fixed binary is 3644c6160dae354319c94840bdd07ca12166500a2b133f97b78421f8db587b08; no warmstart reset was added.",
+      "Qualified runtime model/library bytes, interpreter, distributions, CPU, source lock and sealed external inputs equal the original control qualification. Recorded checks passed 51 Python contracts, three native zero-integration checks, quality and diff checks, with no qualification optimizer calls.",
+      "The design uses two fresh fixed processes, unchanged production reset/encoder, ticks 0..10 and replans 0/10. Four independent new calls derive 4*(35*49+37+700)=9808 private upper-bound steps within 16384 reservations, with zero canonical integration and no reopening of prior ledgers.",
+      "This is a useful minimal intervention on duplicate scheduling. Repeat differences surviving verified unique t34 execution would demonstrate that duplicate simultaneous writes are unnecessary for those observed differences. Warmstart seed differences alone do not establish effects on selected controls.",
+      "Exact outputs after dedup would be consistent with duplicate removal or its downstream scheduling/history effects. The task correctly avoids claiming that this outcome uniquely identifies a write race or excludes warmstart history.",
+      "The prior 8.549605468033405e-12 repeat difference is about 0.855% of the unchanged 1e-9 threshold. It is an exact-repeatability observation, not a threshold or performance failure."
+    ],
+    "reviewer": "/root/science_review",
+    "role": "science",
+    "verdict": "PASS"
+  },
+  {
+    "evidence": [
+      "Task, tests, full daef3c0-to-HEAD additions, original-to-dedup wrapper diff, derivative generator/helper, sealed v2 packet/audit/admission/manifest/logs, original control and A raw manifests, archived matched binaries/provenance, and sealed dependency comparison.",
+      "Read-only receipts: px_1a1045deaf3_4915cba465, px_1a1045f1a6a_8cd3de968b, px_1a1046042d2_3708c7be18."
+    ],
+    "head": "fd9a9205a8bdd5fe3a9ff2423fa7e42a968ebfb8",
+    "limitations": [
+      "Scope is exclusively the new two fixed-only fresh-process repeats and four private optimizer calls; no reopening original, A/B, or other budgets.",
+      "Execution must repeat current precheck under the continuous lock and consume this exact review binding.",
+      "Reviewer performed no tests, native launches, optimizer calls, rebuilds, writes, or permission changes.",
+      "Source and archived provenance verification does not independently reproduce compilation. Historical control is not a simultaneous randomized arm; scheduling/history effects remain causal limitations."
+    ],
+    "packet_sha256": "05dc9d690e78f0d9c07fe2958a9137afbbc6ff44ff48dd366c06a0252cfbb35b",
+    "rationale": [
+      "Verified exact clean branch/HEAD, v2 packet and manifest binding, exact membership and all 60 qualification-member hashes. Admission is ENGINEERING_ADMITTED with zero optimizer calls.",
+      "Independently reconstructed both generated translation units using standard-library parsing and string operations. Both match archived generated-source hashes and differ only by the derivative-index block; warmstart operations and instrumentation remain identical. Archived binary hashes and common provenance match.",
+      "Verified the original sealed control and historical A source manifests and all members. New runtime shares exactly 45 loader/library/model files and their bytes with original v4. Only declared native binary/build provenance differ.",
+      "Reviewed complete task additions and comparison against the repaired original wrapper. New fixed-only output/ledger ownership, distinct review binding, continuous experiment lock, loader-aware stale-process scan, live reset, named-state encoder, LD environment clearing, sealed loader/maps checks, durable reservations, first-failure stop and robust partial accounting remain coherent.",
+      "Fixed counters are enforced as 36 FD calls and 1752 FD upper steps per solve, plus 700 rollout steps. Independent algebra gives 2452 per call, 9808 for four calls, and 16384 reserved. Canonical integration and formal live attempts remain zero.",
+      "Retained logs show 51 passing Python tests, three passing native zero-integration checks, and passing quality/diff checks. Owner PRECHECK_PASS px_1a1045cc0bf_5b65005166 binds v2. Failed v1 unresolved-library evidence remains preserved and was not reused as admission.",
+      "Requested new output is absent; no visible direct or loader-launched controller was found. Old original four-call evidence remains closed and unchanged."
+    ],
+    "reviewer": "/root/execution_review",
+    "role": "execution",
+    "verdict": "PASS"
+  }
+]

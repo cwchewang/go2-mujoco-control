@@ -10,6 +10,8 @@ import subprocess
 from pathlib import Path
 
 from . import fd_duplicate_diagnostic as d
+from .contracts import POLICY_JOINTS, Proprioception, WholeBodyState
+from .native_mjpc import step_packet as live_step_packet
 from .native_transport import NativeTransport
 
 TICKS = tuple(range(11))
@@ -22,6 +24,17 @@ WARMSTART_KEYS = (
     "warmstart_after_norm",
     "warmstart_after_max_abs",
 )
+
+
+def canonical_state(anchor):
+    """Restore the named canonical state before the production packet encoder."""
+    qpos, qvel = anchor["qpos"], anchor["qvel"]
+    return WholeBodyState(
+        Proprioception(POLICY_JOINTS, qpos[7:], qvel[6:], qpos[3:7], qvel[3:6]),
+        qpos[:3],
+        qvel[:3],
+        anchor["time_s"],
+    )
 
 
 def _input_digest(row):
@@ -284,6 +297,17 @@ def _validate_replan_output(directory, variant, call_index, anchor):
         )
     ):
         raise ValueError("replan candidate identity mismatch")
+    states = candidate.get("states")
+    if (
+        not isinstance(states, list)
+        or not states
+        or any(
+            not d.vector(states[0].get(name), size)
+            or any(abs(x - y) > 1e-12 for x, y in zip(states[0][name], anchor[name]))
+            for name, size in (("qpos", 19), ("qvel", 18))
+        )
+    ):
+        raise ValueError("replan candidate initial state differs from native packet")
     return {
         "policy_id": candidate["policy_id"],
         "candidate_id": candidate["candidate_id"],
@@ -362,6 +386,25 @@ def run_sequence_trial(
         if ready.get("worker_count") != 4:
             raise ValueError("sequence replay requires four workers")
         _append_json(native_log, {"ready": ready}, first=True)
+        # The live adapter resets after the constructor's initialization.
+        # Reproduce that IPC boundary before reserving any optimizer call.
+        reset = transport.request("reset", 10)
+        _append_json(native_log, {"request": "reset", "response": reset})
+        if (
+            not isinstance(reset, dict)
+            or set(reset) != {"ok", "reset"}
+            or reset.get("ok") is not True
+            or reset.get("reset") is not True
+        ):
+            raise ValueError("native sequence live-adapter reset rejected")
+        stderr_state = transport.diagnostics()
+        if stderr_state["stderr_read_error"] or stderr_state["stderr_bytes"]:
+            raise ValueError("native warning/stderr stop during reset")
+        result["initialization"] = "constructor_then_live_adapter_reset"
+        result["state_order"] = {
+            "canonical": list(POLICY_JOINTS),
+            "native": ready["joint_names"],
+        }
         for row in rows:
             anchor = {
                 "time_s": row["time_s"],
@@ -369,7 +412,15 @@ def run_sequence_trial(
                 "qpos": row["qpos"],
                 "qvel": row["qvel"],
             }
-            request = d._packet(anchor, replan=row["replan"])
+            state = canonical_state(anchor)
+            request = live_step_packet(
+                state, anchor["command"], ready["joint_names"], replan=row["replan"]
+            )
+            native_anchor = {
+                **anchor,
+                "qpos": state.qpos(ready["joint_names"]).tolist(),
+                "qvel": state.qvel(ready["joint_names"]).tolist(),
+            }
             if row["replan"]:
                 call_index += 1
                 if call_index > 2:
@@ -445,7 +496,7 @@ def run_sequence_trial(
             replan_summary = None
             if row["replan"]:
                 replan_summary = _validate_replan_output(
-                    output_dir, variant, call_index, anchor
+                    output_dir, variant, call_index, native_anchor
                 )
                 replan_summary["cost"] = response["cost"]
             result["inputs"].append(

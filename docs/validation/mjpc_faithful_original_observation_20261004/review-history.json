@@ -1,0 +1,16 @@
+{
+  "blockers": [
+    "ELF-loader-launched controller evaded exe-only scanner",
+    "malformed/error response could break partial accounting"
+  ],
+  "execution_reviewer": "/root/execution_review",
+  "failed_qualification_v1": "/home/che/dev/go2-workspace/faithful-original-observation/_runs/mjpc_faithful_original_qualification_20261003_v1",
+  "fixed_execution": "PASS",
+  "fixed_head": "3b4e25bcf9d12a0704e6dc9ca4e4cf8277b343aa",
+  "fixed_science": "PASS",
+  "initial_execution": "BLOCK",
+  "initial_head": "1c78625043a9179f662247494f84e808aa1d8127",
+  "initial_science": "PASS",
+  "kind": "owner_summary_of_genuine_independent_review_history",
+  "raw_current_reviews": "/home/che/dev/go2-workspace/faithful-original-observation/_runs/mjpc_faithful_original_reviews_20261003"
+}

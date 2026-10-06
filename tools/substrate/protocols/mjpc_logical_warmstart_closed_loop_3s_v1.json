@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "id": "mjpc-logical-warmstart-closed-loop-3s-v1",
+  "branch": "research/mjpc-logical-warmstart-closed-loop-20261004",
+  "parent": "a1fe1e990e08971e4944e90fd4e29d2f1dd684ed",
+  "kind": "exploratory engineering closed-loop causal comparison",
+  "arms": [
+    "logical",
+    "worker"
+  ],
+  "repeats_per_arm": 2,
+  "order": [
+    "logical1",
+    "logical2",
+    "worker1",
+    "worker2"
+  ],
+  "horizon_ticks": 1500,
+  "horizon_s": 3,
+  "physics_period_s": 0.002,
+  "max_attempts": 4,
+  "max_canonical_steps": 6000,
+  "max_optimizer_calls": 600,
+  "private_reservation_per_call": 4096,
+  "max_private_reserved": 2457600,
+  "max_private_upper": 1471200,
+  "private_per_process_limit": 614400,
+  "wall_timeout_s": 300,
+  "native_timeout_s": 30,
+  "retry": "none",
+  "stop": "first safety execution warning identity evidence or budget failure stops entire campaign; performance-repeatability differences retained and do not add attempts",
+  "condition": "existing floor0 source-private prediction model; identical canonical model/home/reset/ramped 1mps command and source PD60/5/torque limits; not original A or B",
+  "warmstart_intervention": "same compiled binary; worker mode retains worker history; logical mode assigns rollout entry seed to trajectory object, records pre-step warmstart per nominal knot, and copies corresponding nominal seed before FD; first use/reset zero only, retains generated nonzero history",
+  "workers": 4,
+  "FD_indices": "unique 0..35",
+  "replan_ticks": "0,10,...,1490",
+  "tolerance": 1e-09,
+  "repeatability_checks": {
+    "progress_abs_difference_m_max": 0.05,
+    "first_torque_saturation_tick_difference_max": 200,
+    "body_height_envelope_abs_difference_m_max": 0.02,
+    "max_abs_roll_difference_rad_max": 0.03,
+    "max_abs_pitch_difference_rad_max": 0.03,
+    "both_reach_horizon": true,
+    "both_canonical_replays_pass": true,
+    "tick20_selected_state_contact_sets_match": true
+  },
+  "stop_behavior": "report actual terminal reason/tick and right-censor at 1500; improved stopping requires observed comparable stops, horizon alone insufficient",
+  "interpretation": "two deterministic repeats support these conditions only, no frequency or historical unique rootcause claim; no cross-arm equivalence presumed",
+  "qualification_optimizer_calls": 0,
+  "qualification_canonical_steps": 0,
+  "authorization_source_thread": "01a0f08f-d223-7240-813b-ee93267b700d"
+}

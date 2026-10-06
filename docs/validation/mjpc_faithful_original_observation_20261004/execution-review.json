@@ -1,0 +1,51 @@
+{
+  "comparisons": {
+    "all_comparisons_within_1e_9": true,
+    "all_cost_differences": 0,
+    "first_exact_drift_between_repeats": 10,
+    "first_exact_drift_from_A_both_repeats": 10,
+    "max_q_des_difference_between_repeats": 8.549605468033405e-12,
+    "repeat1_max_q_des_difference_from_A": 1.8034018722801193e-11,
+    "repeat2_max_q_des_difference_from_A": 1.4180878693537124e-11
+  },
+  "evidence": [
+    "Sealed observation, v4 qualification, historical A raw and manifests; raw native/reset/wire logs, optimizer ledgers, FD traces, predictions, loaded-library records; reviewed production encoder/contracts and launch/cleanup source.",
+    "Read-only audit receipts: px_1a104384560_78d837155c, px_1a10439705e_01adea2fce, px_1a1043a477a_334f9e9d28."
+  ],
+  "head": "3b4e25bcf9d12a0704e6dc9ca4e4cf8277b343aa",
+  "limitations": [
+    "Audit used standard-library reads and arithmetic only; no native execution, tests, dynamics replay, or writes.",
+    "Distinct native OS PIDs are not recorded in the sealed logs; fresh-process verification combines raw evidence with the bound implementation.",
+    "Process inspection covers controllers visible through the review environment's /proc.",
+    "This closeout does not authorize further execution or establish full historical trajectory reproduction or causal attribution."
+  ],
+  "manifest_sha256": "8b3e6fc4c36a7a188715b8221d7bf4d9347683f1637355c24e4a9fcefe8e79d9",
+  "rationale": [
+    "Independently recomputed counters from both native logs and four 4096 reservation rows. Each process reports cumulative FD calls 37/74, FD upper 1801/3602, rollout steps 700/1400, and reserves 4096/8192. Totals agree with sealed accounting.",
+    "Both raw streams contain ready, successful reset, then exactly ticks 0..10. All 22 wire strings exactly match independently reconstructed production .17g encoding with named joint permutation. Only ticks 0 and 10 replan.",
+    "Two fresh processes are supported by the reviewed launch/cleanup loop, separate ready/reset streams, and process-global FD trace indexes restarting at 1 for each repeat. Both traces preserve the original 37-event duplicate-t34 schedule.",
+    "Actual dispatch receipt px_1a104358d2f_3e24940cea confirms approved execution, return code 0, and scientific_attempt_consumed=false. Four private calls remain explicitly accounted separately.",
+    "Rejected dispatch evidence is retained separately and verified: five manifest members, manifest SHA-256 0f767f7f9f1935325c91331f330c2b1fcaf7f63c031fc527161e4c53fc686976."
+  ],
+  "reviewer": "/root/execution_review",
+  "role": "execution-closeout",
+  "verdict": "VERIFIED",
+  "verified": {
+    "canonical_integration_steps": 0,
+    "constructor_ready_then_reset_sequences": 2,
+    "exact_membership_and_all_hashes": true,
+    "formal_live_scientific_attempts": 0,
+    "private_accounted_upper": 10004,
+    "private_optimizer_calls_reserved_and_completed": 4,
+    "private_reserved_upper": 16384,
+    "production_formatted_wire_inputs": 22,
+    "qualification_manifest_members": 59,
+    "run_manifest_members": 21,
+    "sealed_loaded_library_hashes_match": true,
+    "source_manifest_members": 14,
+    "source_raw_unchanged": true,
+    "stderr_bytes": 0,
+    "unverified_reserved_upper": 0,
+    "visible_active_controller_processes": 0
+  }
+}
