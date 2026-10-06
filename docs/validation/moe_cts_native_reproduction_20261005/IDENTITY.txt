@@ -1,0 +1,4 @@
+repo=https://github.com/wertyuilife2/go2_rl_robotlab.git
+commit=28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd
+policy=deploy/pre_train/go2/go2_moe_cts_176k_0.6984.pt
+base_python=/home/che/dev/go2-workspace/current/.substrate/venv-reliable/bin/python

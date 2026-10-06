@@ -1,0 +1,36 @@
+{
+  "kind": "engineering_native_headless_smoke",
+  "repo_commit": "28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd",
+  "policy_sha256": "c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2",
+  "policy": "deploy/pre_train/go2/go2_moe_cts_176k_0.6984.pt",
+  "scene": "flat.xml",
+  "command": [
+    1.0,
+    0.0,
+    0.0
+  ],
+  "dt_s": 0.002,
+  "control_decimation": 10,
+  "control_hz": 50.0,
+  "requested_seconds": 3.0,
+  "executed_steps": 1500,
+  "terminal": "horizon",
+  "error": null,
+  "progress_x_m": 2.515098902793865,
+  "final_xyz_m": [
+    2.515098902793865,
+    -0.01733494587108647,
+    0.34136689601106396
+  ],
+  "body_vx_mean_all_mps": 0.8391199433231795,
+  "body_vx_mean_last1s_mps": 0.9184702970331817,
+  "body_vx_min_mps": -1.8490482337977165e-19,
+  "body_vx_max_mps": 1.0029749043356069,
+  "height_min_m": 0.2931742540025227,
+  "height_max_m": 0.56996076,
+  "max_abs_roll_rad": 0.06847662685359461,
+  "max_abs_pitch_rad": 0.06518477832314197,
+  "max_abs_pd_ctrl": 26.111501273943105,
+  "max_abs_policy_action": 4.8175554275512695,
+  "policy_updates": 150
+}

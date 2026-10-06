@@ -1,12 +1,44 @@
 # Go2 — TOPIC_AUDIT
 
-> **最后更新：2026-10-02**
+> **最后更新：2026-10-05**
 > **状态：ACTIVE TOPIC AUDIT / 尚未锁定论文题**
 > **角色：repo 内 canonical 选题审计；记录“为什么选 / 为什么不选”的证据链。**
 > **项目运行状态：以 `docs/PROJECT_RECORD.md` 为准。**
-> **当前 canonical 决策：MuJoCo 是当前 canonical evaluation physics，MuJoCo/MJX 是目标 substrate；Go2 是第一 testbed；不预选单一 controller，先让对齐 benchmark 和 failure evidence 决定后续方法。**
+> **当前 canonical 决策：MuJoCo 是已有证据的 evaluation physics；新研究可按任务与资源选择其他 stack。Go2 是当前 testbed，先选择可复现的强控制实现，再定义有实际意义的任务与具体机制问题。**
 
-## 0. [CURRENT | SNAPSHOT]
+> **2026-10-04 用户目标更新：** 原实习教师的仿真跨障碍作业降为历史背景；
+> 优先本人学习、研究与可解释可复验的高含金量成果，用于进组与未来学校申请。
+> 仿真演示是展示资产，不再是选题硬约束。当前 MJPC 扩展路线暂搁为 conditional；
+> 后续用户纠正：旧权重低速/方向失败不决定新主线；后续按
+> [推进卡](research/TASK_PROJECT_FOCUS_RESET_20261004.md) 复现选定原生强底座，不强制先做 PGTT 对旧 CTS 的比较。
+> 这不确定论文题、不改变已有科学分类、不授予新的实验预算。
+> 长期仍争取有强对照与机制证据的新方法；近期先完成可复现能力研究。
+> 来源比较与主底座选型已完成：MoE-CTS 方法、作者认可 go2_rl_robotlab 原生实现；先用 Lab176k 策略在同仓 MuJoCo 复现。
+> DIAL 为需要时的优化对照，PGTT 为 heightmap/phase 备选；当前 WSL 内存不足官方 IsaacLab 自训要求。
+> 已完成 pinned native MuJoCo 工程复现 PASS，但 scientific/capability qualification 仍待完成；
+> 具体科研问题尚未锁定，不把 Lab 发布成绩当 RSS 同表数字。
+
+## 0A. [2026-10-05 | ENGINEERING PASS; SCIENTIFIC QUALIFICATION PENDING]
+
+MoE-CTS native reproduction evidence at `docs/validation/moe_cts_native_reproduction_20261005/RESULTS.md`
+is a deterministic, fixed-horizon engineering smoke at code
+`28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd` with policy SHA-256
+`c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2`:
+
+- `flat` 3.0 s: x=`2.5150989028` m, mean body-vx=`0.8391199433` m/s;
+- `stairs` 7.0 s: x=`6.0629091387` m, mean body-vx=`0.8735359818` m/s;
+- `stairs_and_slope` 10.0 s: x=`7.2067317885` m, mean body-vx=`0.7822757093` m/s.
+
+Each run reached its fixed horizon with no runtime or numerical error. The result is
+engineering evidence only: no success-rate, robustness, controller-ranking, or
+research-gap claim follows, and scientific/capability qualification remains pending.
+Next is bounded multi-condition/multi-seed capability measurement plus
+perturbation/failure mapping before selecting a research mechanism.
+
+## 0. [2026-09-28 / 10-02 | RETAINED SNAPSHOT]
+
+本节原路线与结果保留。新底座选型以本页顶部用户更新与当前推进卡为准；
+共享平台与 MuJoCo/MJX 迁移不再是选择研究起点的前置条件。
 
 2026-09-28，#189 仍是第一张封存 RL capability map，但须按
 [语义勘误](validation/rl_capability_map_successor_20260924/ERRATUM_20260928.md)
@@ -33,6 +65,9 @@ robustness evidence；修正 body-local qvel-z 后 yaw probe 仍为 PERFORMANCE_
 L9、L10/TimedReach、SEFR、FSEF 仍为 `HOLD / RE-AUDIT`。本项目尚无 generic multi-controller evaluation platform。
 
 ## 1. [SUPERSEDED → REFRAMED] 老师交付与科研架构
+
+本节保留截至 2026-10-02 的路线记录。下述“最低交付约束 / 交付要求”已被
+2026-10-04 用户目标更新取代；原教师作业不再是当前必须交付的目标。
 
 曾将老师的 Go2 terrain demo 与科研路线绑定为 dual-goal 硬约束，以避免维护两套
 互不相关的系统。现在将其改为最低交付约束：如果成熟开源 controller 能低成本

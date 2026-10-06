@@ -1,0 +1,36 @@
+{
+  "kind": "engineering_native_headless_smoke",
+  "repo_commit": "28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd",
+  "policy_sha256": "c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2",
+  "policy": "deploy/pre_train/go2/go2_moe_cts_176k_0.6984.pt",
+  "scene": "stairs.xml",
+  "command": [
+    1.0,
+    0.0,
+    0.0
+  ],
+  "dt_s": 0.002,
+  "control_decimation": 10,
+  "control_hz": 50.0,
+  "requested_seconds": 7.0,
+  "executed_steps": 3500,
+  "terminal": "horizon",
+  "error": null,
+  "progress_x_m": 6.0629091386805,
+  "final_xyz_m": [
+    6.0629091386805,
+    0.04283624834078825,
+    0.3850895471764585
+  ],
+  "body_vx_mean_all_mps": 0.8735359818157241,
+  "body_vx_mean_last1s_mps": 0.906503848813762,
+  "body_vx_min_mps": -1.8490482337977165e-19,
+  "body_vx_max_mps": 1.0411951153731531,
+  "height_min_m": 0.2931742540025227,
+  "height_max_m": 0.7083251182141483,
+  "max_abs_roll_rad": 0.09185348704960164,
+  "max_abs_pitch_rad": 0.20051974060900585,
+  "max_abs_pd_ctrl": 26.111501273943105,
+  "max_abs_policy_action": 4.879114627838135,
+  "policy_updates": 350
+}

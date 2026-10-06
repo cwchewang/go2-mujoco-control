@@ -1,21 +1,93 @@
 {
   "branch": "research/mjpc-floor-registration-12s-20261003",
-  "title": "Logical warmstart candidate qualified; scientific launch rejected before execution",
-  "task": "docs/research/TASK_MJPC_LOGICAL_WARMSTART_CLOSED_LOOP_20261004.md",
-  "result": "docs/validation/mjpc_logical_warmstart_closed_loop_20261004/RESULTS.md",
-  "stage": "Stage 3 ACTIVE / OPEN; logical ownership QUALIFIED / INDEPENDENTLY APPROVED; closed loop NOT_RUN_PLATFORM_MODE_REJECTED",
-  "scientific_status": "Scientific task px_1a104c0ea54_a2026843e1 rejected before command: workspace-exec tasks must use maintenance mode. No new formal attempts/canonical steps/optimizer calls; no output or ledger. Four-slot protocol unconsumed. A/B closed, R4 failed, no12s.",
-  "last_live_head": "829f3c40f86f6f8a35dff33c1ff83d230f6f2d54",
-  "next": "Resolve supported scientific admission/reconsideration without permission changes or relabeling as zero-science maintenance. Preserve clean producer190e569 and qualified packet; no duplicate or alternate launch.",
+  "title": "Go2 主底座已选：先复现作者原生 MoE-CTS 能力",
+  "task": "docs/research/TASK_PROJECT_FOCUS_RESET_20261004.md",
+  "result": "docs/PROJECT_RECORD.md",
+  "stage": "Stage 3 ACTIVE / OPEN；来源比较与主底座选型完成；MoE-CTS 原生 MuJoCo 工程复现 PASS；科学/能力 qualification 待完成；具体科研问题尚未锁定；旧 MJPC adapter 扩展 PARKED / CONDITIONAL",
+  "scientific_status": "MoE-CTS 原生 MuJoCo 工程复现 PASS：固定 horizon 的 flat 3.0s / x=2.5150989028m / mean vx=0.8391199433，stairs 7.0s / x=6.0629091387m / mean vx=0.8735359818，stairs_and_slope 10.0s / x=7.2067317885m / mean vx=0.7822757093；三条运行均无 runtime 或 numerical error。该结果是 deterministic engineering smoke only，不构成 success-rate、robustness、controller-ranking 或 research-gap claim；科学/能力 qualification 仍待完成。Logical 四槽闭环已完成（4 attempts / 6000 canonical），其重复性改善不代表有用行走资格。下午独立 checkout 的 H36 满速窗 mean body-vx 0.344924 m/s；H56 在测量窗前因私有 warning 与记账门槛停止，配对比较 CENSORED_OR_INCOMPLETE。旧预算全部保持 CLOSED，本次新增科学尝试、optimizer、训练与物理积分均 0。原始数据与用户既有未提交结果保留；独立分支结果尚未自动进入 main",
+  "last_live_head": "3bda7e45724258902aa380e2489432ee6598e739",
+  "next": "在工程复现 PASS 后，先做 bounded multi-condition/multi-seed capability measurement plus perturbation/failure mapping，再选择 research mechanism；不把本次 smoke 解读为 success rate、robustness、controller ranking 或 research gap。当前 WSL 16GB 内存限额低于 IsaacLab 32GB 要求，训练资源另行解决；DIAL 为需要时使用的异范式对照，PGTT 为 heightmap/phase 任务备选。本轮只完成既有证据的 canonical 集成，无新运行、训练或合并发布动作",
   "related_result": {
-    "title": "Duplicate-FD cold-start diagnostic",
-    "path": "docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md",
-    "summary": "The fixed-index bug removes duplicate t34 tasks. The reviewed same-process 8-call observation completed at HEAD 6c2dbad: all calls passed, canonical integration 0, costs identical and tick-10 q_des differed by at most 1.01e-10. Planner/warmstart hashes varied across processes; causal interpretation remains open."
+    "title": "已有 RL 能力图（按勘误解释）",
+    "path": "docs/validation/rl_capability_map_successor_20260924/RESULTS.md",
+    "summary": "冻结台阶任务通过，部分命令性能失败；只属于该 checkpoint 与条件，不是算法类别瓶颈或已确定论文 gap"
   },
   "private_observation_producer_head": "5b13c02d5460fee49ae80c5a95a0426cd341c88a",
   "private_observation_receipt": "px_1a1047e1251_d29d3a031c",
   "private_observation_raw_root": "/home/che/dev/go2-workspace/fd-warmstart-observation/_runs/mjpc_fd_warmstart_observation_20261004",
   "logical_warmstart_producer_head": "190e56939de0d8f57670747b73b4252b4d9ae603",
   "logical_warmstart_dispatch": "px_1a104c0ea54_a2026843e1",
-  "logical_warmstart_packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639"
+  "logical_warmstart_packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639",
+  "logical_warmstart_capture": {
+    "status": "CAMPAIGN_COMPLETE",
+    "budget": "CLOSED",
+    "producer_branch": "research/mjpc-logical-warmstart-closed-loop-20261004",
+    "producer_head": "190e56939de0d8f57670747b73b4252b4d9ae603",
+    "binary_sha256": "b161f969ca5d8e48c7cc3fc7ab98b4e9c93d94b0d67fa721acf1ba4bfef45fef",
+    "packet_sha256": "38d7f7b56ce2eeccbd545f72d10e658e143644e4b59d02943d739845c7bd3639",
+    "result_sha256": "b3f9825e3e90ca67a59e9ae114b8aa0a199896b6147a814a86d3f201d05d3ac9",
+    "ledger_sha256": "c1520e0b04518d29ee037f0e73c26b58224dac8c61d3efb56f69daa327b3e024",
+    "execution": "Base SSH host alias atlas → Atlas WSL Ubuntu-22.04; tmux session go2-logical-warmstart-capture-20261004; wrapper PID 1459503; runner PID 1459506; runner exit 0; log /tmp/go2_logical_warmstart_capture_20261004.log; exit receipt /tmp/go2_logical_warmstart_capture_20261004.exit"
+  },
+  "research_focus": {
+    "updated": "2026-10-04",
+    "goal": "独立学习与研究，形成有明确技术贡献、可解释可复验的科研作品，逐步发展可发表且有实证的新方法，服务进组与未来学校申请",
+    "teacher_demo": "historical_context; simulated obstacle traversal; no longer a hard topic constraint",
+    "mjpc_expansion": "PARKED_CONDITIONAL; not cancellation of independently authorized work",
+    "paper_topic": "NOT_SELECTED",
+    "new_capture_budget": 0,
+    "horizon_screen_producer_head": "3bda7e45724258902aa380e2489432ee6598e739",
+    "offline_accounting_repair_head": "9de313dbc2c4edea01539a11b139e4f6cfa79e94",
+    "candidate": {
+      "name": "PGTT",
+      "status": "CONDITIONAL_SOURCE_ADMISSION_ONLY",
+      "source_head": "9bd133884bbf2eeaa40c82aee534246ccaaf02f8",
+      "checkpoint": "policies/policy_go2_pgtt_level03_run0",
+      "performance": "NOT_EVALUATED_THIS_TASK",
+      "role": "retained_PGTT_source_audit; task_specific_heightmap_phase_alternative; not_primary"
+    },
+    "selection_task": "Source-backed selection completed; next is bounded native qualification of the selected released policy, not another open-ended shortlist",
+    "old_command_failure_route": "SUPERSEDED_AS_DEFAULT; retain scientific evidence; no obligation to continue this checkpoint",
+    "portfolio": "NOT_YET_A_COMPLETED_NEW_METHOD_WORK; existing code and experiment records retained",
+    "foundation_selection": {
+      "status": "SOURCE_COMPARISON_AND_SELECTION_COMPLETE; NATIVE_ENGINEERING_REPRODUCTION_PASS; SCIENTIFIC_CAPABILITY_QUALIFICATION_PENDING",
+      "primary_method": "MoE-CTS (RoboGauge, RSS 2026)",
+      "primary_implementation": "author-endorsed wertyuilife2/go2_rl_robotlab",
+      "code_commit": "28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd",
+      "initial_release": "go2_rl_robotlab/go2_moe_cts_v4.2_176k_0.6984_20260626/exported/policy.pt",
+      "hf_revision": "b9cd72d5046358b4ca6840a3d795d001402e6bfc",
+      "actor_lfs_sha256": "c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2",
+      "native_engineering_reproduction": {
+        "status": "PASS_ENGINEERING_ONLY",
+        "evidence": "docs/validation/moe_cts_native_reproduction_20261005/RESULTS.md",
+        "code_commit": "28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd",
+        "policy_sha256": "c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2",
+        "deterministic": true,
+        "fixed_horizon": true,
+        "runtime_or_numerical_error": false,
+        "runs": [
+          {"condition": "flat", "horizon_s": 3.0, "progress_x_m": 2.5150989028, "mean_body_vx_mps": 0.8391199433},
+          {"condition": "stairs", "horizon_s": 7.0, "progress_x_m": 6.0629091387, "mean_body_vx_mps": 0.8735359818},
+          {"condition": "stairs_and_slope", "horizon_s": 10.0, "progress_x_m": 7.2067317885, "mean_body_vx_mps": 0.7822757093}
+        ],
+        "interpretation_boundary": "Engineering smoke only; no success-rate, robustness, controller-ranking, research-gap, or scientific/capability-qualification claim",
+        "scientific_capability_qualification": "PENDING",
+        "next": "Bounded multi-condition/multi-seed capability measurement plus perturbation/failure mapping before choosing a research mechanism"
+      },
+      "paper_anchor": "Gym go2_moe_cts_137000_0.6713; separate from Lab release and existing local164k policy",
+      "first_execution_path": "same-repository native CPU MuJoCo released-policy qualification; no training prerequisite",
+      "optimization_comparator": "DIAL-MPC source-native Go2 when a concrete task requires an alternative mechanism; not simultaneous full-stack setup",
+      "cpu_alternative": "author-native MuJoCo WBMPC/iLQR for continuous tracking or low-latency feedback; native actuator contract still needs qualification",
+      "task_specific_alternative": "PGTT for heightmap/phase; REAL if depth-visual parkour becomes the chosen task",
+      "training_resource_status": "NOT_READY_BY_OFFICIAL_REQUIREMENTS: WSL memory16GB/swap0; installed host32GiB; IsaacLab v2.3.2 requires RAM>=32GB; compatibility and actual resource use not measured",
+      "not_claimed": [
+        "globally best controller",
+        "scientific/capability qualification proven",
+        "published historical config/source/seed fully bound",
+        "a research gap established",
+        "success rate, robustness, or controller ranking established from the engineering smoke"
+      ],
+      "physics_stack": "new research may change stack; keep historical evidence identity separate"
+    }
+  }
 }

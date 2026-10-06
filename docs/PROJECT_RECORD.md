@@ -1,7 +1,7 @@
 # Go2 — PROJECT_RECORD
 
-> **最后更新：2026-10-02**
-> **状态：R1 SHARED CONTRACTS IMPLEMENTED; NATIVE MJPC ADAPTER ENGINEERING-WIRED; GATE 0 INCOMPLETE**
+> **最后更新：2026-10-05**
+> **状态：MoE-CTS 原生 MuJoCo 工程复现 PASS；科学/能力 qualification 仍待完成；Stage 3 OPEN；MJPC 扩展暂搁**
 > **角色：repo 内项目 canonical 入口；回答“现在是什么、已证明什么、当前 Gate 与下一步是什么”。**
 > **Source of truth：本 repo 同时承载研究认知、代码、配置、实验与结果；raw evidence 以 commit / result / Praxis evidence 为准。**
 > **配对文档：`docs/TOPIC_AUDIT.md` 记录选题 landscape、候选攻击与路线演化。**
@@ -17,6 +17,77 @@
 5. 不用聊天、Memory、截图覆盖 repo 事实。
 
 状态词：`CURRENT / VERIFIED / LEGACY BASELINE / HOLD / RE-AUDIT / SUPERSEDED / HISTORICAL`。
+
+## 当前主线（2026-10-04）
+
+用户已明确更新目标：原实习教师的仿真跨障碍小作业降为历史背景，优先自己的学习、
+研究与高含金量成果，用于科研实习进组和未来学校申请。仿真演示保留为展示资产，
+不再成为选题硬约束；当前无实机要求。先做出问题清楚、证据可靠、贡献可解释的
+可复现研究作品；论文潜力由机制与强对照证据判断，不将发表作为首份成果的前置条件。
+长期仍以可发表且有实证的新方法为目标，要求强基线、机制解释、消融与跨条件验证。
+
+用户后续指出“低速、方向控制问题”是一组现象，并提出先选强控制底座再探索限制。
+据此撤回默认围绕原 CTS 失败、先移植 PGTT 的路线：原实验作为资产保留，
+不决定新研究任务。新底座可按任务与资源换 stack/physics，无需先接旧共享 adapter。
+已有的是代码与实验记录，目前尚无成型新方法作品，也未锁定具体科研问题。
+强底座来源比较与选型已完成，详见[推进卡](research/TASK_PROJECT_FOCUS_RESET_20261004.md)。
+主方法是 MoE-CTS，研究源码采用作者认可的 go2_rl_robotlab，首步用 Lab v4.2/176k
+发布策略与同仓原生 MuJoCo 部署复现能力；不是继续修现用 Gym/164k 权重或旧 adapter。
+RSS 2026 有对 CTS/HIM/DreamWaQ 的 Go2 多地形与扰动比较；Lab 发布版与 RSS 原表
+策略不同，历史训练绑定尚有未知。本机原生部署现已有工程复现证据，但科学/能力 qualification
+仍待完成；不宣称全球最佳或论文 gap。
+PGTT 为 heightmap/phase 任务备选；DIAL 是具体任务需要时的异范式对照，不默认双线搭栈；
+连续跟踪/CPU 反馈可选作者 native iLQR，depth-visual parkour 则另评 REAL。
+本机 RTX5080 16GiB，但 WSL 限16GB RAM/swap0，低于 IsaacLab 32GB RAM 官方要求；
+Windows 实装32GiB不等于WSL可以独占32GiB。先做轻量发布策略复现，训练资源另行解决。
+当前 MJPC adapter 扩展继续 PARKED/CONDITIONAL；全部历史结果和修复保留，不自动追加
+warmstart/horizon。新来源比较不改变原科学分类，不授予或恢复封账运行预算。
+
+### 2026-10-05 | MoE-CTS native MuJoCo engineering reproduction
+
+Durable evidence at `docs/validation/moe_cts_native_reproduction_20261005/RESULTS.md` records a
+PASS for the pinned author-native headless deployment at code
+`28b4516d22617b11aeaf8ead63cc00b0c0bcd1bd` and policy SHA-256
+`c602e749ac292921e3d6f5b2ab1749c4e4eaa6dbe51f751cce5b669b102d10a2`.
+All three fixed-horizon runs completed without runtime or numerical error:
+
+- `flat` 3.0 s: x=`2.5150989028` m, mean body-vx=`0.8391199433` m/s.
+- `stairs` 7.0 s: x=`6.0629091387` m, mean body-vx=`0.8735359818` m/s.
+- `stairs_and_slope` 10.0 s: x=`7.2067317885` m, mean body-vx=`0.7822757093` m/s.
+
+This is a deterministic engineering smoke only. It does not establish success rate,
+robustness, controller ranking, a research gap, or scientific/capability qualification.
+The latter remains pending. The next bounded step is multi-condition, multi-seed
+capability measurement plus perturbation/failure mapping before choosing a research
+mechanism; no training or live run is authorized by this documentation update.
+
+截至本轮零积分证据核对，以下进展覆盖旧附录中“启动被拒绝、0 attempts”的当时状态：
+
+- Logical 四槽已在 producer `190e56939de0d8f57670747b73b4252b4d9ae603` 完成，
+  4 attempts / 6000 canonical / 600 optimizer calls。logical 两条记录状态、目标和
+  control 精确重复，各前进 0.928938 m；这是冻结条件下重复性改善，不是有用行走资格。
+  补充说明为 `docs/validation/mjpc_logical_warmstart_closed_loop_20261004/ACTUAL_RUN_RESULTS.md`，
+  原 raw/manifest 与独立 `.closed.json` 保留，原预约账本仍按设计为 `RESERVED_NO_RETRY`。
+- 下午独立 checkout 的 H36/H56 producer 是
+  `3bda7e45724258902aa380e2489432ee6598e739`。H36 完成 3 s，满速窗 mean body-vx
+  0.344924 m/s、MAE 0.655076 m/s；工程 replay PASS 不代表 1 m/s 任务合格。
+  H56 在 tick70、第八次私有优化时停止，未进入 tick150 测量窗；配对比较
+  `CENSORED_OR_INCOMPLETE`。真实关闭账本保留 2 attempts / 1570 canonical、
+  158 responses / 157 completed 和一条 4096 私有步未决预留，budget CLOSED。
+- 旧 policy-reference 记录无法独立精确重建原 total_return。`234ca5e` 修复实际
+  selected-rollout 的记录面，保留执行 feedback policy；保存 stage_cost 均值一致
+  只证明 payload 一致，不等于原 C++ residual/norm 独立重评分通过。
+- 离线记账/阶段标签修复 `9de313dbc2c4edea01539a11b139e4f6cfa79e94` 改进 H56 的
+  shortfall 与 warning 分类，仍保持停止；没有修复私有数值不稳定、恢复运行或合入 main。
+
+下午原始证据分别位于 workspace 的
+`candidate-consistency-repair-20261004/_runs/mjpc_horizon_screen_closeout_20261004_v1/analysis.json`
+及 `h56-offline-accounting-repair-20261004/_runs/h56_offline_repair_closeout_20261004_v1/RESULTS.md`。
+它们是独立 checkout 的来源与状态，不能默认为本 checkout 或 GitHub main 已包含新实现。
+本轮只同步认知与导航，不代替新的独立科学末审；旧 A/B、R4、#189 和所有封账预算不变。
+
+下文保留此前架构与各阶段证据。涉及老师交付优先级和默认追加 MJPC 诊断的旧建议，
+以本节用户目标更新和当前推进卡为准；科学数值与旧分类不改写。
 
 ## 1. [2026-10-02 | CURRENT | SNAPSHOT] 当前项目
 

@@ -156,9 +156,15 @@ def main():
                     ["git", "status", "--porcelain"], cwd=ROOT, text=True
                 ).strip()
             )
+            prefix = ROOT.relative_to(workspace).as_posix()
+            workspace_current = expected.replace(
+                "](docs/", f"]({prefix}/docs/"
+            ).replace(
+                "`docs/research/current.json`", f"`{prefix}/docs/research/current.json`"
+            )
             (workspace / "START_HERE.md").write_text(
                 f"# Go2 handoff\n\nGenerated; verify Git again on entry.\nRepository: `{ROOT}`.\nObserved HEAD: `{head}`; dirty: `{dirty}`.\n\n"
-                + expected
+                + workspace_current
                 + "\nArchive and retained branch/worktree inventory: `archive/evidence/CATALOG.json`.\nNo raw data or branches were removed by this generator.\n"
             )
             print(json.dumps({key: len(items) for key, items in data.items()}))

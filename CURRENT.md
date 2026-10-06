@@ -7,14 +7,14 @@ Generated from `docs/research/current.json`; edit that source and regenerate.
 ## Active research frontier
 
 Branch: `research/mjpc-floor-registration-12s-20261003`.
-Task: [Logical warmstart candidate qualified; scientific launch rejected before execution](docs/research/TASK_MJPC_LOGICAL_WARMSTART_CLOSED_LOOP_20261004.md).
-Closeout: [Logical warmstart candidate qualified; scientific launch rejected before execution](docs/validation/mjpc_logical_warmstart_closed_loop_20261004/RESULTS.md).
-Stage: Stage 3 ACTIVE / OPEN; logical ownership QUALIFIED / INDEPENDENTLY APPROVED; closed loop NOT_RUN_PLATFORM_MODE_REJECTED.
-Scientific status: Scientific task px_1a104c0ea54_a2026843e1 rejected before command: workspace-exec tasks must use maintenance mode. No new formal attempts/canonical steps/optimizer calls; no output or ledger. Four-slot protocol unconsumed. A/B closed, R4 failed, no12s..
-Last live HEAD: `829f3c40f86f6f8a35dff33c1ff83d230f6f2d54`.
-Next: Resolve supported scientific admission/reconsideration without permission changes or relabeling as zero-science maintenance. Preserve clean producer190e569 and qualified packet; no duplicate or alternate launch.
+Task: [Go2 主底座已选：先复现作者原生 MoE-CTS 能力](docs/research/TASK_PROJECT_FOCUS_RESET_20261004.md).
+Closeout: [Go2 主底座已选：先复现作者原生 MoE-CTS 能力](docs/PROJECT_RECORD.md).
+Stage: Stage 3 ACTIVE / OPEN；来源比较与主底座选型完成；MoE-CTS 原生 MuJoCo 工程复现 PASS；科学/能力 qualification 待完成；具体科研问题尚未锁定；旧 MJPC adapter 扩展 PARKED / CONDITIONAL.
+Scientific status: MoE-CTS 原生 MuJoCo 工程复现 PASS：固定 horizon 的 flat 3.0s / x=2.5150989028m / mean vx=0.8391199433，stairs 7.0s / x=6.0629091387m / mean vx=0.8735359818，stairs_and_slope 10.0s / x=7.2067317885m / mean vx=0.7822757093；三条运行均无 runtime 或 numerical error。该结果是 deterministic engineering smoke only，不构成 success-rate、robustness、controller-ranking 或 research-gap claim；科学/能力 qualification 仍待完成。Logical 四槽闭环已完成（4 attempts / 6000 canonical），其重复性改善不代表有用行走资格。下午独立 checkout 的 H36 满速窗 mean body-vx 0.344924 m/s；H56 在测量窗前因私有 warning 与记账门槛停止，配对比较 CENSORED_OR_INCOMPLETE。旧预算全部保持 CLOSED，本次新增科学尝试、optimizer、训练与物理积分均 0。原始数据与用户既有未提交结果保留；独立分支结果尚未自动进入 main.
+Last live HEAD: `3bda7e45724258902aa380e2489432ee6598e739`.
+Next: 在工程复现 PASS 后，先做 bounded multi-condition/multi-seed capability measurement plus perturbation/failure mapping，再选择 research mechanism；不把本次 smoke 解读为 success rate、robustness、controller ranking 或 research gap。当前 WSL 16GB 内存限额低于 IsaacLab 32GB 要求，训练资源另行解决；DIAL 为需要时使用的异范式对照，PGTT 为 heightmap/phase 任务备选。本轮只完成既有证据的 canonical 集成，无新运行、训练或合并发布动作.
 
-**Related bounded diagnostic:** [Duplicate-FD cold-start diagnostic](docs/validation/mjpc_fd_duplicate_diagnostic_v1_20261002/RESULTS.md) — The fixed-index bug removes duplicate t34 tasks. The reviewed same-process 8-call observation completed at HEAD 6c2dbad: all calls passed, canonical integration 0, costs identical and tick-10 q_des differed by at most 1.01e-10. Planner/warmstart hashes varied across processes; causal interpretation remains open.
+**Related bounded diagnostic:** [已有 RL 能力图（按勘误解释）](docs/validation/rl_capability_map_successor_20260924/RESULTS.md) — 冻结台阶任务通过，部分命令性能失败；只属于该 checkpoint 与条件，不是算法类别瓶颈或已确定论文 gap.
 
 Read [PROJECT_RECORD](docs/PROJECT_RECORD.md) for scientific conclusions and
 [TOPIC_AUDIT](docs/TOPIC_AUDIT.md) for research direction. The
